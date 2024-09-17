@@ -1534,7 +1534,7 @@ void EditorNode::_save_editor_states(const String &p_file, int p_idx) {
 		md = editor_data.get_scene_editor_states(p_idx);
 	}
 
-	List<Variant> keys;
+	LocalVector<Variant> keys;
 	md.get_key_list(&keys);
 	for (const Variant &E : keys) {
 		cf->set_value("editor_states", E, md[E]);
@@ -1611,7 +1611,7 @@ bool EditorNode::_find_and_save_edited_subresources(Object *obj, HashMap<Ref<Res
 			} break;
 			case Variant::DICTIONARY: {
 				Dictionary d = obj->get(E.name);
-				List<Variant> keys;
+				LocalVector<Variant> keys;
 				d.get_key_list(&keys);
 				for (const Variant &F : keys) {
 					Variant v = d[F];
@@ -3481,7 +3481,7 @@ void EditorNode::replace_resources_in_object(Object *p_object, const Vector<Ref<
 			} break;
 			case Variant::DICTIONARY: {
 				Dictionary d = p_object->get(E.name);
-				List<Variant> keys;
+				LocalVector<Variant> keys;
 				bool dictionary_requires_updating = false;
 				d.get_key_list(&keys);
 				for (const Variant &F : keys) {

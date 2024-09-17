@@ -49,7 +49,7 @@ struct DictionaryPrivate {
 	Variant *typed_fallback = nullptr; // Allows a typed dictionary to return dummy values when attempting an invalid access.
 };
 
-void Dictionary::get_key_list(List<Variant> *p_keys) const {
+void Dictionary::get_key_list(LocalVector<Variant> *p_keys) const {
 	if (_p->variant_map.is_empty()) {
 		return;
 	}

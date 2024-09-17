@@ -1796,7 +1796,7 @@ void FileSystemDock::_folder_removed(const String &p_folder) {
 
 	// Remove assigned folder color for all subfolders.
 	bool folder_colors_updated = false;
-	List<Variant> paths;
+	LocalVector<Variant> paths;
 	assigned_folder_colors.get_key_list(&paths);
 	for (const Variant &E : paths) {
 		const String &path = E;

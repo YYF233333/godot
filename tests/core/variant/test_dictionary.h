@@ -97,14 +97,14 @@ TEST_CASE("[Dictionary] Assignment using bracket notation ([])") {
 
 TEST_CASE("[Dictionary] get_key_lists()") {
 	Dictionary map;
-	List<Variant> keys;
-	List<Variant> *ptr = &keys;
+	LocalVector<Variant> keys;
+	LocalVector<Variant> *ptr = &keys;
 	map.get_key_list(ptr);
 	CHECK(keys.is_empty());
 	map[1] = 3;
 	map.get_key_list(ptr);
 	CHECK(keys.size() == 1);
-	CHECK(int(keys.front()->get()) == 1);
+	CHECK(int(keys[0]) == 1);
 	map[2] = 4;
 	map.get_key_list(ptr);
 	CHECK(keys.size() == 3);

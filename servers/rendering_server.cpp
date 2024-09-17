@@ -1319,7 +1319,7 @@ Error RenderingServer::mesh_create_surface_data_from_arrays(SurfaceData *r_surfa
 	}
 	Vector<SurfaceData::LOD> lods;
 	if (index_array_len) {
-		List<Variant> keys;
+		LocalVector<Variant> keys;
 		p_lods.get_key_list(&keys);
 		keys.sort(); // otherwise lod levels may get skipped
 		for (const Variant &E : keys) {

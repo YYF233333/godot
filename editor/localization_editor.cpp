@@ -523,7 +523,7 @@ void LocalizationEditor::update_translations() {
 
 	if (ProjectSettings::get_singleton()->has_setting("internationalization/locale/translation_remaps")) {
 		Dictionary remaps = GLOBAL_GET("internationalization/locale/translation_remaps");
-		List<Variant> rk;
+		LocalVector<Variant> rk;
 		remaps.get_key_list(&rk);
 		Vector<String> keys;
 		for (const Variant &E : rk) {

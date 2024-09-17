@@ -512,7 +512,7 @@ EditorExportPlatform::ExportNotifier::~ExportNotifier() {
 bool EditorExportPlatform::_export_customize_dictionary(Dictionary &dict, LocalVector<Ref<EditorExportPlugin>> &customize_resources_plugins) {
 	bool changed = false;
 
-	List<Variant> keys;
+	LocalVector<Variant> keys;
 	dict.get_key_list(&keys);
 	for (const Variant &K : keys) {
 		Variant v = dict[K];

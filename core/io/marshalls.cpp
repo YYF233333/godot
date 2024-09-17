@@ -1754,7 +1754,7 @@ Error encode_variant(const Variant &p_variant, uint8_t *r_buffer, int &r_len, bo
 			}
 			r_len += 4;
 
-			List<Variant> keys;
+			LocalVector<Variant> keys;
 			d.get_key_list(&keys);
 
 			for (const Variant &E : keys) {

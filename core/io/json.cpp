@@ -117,7 +117,7 @@ String JSON::_stringify(const Variant &p_var, const String &p_indent, int p_cur_
 			ERR_FAIL_COND_V_MSG(p_markers.has(d.id()), "\"{...}\"", "Converting circular structure to JSON.");
 			p_markers.insert(d.id());
 
-			List<Variant> keys;
+			LocalVector<Variant> keys;
 			d.get_key_list(&keys);
 
 			if (p_sort_keys) {
@@ -827,7 +827,7 @@ Variant JSON::from_native(const Variant &p_variant, bool p_allow_classes, bool p
 		} break;
 		case Variant::DICTIONARY: {
 			Dictionary d = p_variant;
-			List<Variant> keys;
+			LocalVector<Variant> keys;
 			d.get_key_list(&keys);
 			bool all_strings = true;
 			for (const Variant &K : keys) {
@@ -1184,7 +1184,7 @@ Variant JSON::to_native(const Variant &p_json, bool p_allow_classes, bool p_allo
 
 					Dictionary p = d["properties"];
 
-					List<Variant> keys;
+					LocalVector<Variant> keys;
 					p.get_key_list(&keys);
 
 					for (const Variant &K : keys) {
@@ -1308,7 +1308,7 @@ Variant JSON::to_native(const Variant &p_json, bool p_allow_classes, bool p_allo
 				}
 			} else {
 				// Regular dictionary with string keys.
-				List<Variant> keys;
+				LocalVector<Variant> keys;
 				d.get_key_list(&keys);
 				Dictionary r;
 				for (const Variant &K : keys) {

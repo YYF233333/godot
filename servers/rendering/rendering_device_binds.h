@@ -413,7 +413,7 @@ protected:
 	}
 	void _set_versions(const Dictionary &p_versions) {
 		versions.clear();
-		List<Variant> keys;
+		LocalVector<Variant> keys;
 		p_versions.get_key_list(&keys);
 		for (const Variant &E : keys) {
 			StringName vname = E;

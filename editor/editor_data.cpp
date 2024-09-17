@@ -340,12 +340,11 @@ void EditorData::set_editor_plugin_states(const Dictionary &p_states) {
 		return;
 	}
 
-	List<Variant> keys;
+	LocalVector<Variant> keys;
 	p_states.get_key_list(&keys);
 
-	List<Variant>::Element *E = keys.front();
-	for (; E; E = E->next()) {
-		String name = E->get();
+	for (const Variant &key : keys) {
+		String name = key;
 		int idx = -1;
 		for (int i = 0; i < editor_plugins.size(); i++) {
 			if (editor_plugins[i]->get_name() == name) {
@@ -1081,7 +1080,7 @@ void EditorData::script_class_load_icon_paths() {
 #ifndef DISABLE_DEPRECATED
 	if (ProjectSettings::get_singleton()->has_setting("_global_script_class_icons")) {
 		Dictionary d = GLOBAL_GET("_global_script_class_icons");
-		List<Variant> keys;
+		LocalVector<Variant> keys;
 		d.get_key_list(&keys);
 
 		for (const Variant &E : keys) {

@@ -186,7 +186,7 @@ public:
 	virtual void get_constants(HashMap<StringName, Variant> *p_constants) override {
 		Dictionary constants;
 		GDVIRTUAL_REQUIRED_CALL(_get_constants, constants);
-		List<Variant> keys;
+		LocalVector<Variant> keys;
 		constants.get_key_list(&keys);
 		for (const Variant &K : keys) {
 			p_constants->insert(K, constants[K]);

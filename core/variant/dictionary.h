@@ -32,7 +32,7 @@
 #define DICTIONARY_H
 
 #include "core/string/ustring.h"
-#include "core/templates/list.h"
+#include "core/templates/local_vector.h"
 #include "core/variant/array.h"
 
 class Variant;
@@ -46,7 +46,7 @@ class Dictionary {
 	void _unref() const;
 
 public:
-	void get_key_list(List<Variant> *p_keys) const;
+	void get_key_list(LocalVector<Variant> *p_keys) const;
 	Variant get_key_at_index(int p_index) const;
 	Variant get_value_at_index(int p_index) const;
 

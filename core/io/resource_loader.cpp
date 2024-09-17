@@ -1278,7 +1278,7 @@ void ResourceLoader::load_translation_remaps() {
 	}
 
 	Dictionary remaps = GLOBAL_GET("internationalization/locale/translation_remaps");
-	List<Variant> keys;
+	LocalVector<Variant> keys;
 	remaps.get_key_list(&keys);
 	for (const Variant &E : keys) {
 		Array langs = remaps[E];

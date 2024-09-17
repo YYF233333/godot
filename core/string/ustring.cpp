@@ -4037,7 +4037,7 @@ String String::format(const Variant &values, const String &placeholder) const {
 		}
 	} else if (values.get_type() == Variant::DICTIONARY) {
 		Dictionary d = values;
-		List<Variant> keys;
+		LocalVector<Variant> keys;
 		d.get_key_list(&keys);
 
 		for (const Variant &key : keys) {

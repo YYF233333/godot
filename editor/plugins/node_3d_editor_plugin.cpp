@@ -6312,7 +6312,7 @@ void Node3DEditor::set_state(const Dictionary &p_state) {
 
 	if (d.has("gizmos_status")) {
 		Dictionary gizmos_status = d["gizmos_status"];
-		List<Variant> keys;
+		LocalVector<Variant> keys;
 		gizmos_status.get_key_list(&keys);
 
 		for (int j = 0; j < gizmo_plugins_by_name.size(); ++j) {

@@ -1449,7 +1449,7 @@ static void gdextension_placeholder_script_instance_update(GDExtensionScriptInst
 		properties_list.push_back(PropertyInfo::from_dict(d));
 	}
 
-	List<Variant> keys;
+	LocalVector<Variant> keys;
 	values.get_key_list(&keys);
 
 	for (const Variant &E : keys) {
