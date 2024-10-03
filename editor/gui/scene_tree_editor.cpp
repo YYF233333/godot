@@ -510,36 +510,63 @@ void SceneTreeEditor::_queue_update_node_tooltip(Node *p_node, TreeItem *p_item)
 	update_node_tooltip_delay->start();
 }
 
+static void _append_string(LocalVector<char32_t> &p_builder, const String &p_string) {
+	p_builder.resize(p_builder.size() + p_string.length());
+	for (int i = 0; i < p_string.length(); i++) {
+		p_builder.push_back(p_string[i]);
+	}
+}
+
 void SceneTreeEditor::_update_node_tooltip(Node *p_node, TreeItem *p_item) {
+	static LocalVector<char32_t> tooltip_builder;
+	tooltip_builder.resize(0);
 	// Display the node name in all tooltips so that long node names can be previewed
 	// without having to rename them.
-	String tooltip = p_node->get_name();
+	//String tooltip = p_node->get_name();
+	_append_string(tooltip_builder, p_node->get_name());
 
 	if (p_node == get_scene_node() && p_node->get_scene_inherited_state().is_valid()) {
 		if (p_item->get_button_by_id(0, BUTTON_SUBSCENE) == -1) {
 			p_item->add_button(0, get_editor_theme_icon(SNAME("InstanceOptions")), BUTTON_SUBSCENE, false, TTR("Open in Editor"));
 		}
-		tooltip += String("\n" + TTR("Inherits:") + " " + p_node->get_scene_inherited_state()->get_path());
+		//tooltip += String("\n" + TTR("Inherits:") + " " + p_node->get_scene_inherited_state()->get_path());
+		tooltip_builder.push_back(U'\n');
+		_append_string(tooltip_builder, TTR("Inherits:"));
+		tooltip_builder.push_back(U' ');
+		_append_string(tooltip_builder, p_node->get_scene_inherited_state()->get_path());
 	} else if (p_node != get_scene_node() && !p_node->get_scene_file_path().is_empty() && can_open_instance) {
 		if (p_item->get_button_by_id(0, BUTTON_SUBSCENE) == -1) {
 			p_item->add_button(0, get_editor_theme_icon(SNAME("InstanceOptions")), BUTTON_SUBSCENE, false, TTR("Open in Editor"));
 		}
-		tooltip += String("\n" + TTR("Instance:") + " " + p_node->get_scene_file_path());
+		//tooltip += String("\n" + TTR("Instance:") + " " + p_node->get_scene_file_path());
+		tooltip_builder.push_back(U'\n');
+		_append_string(tooltip_builder, TTR("Instance:"));
+		tooltip_builder.push_back(U' ');
+		_append_string(tooltip_builder, p_node->get_scene_file_path());
 	}
 
 	StringName custom_type = EditorNode::get_singleton()->get_object_custom_type_name(p_node);
-	tooltip += "\n" + TTR("Type:") + " " + (custom_type != StringName() ? String(custom_type) : p_node->get_class());
+	//tooltip += "\n" + TTR("Type:") + " " + (custom_type != StringName() ? String(custom_type) : p_node->get_class());
+	tooltip_builder.push_back(U'\n');
+	_append_string(tooltip_builder, TTR("Type:"));
+	tooltip_builder.push_back(U' ');
+	_append_string(tooltip_builder, custom_type != StringName() ? String(custom_type) : p_node->get_class());
 
 	if (!p_node->get_editor_description().is_empty()) {
 		const PackedInt32Array boundaries = TS->string_get_word_breaks(p_node->get_editor_description(), "", 80);
-		tooltip += "\n";
+		//tooltip += "\n";
+		tooltip_builder.push_back(U'\n');
 
 		for (int i = 0; i < boundaries.size(); i += 2) {
 			const int start = boundaries[i];
 			const int end = boundaries[i + 1];
-			tooltip += "\n" + p_node->get_editor_description().substr(start, end - start + 1).rstrip("\n");
+			//tooltip += "\n" + p_node->get_editor_description().substr(start, end - start + 1).rstrip("\n");
+			tooltip_builder.push_back(U'\n');
+			_append_string(tooltip_builder, p_node->get_editor_description().substr(start, end - start + 1).rstrip("\n"));
 		}
 	}
+	tooltip_builder.push_back(U'\0');
+	String tooltip = String(tooltip_builder.ptr(), tooltip_builder.size() - 1);
 
 	p_item->set_tooltip_text(0, tooltip);
 }
