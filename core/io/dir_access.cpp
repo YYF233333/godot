@@ -75,8 +75,8 @@ bool DirAccess::drives_are_shortcuts() {
 }
 
 static Error _erase_recursive(DirAccess *da) {
-	List<String> dirs;
-	List<String> files;
+	LocalVector<String> dirs;
+	LocalVector<String> files;
 
 	da->list_dir_begin();
 	String n = da->get_next();
@@ -482,7 +482,7 @@ public:
 };
 
 Error DirAccess::_copy_dir(Ref<DirAccess> &p_target_da, const String &p_to, int p_chmod_flags, bool p_copy_links) {
-	List<String> dirs;
+	LocalVector<String> dirs;
 
 	String curdir = get_current_dir();
 	list_dir_begin();
