@@ -82,7 +82,7 @@ void AddMetadataDialog::_complete_init(const StringName &p_title) {
 	}
 }
 
-void AddMetadataDialog::open(const StringName p_title, List<StringName> &p_existing_metas) {
+void AddMetadataDialog::open(const StringName p_title, LocalVector<StringName> &p_existing_metas) {
 	this->_existing_metas = p_existing_metas;
 	_complete_init(p_title);
 	popup_centered();
@@ -107,7 +107,7 @@ void AddMetadataDialog::_check_meta_name() {
 		validation_panel->set_message(EditorValidationPanel::MSG_ID_DEFAULT, TTR("Metadata name can't be empty."), EditorValidationPanel::MSG_ERROR);
 	} else if (!meta_name.is_valid_ascii_identifier()) {
 		validation_panel->set_message(EditorValidationPanel::MSG_ID_DEFAULT, TTR("Metadata name must be a valid identifier."), EditorValidationPanel::MSG_ERROR);
-	} else if (_existing_metas.find(meta_name)) {
+	} else if (_existing_metas.find(meta_name) != -1) {
 		validation_panel->set_message(EditorValidationPanel::MSG_ID_DEFAULT, vformat(TTR("Metadata with name \"%s\" already exists."), meta_name), EditorValidationPanel::MSG_ERROR);
 	} else if (meta_name[0] == '_') {
 		validation_panel->set_message(EditorValidationPanel::MSG_ID_DEFAULT, TTR("Names starting with _ are reserved for editor-only metadata."), EditorValidationPanel::MSG_ERROR);

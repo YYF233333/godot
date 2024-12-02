@@ -128,7 +128,7 @@ void AnimationPlayer::_validate_property(PropertyInfo &p_property) const {
 }
 
 void AnimationPlayer::_get_property_list(List<PropertyInfo> *p_list) const {
-	List<PropertyInfo> anim_names;
+	LocalVector<PropertyInfo> anim_names;
 
 	for (const KeyValue<StringName, AnimationData> &E : animation_set) {
 		AHashMap<StringName, StringName>::ConstIterator F = animation_next_set.find(E.key);
@@ -282,7 +282,7 @@ void AnimationPlayer::_blend_playback_data(double p_delta, bool p_started) {
 		}
 		return;
 	}
-	List<List<Blend>::Element *> to_erase;
+	LocalVector<List<Blend>::Element *> to_erase;
 	for (List<Blend>::Element *E = c.blend.front(); E; E = E->next()) {
 		Blend &b = E->get();
 		b.blend_left = MAX(0, b.blend_left - Math::abs(speed_scale * p_delta) / b.blend_time);
@@ -879,13 +879,11 @@ Tween::EaseType AnimationPlayer::get_auto_capture_ease_type() const {
 }
 
 #ifdef TOOLS_ENABLED
-void AnimationPlayer::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void AnimationPlayer::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0 && (pf == "play" || pf == "play_backwards" || pf == "has_animation" || pf == "queue")) {
-		List<StringName> al;
-		get_animation_list(&al);
-		for (const StringName &name : al) {
-			r_options->push_back(String(name).quote());
+		for (const StringName &name : get_animation_list()) {
+			r_options.push_back(String(name).quote());
 		}
 	}
 	AnimationMixer::get_argument_options(p_function, p_idx, r_options);
@@ -904,7 +902,7 @@ void AnimationPlayer::_animation_removed(const StringName &p_name, const StringN
 	_animation_set_cache_update();
 
 	// Erase blends if needed
-	List<BlendKey> to_erase;
+	LocalVector<BlendKey> to_erase;
 	for (const KeyValue<BlendKey, double> &E : blend_times) {
 		BlendKey bk = E.key;
 		if (bk.from == name || bk.to == name) {
@@ -912,9 +910,8 @@ void AnimationPlayer::_animation_removed(const StringName &p_name, const StringN
 		}
 	}
 
-	while (to_erase.size()) {
-		blend_times.erase(to_erase.front()->get());
-		to_erase.pop_front();
+	for (const BlendKey &bk : to_erase) {
+		blend_times.erase(bk);
 	}
 }
 
@@ -922,7 +919,7 @@ void AnimationPlayer::_rename_animation(const StringName &p_from_name, const Str
 	AnimationMixer::_rename_animation(p_from_name, p_to_name);
 
 	// Rename autoplay or blends if needed.
-	List<BlendKey> to_erase;
+	LocalVector<BlendKey> to_erase;
 	HashMap<BlendKey, double, BlendKey> to_insert;
 	for (const KeyValue<BlendKey, double> &E : blend_times) {
 		BlendKey bk = E.key;
@@ -943,9 +940,8 @@ void AnimationPlayer::_rename_animation(const StringName &p_from_name, const Str
 		}
 	}
 
-	while (to_erase.size()) {
-		blend_times.erase(to_erase.front()->get());
-		to_erase.pop_front();
+	for (const BlendKey &bk : to_erase) {
+		blend_times.erase(bk);
 	}
 
 	while (to_insert.size()) {

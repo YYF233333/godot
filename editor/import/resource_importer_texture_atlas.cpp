@@ -50,7 +50,7 @@ String ResourceImporterTextureAtlas::get_visible_name() const {
 	return "TextureAtlas";
 }
 
-void ResourceImporterTextureAtlas::get_recognized_extensions(List<String> *p_extensions) const {
+void ResourceImporterTextureAtlas::get_recognized_extensions(LocalVector<String> &p_extensions) const {
 	ImageLoader::get_recognized_extensions(p_extensions);
 }
 
@@ -80,18 +80,18 @@ String ResourceImporterTextureAtlas::get_preset_name(int p_idx) const {
 	return String();
 }
 
-void ResourceImporterTextureAtlas::get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset) const {
-	r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "atlas_file", PROPERTY_HINT_SAVE_FILE, "*.png"), ""));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "import_mode", PROPERTY_HINT_ENUM, "Region,Mesh2D", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), 0));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "crop_to_region"), false));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "trim_alpha_border_from_region"), true));
+void ResourceImporterTextureAtlas::get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset) const {
+	r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "atlas_file", PROPERTY_HINT_SAVE_FILE, "*.png"), ""));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "import_mode", PROPERTY_HINT_ENUM, "Region,Mesh2D", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), 0));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "crop_to_region"), false));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "trim_alpha_border_from_region"), true));
 }
 
 String ResourceImporterTextureAtlas::get_option_group_file() const {
 	return "atlas_file";
 }
 
-Error ResourceImporterTextureAtlas::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
+Error ResourceImporterTextureAtlas::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
 	/* If this happens, it's because the atlas_file field was not filled, so just import a broken texture */
 
 	//use an xpm because it's size independent, the editor images are vector and size dependent

@@ -85,7 +85,8 @@ void GDScriptFunction::debug_get_stack_member_state(int p_line, List<Pair<String
 		}
 	}
 
-	List<_GDFKCS> stackpositions;
+	LocalVector<_GDFKCS> stackpositions;
+	stackpositions.reserve(sdmap.size());
 	for (const KeyValue<StringName, _GDFKC> &E : sdmap) {
 		_GDFKCS spp;
 		spp.id = E.key;
@@ -251,8 +252,8 @@ void GDScriptFunctionState::_clear_stack() {
 }
 
 void GDScriptFunctionState::_clear_connections() {
-	List<Object::Connection> conns;
-	get_signals_connected_to_this(&conns);
+	LocalVector<Object::Connection> conns;
+	get_signals_connected_to_this(conns);
 
 	for (Object::Connection &c : conns) {
 		c.signal.disconnect(c.callable);

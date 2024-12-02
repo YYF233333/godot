@@ -35,9 +35,7 @@
 #include "scene/resources/3d/importer_mesh.h"
 
 void GLTFDocumentExtensionConvertImporterMesh::_copy_meta(Object *p_src_object, Object *p_dst_object) {
-	List<StringName> meta_list;
-	p_src_object->get_meta_list(&meta_list);
-	for (const StringName &meta_key : meta_list) {
+	for (const StringName &meta_key : p_src_object->get_meta_list()) {
 		Variant meta_value = p_src_object->get_meta(meta_key);
 		p_dst_object->set_meta(meta_key, meta_value);
 	}

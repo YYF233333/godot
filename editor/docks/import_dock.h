@@ -56,7 +56,7 @@ class ImportDock : public EditorDock {
 	Label *cleanup_warning = nullptr;
 	Label *label_warning = nullptr;
 	Button *import = nullptr;
-	List<String> need_cleanup;
+	LocalVector<String> need_cleanup;
 
 	Control *advanced_spacer = nullptr;
 	Button *advanced = nullptr;

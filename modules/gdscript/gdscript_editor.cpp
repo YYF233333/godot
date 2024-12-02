@@ -388,8 +388,7 @@ void GDScriptLanguage::debug_get_globals(List<String> *p_globals, List<Variant> 
 	const HashMap<StringName, int> &name_idx = GDScriptLanguage::get_singleton()->get_global_map();
 	const Variant *gl_array = GDScriptLanguage::get_singleton()->get_global_array();
 
-	List<Pair<String, Variant>> cinfo;
-	get_public_constants(&cinfo);
+	LocalVector<Pair<String, Variant>> cinfo = get_public_constants();
 
 	for (const KeyValue<StringName, int> &E : name_idx) {
 		if (GDScriptAnalyzer::class_exists(E.key) || Engine::get_singleton()->has_singleton(E.key)) {
@@ -397,8 +396,8 @@ void GDScriptLanguage::debug_get_globals(List<String> *p_globals, List<Variant> 
 		}
 
 		bool is_script_constant = false;
-		for (List<Pair<String, Variant>>::Element *CE = cinfo.front(); CE; CE = CE->next()) {
-			if (CE->get().first == E.key) {
+		for (const Pair<String, Variant> &CE : cinfo) {
+			if (CE.first == E.key) {
 				is_script_constant = true;
 				break;
 			}
@@ -459,16 +458,16 @@ String GDScriptLanguage::debug_parse_stack_level_expression(int p_level, const S
 	return String();
 }
 
-void GDScriptLanguage::get_recognized_extensions(List<String> *p_extensions) const {
-	p_extensions->push_back("gd");
+void GDScriptLanguage::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("gd");
 }
 
-void GDScriptLanguage::get_public_functions(List<MethodInfo> *p_functions) const {
-	List<StringName> functions;
-	GDScriptUtilityFunctions::get_function_list(&functions);
-
-	for (const StringName &E : functions) {
-		p_functions->push_back(GDScriptUtilityFunctions::get_function_info(E));
+LocalVector<MethodInfo> GDScriptLanguage::get_public_functions() const {
+	LocalVector<MethodInfo> functions;
+	const Vector<StringName> &func_names = GDScriptUtilityFunctions::get_function_list();
+	functions.reserve(func_names.size() + 2);
+	for (const StringName &func_name : func_names) {
+		functions.push_back(GDScriptUtilityFunctions::get_function_info(func_name));
 	}
 
 	// Not really "functions", but show in documentation.
@@ -477,7 +476,7 @@ void GDScriptLanguage::get_public_functions(List<MethodInfo> *p_functions) const
 		mi.name = "preload";
 		mi.arguments.push_back(PropertyInfo(Variant::STRING, "path"));
 		mi.return_val = PropertyInfo(Variant::OBJECT, "", PROPERTY_HINT_RESOURCE_TYPE, "Resource");
-		p_functions->push_back(mi);
+		functions.push_back(mi);
 	}
 	{
 		MethodInfo mi;
@@ -486,40 +485,40 @@ void GDScriptLanguage::get_public_functions(List<MethodInfo> *p_functions) const
 		mi.arguments.push_back(PropertyInfo(Variant::BOOL, "condition"));
 		mi.arguments.push_back(PropertyInfo(Variant::STRING, "message"));
 		mi.default_arguments.push_back(String());
-		p_functions->push_back(mi);
+		functions.push_back(mi);
 	}
+	return functions;
 }
 
-void GDScriptLanguage::get_public_constants(List<Pair<String, Variant>> *p_constants) const {
+LocalVector<Pair<String, Variant>> GDScriptLanguage::get_public_constants() const {
 	Pair<String, Variant> pi;
 	pi.first = "PI";
 	pi.second = Math::PI;
-	p_constants->push_back(pi);
 
 	Pair<String, Variant> tau;
 	tau.first = "TAU";
 	tau.second = Math::TAU;
-	p_constants->push_back(tau);
 
 	Pair<String, Variant> infinity;
 	infinity.first = "INF";
 	infinity.second = Math::INF;
-	p_constants->push_back(infinity);
 
 	Pair<String, Variant> nan;
 	nan.first = "NAN";
 	nan.second = Math::NaN;
-	p_constants->push_back(nan);
+
+	LocalVector<Pair<String, Variant>> constants = {
+		pi,
+		tau,
+		infinity,
+		nan,
+	};
+	return constants;
 }
 
-void GDScriptLanguage::get_public_annotations(List<MethodInfo> *p_annotations) const {
+LocalVector<MethodInfo> GDScriptLanguage::get_public_annotations() const {
 	GDScriptParser parser;
-	List<MethodInfo> annotations;
-	parser.get_annotation_list(&annotations);
-
-	for (const MethodInfo &E : annotations) {
-		p_annotations->push_back(E);
-	}
+	return parser.get_annotation_list();
 }
 
 String GDScriptLanguage::make_function(const String &p_class, const String &p_name, const PackedStringArray &p_args) const {
@@ -972,8 +971,8 @@ static void _find_annotation_arguments(const GDScriptParser::AnnotationNode *p_a
 		if (p_argument == 1) {
 			const Ref<Theme> theme = EditorNode::get_singleton()->get_editor_theme();
 			if (theme.is_valid()) {
-				List<StringName> icon_list;
-				theme->get_icon_list(EditorStringName(EditorIcons), &icon_list);
+				LocalVector<StringName> icon_list;
+				theme->get_icon_list(EditorStringName(EditorIcons), icon_list);
 				for (const StringName &E : icon_list) {
 					ScriptLanguage::CodeCompletionOption option(E, ScriptLanguage::CODE_COMPLETION_KIND_CLASS);
 					option.insert_text = option.display.quote(p_quote_style);
@@ -1038,9 +1037,7 @@ static void _find_built_in_variants(HashMap<String, ScriptLanguage::CodeCompleti
 }
 
 static void _find_global_enums(HashMap<String, ScriptLanguage::CodeCompletionOption> &r_result) {
-	List<StringName> global_enums;
-	CoreConstants::get_global_enums(&global_enums);
-	for (const StringName &enum_name : global_enums) {
+	for (const StringName &enum_name : CoreConstants::get_global_enums()) {
 		ScriptLanguage::CodeCompletionOption option(enum_name, ScriptLanguage::CODE_COMPLETION_KIND_ENUM, ScriptLanguage::LOCATION_OTHER);
 		r_result.insert(option.display, option);
 	}
@@ -1069,8 +1066,8 @@ static void _list_available_types(bool p_inherit_only, GDScriptParser::Completio
 	if (p_context.current_class) {
 		if (!p_inherit_only && p_context.current_class->base_type.is_set()) {
 			// Native enums from base class
-			List<StringName> enums;
-			ClassDB::get_enum_list(p_context.current_class->base_type.native_type, &enums);
+			LocalVector<StringName> enums;
+			ClassDB::get_enum_list(p_context.current_class->base_type.native_type, enums);
 			for (const StringName &E : enums) {
 				ScriptLanguage::CodeCompletionOption option(E, ScriptLanguage::CODE_COMPLETION_KIND_ENUM);
 				r_result.insert(option.display, option);
@@ -1312,8 +1309,8 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 					}
 
 					if (!p_types_only) {
-						List<MethodInfo> methods;
-						scr->get_script_method_list(&methods);
+						LocalVector<MethodInfo> methods;
+						scr->get_script_method_list(methods);
 						for (const MethodInfo &E : methods) {
 							if (E.name.begins_with("@")) {
 								continue;
@@ -1351,8 +1348,8 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 					return;
 				}
 
-				List<StringName> enums;
-				ClassDB::get_enum_list(type, &enums);
+				LocalVector<StringName> enums;
+				ClassDB::get_enum_list(type, enums);
 				for (const StringName &E : enums) {
 					int location = p_recursion_depth + _get_enum_location(type, E);
 					ScriptLanguage::CodeCompletionOption option(E, ScriptLanguage::CODE_COMPLETION_KIND_ENUM, location);
@@ -1364,8 +1361,8 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 				}
 
 				if (!p_only_functions) {
-					List<String> constants;
-					ClassDB::get_integer_constant_list(type, &constants);
+					LocalVector<String> constants;
+					ClassDB::get_integer_constant_list(type, constants);
 					for (const String &E : constants) {
 						int location = p_recursion_depth + _get_constant_location(type, StringName(E));
 						ScriptLanguage::CodeCompletionOption option(E, ScriptLanguage::CODE_COMPLETION_KIND_CONSTANT, location);
@@ -1402,8 +1399,8 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 
 				bool only_static = base_type.is_meta_type && !Engine::get_singleton()->has_singleton(type);
 
-				List<MethodInfo> methods;
-				ClassDB::get_method_list(type, &methods, false, true);
+				LocalVector<MethodInfo> methods;
+				ClassDB::get_method_list(type, methods, false, true);
 				for (const MethodInfo &E : methods) {
 					if (only_static && (E.flags & METHOD_FLAG_STATIC) == 0) {
 						continue;
@@ -1437,9 +1434,9 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 					StringName type = type_str.get_slicec('.', 0);
 					StringName type_enum = base_type.enum_type;
 
-					List<StringName> enum_values;
+					LocalVector<StringName> enum_values;
 
-					ClassDB::get_enum_constants(type, type_enum, &enum_values);
+					ClassDB::get_enum_constants(type, type_enum, enum_values);
 
 					for (const StringName &E : enum_values) {
 						int location = p_recursion_depth + _get_enum_constant_location(type, E);
@@ -1498,8 +1495,8 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 					}
 				}
 
-				List<MethodInfo> methods;
-				tmp.get_method_list(&methods);
+				LocalVector<MethodInfo> methods;
+				tmp.get_method_list(methods);
 				for (const MethodInfo &E : methods) {
 					if (base_type.kind == GDScriptParser::DataType::ENUM && base_type.is_meta_type && !(E.flags & METHOD_FLAG_CONST)) {
 						// Enum types are static and cannot change, therefore we skip non-const dictionary methods.
@@ -1537,10 +1534,7 @@ static void _find_identifiers(const GDScriptParser::CompletionContext &p_context
 		_find_identifiers_in_class(p_context.current_class, p_only_functions, false, (!p_context.current_function || p_context.current_function->is_static), false, p_add_braces, r_result, p_recursion_depth);
 	}
 
-	List<StringName> functions;
-	GDScriptUtilityFunctions::get_function_list(&functions);
-
-	for (const StringName &E : functions) {
+	for (const StringName &E : GDScriptUtilityFunctions::get_function_list()) {
 		MethodInfo function = GDScriptUtilityFunctions::get_function_info(E);
 		ScriptLanguage::CodeCompletionOption option(String(E), ScriptLanguage::CODE_COMPLETION_KIND_FUNCTION);
 		if (p_add_braces) {
@@ -1604,10 +1598,7 @@ static void _find_identifiers(const GDScriptParser::CompletionContext &p_context
 		kwa++;
 	}
 
-	List<StringName> utility_func_names;
-	Variant::get_utility_function_list(&utility_func_names);
-
-	for (const StringName &util_func_name : utility_func_names) {
+	for (const StringName &util_func_name : Variant::get_utility_function_list()) {
 		ScriptLanguage::CodeCompletionOption option(util_func_name, ScriptLanguage::CODE_COMPLETION_KIND_FUNCTION);
 		if (p_add_braces) {
 			option.insert_text += "(";
@@ -2828,8 +2819,8 @@ static bool _guess_method_return_type_from_base(GDScriptParser::CompletionContex
 			case GDScriptParser::DataType::SCRIPT: {
 				Ref<Script> scr = base_type.script_type;
 				if (scr.is_valid()) {
-					List<MethodInfo> methods;
-					scr->get_script_method_list(&methods);
+					LocalVector<MethodInfo> methods;
+					scr->get_script_method_list(methods);
 					for (const MethodInfo &mi : methods) {
 						if (mi.name == p_method) {
 							r_type = _type_from_property(mi.return_val);
@@ -2867,8 +2858,8 @@ static bool _guess_method_return_type_from_base(GDScriptParser::CompletionContex
 					return false;
 				}
 
-				List<MethodInfo> methods;
-				tmp.get_method_list(&methods);
+				LocalVector<MethodInfo> methods;
+				tmp.get_method_list(methods);
 
 				for (const MethodInfo &mi : methods) {
 					if (mi.name == p_method) {
@@ -2929,8 +2920,8 @@ static void _find_enumeration_candidates(GDScriptParser::CompletionContext &p_co
 			return;
 		}
 
-		List<StringName> enum_constants;
-		ClassDB::get_enum_constants(class_name, enum_name, &enum_constants);
+		LocalVector<StringName> enum_constants;
+		ClassDB::get_enum_constants(class_name, enum_name, enum_constants);
 		for (const StringName &E : enum_constants) {
 			String candidate = class_name + "." + E;
 			int location = _get_enum_constant_location(class_name, E);
@@ -3011,8 +3002,8 @@ static void _list_call_arguments(GDScriptParser::CompletionContext &p_context, c
 					if (base.get_type() == Variant::OBJECT) {
 						Object *obj = base.operator Object *();
 						if (obj) {
-							List<String> options;
-							obj->get_argument_options(method, p_argidx, &options);
+							LocalVector<String> options;
+							obj->get_argument_options(method, p_argidx, options);
 							for (String &opt : options) {
 								// Handle user preference.
 								if (opt.is_quoted()) {
@@ -3225,8 +3216,8 @@ static void _list_call_arguments(GDScriptParser::CompletionContext &p_context, c
 					}
 				}
 
-				List<MethodInfo> methods;
-				base.get_method_list(&methods);
+				LocalVector<MethodInfo> methods;
+				base.get_method_list(methods);
 				for (const MethodInfo &E : methods) {
 					if (E.name == method) {
 						r_arghint = _make_arguments_hint(E, p_argidx);
@@ -3370,8 +3361,8 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 				if (err.error != Callable::CallError::CALL_OK) {
 					return;
 				}
-				List<MethodInfo> methods;
-				v.get_method_list(&methods);
+				LocalVector<MethodInfo> methods;
+				v.get_method_list(methods);
 
 				for (MethodInfo &E : methods) {
 					if (p_argidx >= E.arguments.size()) {
@@ -3410,8 +3401,8 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 		return;
 	} else if (GDScriptParser::get_builtin_type(call->function_name) < Variant::VARIANT_MAX) {
 		// Complete constructor.
-		List<MethodInfo> constructors;
-		Variant::get_constructor_list(GDScriptParser::get_builtin_type(call->function_name), &constructors);
+		LocalVector<MethodInfo> constructors;
+		Variant::get_constructor_list(GDScriptParser::get_builtin_type(call->function_name), constructors);
 
 		int i = 0;
 		for (const MethodInfo &E : constructors) {
@@ -3444,7 +3435,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 	r_forced = r_result.size() > 0;
 }
 
-::Error GDScriptLanguage::complete_code(const String &p_code, const String &p_path, Object *p_owner, List<ScriptLanguage::CodeCompletionOption> *r_options, bool &r_forced, String &r_call_hint) {
+::Error GDScriptLanguage::complete_code(const String &p_code, const String &p_path, Object *p_owner, LocalVector<ScriptLanguage::CodeCompletionOption> &r_options, bool &r_forced, String &r_call_hint) {
 	const String quote_style = EDITOR_GET("text_editor/completion/use_single_quotes") ? "'" : "\"";
 
 	GDScriptParser parser;
@@ -3466,9 +3457,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 		case GDScriptParser::COMPLETION_NONE:
 			break;
 		case GDScriptParser::COMPLETION_ANNOTATION: {
-			List<MethodInfo> annotations;
-			parser.get_annotation_list(&annotations);
-			for (const MethodInfo &E : annotations) {
+			for (const MethodInfo &E : parser.get_annotation_list()) {
 				ScriptLanguage::CodeCompletionOption option(E.name.substr(1), ScriptLanguage::CODE_COMPLETION_KIND_PLAIN_TEXT);
 				if (E.arguments.size() > 0) {
 					option.insert_text += "(";
@@ -3488,9 +3477,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 		case GDScriptParser::COMPLETION_BUILT_IN_TYPE_CONSTANT_OR_STATIC_METHOD: {
 			// Constants.
 			{
-				List<StringName> constants;
-				Variant::get_constants_for_type(completion_context.builtin_type, &constants);
-				for (const StringName &E : constants) {
+				for (const StringName &E : Variant::get_constants_for_type(completion_context.builtin_type)) {
 					ScriptLanguage::CodeCompletionOption option(E, ScriptLanguage::CODE_COMPLETION_KIND_CONSTANT);
 					bool valid = false;
 					Variant default_value = Variant::get_constant_value(completion_context.builtin_type, E, &valid);
@@ -3502,9 +3489,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 			}
 			// Methods.
 			{
-				List<StringName> methods;
-				Variant::get_builtin_method_list(completion_context.builtin_type, &methods);
-				for (const StringName &E : methods) {
+				for (const StringName &E : Variant::get_builtin_method_list(completion_context.builtin_type)) {
 					if (Variant::is_builtin_method_static(completion_context.builtin_type, E)) {
 						ScriptLanguage::CodeCompletionOption option(E, ScriptLanguage::CODE_COMPLETION_KIND_FUNCTION);
 						if (!_guess_expecting_callable(completion_context)) {
@@ -3726,7 +3711,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 
 			const bool type_hints = EditorSettings::get_singleton()->get_setting("text_editor/completion/add_type_hints");
 
-			List<MethodInfo> virtual_methods;
+			LocalVector<MethodInfo> virtual_methods;
 			if (is_static) {
 				// Not truly a virtual method, but can also be "overridden".
 				MethodInfo static_init("_static_init");
@@ -3734,7 +3719,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 				static_init.flags |= METHOD_FLAG_STATIC | METHOD_FLAG_VIRTUAL;
 				virtual_methods.push_back(static_init);
 			} else {
-				ClassDB::get_virtual_methods(class_name, &virtual_methods);
+				ClassDB::get_virtual_methods(class_name, virtual_methods);
 			}
 
 			for (const MethodInfo &mi : virtual_methods) {
@@ -3785,8 +3770,8 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 		case GDScriptParser::COMPLETION_GET_NODE: {
 			// Handles the `$Node/Path` or `$"Some NodePath"` syntax specifically.
 			if (p_owner) {
-				List<String> opts;
-				p_owner->get_argument_options("get_node", 0, &opts);
+				LocalVector<String> opts;
+				p_owner->get_argument_options("get_node", 0, opts);
 
 				bool for_unique_name = false;
 				if (completion_context.node != nullptr && completion_context.node->type == GDScriptParser::Node::GET_NODE && !static_cast<GDScriptParser::GetNodeNode *>(completion_context.node)->use_dollar) {
@@ -3849,7 +3834,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 	}
 
 	for (const KeyValue<String, ScriptLanguage::CodeCompletionOption> &E : options) {
-		r_options->push_back(E.value);
+		r_options.push_back(E.value);
 	}
 
 	return OK;
@@ -3857,7 +3842,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 
 #else // !TOOLS_ENABLED
 
-Error GDScriptLanguage::complete_code(const String &p_code, const String &p_path, Object *p_owner, List<ScriptLanguage::CodeCompletionOption> *r_options, bool &r_forced, String &r_call_hint) {
+Error GDScriptLanguage::complete_code(const String &p_code, const String &p_path, Object *p_owner, LocalVector<ScriptLanguage::CodeCompletionOption> &r_options, bool &r_forced, String &r_call_hint) {
 	return OK;
 }
 
@@ -4035,8 +4020,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 						}
 					}
 					if (!found_type) {
-						List<MethodInfo> methods;
-						scr->get_script_method_list(&methods);
+						LocalVector<MethodInfo> methods;
+						scr->get_script_method_list(methods);
 						for (const MethodInfo &method : methods) {
 							if (method.name == name) {
 								found_type = true;
@@ -4048,8 +4033,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 						}
 					}
 					if (!found_type) {
-						List<MethodInfo> signals;
-						scr->get_script_method_list(&signals);
+						LocalVector<MethodInfo> signals;
+						scr->get_script_method_list(signals);
 						for (const MethodInfo &signal : signals) {
 							if (signal.name == name) {
 								found_type = true;
@@ -4110,8 +4095,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 					return OK;
 				}
 
-				List<MethodInfo> virtual_methods;
-				ClassDB::get_virtual_methods(class_name, &virtual_methods, true);
+				LocalVector<MethodInfo> virtual_methods;
+				ClassDB::get_virtual_methods(class_name, virtual_methods, true);
 				for (const MethodInfo &E : virtual_methods) {
 					if (E.name == p_symbol) {
 						r_result.type = ScriptLanguage::LOOKUP_RESULT_CLASS_METHOD;
@@ -4128,8 +4113,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 					return OK;
 				}
 
-				List<StringName> enums;
-				ClassDB::get_enum_list(class_name, &enums);
+				LocalVector<StringName> enums;
+				ClassDB::get_enum_list(class_name, enums);
 				for (const StringName &E : enums) {
 					if (E == p_symbol) {
 						r_result.type = ScriptLanguage::LOOKUP_RESULT_CLASS_ENUM;
@@ -4146,8 +4131,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 					return OK;
 				}
 
-				List<String> constants;
-				ClassDB::get_integer_constant_list(class_name, &constants, true);
+				LocalVector<String> constants;
+				ClassDB::get_integer_constant_list(class_name, constants, true);
 				for (const String &E : constants) {
 					if (E == p_symbol) {
 						r_result.type = ScriptLanguage::LOOKUP_RESULT_CLASS_CONSTANT;
@@ -4353,8 +4338,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 			return OK;
 		}
 		do {
-			List<StringName> enums;
-			ClassDB::get_enum_list(class_name, &enums, true);
+			LocalVector<StringName> enums;
+			ClassDB::get_enum_list(class_name, enums, true);
 			for (const StringName &enum_name : enums) {
 				if (enum_name == p_symbol) {
 					r_result.type = ScriptLanguage::LOOKUP_RESULT_CLASS_ENUM;
@@ -4374,8 +4359,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 			class_name = ScriptServer::get_global_class_native_base(class_name);
 		}
 		do {
-			List<StringName> enums;
-			ClassDB::get_enum_list(class_name, &enums, true);
+			LocalVector<StringName> enums;
+			ClassDB::get_enum_list(class_name, enums, true);
 			for (const StringName &enum_name : enums) {
 				if (enum_name == p_symbol) {
 					r_result.type = ScriptLanguage::LOOKUP_RESULT_CLASS_ENUM;

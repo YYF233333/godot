@@ -29,6 +29,9 @@
 /**************************************************************************/
 
 #include "animation_node_state_machine.h"
+#include "core/string/string_name.h"
+#include "core/templates/local_vector.h"
+#include "scene/animation/animation_tree.h"
 
 /////////////////////////////////////////////////
 
@@ -374,9 +377,7 @@ void AnimationNodeStateMachinePlayback::_signal_state_change(AnimationTree *p_an
 }
 
 void AnimationNodeStateMachinePlayback::_clear_path_children(AnimationTree *p_tree, AnimationNodeStateMachine *p_state_machine, bool p_test_only) {
-	List<AnimationNode::ChildNode> child_nodes;
-	p_state_machine->get_child_nodes(&child_nodes);
-	for (const AnimationNode::ChildNode &child_node : child_nodes) {
+	for (const AnimationNode::ChildNode &child_node : p_state_machine->get_child_nodes()) {
 		Ref<AnimationNodeStateMachine> anodesm = child_node.node;
 		if (_is_grouped_state_machine(anodesm)) {
 			Ref<AnimationNodeStateMachinePlayback> playback = p_tree->get(base_path + child_node.name + "/playback");
@@ -1236,20 +1237,20 @@ AnimationNodeStateMachinePlayback::AnimationNodeStateMachinePlayback() {
 
 ///////////////////////////////////////////////////////
 
-void AnimationNodeStateMachine::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNodeStateMachine::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	AnimationNode::get_parameter_list(r_list);
-	r_list->push_back(PropertyInfo(Variant::OBJECT, playback, PROPERTY_HINT_RESOURCE_TYPE, "AnimationNodeStateMachinePlayback", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_ALWAYS_DUPLICATE)); // Don't store this object in .tres, it always needs to be made as unique object.
-	List<StringName> advance_conditions;
+	r_list.push_back(PropertyInfo(Variant::OBJECT, playback, PROPERTY_HINT_RESOURCE_TYPE, "AnimationNodeStateMachinePlayback", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_ALWAYS_DUPLICATE)); // Don't store this object in .tres, it always needs to be made as unique object.
+	LocalVector<StringName> advance_conditions;
 	for (int i = 0; i < transitions.size(); i++) {
 		StringName ac = transitions[i].transition->get_advance_condition_name();
-		if (ac != StringName() && advance_conditions.find(ac) == nullptr) {
+		if (ac != StringName() && advance_conditions.find(ac) == -1) {
 			advance_conditions.push_back(ac);
 		}
 	}
 
 	advance_conditions.sort_custom<StringName::AlphCompare>();
 	for (const StringName &E : advance_conditions) {
-		r_list->push_back(PropertyInfo(Variant::BOOL, E));
+		r_list.push_back(PropertyInfo(Variant::BOOL, E));
 	}
 }
 
@@ -1374,8 +1375,11 @@ StringName AnimationNodeStateMachine::get_node_name(const Ref<AnimationNode> &p_
 	ERR_FAIL_V(StringName());
 }
 
-void AnimationNodeStateMachine::get_child_nodes(List<ChildNode> *r_child_nodes) {
-	Vector<StringName> nodes;
+LocalVector<AnimationNode::ChildNode> AnimationNodeStateMachine::get_child_nodes() {
+	LocalVector<ChildNode> r_child_nodes;
+	LocalVector<StringName> nodes;
+	r_child_nodes.reserve(states.size());
+	nodes.reserve(states.size());
 
 	for (const KeyValue<StringName, State> &E : states) {
 		nodes.push_back(E.key);
@@ -1383,12 +1387,13 @@ void AnimationNodeStateMachine::get_child_nodes(List<ChildNode> *r_child_nodes) 
 
 	nodes.sort_custom<StringName::AlphCompare>();
 
-	for (int i = 0; i < nodes.size(); i++) {
+	for (const StringName &E : nodes) {
 		ChildNode cn;
-		cn.name = nodes[i];
+		cn.name = E;
 		cn.node = states[cn.name].node;
-		r_child_nodes->push_back(cn);
+		r_child_nodes.push_back(cn);
 	}
+	return r_child_nodes;
 }
 
 bool AnimationNodeStateMachine::has_node(const StringName &p_name) const {
@@ -1804,7 +1809,7 @@ void AnimationNodeStateMachine::_animation_node_removed(const ObjectID &p_oid, c
 }
 
 #ifdef TOOLS_ENABLED
-void AnimationNodeStateMachine::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void AnimationNodeStateMachine::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	bool add_state_options = false;
 	if (p_idx == 0) {
@@ -1814,7 +1819,7 @@ void AnimationNodeStateMachine::get_argument_options(const StringName &p_functio
 	}
 	if (add_state_options) {
 		for (const KeyValue<StringName, State> &E : states) {
-			r_options->push_back(String(E.key).quote());
+			r_options.push_back(String(E.key).quote());
 		}
 	}
 	AnimationRootNode::get_argument_options(p_function, p_idx, r_options);

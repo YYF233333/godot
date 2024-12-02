@@ -521,7 +521,7 @@ void ScriptEditorDebugger::_msg_stack_dump(uint64_t p_thread_id, const Array &p_
 	Array stack_dump_info;
 
 	int i = 0;
-	for (List<ScriptLanguage::StackInfo>::Iterator itr = stack.frames.begin(); itr != stack.frames.end(); ++itr, ++i) {
+	for (LocalVector<ScriptLanguage::StackInfo>::Iterator itr = stack.frames.begin(); itr != stack.frames.end(); ++itr, ++i) {
 		TreeItem *s = stack_dump->create_item(r);
 		Dictionary d;
 		d["frame"] = i;
@@ -1962,7 +1962,8 @@ void ScriptEditorDebugger::_item_menu_id_pressed(int p_option) {
 			}
 
 			// Store first else we will be removing as we loop.
-			List<int> lines;
+			LocalVector<int> lines;
+			lines.reserve(file_item->get_child_count());
 			for (TreeItem *breakpoint_item = file_item->get_first_child(); breakpoint_item; breakpoint_item = breakpoint_item->get_next()) {
 				lines.push_back(breakpoint_item->get_meta("line"));
 			}

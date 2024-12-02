@@ -49,7 +49,7 @@ class Material;
 class EditorSceneFormatImporter : public RefCounted {
 	GDCLASS(EditorSceneFormatImporter, RefCounted);
 
-	List<ResourceImporter::ImportOption> *current_option_list = nullptr;
+	LocalVector<ResourceImporter::ImportOption> *current_option_list = nullptr;
 
 protected:
 	static void _bind_methods();
@@ -75,9 +75,9 @@ public:
 
 	void add_import_option(const String &p_name, const Variant &p_default_value);
 	void add_import_option_advanced(Variant::Type p_type, const String &p_name, const Variant &p_default_value, PropertyHint p_hint = PROPERTY_HINT_NONE, const String &p_hint_string = String(), int p_usage_flags = PROPERTY_USAGE_DEFAULT);
-	virtual void get_extensions(List<String> *r_extensions) const;
-	virtual Node *import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, List<String> *r_missing_deps, Error *r_err = nullptr);
-	virtual void get_import_options(const String &p_path, List<ResourceImporter::ImportOption> *r_options);
+	virtual void get_extensions(LocalVector<String> &r_extensions) const;
+	virtual Node *import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, LocalVector<String> *r_missing_deps, Error *r_err = nullptr);
+	virtual void get_import_options(const String &p_path, LocalVector<ResourceImporter::ImportOption> &r_options);
 	virtual Variant get_option_visibility(const String &p_path, const String &p_scene_import_type, const String &p_option, const HashMap<StringName, Variant> &p_options);
 	virtual void handle_compatibility_options(HashMap<StringName, Variant> &p_import_params) const {}
 };
@@ -116,7 +116,7 @@ public:
 private:
 	mutable const HashMap<StringName, Variant> *current_options = nullptr;
 	mutable const Dictionary *current_options_dict = nullptr;
-	List<ResourceImporter::ImportOption> *current_option_list = nullptr;
+	LocalVector<ResourceImporter::ImportOption> *current_option_list = nullptr;
 
 protected:
 	GDVIRTUAL1(_get_internal_import_options, int)
@@ -135,13 +135,13 @@ public:
 	void add_import_option(const String &p_name, const Variant &p_default_value);
 	void add_import_option_advanced(Variant::Type p_type, const String &p_name, const Variant &p_default_value, PropertyHint p_hint = PROPERTY_HINT_NONE, const String &p_hint_string = String(), int p_usage_flags = PROPERTY_USAGE_DEFAULT);
 
-	virtual void get_internal_import_options(InternalImportCategory p_category, List<ResourceImporter::ImportOption> *r_options);
+	virtual void get_internal_import_options(InternalImportCategory p_category, LocalVector<ResourceImporter::ImportOption> &r_options);
 	virtual Variant get_internal_option_visibility(InternalImportCategory p_category, const String &p_scene_import_type, const String &p_option, const HashMap<StringName, Variant> &p_options) const;
 	virtual Variant get_internal_option_update_view_required(InternalImportCategory p_category, const String &p_option, const HashMap<StringName, Variant> &p_options) const;
 
 	virtual void internal_process(InternalImportCategory p_category, Node *p_base_scene, Node *p_node, Ref<Resource> p_resource, const Dictionary &p_options);
 
-	virtual void get_import_options(const String &p_path, List<ResourceImporter::ImportOption> *r_options);
+	virtual void get_import_options(const String &p_path, LocalVector<ResourceImporter::ImportOption> &r_options);
 	virtual Variant get_option_visibility(const String &p_path, const String &p_scene_import_type, const String &p_option, const HashMap<StringName, Variant> &p_options) const;
 
 	virtual void pre_process(Node *p_scene, const HashMap<StringName, Variant> &p_options);
@@ -240,7 +240,7 @@ public:
 	const Vector<Ref<EditorSceneFormatImporter>> &get_scene_importers() const { return scene_importers; }
 	static void add_scene_importer(Ref<EditorSceneFormatImporter> p_importer, bool p_first_priority = false);
 	static void remove_scene_importer(Ref<EditorSceneFormatImporter> p_importer);
-	static void get_scene_importer_extensions(List<String> *p_extensions);
+	static void get_scene_importer_extensions(LocalVector<String> &p_extensions);
 
 	static void clean_up_importer_plugins();
 
@@ -249,7 +249,7 @@ public:
 
 	virtual String get_importer_name() const override;
 	virtual String get_visible_name() const override;
-	virtual void get_recognized_extensions(List<String> *p_extensions) const override;
+	virtual void get_recognized_extensions(LocalVector<String> &p_extensions) const override;
 	virtual String get_save_extension() const override;
 	virtual String get_resource_type() const override;
 	virtual int get_format_version() const override;
@@ -268,18 +268,18 @@ public:
 		INTERNAL_IMPORT_CATEGORY_MAX = EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_MAX
 	};
 
-	void get_internal_import_options(InternalImportCategory p_category, List<ImportOption> *r_options) const;
+	void get_internal_import_options(InternalImportCategory p_category, LocalVector<ImportOption> &r_options) const;
 	bool get_internal_option_visibility(InternalImportCategory p_category, const String &p_option, const HashMap<StringName, Variant> &p_options) const;
 	bool get_internal_option_update_view_required(InternalImportCategory p_category, const String &p_option, const HashMap<StringName, Variant> &p_options) const;
 
-	virtual void get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset = 0) const override;
+	virtual void get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset = 0) const override;
 	virtual bool get_option_visibility(const String &p_path, const String &p_option, const HashMap<StringName, Variant> &p_options) const override;
 	virtual void handle_compatibility_options(HashMap<StringName, Variant> &p_import_params) const override;
 	// Import scenes *after* everything else (such as textures).
 	virtual int get_import_order() const override { return ResourceImporter::IMPORT_ORDER_SCENE; }
 
 	void _pre_fix_global(Node *p_scene, const HashMap<StringName, Variant> &p_options) const;
-	Node *_pre_fix_node(Node *p_node, Node *p_root, HashMap<Ref<ImporterMesh>, Vector<Ref<Shape3D>>> &r_collision_map, Pair<PackedVector3Array, PackedInt32Array> *r_occluder_arrays, List<Pair<NodePath, Node *>> &r_node_renames, const HashMap<StringName, Variant> &p_options);
+	Node *_pre_fix_node(Node *p_node, Node *p_root, HashMap<Ref<ImporterMesh>, Vector<Ref<Shape3D>>> &r_collision_map, Pair<PackedVector3Array, PackedInt32Array> *r_occluder_arrays, LocalVector<Pair<NodePath, Node *>> &r_node_renames, const HashMap<StringName, Variant> &p_options);
 	Node *_pre_fix_animations(Node *p_node, Node *p_root, const Dictionary &p_node_data, const Dictionary &p_animation_data, float p_animation_fps);
 	Node *_post_fix_node(Node *p_node, Node *p_root, HashMap<Ref<ImporterMesh>, Vector<Ref<Shape3D>>> &collision_map, Pair<PackedVector3Array, PackedInt32Array> &r_occluder_arrays, HashSet<Ref<ImporterMesh>> &r_scanned_meshes, const Dictionary &p_node_data, const Dictionary &p_material_data, const Dictionary &p_animation_data, float p_animation_fps, float p_applied_root_scale, const String &p_source_file, const HashMap<StringName, Variant> &p_options);
 	Node *_post_fix_animations(Node *p_node, Node *p_root, const Dictionary &p_node_data, const Dictionary &p_animation_data, float p_animation_fps, bool p_remove_immutable_tracks);
@@ -290,7 +290,7 @@ public:
 	void _compress_animations(AnimationPlayer *anim, int p_page_size_kb);
 
 	Node *pre_import(const String &p_source_file, const HashMap<StringName, Variant> &p_options);
-	virtual Error import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files = nullptr, Variant *r_metadata = nullptr) override;
+	virtual Error import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata = nullptr) override;
 
 	virtual bool has_advanced_options() const override;
 	virtual void show_advanced_options(const String &p_path) override;
@@ -308,8 +308,8 @@ class EditorSceneFormatImporterESCN : public EditorSceneFormatImporter {
 	GDCLASS(EditorSceneFormatImporterESCN, EditorSceneFormatImporter);
 
 public:
-	virtual void get_extensions(List<String> *r_extensions) const override;
-	virtual Node *import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, List<String> *r_missing_deps, Error *r_err = nullptr) override;
+	virtual void get_extensions(LocalVector<String> &r_extensions) const override;
+	virtual Node *import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, LocalVector<String> *r_missing_deps, Error *r_err = nullptr) override;
 };
 
 template <typename M>

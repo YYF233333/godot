@@ -156,7 +156,7 @@ private:
 		// TODO
 		// Replace with buffer containing the serialized state of managed scripts.
 		// Keep variant state backup to use only with script instance placeholders.
-		List<Pair<StringName, Variant>> properties;
+		LocalVector<Pair<StringName, Variant>> properties;
 		Dictionary event_signals;
 	};
 
@@ -196,7 +196,7 @@ private:
 	bool source_changed_cache = false;
 	bool placeholder_fallback_enabled = false;
 	bool exports_invalidated = true;
-	void _update_exports_values(HashMap<StringName, Variant> &values, List<PropertyInfo> &propnames);
+	void _update_exports_values(HashMap<StringName, Variant> &values, LocalVector<PropertyInfo> &propnames);
 	void _placeholder_erased(PlaceHolderScriptInstance *p_placeholder) override;
 #endif
 
@@ -282,7 +282,7 @@ public:
 
 	ScriptLanguage *get_language() const override;
 
-	void get_script_method_list(List<MethodInfo> *p_list) const override;
+	void get_script_method_list(LocalVector<MethodInfo> &p_list) const override;
 	bool has_method(const StringName &p_method) const override;
 	virtual int get_script_method_argument_count(const StringName &p_method, bool *r_is_valid = nullptr) const override;
 	MethodInfo get_method_info(const StringName &p_method) const override;
@@ -351,7 +351,7 @@ public:
 	bool property_can_revert(const StringName &p_name) const override;
 	bool property_get_revert(const StringName &p_name, Variant &r_ret) const override;
 
-	void get_method_list(List<MethodInfo> *p_list) const override;
+	void get_method_list(LocalVector<MethodInfo> &p_list) const override;
 	bool has_method(const StringName &p_method) const override;
 	virtual int get_method_argument_count(const StringName &p_method, bool *r_is_valid = nullptr) const override;
 	Variant callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
@@ -561,16 +561,16 @@ public:
 
 	void frame() override;
 
-	/* TODO? */ void get_public_functions(List<MethodInfo> *p_functions) const override {}
-	/* TODO? */ void get_public_constants(List<Pair<String, Variant>> *p_constants) const override {}
-	/* TODO? */ void get_public_annotations(List<MethodInfo> *p_annotations) const override {}
+	/* TODO? */ LocalVector<MethodInfo> get_public_functions() const override { return LocalVector<MethodInfo>(); }
+	/* TODO? */ LocalVector<Pair<String, Variant>> get_public_constants() const override { return LocalVector<Pair<String, Variant>>(); }
+	/* TODO? */ LocalVector<MethodInfo> get_public_annotations() const override { return LocalVector<MethodInfo>(); }
 
 	void reload_all_scripts() override;
 	void reload_scripts(const Array &p_scripts, bool p_soft_reload) override;
 	void reload_tool_script(const Ref<Script> &p_script, bool p_soft_reload) override;
 
 	/* LOADER FUNCTIONS */
-	void get_recognized_extensions(List<String> *p_extensions) const override;
+	void get_recognized_extensions(LocalVector<String> &p_extensions) const override;
 
 #ifdef TOOLS_ENABLED
 	Error open_in_external_editor(const Ref<Script> &p_script, int p_line, int p_col) override;
@@ -596,7 +596,7 @@ class ResourceFormatLoaderCSharpScript : public ResourceFormatLoader {
 
 public:
 	Ref<Resource> load(const String &p_path, const String &p_original_path = "", Error *r_error = nullptr, bool p_use_sub_threads = false, float *r_progress = nullptr, CacheMode p_cache_mode = CACHE_MODE_REUSE) override;
-	void get_recognized_extensions(List<String> *p_extensions) const override;
+	void get_recognized_extensions(LocalVector<String> &p_extensions) const override;
 	bool handles_type(const String &p_type) const override;
 	String get_resource_type(const String &p_path) const override;
 };
@@ -606,6 +606,6 @@ class ResourceFormatSaverCSharpScript : public ResourceFormatSaver {
 
 public:
 	Error save(const Ref<Resource> &p_resource, const String &p_path, uint32_t p_flags = 0) override;
-	void get_recognized_extensions(const Ref<Resource> &p_resource, List<String> *p_extensions) const override;
+	void get_recognized_extensions(const Ref<Resource> &p_resource, LocalVector<String> &p_extensions) const override;
 	bool recognize(const Ref<Resource> &p_resource) const override;
 };

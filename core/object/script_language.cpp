@@ -84,8 +84,8 @@ TypedArray<Dictionary> Script::_get_script_property_list() {
 
 TypedArray<Dictionary> Script::_get_script_method_list() {
 	TypedArray<Dictionary> ret;
-	List<MethodInfo> list;
-	get_script_method_list(&list);
+	LocalVector<MethodInfo> list;
+	get_script_method_list(list);
 	for (const MethodInfo &E : list) {
 		ret.append(E.operator Dictionary());
 	}
@@ -435,7 +435,7 @@ void ScriptServer::remove_global_class(const StringName &p_class) {
 	inheriters_cache_dirty = true;
 }
 
-void ScriptServer::get_inheriters_list(const StringName &p_base_type, List<StringName> *r_classes) {
+Vector<StringName> ScriptServer::get_inheriters_list(const StringName &p_base_type) {
 	if (inheriters_cache_dirty) {
 		inheriters_cache.clear();
 		for (const KeyValue<StringName, GlobalScriptClass> &K : global_classes) {
@@ -451,19 +451,14 @@ void ScriptServer::get_inheriters_list(const StringName &p_base_type, List<Strin
 	}
 
 	if (!inheriters_cache.has(p_base_type)) {
-		return;
+		return Vector<StringName>();
 	}
 
-	const Vector<StringName> &v = inheriters_cache[p_base_type];
-	for (int i = 0; i < v.size(); i++) {
-		r_classes->push_back(v[i]);
-	}
+	return inheriters_cache[p_base_type];
 }
 
 void ScriptServer::get_indirect_inheriters_list(const StringName &p_base_type, List<StringName> *r_classes) {
-	List<StringName> direct_inheritors;
-	get_inheriters_list(p_base_type, &direct_inheritors);
-	for (const StringName &inheritor : direct_inheritors) {
+	for (const StringName &inheritor : get_inheriters_list(p_base_type)) {
 		r_classes->push_back(inheritor);
 		get_indirect_inheriters_list(inheritor, r_classes);
 	}
@@ -580,43 +575,44 @@ Vector<Ref<ScriptBacktrace>> ScriptServer::capture_script_backtraces(bool p_incl
 	return result;
 }
 
-////////////////////
-
-void ScriptLanguage::get_core_type_words(List<String> *p_core_type_words) const {
-	p_core_type_words->push_back("String");
-	p_core_type_words->push_back("Vector2");
-	p_core_type_words->push_back("Vector2i");
-	p_core_type_words->push_back("Rect2");
-	p_core_type_words->push_back("Rect2i");
-	p_core_type_words->push_back("Vector3");
-	p_core_type_words->push_back("Vector3i");
-	p_core_type_words->push_back("Transform2D");
-	p_core_type_words->push_back("Vector4");
-	p_core_type_words->push_back("Vector4i");
-	p_core_type_words->push_back("Plane");
-	p_core_type_words->push_back("Quaternion");
-	p_core_type_words->push_back("AABB");
-	p_core_type_words->push_back("Basis");
-	p_core_type_words->push_back("Transform3D");
-	p_core_type_words->push_back("Projection");
-	p_core_type_words->push_back("Color");
-	p_core_type_words->push_back("StringName");
-	p_core_type_words->push_back("NodePath");
-	p_core_type_words->push_back("RID");
-	p_core_type_words->push_back("Callable");
-	p_core_type_words->push_back("Signal");
-	p_core_type_words->push_back("Dictionary");
-	p_core_type_words->push_back("Array");
-	p_core_type_words->push_back("PackedByteArray");
-	p_core_type_words->push_back("PackedInt32Array");
-	p_core_type_words->push_back("PackedInt64Array");
-	p_core_type_words->push_back("PackedFloat32Array");
-	p_core_type_words->push_back("PackedFloat64Array");
-	p_core_type_words->push_back("PackedStringArray");
-	p_core_type_words->push_back("PackedVector2Array");
-	p_core_type_words->push_back("PackedVector3Array");
-	p_core_type_words->push_back("PackedColorArray");
-	p_core_type_words->push_back("PackedVector4Array");
+const Span<StringName> ScriptLanguage::get_core_type_words() const {
+	static const LocalVector<StringName> core_type_words = {
+		"String",
+		"Vector2",
+		"Vector2i",
+		"Rect2",
+		"Rect2i",
+		"Vector3",
+		"Vector3i",
+		"Transform2D",
+		"Vector4",
+		"Vector4i",
+		"Plane",
+		"Quaternion",
+		"AABB",
+		"Basis",
+		"Transform3D",
+		"Projection",
+		"Color",
+		"StringName",
+		"NodePath",
+		"RID",
+		"Callable",
+		"Signal",
+		"Dictionary",
+		"Array",
+		"PackedByteArray",
+		"PackedInt32Array",
+		"PackedInt64Array",
+		"PackedFloat32Array",
+		"PackedFloat64Array",
+		"PackedStringArray",
+		"PackedVector2Array",
+		"PackedVector3Array",
+		"PackedColorArray",
+		"PackedVector4Array",
+	};
+	return core_type_words.span();
 }
 
 void ScriptLanguage::frame() {
@@ -762,7 +758,7 @@ Variant::Type PlaceHolderScriptInstance::get_property_type(const StringName &p_n
 	return Variant::NIL;
 }
 
-void PlaceHolderScriptInstance::get_method_list(List<MethodInfo> *p_list) const {
+void PlaceHolderScriptInstance::get_method_list(LocalVector<MethodInfo> &p_list) const {
 	if (script->is_placeholder_fallback_enabled()) {
 		return;
 	}
@@ -802,7 +798,7 @@ Variant PlaceHolderScriptInstance::callp(const StringName &p_method, const Varia
 #endif // TOOLS_ENABLED
 }
 
-void PlaceHolderScriptInstance::update(const List<PropertyInfo> &p_properties, const HashMap<StringName, Variant> &p_values) {
+void PlaceHolderScriptInstance::update(const LocalVector<PropertyInfo> &p_properties, const HashMap<StringName, Variant> &p_values) {
 	HashSet<StringName> new_values;
 	for (const PropertyInfo &E : p_properties) {
 		if (E.usage & (PROPERTY_USAGE_GROUP | PROPERTY_USAGE_SUBGROUP | PROPERTY_USAGE_CATEGORY)) {
@@ -820,7 +816,7 @@ void PlaceHolderScriptInstance::update(const List<PropertyInfo> &p_properties, c
 	}
 
 	properties = p_properties;
-	List<StringName> to_remove;
+	LocalVector<StringName> to_remove;
 
 	for (KeyValue<StringName, Variant> &E : values) {
 		if (!new_values.has(E.key)) {
@@ -836,9 +832,8 @@ void PlaceHolderScriptInstance::update(const List<PropertyInfo> &p_properties, c
 		}
 	}
 
-	while (to_remove.size()) {
-		values.erase(to_remove.front()->get());
-		to_remove.pop_front();
+	for (const StringName &E : to_remove) {
+		values.erase(E);
 	}
 
 	if (owner && owner->get_script_instance() == this) {

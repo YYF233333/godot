@@ -106,12 +106,9 @@ protected:
 
 	TypedArray<StringName> _get_animation_library_list() const;
 	Vector<String> _get_animation_list() const {
-		List<StringName> animations;
-		get_animation_list(&animations);
 		Vector<String> ret;
-		while (animations.size()) {
-			ret.push_back(animations.front()->get());
-			animations.pop_front();
+		for (const StringName &animation : get_animation_list()) {
+			ret.push_back(animation);
 		}
 		return ret;
 	}
@@ -344,7 +341,7 @@ protected:
 	virtual void _validate_property(PropertyInfo &p_property) const;
 
 #ifdef TOOLS_ENABLED
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	virtual void get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const override;
 #endif
 
 	static void _bind_methods();
@@ -401,7 +398,7 @@ public:
 	/* ---- Data lists ---- */
 	Dictionary *get_animation_libraries();
 
-	void get_animation_library_list(List<StringName> *p_animations) const;
+	LocalVector<StringName> get_animation_library_list() const;
 	Ref<AnimationLibrary> get_animation_library(const StringName &p_name) const;
 	bool has_animation_library(const StringName &p_name) const;
 	StringName get_animation_library_name(const Ref<AnimationLibrary> &p_animation_library) const;
@@ -410,7 +407,7 @@ public:
 	void remove_animation_library(const StringName &p_name);
 	void rename_animation_library(const StringName &p_name, const StringName &p_new_name);
 
-	void get_animation_list(List<StringName> *p_animations) const;
+	LocalVector<StringName> get_animation_list() const;
 	Ref<Animation> get_animation(const StringName &p_name) const;
 	bool has_animation(const StringName &p_name) const;
 	StringName find_animation(const Ref<Animation> &p_animation) const;

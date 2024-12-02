@@ -92,8 +92,8 @@ void ResourcePreloaderEditor::_load_pressed() {
 	loading_scene = false;
 
 	file->clear_filters();
-	List<String> extensions;
-	ResourceLoader::get_recognized_extensions_for_type("", &extensions);
+	LocalVector<String> extensions;
+	ResourceLoader::get_recognized_extensions_for_type("", extensions);
 	for (const String &extension : extensions) {
 		file->add_filter("*." + extension);
 	}
@@ -185,17 +185,11 @@ void ResourcePreloaderEditor::_update_library() {
 
 	TreeItem *root = tree->create_item(nullptr);
 
-	List<StringName> rnames;
-	preloader->get_resource_list(&rnames);
+	LocalVector<StringName> rnames = preloader->get_resource_list();
 
-	List<String> names;
+	rnames.sort();
+
 	for (const StringName &E : rnames) {
-		names.push_back(E);
-	}
-
-	names.sort();
-
-	for (const String &E : names) {
 		TreeItem *ti = tree->create_item(root);
 		ti->set_cell_mode(0, TreeItem::CELL_MODE_STRING);
 		ti->set_editable(0, true);

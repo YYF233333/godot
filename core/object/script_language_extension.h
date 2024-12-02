@@ -167,11 +167,11 @@ public:
 
 	GDVIRTUAL0RC_REQUIRED(TypedArray<Dictionary>, _get_script_method_list)
 
-	virtual void get_script_method_list(List<MethodInfo> *r_methods) const override {
+	virtual void get_script_method_list(LocalVector<MethodInfo> &r_methods) const override {
 		TypedArray<Dictionary> sl;
 		GDVIRTUAL_CALL(_get_script_method_list, sl);
 		for (int i = 0; i < sl.size(); i++) {
-			r_methods->push_back(MethodInfo::from_dict(sl[i]));
+			r_methods.push_back(MethodInfo::from_dict(sl[i]));
 		}
 	}
 
@@ -392,14 +392,14 @@ public:
 
 	GDVIRTUAL3RC_REQUIRED(Dictionary, _complete_code, const String &, const String &, Object *)
 
-	virtual Error complete_code(const String &p_code, const String &p_path, Object *p_owner, List<CodeCompletionOption> *r_options, bool &r_force, String &r_call_hint) override {
+	virtual Error complete_code(const String &p_code, const String &p_path, Object *p_owner, LocalVector<CodeCompletionOption> &r_options, bool &r_force, String &r_call_hint) override {
 		Dictionary ret;
 		GDVIRTUAL_CALL(_complete_code, p_code, p_path, p_owner, ret);
 		if (!ret.has("result")) {
 			return ERR_UNAVAILABLE;
 		}
 
-		if (r_options != nullptr && ret.has("options")) {
+		if (ret.has("options")) {
 			Array options = ret["options"];
 			for (const Variant &var : options) {
 				Dictionary op = var;
@@ -426,7 +426,7 @@ public:
 					}
 				}
 				option.matches_dirty = true;
-				r_options->push_back(option);
+				r_options.push_back(option);
 			}
 		}
 
@@ -592,42 +592,51 @@ public:
 
 	GDVIRTUAL0RC_REQUIRED(PackedStringArray, _get_recognized_extensions)
 
-	virtual void get_recognized_extensions(List<String> *p_extensions) const override {
+	virtual void get_recognized_extensions(LocalVector<String> &p_extensions) const override {
 		PackedStringArray ret;
 		GDVIRTUAL_CALL(_get_recognized_extensions, ret);
 		for (int i = 0; i < ret.size(); i++) {
-			p_extensions->push_back(ret[i]);
+			p_extensions.push_back(ret[i]);
 		}
 	}
 
 	GDVIRTUAL0RC_REQUIRED(TypedArray<Dictionary>, _get_public_functions)
-	virtual void get_public_functions(List<MethodInfo> *p_functions) const override {
+	virtual LocalVector<MethodInfo> get_public_functions() const override {
 		TypedArray<Dictionary> ret;
 		GDVIRTUAL_CALL(_get_public_functions, ret);
+		LocalVector<MethodInfo> functions;
+		functions.reserve(ret.size());
 		for (const Variant &var : ret) {
 			MethodInfo mi = MethodInfo::from_dict(var);
-			p_functions->push_back(mi);
+			functions.push_back(mi);
 		}
+		return functions;
 	}
 	GDVIRTUAL0RC_REQUIRED(Dictionary, _get_public_constants)
-	virtual void get_public_constants(List<Pair<String, Variant>> *p_constants) const override {
+	virtual LocalVector<Pair<String, Variant>> get_public_constants() const override {
 		Dictionary ret;
 		GDVIRTUAL_CALL(_get_public_constants, ret);
+		LocalVector<Pair<String, Variant>> constants;
+		constants.reserve(ret.size());
 		for (int i = 0; i < ret.size(); i++) {
 			Dictionary d = ret[i];
 			ERR_CONTINUE(!d.has("name"));
 			ERR_CONTINUE(!d.has("value"));
-			p_constants->push_back(Pair<String, Variant>(d["name"], d["value"]));
+			constants.push_back(Pair<String, Variant>(d["name"], d["value"]));
 		}
+		return constants;
 	}
 	GDVIRTUAL0RC_REQUIRED(TypedArray<Dictionary>, _get_public_annotations)
-	virtual void get_public_annotations(List<MethodInfo> *p_annotations) const override {
+	virtual LocalVector<MethodInfo> get_public_annotations() const override {
 		TypedArray<Dictionary> ret;
 		GDVIRTUAL_CALL(_get_public_annotations, ret);
+		LocalVector<MethodInfo> annotations;
+		annotations.reserve(ret.size());
 		for (const Variant &var : ret) {
 			MethodInfo mi = MethodInfo::from_dict(var);
-			p_annotations->push_back(mi);
+			annotations.push_back(mi);
 		}
+		return annotations;
 	}
 
 	EXBIND0(profiling_start)
@@ -802,7 +811,7 @@ public:
 		List<Pair<StringName, Variant>> *state = (List<Pair<StringName, Variant>> *)p_userdata;
 		state->push_back(Pair<StringName, Variant>(*(const StringName *)p_name, *(const Variant *)p_value));
 	}
-	virtual void get_property_state(List<Pair<StringName, Variant>> &state) override {
+	virtual void get_property_state(LocalVector<Pair<StringName, Variant>> &state) override {
 		if (native_info->get_property_state_func) {
 			native_info->get_property_state_func(instance, _add_property_with_state, &state);
 			return;
@@ -810,12 +819,12 @@ public:
 		ScriptInstance::get_property_state(state);
 	}
 
-	virtual void get_method_list(List<MethodInfo> *p_list) const override {
+	virtual void get_method_list(LocalVector<MethodInfo> &p_list) const override {
 		if (native_info->get_method_list_func) {
 			uint32_t mcount;
 			const GDExtensionMethodInfo *minfo = native_info->get_method_list_func(instance, &mcount);
 			for (uint32_t i = 0; i < mcount; i++) {
-				p_list->push_back(MethodInfo(minfo[i]));
+				p_list.push_back(MethodInfo(minfo[i]));
 			}
 			if (native_info->free_method_list_func) {
 				native_info->free_method_list_func(instance, minfo, mcount);

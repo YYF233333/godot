@@ -61,8 +61,8 @@ static void _draw_shadowed_line(Control *p_control, const Point2 &p_from, const 
 
 void SpriteFramesEditor::_open_sprite_sheet() {
 	file_split_sheet->clear_filters();
-	List<String> extensions;
-	ResourceLoader::get_recognized_extensions_for_type("Texture2D", &extensions);
+	LocalVector<String> extensions;
+	ResourceLoader::get_recognized_extensions_for_type("Texture2D", extensions);
 	for (const String &extension : extensions) {
 		file_split_sheet->add_filter("*." + extension);
 	}
@@ -830,8 +830,8 @@ void SpriteFramesEditor::_load_pressed() {
 	loading_scene = false;
 
 	file->clear_filters();
-	List<String> extensions;
-	ResourceLoader::get_recognized_extensions_for_type("Texture2D", &extensions);
+	LocalVector<String> extensions;
+	ResourceLoader::get_recognized_extensions_for_type("Texture2D", extensions);
 	for (const String &extension : extensions) {
 		file->add_filter("*." + extension);
 	}
@@ -1131,7 +1131,7 @@ void SpriteFramesEditor::_select_animation(const String &p_name, bool p_update_n
 	_update_library();
 }
 
-static void _find_anim_sprites(Node *p_node, List<Node *> *r_nodes, Ref<SpriteFrames> p_sfames) {
+static void _find_anim_sprites(Node *p_node, LocalVector<Node *> &r_nodes, Ref<SpriteFrames> p_sfames) {
 	Node *edited = EditorNode::get_singleton()->get_edited_scene();
 	if (!edited) {
 		return;
@@ -1143,14 +1143,14 @@ static void _find_anim_sprites(Node *p_node, List<Node *> *r_nodes, Ref<SpriteFr
 	{
 		AnimatedSprite2D *as = Object::cast_to<AnimatedSprite2D>(p_node);
 		if (as && as->get_sprite_frames() == p_sfames) {
-			r_nodes->push_back(p_node);
+			r_nodes.push_back(p_node);
 		}
 	}
 
 	{
 		AnimatedSprite3D *as = Object::cast_to<AnimatedSprite3D>(p_node);
 		if (as && as->get_sprite_frames() == p_sfames) {
-			r_nodes->push_back(p_node);
+			r_nodes.push_back(p_node);
 		}
 	}
 
@@ -1213,8 +1213,8 @@ void SpriteFramesEditor::_animation_name_edited() {
 }
 
 void SpriteFramesEditor::_rename_node_animation(EditorUndoRedoManager *undo_redo, bool is_undo, const String &p_filter, const String &p_new_animation, const String &p_new_autoplay) {
-	List<Node *> nodes;
-	_find_anim_sprites(EditorNode::get_singleton()->get_edited_scene(), &nodes, Ref<SpriteFrames>(frames));
+	LocalVector<Node *> nodes;
+	_find_anim_sprites(EditorNode::get_singleton()->get_edited_scene(), nodes, Ref<SpriteFrames>(frames));
 
 	if (is_undo) {
 		for (Node *E : nodes) {
@@ -1428,14 +1428,13 @@ void SpriteFramesEditor::_animation_remove_undo_redo(const StringName &p_action_
 }
 
 StringName SpriteFramesEditor::_find_next_animation() {
-	List<StringName> anim_names;
-	frames->get_animation_list(&anim_names);
+	LocalVector<StringName> anim_names = frames->get_animation_list();
 	anim_names.sort_custom<StringName::AlphCompare>();
 	if (anim_names.size() >= 2) {
-		if (edited_anim == anim_names.get(0)) {
-			return anim_names.get(1);
+		if (edited_anim == anim_names[0]) {
+			return anim_names[1];
 		} else {
-			return anim_names.get(0);
+			return anim_names[0];
 		}
 	} else {
 		return StringName();
@@ -1625,8 +1624,7 @@ void SpriteFramesEditor::_update_library_impl() {
 
 		TreeItem *anim_root = animations->create_item();
 
-		List<StringName> anim_names;
-		frames->get_animation_list(&anim_names);
+		LocalVector<StringName> anim_names = frames->get_animation_list();
 		anim_names.sort_custom<StringName::AlphCompare>();
 		if (!anim_names.size()) {
 			missing_anim_label->show();
@@ -1775,11 +1773,10 @@ void SpriteFramesEditor::edit(Ref<SpriteFrames> p_frames) {
 	read_only = EditorNode::get_singleton()->is_resource_read_only(p_frames);
 
 	if (!p_frames->has_animation(edited_anim)) {
-		List<StringName> anim_names;
-		frames->get_animation_list(&anim_names);
+		LocalVector<StringName> anim_names = frames->get_animation_list();
 		anim_names.sort_custom<StringName::AlphCompare>();
 		if (anim_names.size()) {
-			edited_anim = anim_names.front()->get();
+			edited_anim = anim_names[0];
 		} else {
 			edited_anim = StringName();
 		}

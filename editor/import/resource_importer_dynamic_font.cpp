@@ -44,17 +44,15 @@ String ResourceImporterDynamicFont::get_visible_name() const {
 	return "Font Data (Dynamic Font)";
 }
 
-void ResourceImporterDynamicFont::get_recognized_extensions(List<String> *p_extensions) const {
-	if (p_extensions) {
-		p_extensions->push_back("ttf");
-		p_extensions->push_back("ttc");
-		p_extensions->push_back("otf");
-		p_extensions->push_back("otc");
-		p_extensions->push_back("woff");
-		p_extensions->push_back("woff2");
-		p_extensions->push_back("pfb");
-		p_extensions->push_back("pfm");
-	}
+void ResourceImporterDynamicFont::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("ttf");
+	p_extensions.push_back("ttc");
+	p_extensions.push_back("otf");
+	p_extensions.push_back("otc");
+	p_extensions.push_back("woff");
+	p_extensions.push_back("woff2");
+	p_extensions.push_back("pfb");
+	p_extensions.push_back("pfm");
 }
 
 String ResourceImporterDynamicFont::get_save_extension() const {
@@ -109,37 +107,37 @@ String ResourceImporterDynamicFont::get_preset_name(int p_idx) const {
 	}
 }
 
-void ResourceImporterDynamicFont::get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset) const {
+void ResourceImporterDynamicFont::get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset) const {
 	bool msdf = p_preset == PRESET_MSDF;
 
-	r_options->push_back(ImportOption(PropertyInfo(Variant::NIL, "Rendering", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP), Variant()));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::NIL, "Rendering", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP), Variant()));
 
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "antialiasing", PROPERTY_HINT_ENUM, "None,Grayscale,LCD Subpixel"), 1));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "generate_mipmaps"), false));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "disable_embedded_bitmaps"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "multichannel_signed_distance_field", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), (msdf) ? true : false));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "msdf_pixel_range", PROPERTY_HINT_RANGE, "1,100,1"), 8));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "msdf_size", PROPERTY_HINT_RANGE, "1,250,1"), 48));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "antialiasing", PROPERTY_HINT_ENUM, "None,Grayscale,LCD Subpixel"), 1));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "generate_mipmaps"), false));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "disable_embedded_bitmaps"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "multichannel_signed_distance_field", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), (msdf) ? true : false));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "msdf_pixel_range", PROPERTY_HINT_RANGE, "1,100,1"), 8));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "msdf_size", PROPERTY_HINT_RANGE, "1,250,1"), 48));
 
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "allow_system_fallback"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "force_autohinter"), false));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "modulate_color_glyphs"), false));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "hinting", PROPERTY_HINT_ENUM, "None,Light,Normal"), 1));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "subpixel_positioning", PROPERTY_HINT_ENUM, "Disabled,Auto,One Half of a Pixel,One Quarter of a Pixel,Auto (Except Pixel Fonts)"), 4));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "keep_rounding_remainders"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "oversampling", PROPERTY_HINT_RANGE, "0,10,0.1"), 0.0));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "allow_system_fallback"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "force_autohinter"), false));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "modulate_color_glyphs"), false));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "hinting", PROPERTY_HINT_ENUM, "None,Light,Normal"), 1));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "subpixel_positioning", PROPERTY_HINT_ENUM, "Disabled,Auto,One Half of a Pixel,One Quarter of a Pixel,Auto (Except Pixel Fonts)"), 4));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "keep_rounding_remainders"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "oversampling", PROPERTY_HINT_RANGE, "0,10,0.1"), 0.0));
 
-	r_options->push_back(ImportOption(PropertyInfo(Variant::NIL, "Fallbacks", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP), Variant()));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::ARRAY, "fallbacks", PROPERTY_HINT_ARRAY_TYPE, MAKE_RESOURCE_TYPE_HINT("Font")), Array()));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::NIL, "Fallbacks", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP), Variant()));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::ARRAY, "fallbacks", PROPERTY_HINT_ARRAY_TYPE, MAKE_RESOURCE_TYPE_HINT("Font")), Array()));
 
-	r_options->push_back(ImportOption(PropertyInfo(Variant::NIL, "Compress", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP), Variant()));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "compress"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::NIL, "Compress", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP), Variant()));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "compress"), true));
 
 	// Hide from the main UI, only for advanced import dialog.
-	r_options->push_back(ImportOption(PropertyInfo(Variant::ARRAY, "preload", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), Array()));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::DICTIONARY, "language_support", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), Dictionary()));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::DICTIONARY, "script_support", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), Dictionary()));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::DICTIONARY, "opentype_features", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), Dictionary()));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::ARRAY, "preload", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), Array()));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::DICTIONARY, "language_support", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), Dictionary()));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::DICTIONARY, "script_support", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), Dictionary()));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::DICTIONARY, "opentype_features", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), Dictionary()));
 }
 
 bool ResourceImporterDynamicFont::has_advanced_options() const {
@@ -149,7 +147,7 @@ void ResourceImporterDynamicFont::show_advanced_options(const String &p_path) {
 	DynamicFontImportSettingsDialog::get_singleton()->open_settings(p_path);
 }
 
-Error ResourceImporterDynamicFont::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
+Error ResourceImporterDynamicFont::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
 	print_verbose("Importing dynamic font from: " + p_source_file);
 
 	int antialiasing = p_options["antialiasing"];

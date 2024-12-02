@@ -474,7 +474,7 @@ public:
 	PackedStringArray get_configuration_warnings() const override;
 	PackedStringArray get_accessibility_configuration_warnings() const override;
 #ifdef TOOLS_ENABLED
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	virtual void get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const override;
 #endif //TOOLS_ENABLED
 
 	virtual bool is_text_field() const;

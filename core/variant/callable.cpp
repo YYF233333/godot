@@ -572,8 +572,8 @@ Array Signal::get_connections() const {
 		return Array();
 	}
 
-	List<Object::Connection> connections;
-	obj->get_signal_connection_list(name, &connections);
+	LocalVector<Object::Connection> connections;
+	obj->get_signal_connection_list(name, connections);
 
 	Array arr;
 	for (const Object::Connection &E : connections) {

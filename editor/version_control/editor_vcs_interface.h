@@ -68,13 +68,13 @@ public:
 		int old_start;
 		int new_lines;
 		int old_lines;
-		List<DiffLine> diff_lines;
+		LocalVector<DiffLine> diff_lines;
 	};
 
 	struct DiffFile {
 		String new_file;
 		String old_file;
-		List<DiffHunk> diff_hunks;
+		LocalVector<DiffHunk> diff_hunks;
 	};
 
 	struct Commit {
@@ -140,17 +140,17 @@ public:
 	// Proxies to the editor for use
 	bool initialize(const String &p_project_path);
 	void set_credentials(const String &p_username, const String &p_password, const String &p_ssh_public_key_path, const String &p_ssh_private_key_path, const String &p_ssh_passphrase);
-	List<StatusFile> get_modified_files_data();
+	LocalVector<StatusFile> get_modified_files_data();
 	void stage_file(const String &p_file_path);
 	void unstage_file(const String &p_file_path);
 	void discard_file(const String &p_file_path);
 	void commit(const String &p_msg);
-	List<DiffFile> get_diff(const String &p_identifier, TreeArea p_area);
+	LocalVector<DiffFile> get_diff(const String &p_identifier, TreeArea p_area);
 	bool shut_down();
 	String get_vcs_name();
-	List<Commit> get_previous_commits(int p_max_commits);
-	List<String> get_branch_list();
-	List<String> get_remotes();
+	LocalVector<Commit> get_previous_commits(int p_max_commits);
+	LocalVector<String> get_branch_list();
+	LocalVector<String> get_remotes();
 	void create_branch(const String &p_branch_name);
 	void remove_branch(const String &p_branch_name);
 	void create_remote(const String &p_remote_name, const String &p_remote_url);
@@ -160,7 +160,7 @@ public:
 	void pull(const String &p_remote);
 	void push(const String &p_remote, bool p_force);
 	void fetch(const String &p_remote);
-	List<DiffHunk> get_line_diff(const String &p_file_path, const String &p_text);
+	LocalVector<DiffHunk> get_line_diff(const String &p_file_path, const String &p_text);
 
 	// Helper functions to create and convert Dictionary into data structures
 	Dictionary create_diff_line(int p_new_line_no, int p_old_line_no, const String &p_content, const String &p_status);

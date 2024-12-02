@@ -172,8 +172,8 @@ Array GDScriptTextDocument::completion(const Dictionary &p_params) {
 	params.load(p_params);
 	Dictionary request_data = params.to_json();
 
-	List<ScriptLanguage::CodeCompletionOption> options;
-	GDScriptLanguageProtocol::get_singleton()->get_workspace()->completion(params, &options);
+	LocalVector<ScriptLanguage::CodeCompletionOption> options;
+	GDScriptLanguageProtocol::get_singleton()->get_workspace()->completion(params, options);
 
 	if (!options.is_empty()) {
 		int i = 0;
@@ -355,9 +355,7 @@ Array GDScriptTextDocument::documentLink(const Dictionary &p_params) {
 	LSP::DocumentLinkParams params;
 	params.load(p_params);
 
-	List<LSP::DocumentLink> links;
-	GDScriptLanguageProtocol::get_singleton()->get_workspace()->resolve_document_links(params.textDocument.uri, links);
-	for (const LSP::DocumentLink &E : links) {
+	for (const LSP::DocumentLink &E : GDScriptLanguageProtocol::get_singleton()->get_workspace()->resolve_document_links(params.textDocument.uri)) {
 		ret.push_back(E.to_json());
 	}
 	return ret;
@@ -382,7 +380,7 @@ Variant GDScriptTextDocument::hover(const Dictionary &p_params) {
 	} else if (GDScriptLanguageProtocol::get_singleton()->is_smart_resolve_enabled()) {
 		Dictionary ret;
 		Array contents;
-		List<const LSP::DocumentSymbol *> list;
+		LocalVector<const LSP::DocumentSymbol *> list;
 		GDScriptLanguageProtocol::get_singleton()->resolve_related_symbols(params, list);
 		for (const LSP::DocumentSymbol *&E : list) {
 			if (const LSP::DocumentSymbol *s = E) {
@@ -399,17 +397,17 @@ Variant GDScriptTextDocument::hover(const Dictionary &p_params) {
 Array GDScriptTextDocument::definition(const Dictionary &p_params) {
 	LSP::TextDocumentPositionParams params;
 	params.load(p_params);
-	List<const LSP::DocumentSymbol *> symbols;
+	LocalVector<const LSP::DocumentSymbol *> symbols;
 	return find_symbols(params, symbols);
 }
 
 Variant GDScriptTextDocument::declaration(const Dictionary &p_params) {
 	LSP::TextDocumentPositionParams params;
 	params.load(p_params);
-	List<const LSP::DocumentSymbol *> symbols;
+	LocalVector<const LSP::DocumentSymbol *> symbols;
 	Array arr = find_symbols(params, symbols);
-	if (arr.is_empty() && !symbols.is_empty() && !symbols.front()->get()->native_class.is_empty()) { // Find a native symbol
-		const LSP::DocumentSymbol *symbol = symbols.front()->get();
+	if (arr.is_empty() && !symbols.is_empty() && !symbols[0]->native_class.is_empty()) { // Find a native symbol
+		const LSP::DocumentSymbol *symbol = symbols[0];
 		if (GDScriptLanguageProtocol::get_singleton()->is_goto_native_symbols_enabled()) {
 			String id;
 			switch (symbol->kind) {
@@ -466,7 +464,7 @@ void GDScriptTextDocument::show_native_symbol_in_editor(const String &p_symbol_i
 	DisplayServer::get_singleton()->window_move_to_foreground();
 }
 
-Array GDScriptTextDocument::find_symbols(const LSP::TextDocumentPositionParams &p_location, List<const LSP::DocumentSymbol *> &r_list) {
+Array GDScriptTextDocument::find_symbols(const LSP::TextDocumentPositionParams &p_location, LocalVector<const LSP::DocumentSymbol *> &r_list) {
 	Array arr;
 	const LSP::DocumentSymbol *symbol = GDScriptLanguageProtocol::get_singleton()->get_workspace()->resolve_symbol(p_location);
 	if (symbol) {
@@ -481,7 +479,7 @@ Array GDScriptTextDocument::find_symbols(const LSP::TextDocumentPositionParams &
 		}
 		r_list.push_back(symbol);
 	} else if (GDScriptLanguageProtocol::get_singleton()->is_smart_resolve_enabled()) {
-		List<const LSP::DocumentSymbol *> list;
+		LocalVector<const LSP::DocumentSymbol *> list;
 		GDScriptLanguageProtocol::get_singleton()->resolve_related_symbols(p_location, list);
 		for (const LSP::DocumentSymbol *&E : list) {
 			if (const LSP::DocumentSymbol *s = E) {

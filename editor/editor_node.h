@@ -872,7 +872,7 @@ public:
 	Error load_scene_or_resource(const String &p_file, bool p_ignore_broken_deps = false, bool p_change_scene_tab_if_already_open = true);
 
 	HashMap<StringName, Variant> get_modified_properties_for_node(Node *p_node, bool p_node_references_only);
-	HashMap<StringName, Variant> get_modified_properties_reference_to_nodes(Node *p_node, List<Node *> &p_nodes_referenced_by);
+	HashMap<StringName, Variant> get_modified_properties_reference_to_nodes(Node *p_node, LocalVector<Node *> &p_nodes_referenced_by);
 
 	void set_unfocused_low_processor_usage_mode_enabled(bool p_enabled);
 
@@ -895,7 +895,7 @@ public:
 		HashMap<StringName, Variant> property_table;
 		List<ConnectionWithNodePath> connections_to;
 		List<Connection> connections_from;
-		List<Node::GroupInfo> groups;
+		LocalVector<Node::GroupInfo> groups;
 	};
 
 	struct InstanceModificationsEntry {
@@ -917,7 +917,7 @@ public:
 	};
 
 	HashMap<int, SceneModificationsEntry> scenes_modification_table;
-	List<String> scenes_reimported;
+	LocalVector<String> scenes_reimported;
 	List<String> resources_reimported;
 
 	void update_node_from_node_modification_entry(Node *p_node, ModificationNodeEntry &p_node_modification);
@@ -933,9 +933,9 @@ public:
 			Node *p_root,
 			Node *p_node,
 			HashSet<Node *> &p_excluded_nodes,
-			List<Node *> &p_instance_list_with_children,
+			LocalVector<Node *> &p_instance_list_with_children,
 			HashMap<NodePath, ModificationNodeEntry> &p_modification_table);
-	void get_children_nodes(Node *p_node, List<Node *> &p_nodes);
+	void get_children_nodes(Node *p_node, LocalVector<Node *> &p_nodes);
 	bool is_additional_node_in_scene(Node *p_edited_scene, Node *p_reimported_root, Node *p_node);
 
 	void replace_history_reimported_nodes(Node *p_original_root_node, Node *p_new_root_node, Node *p_node);
@@ -996,7 +996,7 @@ public:
 	void reload_scene(const String &p_path);
 
 	void find_all_instances_inheriting_path_in_node(Node *p_root, Node *p_node, const String &p_instance_path, HashSet<Node *> &p_instance_list);
-	void preload_reimporting_with_path_in_edited_scenes(const List<String> &p_scenes);
+	void preload_reimporting_with_path_in_edited_scenes(const LocalVector<String> &p_scenes);
 	void reload_instances_with_path_in_edited_scenes();
 
 	bool is_exiting() const { return exiting; }

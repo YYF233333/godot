@@ -53,7 +53,7 @@ class SceneImportSettingsData : public Object {
 	HashMap<StringName, Variant> *settings = nullptr;
 	HashMap<StringName, Variant> current;
 	HashMap<StringName, Variant> defaults;
-	List<ResourceImporter::ImportOption> options;
+	LocalVector<ResourceImporter::ImportOption> options;
 	Vector<String> animation_list;
 
 	bool hide_options = false;
@@ -139,10 +139,9 @@ class SceneImportSettingsData : public Object {
 						hint_string = anim->get_name();
 					}
 					if (library.is_valid()) {
-						List<StringName> anim_names;
-						library->get_animation_list(&anim_names);
+						LocalVector<StringName> anim_names = library->get_animation_list();
 						if (anim_names.size() == 1) {
-							(*settings)["rest_pose/selected_animation"] = String(anim_names.front()->get());
+							(*settings)["rest_pose/selected_animation"] = String(anim_names[0]);
 						}
 						for (StringName anim_name : anim_names) {
 							hint_string += "," + anim_name; // Include preceding, as a catch-all.
@@ -462,9 +461,7 @@ void SceneImportSettingsDialog::_fill_scene(Node *p_node, TreeItem *p_parent_ite
 	AnimationPlayer *anim_node = Object::cast_to<AnimationPlayer>(p_node);
 	if (anim_node) {
 		Vector<String> animation_list;
-		List<StringName> animations;
-		anim_node->get_animation_list(&animations);
-		for (const StringName &E : animations) {
+		for (const StringName &E : anim_node->get_animation_list()) {
 			_fill_animation(scene_tree, anim_node->get_animation(E), E, item);
 			animation_list.append(E);
 		}
@@ -712,8 +709,8 @@ void SceneImportSettingsDialog::_load_default_subresource_settings(HashMap<Strin
 		Dictionary d = base_subresource_settings[p_type];
 		if (d.has(p_import_id)) {
 			d = d[p_import_id];
-			List<ResourceImporterScene::ImportOption> options;
-			_resource_importer_scene->get_internal_import_options(p_category, &options);
+			LocalVector<ResourceImporterScene::ImportOption> options;
+			_resource_importer_scene->get_internal_import_options(p_category, options);
 			for (const ResourceImporterScene::ImportOption &E : options) {
 				String key = E.option.name;
 				if (d.has(key)) {
@@ -783,8 +780,7 @@ void SceneImportSettingsDialog::open_settings(const String &p_path, const String
 		config.instantiate();
 		Error err = config->load(p_path + ".import");
 		if (err == OK) {
-			Vector<String> keys = config->get_section_keys("params");
-			for (const String &E : keys) {
+			for (const String &E : config->get_section_keys("params")) {
 				Variant value = config->get_value("params", E);
 				if (E == "_subresources") {
 					base_subresource_settings = value;
@@ -989,12 +985,12 @@ void SceneImportSettingsDialog::_select(Tree *p_from, const String &p_type, cons
 
 	_update_camera();
 
-	List<ResourceImporter::ImportOption> options;
+	LocalVector<ResourceImporter::ImportOption> options;
 
 	if (scene_import_settings_data->category == ResourceImporterScene::INTERNAL_IMPORT_CATEGORY_MAX) {
-		_resource_importer_scene->get_import_options(base_path, &options);
+		_resource_importer_scene->get_import_options(base_path, options);
 	} else {
-		_resource_importer_scene->get_internal_import_options(scene_import_settings_data->category, &options);
+		_resource_importer_scene->get_internal_import_options(scene_import_settings_data->category, options);
 	}
 
 	scene_import_settings_data->defaults.clear();

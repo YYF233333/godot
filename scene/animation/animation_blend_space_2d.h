@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/templates/local_vector.h"
 #include "scene/animation/animation_tree.h"
 
 class AnimationNodeBlendSpace2D : public AnimationRootNode {
@@ -93,10 +94,10 @@ protected:
 	virtual void _animation_node_removed(const ObjectID &p_oid, const StringName &p_node) override;
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
-	virtual void get_child_nodes(List<ChildNode> *r_child_nodes) override;
+	virtual LocalVector<ChildNode> get_child_nodes() override;
 
 	void add_blend_point(const Ref<AnimationRootNode> &p_node, const Vector2 &p_position, int p_at_index = -1);
 	void set_blend_point_position(int p_point, const Vector2 &p_position);

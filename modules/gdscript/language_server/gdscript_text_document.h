@@ -47,7 +47,7 @@ protected:
 	Array native_member_completions;
 
 private:
-	Array find_symbols(const LSP::TextDocumentPositionParams &p_location, List<const LSP::DocumentSymbol *> &r_list);
+	Array find_symbols(const LSP::TextDocumentPositionParams &p_location, LocalVector<const LSP::DocumentSymbol *> &r_list);
 	void notify_client_show_symbol(const LSP::DocumentSymbol *symbol);
 
 public:

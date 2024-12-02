@@ -253,9 +253,9 @@ void EditorFileSystem::scan_for_uid() {
 	_load_first_scan_root_dir();
 
 	// Load extensions for which an .import should exists.
-	List<String> extensionsl;
+	LocalVector<String> extensionsl;
 	HashSet<String> import_extensions;
-	ResourceFormatImporter::get_singleton()->get_recognized_extensions(&extensionsl);
+	ResourceFormatImporter::get_singleton()->get_recognized_extensions(extensionsl);
 	for (const String &E : extensionsl) {
 		import_extensions.insert(E);
 	}
@@ -309,8 +309,8 @@ void EditorFileSystem::_first_scan_filesystem() {
 
 	// Preloading GDExtensions file extensions to prevent looping on all the resource loaders
 	// for each files in _first_scan_process_scripts.
-	List<String> gdextension_extensions;
-	ResourceLoader::get_recognized_extensions_for_type("GDExtension", &gdextension_extensions);
+	LocalVector<String> gdextension_extensions;
+	ResourceLoader::get_recognized_extensions_for_type("GDExtension", gdextension_extensions);
 
 	// This loads the global class names from the scripts and ensures that even if the
 	// global_script_class_cache.cfg was missing or invalid, the global class names are valid in ScriptServer.
@@ -345,7 +345,7 @@ void EditorFileSystem::_first_scan_filesystem() {
 	ep.step(TTR("Starting file scan..."), 5, true);
 }
 
-void EditorFileSystem::_first_scan_process_scripts(const ScannedDirectory *p_scan_dir, List<String> &p_gdextension_extensions, HashSet<String> &p_existing_class_names, HashSet<String> &p_extensions) {
+void EditorFileSystem::_first_scan_process_scripts(const ScannedDirectory *p_scan_dir, LocalVector<String> &p_gdextension_extensions, HashSet<String> &p_existing_class_names, HashSet<String> &p_extensions) {
 	for (ScannedDirectory *scan_sub_dir : p_scan_dir->subdirs) {
 		_first_scan_process_scripts(scan_sub_dir, p_gdextension_extensions, p_existing_class_names, p_extensions);
 	}
@@ -379,7 +379,7 @@ void EditorFileSystem::_first_scan_process_scripts(const ScannedDirectory *p_sca
 		}
 
 		// Check for GDExtensions.
-		if (p_gdextension_extensions.find(ext)) {
+		if (p_gdextension_extensions.has(ext)) {
 			const String path = p_scan_dir->full_path.path_join(scan_file);
 			const String type = ResourceLoader::get_resource_type(path);
 			if (type == SNAME("GDExtension")) {
@@ -1131,7 +1131,7 @@ void EditorFileSystem::ScanProgress::increment() {
 }
 
 int EditorFileSystem::_scan_new_dir(ScannedDirectory *p_dir, Ref<DirAccess> &da) {
-	List<String> dirs;
+	LocalVector<String> dirs;
 	List<String> files;
 
 	String cd = da->get_current_dir();
@@ -1605,10 +1605,8 @@ void EditorFileSystem::_scan_fs_changes(EditorFileSystemDirectory *p_dir, ScanPr
 
 void EditorFileSystem::_delete_internal_files(const String &p_file) {
 	if (FileAccess::exists(p_file + ".import")) {
-		List<String> paths;
-		ResourceFormatImporter::get_singleton()->get_internal_resource_path_list(p_file, &paths);
 		Ref<DirAccess> da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
-		for (const String &E : paths) {
+		for (const String &E : ResourceFormatImporter::get_singleton()->get_internal_resource_path_list(p_file)) {
 			da->remove(E);
 		}
 		da->remove(p_file + ".import");
@@ -2062,8 +2060,8 @@ Vector<String> EditorFileSystem::_get_dependencies(const String &p_path) {
 		}
 	}
 
-	List<String> deps;
-	ResourceLoader::get_dependencies(p_path, &deps);
+	LocalVector<String> deps;
+	ResourceLoader::get_dependencies(p_path, deps);
 
 	Vector<String> ret;
 	for (const String &E : deps) {
@@ -2614,16 +2612,15 @@ Error EditorFileSystem::_reimport_group(const String &p_group_file, const Vector
 
 		Ref<ResourceImporter> importer = ResourceFormatImporter::get_singleton()->get_importer_by_name(importer_name);
 		ERR_FAIL_COND_V(importer.is_null(), ERR_FILE_CORRUPT);
-		List<ResourceImporter::ImportOption> options;
-		importer->get_import_options(p_files[i], &options);
+		LocalVector<ResourceImporter::ImportOption> options;
+		importer->get_import_options(p_files[i], options);
 		//set default values
 		for (const ResourceImporter::ImportOption &E : options) {
 			source_file_options[p_files[i]][E.option.name] = E.default_value;
 		}
 
 		if (config->has_section("params")) {
-			Vector<String> sk = config->get_section_keys("params");
-			for (const String &param : sk) {
+			for (const String &param : config->get_section_keys("params")) {
 				Variant value = config->get_value("params", param);
 				//override with whatever is in file
 				source_file_options[p_files[i]][param] = value;
@@ -2701,8 +2698,8 @@ Error EditorFileSystem::_reimport_group(const String &p_group_file, const Vector
 
 			//store options in provided order, to avoid file changing. Order is also important because first match is accepted first.
 
-			List<ResourceImporter::ImportOption> options;
-			importer->get_import_options(file, &options);
+			LocalVector<ResourceImporter::ImportOption> options;
+			importer->get_import_options(file, options);
 			//set default values
 			for (const ResourceImporter::ImportOption &F : options) {
 				String base = F.option.name;
@@ -2806,8 +2803,7 @@ Error EditorFileSystem::_reimport_file(const String &p_file, const HashMap<Strin
 		Error err = cf->load(p_file + ".import");
 		if (err == OK) {
 			if (cf->has_section("params")) {
-				Vector<String> sk = cf->get_section_keys("params");
-				for (const String &E : sk) {
+				for (const String &E : cf->get_section_keys("params")) {
 					if (!params.has(E)) {
 						params[E] = cf->get_value("params", E);
 					}
@@ -2874,8 +2870,8 @@ Error EditorFileSystem::_reimport_file(const String &p_file, const HashMap<Strin
 
 	//mix with default params, in case a parameter is missing
 
-	List<ResourceImporter::ImportOption> opts;
-	importer->get_import_options(p_file, &opts);
+	LocalVector<ResourceImporter::ImportOption> opts;
+	importer->get_import_options(p_file, opts);
 	for (const ResourceImporter::ImportOption &E : opts) {
 		if (!params.has(E.option.name)) { //this one is not present
 			params[E.option.name] = E.default_value;
@@ -2898,10 +2894,10 @@ Error EditorFileSystem::_reimport_file(const String &p_file, const HashMap<Strin
 	//finally, perform import!!
 	String base_path = ResourceFormatImporter::get_singleton()->get_import_base_path(p_file);
 
-	List<String> import_variants;
-	List<String> gen_files;
+	LocalVector<String> import_variants;
+	LocalVector<String> gen_files;
 	Variant meta;
-	Error err = importer->import(uid, p_file, base_path, params, &import_variants, &gen_files, &meta);
+	Error err = importer->import(uid, p_file, base_path, params, import_variants, gen_files, &meta);
 
 	// As import is complete, save the .import file.
 
@@ -3128,8 +3124,8 @@ Error EditorFileSystem::_copy_file(const String &p_from, const String &p_to) {
 			res = ResourceLoader::load(p_from, "", ResourceFormatLoader::CACHE_MODE_REUSE, &err);
 		} else {
 			bool edited = false;
-			List<Ref<Resource>> cached;
-			ResourceCache::get_cached_resources(&cached);
+			LocalVector<Ref<Resource>> cached;
+			ResourceCache::get_cached_resources(cached);
 			for (Ref<Resource> &resource : cached) {
 				if (!resource->is_edited()) {
 					continue;
@@ -3485,8 +3481,7 @@ void EditorFileSystem::_move_group_files(EditorFileSystemDirectory *efd, const S
 				config->set_value("remap", "group_file", p_new_location);
 			}
 
-			Vector<String> sk = config->get_section_keys("params");
-			for (const String &param : sk) {
+			for (const String &param : config->get_section_keys("params")) {
 				//not very clean, but should work
 				String value = config->get_value("params", param);
 				if (value == p_group_file) {
@@ -3701,8 +3696,8 @@ void EditorFileSystem::_update_extensions() {
 	textfile_extensions.clear();
 	other_file_extensions.clear();
 
-	List<String> extensionsl;
-	ResourceLoader::get_recognized_extensions_for_type("", &extensionsl);
+	LocalVector<String> extensionsl;
+	ResourceLoader::get_recognized_extensions_for_type("", extensionsl);
 	for (const String &E : extensionsl) {
 		valid_extensions.insert(E);
 	}
@@ -3725,7 +3720,7 @@ void EditorFileSystem::_update_extensions() {
 	}
 
 	extensionsl.clear();
-	ResourceFormatImporter::get_singleton()->get_recognized_extensions(&extensionsl);
+	ResourceFormatImporter::get_singleton()->get_recognized_extensions(extensionsl);
 	for (const String &E : extensionsl) {
 		import_extensions.insert(!E.begins_with(".") ? "." + E : E);
 	}

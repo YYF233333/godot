@@ -71,8 +71,8 @@ static void _rename_theme_type(EditorUndoRedoManager *p_ur, Theme *p_theme, cons
 			p_ur->add_undo_method(p_theme, "set_type_variation", p_old_theme_type, old_base_type);
 		}
 
-		List<StringName> names;
-		p_theme->get_type_variation_list(p_old_theme_type, &names);
+		LocalVector<StringName> names;
+		p_theme->get_type_variation_list(p_old_theme_type, names);
 		for (const StringName &E : names) {
 			p_ur->add_undo_method(p_theme, "set_type_variation", E, p_old_theme_type);
 		}
@@ -92,8 +92,8 @@ void ThemeItemImportTree::_update_items_tree() {
 	String filter_text = import_items_filter->get_text();
 
 	List<StringName> types;
-	List<StringName> names;
-	List<StringName> filtered_names;
+	LocalVector<StringName> names;
+	LocalVector<StringName> filtered_names;
 	base_theme->get_type_list(&types);
 	types.sort_custom<StringName::AlphCompare>();
 
@@ -141,7 +141,7 @@ void ThemeItemImportTree::_update_items_tree() {
 
 			names.clear();
 			filtered_names.clear();
-			base_theme->get_theme_item_list(dt, E, &names);
+			base_theme->get_theme_item_list(dt, E, names);
 
 			bool data_type_has_filtered_items = false;
 
@@ -1392,12 +1392,12 @@ void ThemeItemEditorDialog::_update_edit_item_tree(String p_item_type) {
 	edit_items_tree->clear();
 	TreeItem *root = edit_items_tree->create_item();
 
-	List<StringName> names;
+	LocalVector<StringName> names;
 	bool has_any_items = false;
 
 	{ // Colors.
 		names.clear();
-		edited_theme->get_color_list(p_item_type, &names);
+		edited_theme->get_color_list(p_item_type, names);
 
 		if (names.size() > 0) {
 			TreeItem *color_root = edit_items_tree->create_item(root);
@@ -1420,7 +1420,7 @@ void ThemeItemEditorDialog::_update_edit_item_tree(String p_item_type) {
 
 	{ // Constants.
 		names.clear();
-		edited_theme->get_constant_list(p_item_type, &names);
+		edited_theme->get_constant_list(p_item_type, names);
 
 		if (names.size() > 0) {
 			TreeItem *constant_root = edit_items_tree->create_item(root);
@@ -1443,7 +1443,7 @@ void ThemeItemEditorDialog::_update_edit_item_tree(String p_item_type) {
 
 	{ // Fonts.
 		names.clear();
-		edited_theme->get_font_list(p_item_type, &names);
+		edited_theme->get_font_list(p_item_type, names);
 
 		if (names.size() > 0) {
 			TreeItem *font_root = edit_items_tree->create_item(root);
@@ -1466,7 +1466,7 @@ void ThemeItemEditorDialog::_update_edit_item_tree(String p_item_type) {
 
 	{ // Font sizes.
 		names.clear();
-		edited_theme->get_font_size_list(p_item_type, &names);
+		edited_theme->get_font_size_list(p_item_type, names);
 
 		if (names.size() > 0) {
 			TreeItem *font_size_root = edit_items_tree->create_item(root);
@@ -1489,7 +1489,7 @@ void ThemeItemEditorDialog::_update_edit_item_tree(String p_item_type) {
 
 	{ // Icons.
 		names.clear();
-		edited_theme->get_icon_list(p_item_type, &names);
+		edited_theme->get_icon_list(p_item_type, names);
 
 		if (names.size() > 0) {
 			TreeItem *icon_root = edit_items_tree->create_item(root);
@@ -1512,7 +1512,7 @@ void ThemeItemEditorDialog::_update_edit_item_tree(String p_item_type) {
 
 	{ // Styleboxes.
 		names.clear();
-		edited_theme->get_stylebox_list(p_item_type, &names);
+		edited_theme->get_stylebox_list(p_item_type, names);
 
 		if (names.size() > 0) {
 			TreeItem *stylebox_root = edit_items_tree->create_item(root);
@@ -1658,7 +1658,7 @@ void ThemeItemEditorDialog::_remove_theme_type(const String &p_theme_type) {
 }
 
 void ThemeItemEditorDialog::_remove_data_type_items(Theme::DataType p_data_type, String p_item_type) {
-	List<StringName> names;
+	LocalVector<StringName> names;
 
 	Ref<Theme> old_snapshot = edited_theme->duplicate();
 	Ref<Theme> new_snapshot = edited_theme->duplicate();
@@ -1666,7 +1666,7 @@ void ThemeItemEditorDialog::_remove_data_type_items(Theme::DataType p_data_type,
 	EditorUndoRedoManager *ur = EditorUndoRedoManager::get_singleton();
 	ur->create_action(TTR("Remove Data Type Items From Theme"));
 
-	new_snapshot->get_theme_item_list(p_data_type, p_item_type, &names);
+	new_snapshot->get_theme_item_list(p_data_type, p_item_type, names);
 	for (const StringName &E : names) {
 		new_snapshot->clear_theme_item(p_data_type, E, edited_item_type);
 
@@ -1687,7 +1687,7 @@ void ThemeItemEditorDialog::_remove_data_type_items(Theme::DataType p_data_type,
 }
 
 void ThemeItemEditorDialog::_remove_class_items() {
-	List<StringName> names;
+	LocalVector<StringName> names;
 
 	Ref<Theme> old_snapshot = edited_theme->duplicate();
 	Ref<Theme> new_snapshot = edited_theme->duplicate();
@@ -1699,7 +1699,7 @@ void ThemeItemEditorDialog::_remove_class_items() {
 		Theme::DataType data_type = (Theme::DataType)dt;
 
 		names.clear();
-		ThemeDB::get_singleton()->get_default_theme()->get_theme_item_list(data_type, edited_item_type, &names);
+		ThemeDB::get_singleton()->get_default_theme()->get_theme_item_list(data_type, edited_item_type, names);
 		for (const StringName &E : names) {
 			if (new_snapshot->has_theme_item_nocheck(data_type, E, edited_item_type)) {
 				new_snapshot->clear_theme_item(data_type, E, edited_item_type);
@@ -1723,7 +1723,7 @@ void ThemeItemEditorDialog::_remove_class_items() {
 }
 
 void ThemeItemEditorDialog::_remove_custom_items() {
-	List<StringName> names;
+	LocalVector<StringName> names;
 
 	Ref<Theme> old_snapshot = edited_theme->duplicate();
 	Ref<Theme> new_snapshot = edited_theme->duplicate();
@@ -1735,7 +1735,7 @@ void ThemeItemEditorDialog::_remove_custom_items() {
 		Theme::DataType data_type = (Theme::DataType)dt;
 
 		names.clear();
-		new_snapshot->get_theme_item_list(data_type, edited_item_type, &names);
+		new_snapshot->get_theme_item_list(data_type, edited_item_type, names);
 		for (const StringName &E : names) {
 			if (!ThemeDB::get_singleton()->get_default_theme()->has_theme_item_nocheck(data_type, E, edited_item_type)) {
 				new_snapshot->clear_theme_item(data_type, E, edited_item_type);
@@ -1759,7 +1759,7 @@ void ThemeItemEditorDialog::_remove_custom_items() {
 }
 
 void ThemeItemEditorDialog::_remove_all_items() {
-	List<StringName> names;
+	LocalVector<StringName> names;
 
 	Ref<Theme> old_snapshot = edited_theme->duplicate();
 	Ref<Theme> new_snapshot = edited_theme->duplicate();
@@ -1771,7 +1771,7 @@ void ThemeItemEditorDialog::_remove_all_items() {
 		Theme::DataType data_type = (Theme::DataType)dt;
 
 		names.clear();
-		new_snapshot->get_theme_item_list(data_type, edited_item_type, &names);
+		new_snapshot->get_theme_item_list(data_type, edited_item_type, names);
 		for (const StringName &E : names) {
 			new_snapshot->clear_theme_item(data_type, E, edited_item_type);
 
@@ -2160,8 +2160,8 @@ ThemeItemEditorDialog::ThemeItemEditorDialog(ThemeTypeEditor *p_theme_type_edito
 	import_another_theme_dialog = memnew(EditorFileDialog);
 	import_another_theme_dialog->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_FILE);
 	import_another_theme_dialog->set_title(TTR("Select Another Theme Resource:"));
-	List<String> ext;
-	ResourceLoader::get_recognized_extensions_for_type("Theme", &ext);
+	LocalVector<String> ext;
+	ResourceLoader::get_recognized_extensions_for_type("Theme", ext);
 	for (const String &E : ext) {
 		import_another_theme_dialog->add_filter("*." + E, TTR("Theme Resource"));
 	}
@@ -2456,7 +2456,7 @@ void ThemeTypeEditor::_update_type_list_debounced() {
 
 HashMap<StringName, bool> ThemeTypeEditor::_get_type_items(String p_type_name, Theme::DataType p_type, bool p_include_default) {
 	HashMap<StringName, bool> items;
-	List<StringName> names;
+	LocalVector<StringName> names;
 
 	if (p_include_default) {
 		names.clear();
@@ -2495,7 +2495,7 @@ HashMap<StringName, bool> ThemeTypeEditor::_get_type_items(String p_type_name, T
 
 	{
 		names.clear();
-		edited_theme->get_theme_item_list(p_type, p_type_name, &names);
+		edited_theme->get_theme_item_list(p_type, p_type_name, names);
 		names.sort_custom<StringName::AlphCompare>();
 		for (const StringName &E : names) {
 			items[E] = true;
@@ -2925,7 +2925,7 @@ void ThemeTypeEditor::_remove_type_button_cbk() {
 }
 
 void ThemeTypeEditor::_add_default_type_items() {
-	List<StringName> names;
+	LocalVector<StringName> names;
 	String default_type = edited_type;
 	if (edited_theme->get_type_variation_base(edited_type) != StringName()) {
 		default_type = edited_theme->get_type_variation_base(edited_type);
@@ -2938,7 +2938,7 @@ void ThemeTypeEditor::_add_default_type_items() {
 
 	{
 		names.clear();
-		ThemeDB::get_singleton()->get_default_theme()->get_icon_list(default_type, &names);
+		ThemeDB::get_singleton()->get_default_theme()->get_icon_list(default_type, names);
 		for (const StringName &E : names) {
 			if (!new_snapshot->has_icon(E, edited_type)) {
 				new_snapshot->set_icon(E, edited_type, ThemeDB::get_singleton()->get_default_theme()->get_icon(E, edited_type));
@@ -2947,7 +2947,7 @@ void ThemeTypeEditor::_add_default_type_items() {
 	}
 	{
 		names.clear();
-		ThemeDB::get_singleton()->get_default_theme()->get_stylebox_list(default_type, &names);
+		ThemeDB::get_singleton()->get_default_theme()->get_stylebox_list(default_type, names);
 		for (const StringName &E : names) {
 			if (!new_snapshot->has_stylebox(E, edited_type)) {
 				new_snapshot->set_stylebox(E, edited_type, ThemeDB::get_singleton()->get_default_theme()->get_stylebox(E, edited_type));
@@ -2956,7 +2956,7 @@ void ThemeTypeEditor::_add_default_type_items() {
 	}
 	{
 		names.clear();
-		ThemeDB::get_singleton()->get_default_theme()->get_font_list(default_type, &names);
+		ThemeDB::get_singleton()->get_default_theme()->get_font_list(default_type, names);
 		for (const StringName &E : names) {
 			if (!new_snapshot->has_font(E, edited_type)) {
 				new_snapshot->set_font(E, edited_type, ThemeDB::get_singleton()->get_default_theme()->get_font(E, edited_type));
@@ -2965,7 +2965,7 @@ void ThemeTypeEditor::_add_default_type_items() {
 	}
 	{
 		names.clear();
-		ThemeDB::get_singleton()->get_default_theme()->get_font_size_list(default_type, &names);
+		ThemeDB::get_singleton()->get_default_theme()->get_font_size_list(default_type, names);
 		for (const StringName &E : names) {
 			if (!new_snapshot->has_font_size(E, edited_type)) {
 				new_snapshot->set_font_size(E, edited_type, ThemeDB::get_singleton()->get_default_theme()->get_font_size(E, edited_type));
@@ -2974,7 +2974,7 @@ void ThemeTypeEditor::_add_default_type_items() {
 	}
 	{
 		names.clear();
-		ThemeDB::get_singleton()->get_default_theme()->get_color_list(default_type, &names);
+		ThemeDB::get_singleton()->get_default_theme()->get_color_list(default_type, names);
 		for (const StringName &E : names) {
 			if (!new_snapshot->has_color(E, edited_type)) {
 				new_snapshot->set_color(E, edited_type, ThemeDB::get_singleton()->get_default_theme()->get_color(E, edited_type));
@@ -2983,7 +2983,7 @@ void ThemeTypeEditor::_add_default_type_items() {
 	}
 	{
 		names.clear();
-		ThemeDB::get_singleton()->get_default_theme()->get_constant_list(default_type, &names);
+		ThemeDB::get_singleton()->get_default_theme()->get_constant_list(default_type, names);
 		for (const StringName &E : names) {
 			if (!new_snapshot->has_constant(E, edited_type)) {
 				new_snapshot->set_constant(E, edited_type, ThemeDB::get_singleton()->get_default_theme()->get_constant(E, edited_type));
@@ -3404,9 +3404,9 @@ void ThemeTypeEditor::_update_stylebox_from_leading() {
 	// Prevent changes from immediately being reported while the operation is still ongoing.
 	edited_theme->_freeze_change_propagation();
 
-	List<StringName> names;
-	edited_theme->get_stylebox_list(edited_type, &names);
-	List<Ref<StyleBox>> styleboxes;
+	LocalVector<StringName> names;
+	edited_theme->get_stylebox_list(edited_type, names);
+	LocalVector<Ref<StyleBox>> styleboxes;
 	for (const StringName &E : names) {
 		Ref<StyleBox> sb = edited_theme->get_stylebox(E, edited_type);
 
@@ -4061,8 +4061,8 @@ ThemeEditor::ThemeEditor() {
 	preview_scene_dialog = memnew(EditorFileDialog);
 	preview_scene_dialog->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_FILE);
 	preview_scene_dialog->set_title(TTR("Select UI Scene:"));
-	List<String> ext;
-	ResourceLoader::get_recognized_extensions_for_type("PackedScene", &ext);
+	LocalVector<String> ext;
+	ResourceLoader::get_recognized_extensions_for_type("PackedScene", ext);
 	for (const String &E : ext) {
 		preview_scene_dialog->add_filter("*." + E, TTR("Scene"));
 	}

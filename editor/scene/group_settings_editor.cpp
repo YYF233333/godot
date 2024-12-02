@@ -295,7 +295,8 @@ void GroupSettingsEditor::update_groups() {
 	tree->clear();
 	TreeItem *root = tree->create_item();
 
-	List<StringName> keys;
+	LocalVector<StringName> keys;
+	keys.reserve(groups_cache.size());
 	for (const KeyValue<StringName, String> &E : groups_cache) {
 		keys.push_back(E.key);
 	}

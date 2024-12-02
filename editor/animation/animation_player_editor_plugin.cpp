@@ -817,8 +817,6 @@ void AnimationPlayerEditor::_update_animation_blend() {
 
 	String current = animation->get_item_text(animation->get_selected());
 
-	List<StringName> anims;
-	player->get_animation_list(&anims);
 	TreeItem *root = blend_editor.tree->create_item();
 	updating_blends = true;
 
@@ -827,7 +825,7 @@ void AnimationPlayerEditor::_update_animation_blend() {
 	blend_editor.next->clear();
 	blend_editor.next->add_item("", i);
 
-	for (const StringName &to : anims) {
+	for (const StringName &to : player->get_animation_list()) {
 		TreeItem *blend = blend_editor.tree->create_item(root);
 		blend->set_editable(0, false);
 		blend->set_editable(1, true);
@@ -1024,8 +1022,7 @@ void AnimationPlayerEditor::_update_player() {
 		return;
 	}
 
-	List<StringName> libraries;
-	player->get_animation_library_list(&libraries);
+	LocalVector<StringName> libraries = player->get_animation_library_list();
 
 	int active_idx = -1;
 	bool no_anims_found = true;
@@ -1048,10 +1045,7 @@ void AnimationPlayerEditor::_update_player() {
 			}
 		}
 
-		List<StringName> animlist;
-		anim_library->get_animation_list(&animlist);
-
-		for (const StringName &E : animlist) {
+		for (const StringName &E : anim_library->get_animation_list()) {
 			String path = K;
 			if (path != "") {
 				path += "/";
@@ -1148,8 +1142,7 @@ void AnimationPlayerEditor::_update_name_dialog_library_dropdown() {
 		}
 	}
 
-	List<StringName> libraries;
-	player->get_animation_library_list(&libraries);
+	LocalVector<StringName> libraries = player->get_animation_library_list();
 	library->clear();
 
 	int valid_library_count = 0;
@@ -1490,22 +1483,17 @@ void AnimationPlayerEditor::_current_animation_changed(const StringName &p_name)
 		}
 
 		// Determine the read-only status of the animation's library and the libraries as a whole.
-		List<StringName> libraries;
-		player->get_animation_library_list(&libraries);
-
 		bool current_animation_library_is_readonly = false;
 		bool all_animation_libraries_are_readonly = true;
-		for (const StringName &K : libraries) {
+		for (const StringName &K : player->get_animation_library_list()) {
 			Ref<AnimationLibrary> anim_library = player->get_animation_library(K);
 			bool animation_library_is_readonly = EditorNode::get_singleton()->is_resource_read_only(anim_library);
 			if (!animation_library_is_readonly) {
 				all_animation_libraries_are_readonly = false;
 			}
 
-			List<StringName> animlist;
-			anim_library->get_animation_list(&animlist);
 			bool animation_found = false;
-			for (const StringName &E : animlist) {
+			for (const StringName &E : anim_library->get_animation_list()) {
 				String path = K;
 				if (path != "") {
 					path += "/";
@@ -2441,9 +2429,7 @@ void AnimationPlayerEditorPlugin::_update_dummy_player(AnimationMixer *p_mixer) 
 	memdelete(default_node);
 
 	// Library list is dynamically added to property list, should be copied explicitly.
-	List<StringName> libraries;
-	p_mixer->get_animation_library_list(&libraries);
-	for (const StringName &K : libraries) {
+	for (const StringName &K : p_mixer->get_animation_library_list()) {
 		dummy_player->add_animation_library(K, p_mixer->get_animation_library(K));
 	}
 

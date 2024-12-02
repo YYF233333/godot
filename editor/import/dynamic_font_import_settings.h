@@ -46,7 +46,7 @@ class DynamicFontImportSettingsData : public RefCounted {
 
 	HashMap<StringName, Variant> settings;
 	HashMap<StringName, Variant> defaults;
-	List<ResourceImporter::ImportOption> options;
+	LocalVector<ResourceImporter::ImportOption> options;
 	DynamicFontImportSettingsDialog *owner = nullptr;
 
 	HashSet<char32_t> selected_chars;
@@ -80,8 +80,8 @@ class DynamicFontImportSettingsDialog : public ConfirmationDialog {
 	String base_path;
 
 	Ref<DynamicFontImportSettingsData> import_settings_data;
-	List<ResourceImporter::ImportOption> options_variations;
-	List<ResourceImporter::ImportOption> options_general;
+	LocalVector<ResourceImporter::ImportOption> options_variations;
+	LocalVector<ResourceImporter::ImportOption> options_general;
 
 	bool is_pixel = false;
 
@@ -132,7 +132,7 @@ class DynamicFontImportSettingsDialog : public ConfirmationDialog {
 	EditorInspector *inspector_text = nullptr;
 	Button *btn_fill = nullptr;
 
-	List<ResourceImporter::ImportOption> options_text;
+	LocalVector<ResourceImporter::ImportOption> options_text;
 	Ref<DynamicFontImportSettingsData> text_settings_data;
 
 	void _change_text_opts();

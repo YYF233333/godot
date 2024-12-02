@@ -222,8 +222,8 @@ private:
 	float code_completion_pan_offset = 0.0f;
 
 	HashSet<char32_t> code_completion_prefixes;
-	List<ScriptLanguage::CodeCompletionOption> code_completion_option_submitted;
-	List<ScriptLanguage::CodeCompletionOption> code_completion_option_sources;
+	LocalVector<ScriptLanguage::CodeCompletionOption> code_completion_option_submitted;
+	LocalVector<ScriptLanguage::CodeCompletionOption> code_completion_option_sources;
 	String code_completion_base;
 
 	void _update_scroll_selected_line(float p_mouse_y);

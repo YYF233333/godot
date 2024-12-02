@@ -424,15 +424,15 @@ void EditorResourcePicker::_update_menu_items() {
 void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 	switch (p_which) {
 		case OBJ_MENU_LOAD: {
-			List<String> extensions;
+			LocalVector<String> extensions;
 			for (int i = 0; i < base_type.get_slice_count(","); i++) {
 				String base = base_type.get_slicec(',', i);
 				if (base == "Resource") {
 					base = "";
 				}
-				ResourceLoader::get_recognized_extensions_for_type(base, &extensions);
+				ResourceLoader::get_recognized_extensions_for_type(base, extensions);
 				if (ScriptServer::is_global_class(base)) {
-					ResourceLoader::get_recognized_extensions_for_type(ScriptServer::get_global_class_native_base(base), &extensions);
+					ResourceLoader::get_recognized_extensions_for_type(ScriptServer::get_global_class_native_base(base), extensions);
 				}
 			}
 
@@ -785,8 +785,8 @@ static bool _should_hide_type(const StringName &p_type) {
 	return false;
 }
 
-static void _add_allowed_type(const StringName &p_type, List<StringName> *p_vector) {
-	if (p_vector->find(p_type)) {
+static void _add_allowed_type(const StringName &p_type, LocalVector<StringName> &p_vector) {
+	if (p_vector.has(p_type)) {
 		// Already added.
 		return;
 	}
@@ -795,7 +795,7 @@ static void _add_allowed_type(const StringName &p_type, List<StringName> *p_vect
 		// Engine class.
 
 		if (!_should_hide_type(p_type)) {
-			p_vector->push_back(p_type);
+			p_vector.push_back(p_type);
 		}
 
 		LocalVector<StringName> inheriters;
@@ -805,12 +805,10 @@ static void _add_allowed_type(const StringName &p_type, List<StringName> *p_vect
 		}
 	} else {
 		// Script class.
-		p_vector->push_back(p_type);
+		p_vector.push_back(p_type);
 	}
 
-	List<StringName> inheriters;
-	ScriptServer::get_inheriters_list(p_type, &inheriters);
-	for (const StringName &S : inheriters) {
+	for (const StringName &S : ScriptServer::get_inheriters_list(p_type)) {
 		_add_allowed_type(S, p_vector);
 	}
 }
@@ -820,7 +818,7 @@ void EditorResourcePicker::_ensure_allowed_types() const {
 		return;
 	}
 
-	List<StringName> final_allowed;
+	LocalVector<StringName> final_allowed;
 
 	Vector<String> allowed_types = base_type.split(",");
 	int size = allowed_types.size();
@@ -831,7 +829,7 @@ void EditorResourcePicker::_ensure_allowed_types() const {
 			final_allowed.erase(base.right(-1));
 			continue;
 		}
-		_add_allowed_type(base, &final_allowed);
+		_add_allowed_type(base, final_allowed);
 	}
 
 	for (const StringName &SN : final_allowed) {

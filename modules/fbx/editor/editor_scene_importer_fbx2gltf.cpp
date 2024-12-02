@@ -36,13 +36,13 @@
 
 #include "modules/gltf/gltf_document.h"
 
-void EditorSceneFormatImporterFBX2GLTF::get_extensions(List<String> *r_extensions) const {
-	r_extensions->push_back("fbx");
+void EditorSceneFormatImporterFBX2GLTF::get_extensions(LocalVector<String> &r_extensions) const {
+	r_extensions.push_back("fbx");
 }
 
 Node *EditorSceneFormatImporterFBX2GLTF::import_scene(const String &p_path, uint32_t p_flags,
 		const HashMap<StringName, Variant> &p_options,
-		List<String> *r_missing_deps, Error *r_err) {
+		LocalVector<String> *r_missing_deps, Error *r_err) {
 	// FIXME: Hack to work around GH-86309.
 	if (p_options.has("fbx/importer") && int(p_options["fbx/importer"]) == EditorSceneFormatImporterUFBX::FBX_IMPORTER_UFBX) {
 		Ref<EditorSceneFormatImporterUFBX> fbx2gltf_importer;
@@ -136,7 +136,7 @@ Variant EditorSceneFormatImporterFBX2GLTF::get_option_visibility(const String &p
 	r_options->push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::INT, SNAME(PATH), PROPERTY_HINT_ENUM, ENUM_HINT), VALUE));
 
 void EditorSceneFormatImporterFBX2GLTF::get_import_options(const String &p_path,
-		List<ResourceImporter::ImportOption> *r_options) {
+		LocalVector<ResourceImporter::ImportOption> &r_options) {
 	// This function must be empty to avoid both FBX2glTF and UFBX adding the same options to FBX files.
 }
 

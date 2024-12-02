@@ -447,13 +447,13 @@ void AudioStreamInteractive::_validate_property(PropertyInfo &r_property) const 
 	}
 }
 
-void AudioStreamInteractive::get_parameter_list(List<Parameter> *r_parameters) {
+void AudioStreamInteractive::get_parameter_list(LocalVector<Parameter> &r_parameters) {
 	String clip_names;
 	for (int i = 0; i < clip_count; i++) {
 		clip_names += ",";
 		clip_names += clips[i].name;
 	}
-	r_parameters->push_back(Parameter(PropertyInfo(Variant::STRING, "switch_to_clip", PROPERTY_HINT_ENUM, clip_names, PROPERTY_USAGE_EDITOR), ""));
+	r_parameters.push_back(Parameter(PropertyInfo(Variant::STRING, "switch_to_clip", PROPERTY_HINT_ENUM, clip_names, PROPERTY_USAGE_EDITOR), ""));
 }
 
 void AudioStreamInteractive::_bind_methods() {

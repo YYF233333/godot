@@ -289,11 +289,11 @@ void GDScript::_placeholder_erased(PlaceHolderScriptInstance *p_placeholder) {
 
 #endif
 
-void GDScript::_get_script_method_list(List<MethodInfo> *r_list, bool p_include_base) const {
+void GDScript::_get_script_method_list(LocalVector<MethodInfo> &r_list, bool p_include_base) const {
 	const GDScript *current = this;
 	while (current) {
 		for (const KeyValue<StringName, GDScriptFunction *> &E : current->member_functions) {
-			r_list->push_back(E.value->get_method_info());
+			r_list.push_back(E.value->get_method_info());
 		}
 
 		if (!p_include_base) {
@@ -304,7 +304,7 @@ void GDScript::_get_script_method_list(List<MethodInfo> *r_list, bool p_include_
 	}
 }
 
-void GDScript::get_script_method_list(List<MethodInfo> *r_list) const {
+void GDScript::get_script_method_list(LocalVector<MethodInfo> &r_list) const {
 	_get_script_method_list(r_list, true);
 }
 
@@ -456,7 +456,7 @@ void GDScript::set_source_code(const String &p_code) {
 }
 
 #ifdef TOOLS_ENABLED
-void GDScript::_update_exports_values(HashMap<StringName, Variant> &values, List<PropertyInfo> &propnames) {
+void GDScript::_update_exports_values(HashMap<StringName, Variant> &values, LocalVector<PropertyInfo> &propnames) {
 	for (const KeyValue<StringName, Variant> &E : member_default_values_cache) {
 		values[E.key] = E.value;
 	}
@@ -610,7 +610,7 @@ bool GDScript::_update_exports(bool *r_err, bool p_recursive_call, PlaceHolderSc
 
 		// update placeholders if any
 		HashMap<StringName, Variant> values;
-		List<PropertyInfo> propnames;
+		LocalVector<PropertyInfo> propnames;
 		_update_exports_values(values, propnames);
 
 		if (changed) {
@@ -1273,7 +1273,7 @@ RBSet<GDScript *> GDScript::get_dependencies() {
 HashMap<GDScript *, RBSet<GDScript *>> GDScript::get_all_dependencies() {
 	HashMap<GDScript *, RBSet<GDScript *>> all_dependencies;
 
-	List<GDScript *> scripts;
+	LocalVector<GDScript *> scripts;
 	{
 		MutexLock lock(GDScriptLanguage::singleton->mutex);
 
@@ -2006,11 +2006,11 @@ bool GDScriptInstance::property_get_revert(const StringName &p_name, Variant &r_
 	return false;
 }
 
-void GDScriptInstance::get_method_list(List<MethodInfo> *p_list) const {
+void GDScriptInstance::get_method_list(LocalVector<MethodInfo> &p_list) const {
 	const GDScript *sptr = script.ptr();
 	while (sptr) {
 		for (const KeyValue<StringName, GDScriptFunction *> &E : sptr->member_functions) {
-			p_list->push_back(E.value->get_method_info());
+			p_list.push_back(E.value->get_method_info());
 		}
 		sptr = sptr->base.ptr();
 	}
@@ -2284,9 +2284,7 @@ void GDScriptLanguage::init() {
 
 	//populate singletons
 
-	List<Engine::Singleton> singletons;
-	Engine::get_singleton()->get_singletons(&singletons);
-	for (const Engine::Singleton &E : singletons) {
+	for (const Engine::Singleton &E : Engine::get_singleton()->get_singletons()) {
 		_add_global(E.name, E.ptr);
 	}
 
@@ -2311,9 +2309,7 @@ void GDScriptLanguage::init() {
 
 #ifdef TOOLS_ENABLED
 void GDScriptLanguage::_extension_loaded(const Ref<GDExtension> &p_extension) {
-	List<StringName> class_list;
-	ClassDB::get_extension_class_list(p_extension, &class_list);
-	for (const StringName &n : class_list) {
+	for (const StringName &n : ClassDB::get_extension_class_list(p_extension)) {
 		if (globals.has(n)) {
 			continue;
 		}
@@ -2323,9 +2319,7 @@ void GDScriptLanguage::_extension_loaded(const Ref<GDExtension> &p_extension) {
 }
 
 void GDScriptLanguage::_extension_unloading(const Ref<GDExtension> &p_extension) {
-	List<StringName> class_list;
-	ClassDB::get_extension_class_list(p_extension, &class_list);
-	for (const StringName &n : class_list) {
+	for (const StringName &n : ClassDB::get_extension_class_list(p_extension)) {
 		_remove_global(n);
 	}
 }
@@ -2566,9 +2560,7 @@ void GDScriptLanguage::reload_all_scripts() {
 #ifdef TOOLS_ENABLED
 		if (Engine::get_singleton()->is_editor_hint()) {
 			// Reload all pointers to existing singletons so that tool scripts can work with the reloaded extensions.
-			List<Engine::Singleton> singletons;
-			Engine::get_singleton()->get_singletons(&singletons);
-			for (const Engine::Singleton &E : singletons) {
+			for (const Engine::Singleton &E : Engine::get_singleton()->get_singletons()) {
 				if (globals.has(E.name)) {
 					_add_global(E.name, E.ptr);
 				}
@@ -2584,7 +2576,7 @@ void GDScriptLanguage::reload_all_scripts() {
 void GDScriptLanguage::reload_scripts(const Array &p_scripts, bool p_soft_reload) {
 #ifdef DEBUG_ENABLED
 
-	List<Ref<GDScript>> scripts;
+	LocalVector<Ref<GDScript>> scripts;
 	{
 		MutexLock lock(mutex);
 
@@ -2600,7 +2592,7 @@ void GDScriptLanguage::reload_scripts(const Array &p_scripts, bool p_soft_reload
 
 	//when someone asks you why dynamically typed languages are easier to write....
 
-	HashMap<Ref<GDScript>, HashMap<ObjectID, List<Pair<StringName, Variant>>>> to_reload;
+	HashMap<Ref<GDScript>, HashMap<ObjectID, LocalVector<Pair<StringName, Variant>>>> to_reload;
 
 	//as scripts are going to be reloaded, must proceed without locking here
 
@@ -2613,16 +2605,16 @@ void GDScriptLanguage::reload_scripts(const Array &p_scripts, bool p_soft_reload
 			continue;
 		}
 
-		to_reload.insert(scr, HashMap<ObjectID, List<Pair<StringName, Variant>>>());
+		to_reload.insert(scr, HashMap<ObjectID, LocalVector<Pair<StringName, Variant>>>());
 
 		if (!p_soft_reload) {
 			//save state and remove script from instances
-			HashMap<ObjectID, List<Pair<StringName, Variant>>> &map = to_reload[scr];
+			HashMap<ObjectID, LocalVector<Pair<StringName, Variant>>> &map = to_reload[scr];
 
 			while (scr->instances.front()) {
 				Object *obj = scr->instances.front()->get();
 				//save instance info
-				List<Pair<StringName, Variant>> state;
+				LocalVector<Pair<StringName, Variant>> state;
 				if (obj->get_script_instance()) {
 					obj->get_script_instance()->get_property_state(state);
 					map[obj->get_instance_id()] = state;
@@ -2638,8 +2630,8 @@ void GDScriptLanguage::reload_scripts(const Array &p_scripts, bool p_soft_reload
 
 				//save instance info
 				if (obj->get_script_instance()) {
-					map.insert(obj->get_instance_id(), List<Pair<StringName, Variant>>());
-					List<Pair<StringName, Variant>> &state = map[obj->get_instance_id()];
+					map.insert(obj->get_instance_id(), LocalVector<Pair<StringName, Variant>>());
+					LocalVector<Pair<StringName, Variant>> &state = map[obj->get_instance_id()];
 					obj->get_script_instance()->get_property_state(state);
 					obj->set_script(Variant());
 				} else {
@@ -2650,13 +2642,13 @@ void GDScriptLanguage::reload_scripts(const Array &p_scripts, bool p_soft_reload
 
 #endif // TOOLS_ENABLED
 
-			for (const KeyValue<ObjectID, List<Pair<StringName, Variant>>> &F : scr->pending_reload_state) {
+			for (const KeyValue<ObjectID, LocalVector<Pair<StringName, Variant>>> &F : scr->pending_reload_state) {
 				map[F.key] = F.value; //pending to reload, use this one instead
 			}
 		}
 	}
 
-	for (KeyValue<Ref<GDScript>, HashMap<ObjectID, List<Pair<StringName, Variant>>>> &E : to_reload) {
+	for (KeyValue<Ref<GDScript>, HashMap<ObjectID, LocalVector<Pair<StringName, Variant>>>> &E : to_reload) {
 		Ref<GDScript> scr = E.key;
 		print_verbose("GDScript: Reloading: " + scr->get_path());
 		if (scr->is_built_in()) {
@@ -2675,8 +2667,8 @@ void GDScriptLanguage::reload_scripts(const Array &p_scripts, bool p_soft_reload
 		scr->reload(p_soft_reload);
 
 		//restore state if saved
-		for (KeyValue<ObjectID, List<Pair<StringName, Variant>>> &F : E.value) {
-			List<Pair<StringName, Variant>> &saved_state = F.value;
+		for (KeyValue<ObjectID, LocalVector<Pair<StringName, Variant>>> &F : E.value) {
+			LocalVector<Pair<StringName, Variant>> &saved_state = F.value;
 
 			Object *obj = ObjectDB::get_instance(F.key);
 			if (!obj) {
@@ -2701,12 +2693,12 @@ void GDScriptLanguage::reload_scripts(const Array &p_scripts, bool p_soft_reload
 
 			if (script_inst->is_placeholder() && scr->is_placeholder_fallback_enabled()) {
 				PlaceHolderScriptInstance *placeholder = static_cast<PlaceHolderScriptInstance *>(script_inst);
-				for (List<Pair<StringName, Variant>>::Element *G = saved_state.front(); G; G = G->next()) {
-					placeholder->property_set_fallback(G->get().first, G->get().second);
+				for (const Pair<StringName, Variant> &G : saved_state) {
+					placeholder->property_set_fallback(G.first, G.second);
 				}
 			} else {
-				for (List<Pair<StringName, Variant>>::Element *G = saved_state.front(); G; G = G->next()) {
-					script_inst->set(G->get().first, G->get().second);
+				for (const Pair<StringName, Variant> &G : saved_state) {
+					script_inst->set(G.first, G.second);
 				}
 			}
 
@@ -3080,9 +3072,9 @@ Ref<Resource> ResourceFormatLoaderGDScript::load(const String &p_path, const Str
 	return scr;
 }
 
-void ResourceFormatLoaderGDScript::get_recognized_extensions(List<String> *p_extensions) const {
-	p_extensions->push_back("gd");
-	p_extensions->push_back("gdc");
+void ResourceFormatLoaderGDScript::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("gd");
+	p_extensions.push_back("gdc");
 }
 
 bool ResourceFormatLoaderGDScript::handles_type(const String &p_type) const {
@@ -3097,7 +3089,7 @@ String ResourceFormatLoaderGDScript::get_resource_type(const String &p_path) con
 	return "";
 }
 
-void ResourceFormatLoaderGDScript::get_dependencies(const String &p_path, List<String> *p_dependencies, bool p_add_types) {
+void ResourceFormatLoaderGDScript::get_dependencies(const String &p_path, LocalVector<String> &p_dependencies, bool p_add_types) {
 	Ref<FileAccess> file = FileAccess::open(p_path, FileAccess::READ);
 	ERR_FAIL_COND_MSG(file.is_null(), "Cannot open file '" + p_path + "'.");
 
@@ -3112,7 +3104,7 @@ void ResourceFormatLoaderGDScript::get_dependencies(const String &p_path, List<S
 	}
 
 	for (const String &E : parser.get_dependencies()) {
-		p_dependencies->push_back(E);
+		p_dependencies.push_back(E);
 	}
 }
 
@@ -3197,9 +3189,9 @@ Error ResourceFormatSaverGDScript::save(const Ref<Resource> &p_resource, const S
 	return OK;
 }
 
-void ResourceFormatSaverGDScript::get_recognized_extensions(const Ref<Resource> &p_resource, List<String> *p_extensions) const {
+void ResourceFormatSaverGDScript::get_recognized_extensions(const Ref<Resource> &p_resource, LocalVector<String> &p_extensions) const {
 	if (Object::cast_to<GDScript>(*p_resource)) {
-		p_extensions->push_back("gd");
+		p_extensions.push_back("gd");
 	}
 }
 

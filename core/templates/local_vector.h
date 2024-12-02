@@ -78,6 +78,16 @@ public:
 	_FORCE_INLINE_ Span<T> span() const { return Span(data, count); }
 	_FORCE_INLINE_ operator Span<T>() const { return span(); }
 
+	T &back() {
+		CRASH_BAD_UNSIGNED_INDEX(0, count);
+		return data[count - 1];
+	}
+
+	const T &back() const {
+		CRASH_BAD_UNSIGNED_INDEX(0, count);
+		return data[count - 1];
+	}
+
 	// Must take a copy instead of a reference (see GH-31736).
 	_FORCE_INLINE_ void push_back(T p_elem) {
 		if (unlikely(count == capacity)) {
@@ -85,6 +95,14 @@ public:
 		}
 
 		memnew_placement(&data[count++], T(std::move(p_elem)));
+	}
+
+	void pop_back() {
+		ERR_FAIL_COND(count == 0);
+		count--;
+		if constexpr (!std::is_trivially_destructible_v<T> && !force_trivial) {
+			data[count].~T();
+		}
 	}
 
 	void remove_at(U p_index) {

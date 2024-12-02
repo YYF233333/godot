@@ -2765,7 +2765,7 @@ Animation::UpdateMode Animation::value_track_get_update_mode(int p_track) const 
 }
 
 template <typename T>
-void Animation::_track_get_key_indices_in_range(const LocalVector<T> &p_array, double from_time, double to_time, List<int> *p_indices, bool p_is_backward) const {
+void Animation::_track_get_key_indices_in_range(const LocalVector<T> &p_array, double from_time, double to_time, LocalVector<int> &p_indices, bool p_is_backward) const {
 	int len = p_array.size();
 	if (len == 0) {
 		return;
@@ -2803,22 +2803,22 @@ void Animation::_track_get_key_indices_in_range(const LocalVector<T> &p_array, d
 	}
 
 	if (from == to) {
-		p_indices->push_back(from);
+		p_indices.push_back(from);
 		return;
 	}
 
 	if (!p_is_backward) {
 		for (int i = from; i <= to; i++) {
-			p_indices->push_back(i);
+			p_indices.push_back(i);
 		}
 	} else {
 		for (int i = to; i >= from; i--) {
-			p_indices->push_back(i);
+			p_indices.push_back(i);
 		}
 	}
 }
 
-void Animation::track_get_key_indices_in_range(int p_track, double p_time, double p_delta, List<int> *p_indices, Animation::LoopedFlag p_looped_flag) const {
+void Animation::track_get_key_indices_in_range(int p_track, double p_time, double p_delta, LocalVector<int> &p_indices, Animation::LoopedFlag p_looped_flag) const {
 	ERR_FAIL_UNSIGNED_INDEX((uint32_t)p_track, tracks.size());
 
 	if (p_delta == 0) {
@@ -2985,12 +2985,12 @@ void Animation::track_get_key_indices_in_range(int p_track, double p_time, doubl
 				if (!is_backward && Math::is_equal_approx(from_time, 0)) {
 					int edge = track_find_key(p_track, 0, FIND_MODE_EXACT);
 					if (edge >= 0) {
-						p_indices->push_back(edge);
+						p_indices.push_back(edge);
 					}
 				} else if (is_backward && Math::is_equal_approx(to_time, length)) {
 					int edge = track_find_key(p_track, length, FIND_MODE_EXACT);
 					if (edge >= 0) {
-						p_indices->push_back(edge);
+						p_indices.push_back(edge);
 					}
 				}
 			}
@@ -5486,7 +5486,7 @@ bool Animation::_fetch_compressed(uint32_t p_compressed_track, double p_time, Ve
 }
 
 template <uint32_t COMPONENTS>
-void Animation::_get_compressed_key_indices_in_range(uint32_t p_compressed_track, double p_time, double p_delta, List<int> *r_indices) const {
+void Animation::_get_compressed_key_indices_in_range(uint32_t p_compressed_track, double p_time, double p_delta, LocalVector<int> &r_indices) const {
 	ERR_FAIL_COND(!compression.enabled);
 	ERR_FAIL_UNSIGNED_INDEX(p_compressed_track, compression.bounds.size());
 
@@ -5516,7 +5516,7 @@ void Animation::_get_compressed_key_indices_in_range(uint32_t p_compressed_track
 			if (frame_time >= p_time + p_delta) {
 				return;
 			} else if (frame_time >= p_time) {
-				r_indices->push_back(key_index);
+				r_indices.push_back(key_index);
 			}
 
 			key_index++;
@@ -5550,7 +5550,7 @@ void Animation::_get_compressed_key_indices_in_range(uint32_t p_compressed_track
 					if (frame_time >= p_time + p_delta) {
 						return;
 					} else if (frame_time >= p_time) {
-						r_indices->push_back(key_index);
+						r_indices.push_back(key_index);
 					}
 
 					for (uint32_t k = 0; k < COMPONENTS; k++) {

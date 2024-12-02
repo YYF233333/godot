@@ -599,10 +599,13 @@ BaseButton::~BaseButton() {
 	}
 }
 
-void ButtonGroup::get_buttons(List<BaseButton *> *r_buttons) {
+LocalVector<BaseButton *> ButtonGroup::get_buttons() {
+	LocalVector<BaseButton *> r_buttons;
+	r_buttons.reserve(buttons.size());
 	for (BaseButton *E : buttons) {
-		r_buttons->push_back(E);
+		r_buttons.push_back(E);
 	}
+	return r_buttons;
 }
 
 TypedArray<BaseButton> ButtonGroup::_get_buttons() {

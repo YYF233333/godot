@@ -402,16 +402,16 @@ void EditorPlugin::apply_changes() {
 	GDVIRTUAL_CALL(_apply_changes);
 }
 
-void EditorPlugin::get_breakpoints(List<String> *p_breakpoints) {
+void EditorPlugin::get_breakpoints(LocalVector<String> &p_breakpoints) {
 	PackedStringArray arr;
 	if (GDVIRTUAL_CALL(_get_breakpoints, arr)) {
 		for (int i = 0; i < arr.size(); i++) {
-			p_breakpoints->push_back(arr[i]);
+			p_breakpoints.push_back(arr[i]);
 		}
 	}
 }
 
-bool EditorPlugin::get_remove_list(List<Node *> *p_list) {
+bool EditorPlugin::get_remove_list(LocalVector<Node *> &p_list) {
 	return false;
 }
 

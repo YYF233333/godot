@@ -53,8 +53,8 @@ static void _setup_search_file_dialog(EditorFileDialog *p_dialog, const String &
 	p_dialog->set_current_dir(p_file.get_base_dir());
 
 	p_dialog->clear_filters();
-	List<String> ext;
-	ResourceLoader::get_recognized_extensions_for_type(p_type, &ext);
+	LocalVector<String> ext;
+	ResourceLoader::get_recognized_extensions_for_type(p_type, ext);
 	for (const String &E : ext) {
 		p_dialog->add_filter("*." + E);
 	}
@@ -204,8 +204,8 @@ static String _get_stored_dep_path(const String &p_dep) {
 }
 
 void DependencyEditor::_update_list() {
-	List<String> deps;
-	ResourceLoader::get_dependencies(editing, &deps, true);
+	LocalVector<String> deps;
+	ResourceLoader::get_dependencies(editing, deps, true);
 
 	tree->clear();
 	missing.clear();
@@ -895,8 +895,8 @@ void DependencyErrorDialog::_check_for_resolved() {
 			const String &owner_path = owner_ti->get_metadata(0);
 
 			if (!owner_deps.has(owner_path)) {
-				List<String> deps;
-				ResourceLoader::get_dependencies(owner_path, &deps);
+				LocalVector<String> deps;
+				ResourceLoader::get_dependencies(owner_path, deps);
 
 				LocalVector<String> &stored_paths = owner_deps[owner_path];
 				for (const String &dep : deps) {
@@ -1031,7 +1031,7 @@ void OrphanResourcesDialog::show() {
 	popup_centered_ratio(0.4);
 }
 
-void OrphanResourcesDialog::_find_to_delete(TreeItem *p_item, List<String> &r_paths) {
+void OrphanResourcesDialog::_find_to_delete(TreeItem *p_item, LocalVector<String> &r_paths) {
 	while (p_item) {
 		if (p_item->get_cell_mode(0) == TreeItem::CELL_MODE_CHECK && p_item->is_checked(0)) {
 			r_paths.push_back(p_item->get_metadata(0));

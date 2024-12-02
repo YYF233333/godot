@@ -63,8 +63,8 @@ void ConnectionInfoDialog::popup_connections(const String &p_method, const Vecto
 	TreeItem *root = tree->create_item();
 
 	for (int i = 0; i < p_nodes.size(); i++) {
-		List<Connection> all_connections;
-		p_nodes[i]->get_signals_connected_to_this(&all_connections);
+		LocalVector<Connection> all_connections;
+		p_nodes[i]->get_signals_connected_to_this(all_connections);
 
 		for (const Connection &connection : all_connections) {
 			if (connection.callable.get_method() != p_method) {
@@ -1192,12 +1192,12 @@ void ScriptEditor::_update_modified_scripts_for_external_editor(Ref<Script> p_fo
 	}
 }
 
-void ScriptTextEditor::_code_complete_scripts(void *p_ud, const String &p_code, List<ScriptLanguage::CodeCompletionOption> *r_options, bool &r_force) {
+void ScriptTextEditor::_code_complete_scripts(void *p_ud, const String &p_code, LocalVector<ScriptLanguage::CodeCompletionOption> &r_options, bool &r_force) {
 	ScriptTextEditor *ste = (ScriptTextEditor *)p_ud;
 	ste->_code_complete_script(p_code, r_options, r_force);
 }
 
-void ScriptTextEditor::_code_complete_script(const String &p_code, List<ScriptLanguage::CodeCompletionOption> *r_options, bool &r_force) {
+void ScriptTextEditor::_code_complete_script(const String &p_code, LocalVector<ScriptLanguage::CodeCompletionOption> &r_options, bool &r_force) {
 	if (color_panel->is_visible()) {
 		return;
 	}
@@ -1570,8 +1570,8 @@ void ScriptTextEditor::_update_connected_methods() {
 	Vector<Node *> nodes = _find_all_node_for_script(base, base, script);
 	HashSet<StringName> methods_found;
 	for (int i = 0; i < nodes.size(); i++) {
-		List<Connection> signal_connections;
-		nodes[i]->get_signals_connected_to_this(&signal_connections);
+		LocalVector<Connection> signal_connections;
+		nodes[i]->get_signals_connected_to_this(signal_connections);
 
 		for (const Connection &connection : signal_connections) {
 			if (!(connection.flags & CONNECT_PERSIST)) {
@@ -1661,8 +1661,8 @@ void ScriptTextEditor::_update_connected_methods() {
 
 		if (found_base_class.is_empty()) {
 			while (base_class) {
-				List<MethodInfo> methods;
-				ClassDB::get_method_list(base_class, &methods, true);
+				LocalVector<MethodInfo> methods;
+				ClassDB::get_method_list(base_class, methods, true);
 				for (const MethodInfo &mi : methods) {
 					if (mi.name == name) {
 						found_base_class = "builtin:" + base_class;

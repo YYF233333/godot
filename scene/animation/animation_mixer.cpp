@@ -183,7 +183,7 @@ void AnimationMixer::_animation_set_cache_update() {
 	}
 
 	// Check removed.
-	List<StringName> to_erase;
+	LocalVector<StringName> to_erase;
 	for (const KeyValue<StringName, AnimationData> &E : animation_set) {
 		if (E.value.last_update != animation_set_update_pass) {
 			// Was not updated, must be erased.
@@ -192,9 +192,8 @@ void AnimationMixer::_animation_set_cache_update() {
 		}
 	}
 
-	while (to_erase.size()) {
-		animation_set.erase(to_erase.front()->get());
-		to_erase.pop_front();
+	for (const StringName &name : to_erase) {
+		animation_set.erase(name);
 	}
 
 	if (clear_cache_needed) {
@@ -257,10 +256,13 @@ TypedArray<StringName> AnimationMixer::_get_animation_library_list() const {
 	return ret;
 }
 
-void AnimationMixer::get_animation_library_list(List<StringName> *p_libraries) const {
+LocalVector<StringName> AnimationMixer::get_animation_library_list() const {
+	LocalVector<StringName> p_libraries;
+	p_libraries.reserve(animation_libraries.size());
 	for (const AnimationLibraryData &lib : animation_libraries) {
-		p_libraries->push_back(lib.name);
+		p_libraries.push_back(lib.name);
 	}
+	return p_libraries;
 }
 
 Ref<AnimationLibrary> AnimationMixer::get_animation_library(const StringName &p_name) const {
@@ -401,15 +403,14 @@ void AnimationMixer::rename_animation_library(const StringName &p_name, const St
 	notify_property_list_changed();
 }
 
-void AnimationMixer::get_animation_list(List<StringName> *p_animations) const {
-	List<String> anims;
+LocalVector<StringName> AnimationMixer::get_animation_list() const {
+	LocalVector<StringName> anims;
+	anims.reserve(animation_set.size());
 	for (const KeyValue<StringName, AnimationData> &E : animation_set) {
 		anims.push_back(E.key);
 	}
 	anims.sort();
-	for (const String &E : anims) {
-		p_animations->push_back(E);
-	}
+	return anims;
 }
 
 Ref<Animation> AnimationMixer::get_animation(const StringName &p_name) const {
@@ -652,8 +653,7 @@ bool AnimationMixer::_update_caches() {
 	root_motion_cache.rot = Quaternion(0, 0, 0, 1);
 	root_motion_cache.scale = Vector3(1, 1, 1);
 
-	List<StringName> sname_list;
-	get_animation_list(&sname_list);
+	LocalVector<StringName> sname_list = get_animation_list();
 
 	bool check_path = GLOBAL_GET_CACHED(bool, "animation/warnings/check_invalid_track_paths");
 	bool check_angle_interpolation = GLOBAL_GET_CACHED(bool, "animation/warnings/check_angle_interpolation_type_conflicting");
@@ -954,7 +954,7 @@ bool AnimationMixer::_update_caches() {
 		}
 	}
 
-	List<Animation::TypeHash> to_delete;
+	LocalVector<Animation::TypeHash> to_delete;
 
 	for (const KeyValue<Animation::TypeHash, TrackCache *> &K : track_cache) {
 		if (K.value->setup_pass != setup_pass) {
@@ -962,11 +962,9 @@ bool AnimationMixer::_update_caches() {
 		}
 	}
 
-	while (to_delete.front()) {
-		Animation::TypeHash thash = to_delete.front()->get();
+	for (const Animation::TypeHash &thash : to_delete) {
 		memdelete(track_cache[thash]);
 		track_cache.erase(thash);
-		to_delete.pop_front();
 	}
 
 	track_map.clear();
@@ -1631,8 +1629,8 @@ void AnimationMixer::_blend_process(double p_delta, bool p_update_only) {
 								t_obj->set_indexed(t->subpath, value);
 							}
 						} else {
-							List<int> indices;
-							a->track_get_key_indices_in_range(i, time, delta, &indices, looped_flag);
+							LocalVector<int> indices;
+							a->track_get_key_indices_in_range(i, time, delta, indices, looped_flag);
 							for (int &F : indices) {
 								t->use_discrete = true;
 								Variant value = a->track_get_key_value(i, F);
@@ -1664,8 +1662,8 @@ void AnimationMixer::_blend_process(double p_delta, bool p_update_only) {
 						Vector<Variant> params = a->method_track_get_params(i, idx);
 						_call_object(t->object_id, method, params, callback_mode_method == ANIMATION_CALLBACK_MODE_METHOD_DEFERRED);
 					} else {
-						List<int> indices;
-						a->track_get_key_indices_in_range(i, time, delta, &indices, looped_flag);
+						LocalVector<int> indices;
+						a->track_get_key_indices_in_range(i, time, delta, indices, looped_flag);
 						for (int &F : indices) {
 							StringName method = a->method_track_get_name(i, F);
 							Vector<Variant> params = a->method_track_get_params(i, F);
@@ -1712,10 +1710,10 @@ void AnimationMixer::_blend_process(double p_delta, bool p_update_only) {
 							map.erase(idx);
 						}
 					} else {
-						List<int> to_play;
-						a->track_get_key_indices_in_range(i, time, delta, &to_play, looped_flag);
+						LocalVector<int> to_play;
+						a->track_get_key_indices_in_range(i, time, delta, to_play, looped_flag);
 						if (to_play.size()) {
-							idx = to_play.back()->get();
+							idx = to_play.back();
 						}
 					}
 					if (idx < 0) {
@@ -1827,10 +1825,10 @@ void AnimationMixer::_blend_process(double p_delta, bool p_update_only) {
 						}
 					} else {
 						// Find stuff to play.
-						List<int> to_play;
-						a->track_get_key_indices_in_range(i, time, delta, &to_play, looped_flag);
+						LocalVector<int> to_play;
+						a->track_get_key_indices_in_range(i, time, delta, to_play, looped_flag);
 						if (to_play.size()) {
-							int idx = to_play.back()->get();
+							int idx = to_play.back();
 							StringName anim_name = a->animation_track_get_key_animation(i, idx);
 							if (String(anim_name) == "[stop]" || !player2->has_animation(anim_name)) {
 								if (playing_caches.has(t)) {
@@ -2371,20 +2369,16 @@ void AnimationMixer::_notification(int p_what) {
 }
 
 #ifdef TOOLS_ENABLED
-void AnimationMixer::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void AnimationMixer::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0) {
 		if (pf == "get_animation" || pf == "has_animation") {
-			List<StringName> al;
-			get_animation_list(&al);
-			for (const StringName &name : al) {
-				r_options->push_back(String(name).quote());
+			for (const StringName &name : get_animation_list()) {
+				r_options.push_back(String(name).quote());
 			}
 		} else if (pf == "get_animation_library" || pf == "has_animation_library" || pf == "remove_animation_library" || pf == "rename_animation_library") {
-			List<StringName> al;
-			get_animation_library_list(&al);
-			for (const StringName &name : al) {
-				r_options->push_back(String(name).quote());
+			for (const StringName &name : get_animation_library_list()) {
+				r_options.push_back(String(name).quote());
 			}
 		}
 	}

@@ -534,8 +534,8 @@ void SceneTreeEditor::_update_node(Node *p_node, TreeItem *p_item, bool p_part_o
 		if (num_groups >= 1) {
 			msg_temp += TTRN("Node is in this group:", "Node is in the following groups:", num_groups) + "\n";
 
-			List<GroupInfo> groups;
-			p_node->get_groups(&groups);
+			LocalVector<GroupInfo> groups;
+			p_node->get_groups(groups);
 			for (const GroupInfo &E : groups) {
 				if (E.persistent) {
 					msg_temp += String::utf8("•  ") + String(E.name) + "\n";
@@ -1180,8 +1180,8 @@ bool SceneTreeEditor::_item_matches_all_terms(TreeItem *p_item, const PackedStri
 						return false;
 					}
 				} else {
-					List<Node::GroupInfo> group_info_list;
-					node->get_groups(&group_info_list);
+					LocalVector<Node::GroupInfo> group_info_list;
+					node->get_groups(group_info_list);
 
 					bool term_in_groups = false;
 					for (const Node::GroupInfo &group_info : group_info_list) {
@@ -1653,7 +1653,7 @@ void SceneTreeEditor::_edited() {
 	ERR_FAIL_NULL(edited);
 
 	if (is_scene_tree_dock && tree->get_next_selected(which)) {
-		List<Node *> nodes_to_rename;
+		LocalVector<Node *> nodes_to_rename;
 		for (TreeItem *item = which; item; item = tree->get_next_selected(item)) {
 			Node *n = get_node(item->get_metadata(0));
 			ERR_FAIL_NULL(n);
@@ -1662,7 +1662,7 @@ void SceneTreeEditor::_edited() {
 		ERR_FAIL_COND(nodes_to_rename.is_empty());
 
 		EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
-		undo_redo->create_action(TTR("Rename Nodes"), UndoRedo::MERGE_DISABLE, nodes_to_rename.front()->get(), true);
+		undo_redo->create_action(TTR("Rename Nodes"), UndoRedo::MERGE_DISABLE, nodes_to_rename[0], true);
 
 		TreeItem *item = which;
 		String new_name = edited->get_text(0);

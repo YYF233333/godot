@@ -51,7 +51,7 @@ class DependencyEditor : public AcceptDialog {
 
 	String replacing;
 	String editing;
-	List<String> missing;
+	LocalVector<String> missing;
 
 	void _fix_and_find(EditorFileSystemDirectory *efsd, HashMap<String, HashMap<String, String>> &candidates);
 
@@ -179,8 +179,8 @@ class OrphanResourcesDialog : public ConfirmationDialog {
 
 	bool _fill_owners(EditorFileSystemDirectory *efsd, HashMap<String, int> &refs, TreeItem *p_parent);
 
-	List<String> paths;
-	void _find_to_delete(TreeItem *p_item, List<String> &r_paths);
+	LocalVector<String> paths;
+	void _find_to_delete(TreeItem *p_item, LocalVector<String> &r_paths);
 	void _delete_confirm();
 	void _button_pressed(Object *p_item, int p_column, int p_id, MouseButton p_button);
 

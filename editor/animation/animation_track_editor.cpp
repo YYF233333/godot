@@ -646,9 +646,7 @@ void AnimationTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) const
 			if (root_path) {
 				AnimationPlayer *ap = Object::cast_to<AnimationPlayer>(root_path->get_node_or_null(animation->track_get_path(track)));
 				if (ap) {
-					List<StringName> anims;
-					ap->get_animation_list(&anims);
-					for (const StringName &E : anims) {
+					for (const StringName &E : ap->get_animation_list()) {
 						if (!animations.is_empty()) {
 							animations += ",";
 						}
@@ -727,7 +725,7 @@ void AnimationMultiTrackKeyEdit::_key_ofs_changed(const Ref<Animation> &p_anim, 
 		return;
 	}
 
-	for (const KeyValue<int, List<float>> &E : key_ofs_map) {
+	for (const KeyValue<int, LocalVector<float>> &E : key_ofs_map) {
 		int key = 0;
 		for (const float &key_ofs : E.value) {
 			if (from != key_ofs) {
@@ -736,7 +734,7 @@ void AnimationMultiTrackKeyEdit::_key_ofs_changed(const Ref<Animation> &p_anim, 
 			}
 
 			int track = E.key;
-			key_ofs_map[track].get(key) = to;
+			key_ofs_map[track][key] = to;
 
 			if (setting) {
 				return;
@@ -752,7 +750,7 @@ void AnimationMultiTrackKeyEdit::_key_ofs_changed(const Ref<Animation> &p_anim, 
 bool AnimationMultiTrackKeyEdit::_set(const StringName &p_name, const Variant &p_value) {
 	bool update_obj = false;
 	bool change_notify_deserved = false;
-	for (const KeyValue<int, List<float>> &E : key_ofs_map) {
+	for (const KeyValue<int, LocalVector<float>> &E : key_ofs_map) {
 		int track = E.key;
 		for (const float &key_ofs : E.value) {
 			int key = animation->track_find_key(track, key_ofs, Animation::FIND_MODE_APPROX);
@@ -1009,7 +1007,7 @@ bool AnimationMultiTrackKeyEdit::_set(const StringName &p_name, const Variant &p
 }
 
 bool AnimationMultiTrackKeyEdit::_get(const StringName &p_name, Variant &r_ret) const {
-	for (const KeyValue<int, List<float>> &E : key_ofs_map) {
+	for (const KeyValue<int, LocalVector<float>> &E : key_ofs_map) {
 		int track = E.key;
 		for (const float &key_ofs : E.value) {
 			int key = animation->track_find_key(track, key_ofs, Animation::FIND_MODE_APPROX);
@@ -1137,7 +1135,7 @@ void AnimationMultiTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) 
 
 	bool same_track_type = true;
 	bool same_key_type = true;
-	for (const KeyValue<int, List<float>> &E : key_ofs_map) {
+	for (const KeyValue<int, LocalVector<float>> &E : key_ofs_map) {
 		int track = E.key;
 		ERR_FAIL_INDEX(track, animation->get_track_count());
 
@@ -1252,9 +1250,7 @@ void AnimationMultiTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) 
 				if (root_path) {
 					AnimationPlayer *ap = Object::cast_to<AnimationPlayer>(root_path->get_node_or_null(animation->track_get_path(first_track)));
 					if (ap) {
-						List<StringName> anims;
-						ap->get_animation_list(&anims);
-						for (const StringName &anim : anims) {
+						for (const StringName &anim : ap->get_animation_list()) {
 							if (!animations.is_empty()) {
 								animations += ",";
 							}
@@ -4255,10 +4251,8 @@ void AnimationTrackEditor::_animation_track_remove_request(int p_track, Ref<Anim
 					if (reset->track_get_path(i) == p_from_animation->track_get_path(p_track)) {
 						// Check if the reset track isn't used by other animations.
 						bool used = false;
-						List<StringName> animation_list;
-						player->get_animation_list(&animation_list);
 
-						for (const StringName &anim_name : animation_list) {
+						for (const StringName &anim_name : player->get_animation_list()) {
 							Ref<Animation> anim = player->get_animation(anim_name);
 							if (anim == p_from_animation || anim == reset) {
 								continue;
@@ -4479,13 +4473,13 @@ void AnimationTrackEditor::_insert_track(bool p_reset_wanted, bool p_create_bezi
 
 	TrackIndices next_tracks(animation.ptr(), reset_anim.ptr());
 	bool advance = false;
-	while (insert_data.size()) {
-		if (insert_data.front()->get().advance) {
+	for (const InsertData &E : insert_data) {
+		if (E.advance) {
 			advance = true;
 		}
-		next_tracks = _confirm_insert(insert_data.front()->get(), next_tracks, p_reset_wanted, reset_anim, p_create_beziers);
-		insert_data.pop_front();
+		next_tracks = _confirm_insert(E, next_tracks, p_reset_wanted, reset_anim, p_create_beziers);
 	}
+	insert_data.clear();
 
 	undo_redo->commit_action();
 
@@ -4819,13 +4813,13 @@ void AnimationTrackEditor::_confirm_insert_list() {
 
 	TrackIndices next_tracks(animation.ptr(), reset_anim.ptr());
 	bool advance = false;
-	while (insert_data.size()) {
-		if (insert_data.front()->get().advance) {
+	for (const InsertData &E : insert_data) {
+		if (E.advance) {
 			advance = true;
 		}
-		next_tracks = _confirm_insert(insert_data.front()->get(), next_tracks, create_reset, reset_anim, insert_confirm_bezier->is_pressed());
-		insert_data.pop_front();
+		next_tracks = _confirm_insert(E, next_tracks, create_reset, reset_anim, insert_confirm_bezier->is_pressed());
 	}
+	insert_data.clear();
 
 	undo_redo->commit_action();
 
@@ -6044,8 +6038,8 @@ void AnimationTrackEditor::_add_method_key(const String &p_method) {
 	Node *base = root->get_node_or_null(animation->track_get_path(insert_key_from_track_call_track));
 	ERR_FAIL_NULL(base);
 
-	List<MethodInfo> minfo;
-	base->get_method_list(&minfo);
+	LocalVector<MethodInfo> minfo;
+	base->get_method_list(minfo);
 
 	for (const MethodInfo &E : minfo) {
 		if (E.name == p_method) {
@@ -6201,7 +6195,7 @@ void AnimationTrackEditor::_update_key_edit() {
 		multi_key_edit->animation_read_only = read_only;
 		multi_key_edit->editor = this;
 
-		RBMap<int, List<float>> key_ofs_map;
+		RBMap<int, LocalVector<float>> key_ofs_map;
 		RBMap<int, NodePath> base_map;
 		int first_track = -1;
 		for (const KeyValue<SelectedKey, KeyInfo> &E : selection) {
@@ -6211,7 +6205,7 @@ void AnimationTrackEditor::_update_key_edit() {
 			}
 
 			if (!key_ofs_map.has(track)) {
-				key_ofs_map[track] = List<float>();
+				key_ofs_map[track] = LocalVector<float>();
 				base_map[track] = NodePath();
 			}
 
@@ -6264,7 +6258,7 @@ void AnimationTrackEditor::_move_selection_commit() {
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 	undo_redo->create_action(TTR("Animation Move Keys"));
 
-	List<_AnimMoveRestore> to_restore;
+	LocalVector<_AnimMoveRestore> to_restore;
 
 	float motion = moving_selection_offset;
 	// 1 - remove the keys.
@@ -6578,7 +6572,7 @@ void AnimationTrackEditor::_anim_duplicate_keys(float p_ofs, bool p_ofs_valid, i
 		EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 		undo_redo->create_action(TTR("Animation Duplicate Keys"));
 
-		List<Pair<int, float>> new_selection_values;
+		LocalVector<Pair<int, float>> new_selection_values;
 
 		for (RBMap<SelectedKey, KeyInfo>::Element *E = selection.back(); E; E = E->prev()) {
 			const SelectedKey &sk = E->key();
@@ -6727,7 +6721,8 @@ void AnimationTrackEditor::_anim_paste_keys(float p_ofs, bool p_ofs_valid, int p
 
 		EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 		undo_redo->create_action(TTR("Animation Paste Keys"));
-		List<Pair<int, float>> new_selection_values;
+		LocalVector<Pair<int, float>> new_selection_values;
+		new_selection_values.reserve(key_clipboard.keys.size());
 
 		for (int i = 0; i < key_clipboard.keys.size(); i++) {
 			const KeyClipboard::Key key = key_clipboard.keys[i];
@@ -7113,7 +7108,7 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 			EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 			undo_redo->create_action(TTR("Animation Scale Keys"));
 
-			List<_AnimMoveRestore> to_restore;
+			LocalVector<_AnimMoveRestore> to_restore;
 
 			// 1 - Remove the keys.
 			for (RBMap<SelectedKey, KeyInfo>::Element *E = selection.back(); E; E = E->prev()) {
@@ -7638,9 +7633,7 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 		} break;
 		case EDIT_CLEAN_UP_ANIMATION_CONFIRM: {
 			if (cleanup_all->is_pressed()) {
-				List<StringName> names;
-				AnimationPlayerEditor::get_singleton()->get_player()->get_animation_list(&names);
-				for (const StringName &E : names) {
+				for (const StringName &E : AnimationPlayerEditor::get_singleton()->get_player()->get_animation_list()) {
 					_cleanup_animation(AnimationPlayerEditor::get_singleton()->get_player()->get_animation(E));
 				}
 			} else {

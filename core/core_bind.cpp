@@ -80,8 +80,8 @@ Ref<Resource> ResourceLoader::load(const String &p_path, const String &p_type_hi
 }
 
 Vector<String> ResourceLoader::get_recognized_extensions_for_type(const String &p_type) {
-	List<String> exts;
-	::ResourceLoader::get_recognized_extensions_for_type(p_type, &exts);
+	LocalVector<String> exts;
+	::ResourceLoader::get_recognized_extensions_for_type(p_type, exts);
 	Vector<String> ret;
 	for (const String &E : exts) {
 		ret.push_back(E);
@@ -103,8 +103,8 @@ void ResourceLoader::set_abort_on_missing_resources(bool p_abort) {
 }
 
 PackedStringArray ResourceLoader::get_dependencies(const String &p_path) {
-	List<String> deps;
-	::ResourceLoader::get_dependencies(p_path, &deps);
+	LocalVector<String> deps;
+	::ResourceLoader::get_dependencies(p_path, deps);
 
 	PackedStringArray ret;
 	for (const String &E : deps) {
@@ -176,8 +176,8 @@ Error ResourceSaver::set_uid(const String &p_path, ResourceUID::ID p_uid) {
 }
 
 Vector<String> ResourceSaver::get_recognized_extensions(const Ref<Resource> &p_resource) {
-	List<String> exts;
-	::ResourceSaver::get_recognized_extensions(p_resource, &exts);
+	LocalVector<String> exts;
+	::ResourceSaver::get_recognized_extensions(p_resource, exts);
 	Vector<String> ret;
 	for (const String &E : exts) {
 		ret.push_back(E);
@@ -1697,8 +1697,8 @@ int ClassDB::class_get_method_argument_count(const StringName &p_class, const St
 }
 
 TypedArray<Dictionary> ClassDB::class_get_method_list(const StringName &p_class, bool p_no_inheritance) const {
-	List<MethodInfo> methods;
-	::ClassDB::get_method_list(p_class, &methods, p_no_inheritance);
+	LocalVector<MethodInfo> methods;
+	::ClassDB::get_method_list(p_class, methods, p_no_inheritance);
 	TypedArray<Dictionary> ret;
 
 	for (const MethodInfo &E : methods) {
@@ -1732,8 +1732,8 @@ Variant ClassDB::class_call_static(const Variant **p_arguments, int p_argcount, 
 }
 
 PackedStringArray ClassDB::class_get_integer_constant_list(const StringName &p_class, bool p_no_inheritance) const {
-	List<String> constants;
-	::ClassDB::get_integer_constant_list(p_class, &constants, p_no_inheritance);
+	LocalVector<String> constants;
+	::ClassDB::get_integer_constant_list(p_class, constants, p_no_inheritance);
 
 	PackedStringArray ret;
 	ret.resize(constants.size());
@@ -1763,8 +1763,8 @@ bool ClassDB::class_has_enum(const StringName &p_class, const StringName &p_name
 }
 
 PackedStringArray ClassDB::class_get_enum_list(const StringName &p_class, bool p_no_inheritance) const {
-	List<StringName> enums;
-	::ClassDB::get_enum_list(p_class, &enums, p_no_inheritance);
+	LocalVector<StringName> enums;
+	::ClassDB::get_enum_list(p_class, enums, p_no_inheritance);
 
 	PackedStringArray ret;
 	ret.resize(enums.size());
@@ -1777,8 +1777,8 @@ PackedStringArray ClassDB::class_get_enum_list(const StringName &p_class, bool p
 }
 
 PackedStringArray ClassDB::class_get_enum_constants(const StringName &p_class, const StringName &p_enum, bool p_no_inheritance) const {
-	List<StringName> constants;
-	::ClassDB::get_enum_constants(p_class, p_enum, &constants, p_no_inheritance);
+	LocalVector<StringName> constants;
+	::ClassDB::get_enum_constants(p_class, p_enum, constants, p_no_inheritance);
 
 	PackedStringArray ret;
 	ret.resize(constants.size());
@@ -1803,7 +1803,7 @@ bool ClassDB::is_class_enabled(const StringName &p_class) const {
 }
 
 #ifdef TOOLS_ENABLED
-void ClassDB::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void ClassDB::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	bool first_argument_is_class = false;
 	if (p_idx == 0) {
@@ -1821,7 +1821,7 @@ void ClassDB::get_argument_options(const StringName &p_function, int p_idx, List
 		::ClassDB::get_class_list(classes);
 		for (const StringName &E : classes) {
 			if (::ClassDB::is_class_exposed(E)) {
-				r_options->push_back(E.operator String().quote());
+				r_options.push_back(E.operator String().quote());
 			}
 		}
 	}
@@ -2009,11 +2009,9 @@ void Engine::unregister_singleton(const StringName &p_name) {
 }
 
 Vector<String> Engine::get_singleton_list() const {
-	List<::Engine::Singleton> singletons;
-	::Engine::get_singleton()->get_singletons(&singletons);
 	Vector<String> ret;
-	for (const ::Engine::Singleton &E : singletons) {
-		ret.push_back(E.name);
+	for (const ::Engine::Singleton &s : ::Engine::get_singleton()->get_singletons()) {
+		ret.push_back(s.name);
 	}
 	return ret;
 }
@@ -2077,11 +2075,11 @@ bool Engine::is_printing_error_messages() const {
 }
 
 #ifdef TOOLS_ENABLED
-void Engine::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void Engine::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0 && (pf == "has_singleton" || pf == "get_singleton" || pf == "unregister_singleton")) {
 		for (const String &E : get_singleton_list()) {
-			r_options->push_back(E.quote());
+			r_options.push_back(E.quote());
 		}
 	}
 	Object::get_argument_options(p_function, p_idx, r_options);

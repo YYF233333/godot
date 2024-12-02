@@ -32,7 +32,7 @@
 
 #include "core/string/string_name.h"
 #include "core/templates/hash_map.h"
-#include "core/templates/list.h"
+#include "core/templates/local_vector.h"
 
 class CoreConstants {
 public:
@@ -47,6 +47,6 @@ public:
 	static bool is_global_enum(const StringName &p_enum);
 	static void get_enum_values(const StringName &p_enum, HashMap<StringName, int64_t> *r_values);
 #ifdef TOOLS_ENABLED
-	static void get_global_enums(List<StringName> *r_values);
+	static LocalVector<StringName> get_global_enums();
 #endif
 };

@@ -65,8 +65,8 @@ public:
 	static ResourceFormatImporter *get_singleton() { return singleton; }
 	virtual Ref<Resource> load(const String &p_path, const String &p_original_path = "", Error *r_error = nullptr, bool p_use_sub_threads = false, float *r_progress = nullptr, CacheMode p_cache_mode = CACHE_MODE_REUSE) override;
 	Ref<Resource> load_internal(const String &p_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode, bool p_silence_errors);
-	virtual void get_recognized_extensions(List<String> *p_extensions) const override;
-	virtual void get_recognized_extensions_for_type(const String &p_type, List<String> *p_extensions) const override;
+	virtual void get_recognized_extensions(LocalVector<String> &p_extensions) const override;
+	virtual void get_recognized_extensions_for_type(const String &p_type, LocalVector<String> &p_extensions) const override;
 	virtual bool recognize_path(const String &p_path, const String &p_for_type = String()) const override;
 	virtual bool handles_type(const String &p_type) const override;
 	virtual String get_resource_type(const String &p_path) const override;
@@ -74,7 +74,7 @@ public:
 	virtual bool has_custom_uid_support() const override;
 	virtual Variant get_resource_metadata(const String &p_path) const;
 	virtual bool is_import_valid(const String &p_path) const override;
-	virtual void get_dependencies(const String &p_path, List<String> *p_dependencies, bool p_add_types = false) override;
+	virtual void get_dependencies(const String &p_path, LocalVector<String> &p_dependencies, bool p_add_types = false) override;
 	virtual bool is_imported(const String &p_path) const override { return recognize_path(p_path); }
 	virtual String get_import_group_file(const String &p_path) const override;
 	virtual void get_classes_used(const String &p_path, HashSet<StringName> *r_classes) override;
@@ -87,15 +87,15 @@ public:
 	Error get_import_order_threads_and_importer(const String &p_path, int &r_order, bool &r_can_threads, String &r_importer) const;
 
 	String get_internal_resource_path(const String &p_path) const;
-	void get_internal_resource_path_list(const String &p_path, List<String> *r_paths);
+	LocalVector<String> get_internal_resource_path_list(const String &p_path);
 
 	void add_importer(const Ref<ResourceImporter> &p_importer, bool p_first_priority = false);
 
 	void remove_importer(const Ref<ResourceImporter> &p_importer) { importers.erase(p_importer); }
 	Ref<ResourceImporter> get_importer_by_name(const String &p_name) const;
 	Ref<ResourceImporter> get_importer_by_file(const String &p_file) const;
-	void get_importers_for_file(const String &p_file, List<Ref<ResourceImporter>> *r_importers);
-	void get_importers(List<Ref<ResourceImporter>> *r_importers);
+	LocalVector<Ref<ResourceImporter>> get_importers_for_file(const String &p_file);
+	Vector<Ref<ResourceImporter>> get_importers();
 
 	bool are_import_settings_valid(const String &p_path) const;
 	String get_import_settings_hash() const;
@@ -119,7 +119,7 @@ public:
 
 	virtual String get_importer_name() const = 0;
 	virtual String get_visible_name() const = 0;
-	virtual void get_recognized_extensions(List<String> *p_extensions) const = 0;
+	virtual void get_recognized_extensions(LocalVector<String> &p_extensions) const = 0;
 	virtual String get_save_extension() const = 0;
 	virtual String get_resource_type() const = 0;
 	virtual float get_priority() const { return 1.0; }
@@ -148,12 +148,12 @@ public:
 	virtual int get_preset_count() const { return 0; }
 	virtual String get_preset_name(int p_idx) const { return String(); }
 
-	virtual void get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset = 0) const = 0;
+	virtual void get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset = 0) const = 0;
 	virtual bool get_option_visibility(const String &p_path, const String &p_option, const HashMap<StringName, Variant> &p_options) const = 0;
 	virtual void handle_compatibility_options(HashMap<StringName, Variant> &p_import_params) const {}
 	virtual String get_option_group_file() const { return String(); }
 
-	virtual Error import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files = nullptr, Variant *r_metadata = nullptr) = 0;
+	virtual Error import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata = nullptr) = 0;
 	virtual bool can_import_threaded() const { return false; }
 	virtual void import_threaded_begin() {}
 	virtual void import_threaded_end() {}

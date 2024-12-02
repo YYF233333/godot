@@ -127,10 +127,13 @@ Vector<String> ResourcePreloader::_get_resource_list() const {
 	return res;
 }
 
-void ResourcePreloader::get_resource_list(List<StringName> *p_list) {
+LocalVector<StringName> ResourcePreloader::get_resource_list() {
+	LocalVector<StringName> p_list;
+	p_list.reserve(resources.size());
 	for (const KeyValue<StringName, Ref<Resource>> &E : resources) {
-		p_list->push_back(E.key);
+		p_list.push_back(E.key);
 	}
+	return p_list;
 }
 
 void ResourcePreloader::_bind_methods() {

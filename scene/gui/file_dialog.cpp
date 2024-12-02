@@ -852,7 +852,7 @@ void FileDialog::update_file_list() {
 
 	String filename_filter_lower = file_name_filter.to_lower();
 
-	List<String> patterns;
+	LocalVector<String> patterns;
 	// Build filter.
 	if (filter->get_selected() == filter->get_item_count() - 1) {
 		// Match all.

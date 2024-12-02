@@ -618,7 +618,7 @@ void ProjectSettingsEditor::_update_action_map_editor() {
 		action_info.editable = true;
 		action_info.name = display_name;
 
-		const bool is_builtin_input = ProjectSettings::get_singleton()->get_input_presets().find(property_name) != nullptr;
+		const bool is_builtin_input = ProjectSettings::get_singleton()->get_input_presets().find(property_name) != -1;
 		if (is_builtin_input) {
 			action_info.editable = false;
 			action_info.icon = builtin_icon;

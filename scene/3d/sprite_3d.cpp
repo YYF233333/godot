@@ -1067,8 +1067,7 @@ void AnimatedSprite3D::_validate_property(PropertyInfo &p_property) const {
 		return;
 	}
 	if (p_property.name == "animation") {
-		List<StringName> names;
-		frames->get_animation_list(&names);
+		LocalVector<StringName> names = frames->get_animation_list();
 		names.sort_custom<StringName::AlphCompare>();
 
 		bool current_found = false;
@@ -1214,14 +1213,13 @@ void AnimatedSprite3D::set_sprite_frames(const Ref<SpriteFrames> &p_frames) {
 	if (frames.is_valid()) {
 		frames->connect(CoreStringName(changed), callable_mp(this, &AnimatedSprite3D::_res_changed));
 
-		List<StringName> al;
-		frames->get_animation_list(&al);
+		LocalVector<StringName> al = frames->get_animation_list();
 		if (al.is_empty()) {
 			set_animation(StringName());
 			autoplay = String();
 		} else {
 			if (!frames->has_animation(animation)) {
-				set_animation(al.front()->get());
+				set_animation(al[0]);
 			}
 			if (!frames->has_animation(autoplay)) {
 				autoplay = String();
@@ -1471,14 +1469,12 @@ PackedStringArray AnimatedSprite3D::get_configuration_warnings() const {
 }
 
 #ifdef TOOLS_ENABLED
-void AnimatedSprite3D::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void AnimatedSprite3D::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0 && frames.is_valid()) {
 		if (pf == "play" || pf == "play_backwards" || pf == "set_animation" || pf == "set_autoplay") {
-			List<StringName> al;
-			frames->get_animation_list(&al);
-			for (const StringName &name : al) {
-				r_options->push_back(String(name).quote());
+			for (const StringName &name : frames->get_animation_list()) {
+				r_options.push_back(String(name).quote());
 			}
 		}
 	}

@@ -3315,8 +3315,8 @@ void EditorPropertyResource::_set_read_only(bool p_read_only) {
 void EditorPropertyResource::_resource_selected(const Ref<Resource> &p_resource, bool p_inspect) {
 	if (p_resource->is_built_in() && !p_resource->get_path().is_empty()) {
 		String parent = p_resource->get_path().get_slice("::", 0);
-		List<String> extensions;
-		ResourceLoader::get_recognized_extensions_for_type("PackedScene", &extensions);
+		LocalVector<String> extensions;
+		ResourceLoader::get_recognized_extensions_for_type("PackedScene", extensions);
 
 		if (p_inspect) {
 			if (extensions.find(parent.get_extension()) && (!EditorNode::get_singleton()->get_edited_scene() || EditorNode::get_singleton()->get_edited_scene()->get_scene_file_path() != parent)) {
@@ -3837,7 +3837,7 @@ static EditorProperty *get_input_action_editor(const String &p_hint_text, bool i
 	ProjectSettings::get_singleton()->get_property_list(&pinfo);
 	Vector<String> hints = p_hint_text.remove_char(' ').split(",", false);
 
-	HashMap<String, List<Ref<InputEvent>>> builtins = InputMap::get_singleton()->get_builtins();
+	HashMap<String, LocalVector<Ref<InputEvent>>> builtins = InputMap::get_singleton()->get_builtins();
 	bool show_builtin = hints.has("show_builtin");
 
 	for (const PropertyInfo &pi : pinfo) {

@@ -142,7 +142,7 @@ class SceneTreeDock : public EditorDock {
 	LocalVector<ObjectID> node_previous_selection;
 	bool update_script_button_queued = false;
 
-	List<Node *> node_clipboard;
+	LocalVector<Node *> node_clipboard;
 	HashSet<Node *> node_clipboard_edited_scene_owned;
 	String clipboard_source_scene;
 	HashMap<String, HashMap<Node *, HashMap<Ref<Resource>, Ref<Resource>>>> clipboard_resource_remap;
@@ -291,7 +291,7 @@ class SceneTreeDock : public EditorDock {
 	void _create_remap_for_resource(Ref<Resource> p_resource, HashMap<Ref<Resource>, Ref<Resource>> &r_remap);
 
 	void _list_all_subresources(PopupMenu *p_menu);
-	void _gather_resources(Node *p_node, List<Pair<Ref<Resource>, Node *>> &r_resources);
+	void _gather_resources(Node *p_node, LocalVector<Pair<Ref<Resource>, Node *>> &r_resources);
 	void _edit_subresource(int p_idx, const PopupMenu *p_from_menu);
 
 	bool profile_allow_editing = true;
@@ -353,8 +353,8 @@ public:
 	void open_add_child_dialog();
 	void open_instance_child_dialog();
 
-	List<Node *> paste_nodes(bool p_paste_as_sibling = false);
-	List<Node *> get_node_clipboard() const;
+	LocalVector<Node *> paste_nodes(bool p_paste_as_sibling = false);
+	LocalVector<Node *> get_node_clipboard() const;
 
 	ScriptCreateDialog *get_script_create_dialog() {
 		return script_create_dialog;

@@ -1067,7 +1067,7 @@ Error ProjectSettings::save() {
 	return error;
 }
 
-Error ProjectSettings::_save_settings_binary(const String &p_file, const RBMap<String, List<String>> &p_props, const CustomMap &p_custom, const String &p_custom_features) {
+Error ProjectSettings::_save_settings_binary(const String &p_file, const RBMap<String, LocalVector<String>> &p_props, const CustomMap &p_custom, const String &p_custom_features) {
 	Error err;
 	Ref<FileAccess> file = FileAccess::open(p_file, FileAccess::WRITE, &err);
 	ERR_FAIL_COND_V_MSG(err != OK, err, vformat("Couldn't save project.binary at '%s'.", p_file));
@@ -1077,7 +1077,7 @@ Error ProjectSettings::_save_settings_binary(const String &p_file, const RBMap<S
 
 	int count = 0;
 
-	for (const KeyValue<String, List<String>> &E : p_props) {
+	for (const KeyValue<String, LocalVector<String>> &E : p_props) {
 		count += E.value.size();
 	}
 
@@ -1104,7 +1104,7 @@ Error ProjectSettings::_save_settings_binary(const String &p_file, const RBMap<S
 		file->store_32(uint32_t(count));
 	}
 
-	for (const KeyValue<String, List<String>> &E : p_props) {
+	for (const KeyValue<String, LocalVector<String>> &E : p_props) {
 		for (const String &key : E.value) {
 			String k = key;
 			if (!E.key.is_empty()) {
@@ -1136,7 +1136,7 @@ Error ProjectSettings::_save_settings_binary(const String &p_file, const RBMap<S
 	return OK;
 }
 
-Error ProjectSettings::_save_settings_text(const String &p_file, const RBMap<String, List<String>> &p_props, const CustomMap &p_custom, const String &p_custom_features) {
+Error ProjectSettings::_save_settings_text(const String &p_file, const RBMap<String, LocalVector<String>> &p_props, const CustomMap &p_custom, const String &p_custom_features) {
 	Error err;
 	Ref<FileAccess> file = FileAccess::open(p_file, FileAccess::WRITE, &err);
 
@@ -1157,7 +1157,7 @@ Error ProjectSettings::_save_settings_text(const String &p_file, const RBMap<Str
 	}
 	file->store_string("\n");
 
-	for (const KeyValue<String, List<String>> &E : p_props) {
+	for (const KeyValue<String, LocalVector<String>> &E : p_props) {
 		if (E.key != p_props.begin()->key) {
 			file->store_string("\n");
 		}
@@ -1280,7 +1280,7 @@ Error ProjectSettings::save_custom(const String &p_path, const CustomMap &p_cust
 		vclist.insert(vc);
 	}
 
-	RBMap<String, List<String>> save_props;
+	RBMap<String, LocalVector<String>> save_props;
 
 	for (const _VCSort &E : vclist) {
 		String category = E.name;
@@ -1579,7 +1579,7 @@ const HashMap<StringName, HashSet<StringName>> &ProjectSettings::get_scene_group
 }
 
 #ifdef TOOLS_ENABLED
-void ProjectSettings::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void ProjectSettings::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0) {
 		if (pf == "has_setting" || pf == "set_setting" || pf == "get_setting" || pf == "get_setting_with_override" ||
@@ -1590,7 +1590,7 @@ void ProjectSettings::get_argument_options(const StringName &p_function, int p_i
 					continue;
 				}
 
-				r_options->push_back(String(E.key).quote());
+				r_options.push_back(String(E.key).quote());
 			}
 		}
 	}
@@ -1640,9 +1640,9 @@ void ProjectSettings::_bind_methods() {
 
 void ProjectSettings::_add_builtin_input_map() {
 	if (InputMap::get_singleton()) {
-		HashMap<String, List<Ref<InputEvent>>> builtins = InputMap::get_singleton()->get_builtins();
+		HashMap<String, LocalVector<Ref<InputEvent>>> builtins = InputMap::get_singleton()->get_builtins();
 
-		for (KeyValue<String, List<Ref<InputEvent>>> &E : builtins) {
+		for (KeyValue<String, LocalVector<Ref<InputEvent>>> &E : builtins) {
 			Array events;
 
 			// Convert list of input events into array

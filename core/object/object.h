@@ -903,7 +903,7 @@ public:
 
 	bool has_method(const StringName &p_method) const;
 	int get_method_argument_count(const StringName &p_method, bool *r_is_valid = nullptr) const;
-	void get_method_list(List<MethodInfo> *p_list) const;
+	void get_method_list(LocalVector<MethodInfo> &p_list) const;
 	Variant callv(const StringName &p_method, const Array &p_args);
 	virtual Variant callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 	virtual Variant call_const(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
@@ -953,7 +953,7 @@ public:
 	DEBUG_VIRTUAL void set_meta(const StringName &p_name, const Variant &p_value);
 	DEBUG_VIRTUAL void remove_meta(const StringName &p_name);
 	DEBUG_VIRTUAL Variant get_meta(const StringName &p_name, const Variant &p_default = Variant()) const;
-	DEBUG_VIRTUAL void get_meta_list(List<StringName> *p_list) const;
+	DEBUG_VIRTUAL LocalVector<StringName> get_meta_list() const;
 	DEBUG_VIRTUAL void merge_meta_from(const Object *p_src);
 
 #ifdef TOOLS_ENABLED
@@ -981,11 +981,11 @@ public:
 	DEBUG_VIRTUAL Error emit_signalp(const StringName &p_name, const Variant **p_args, int p_argcount);
 	DEBUG_VIRTUAL bool has_signal(const StringName &p_name) const;
 	DEBUG_VIRTUAL void get_signal_list(List<MethodInfo> *p_signals) const;
-	DEBUG_VIRTUAL void get_signal_connection_list(const StringName &p_signal, List<Connection> *p_connections) const;
-	DEBUG_VIRTUAL void get_all_signal_connections(List<Connection> *p_connections) const;
+	DEBUG_VIRTUAL void get_signal_connection_list(const StringName &p_signal, LocalVector<Connection> &p_connections) const;
+	DEBUG_VIRTUAL void get_all_signal_connections(LocalVector<Connection> &p_connections) const;
 	DEBUG_VIRTUAL int get_persistent_signal_connection_count() const;
 	DEBUG_VIRTUAL uint32_t get_signal_connection_flags(const StringName &p_name, const Callable &p_callable) const;
-	DEBUG_VIRTUAL void get_signals_connected_to_this(List<Connection> *p_connections) const;
+	DEBUG_VIRTUAL void get_signals_connected_to_this(LocalVector<Connection> &p_connections) const;
 
 	DEBUG_VIRTUAL Error connect(const StringName &p_signal, const Callable &p_callable, uint32_t p_flags = 0);
 	DEBUG_VIRTUAL void disconnect(const StringName &p_signal, const Callable &p_callable);
@@ -1018,7 +1018,7 @@ public:
 	virtual void set_translation_domain(const StringName &p_domain);
 
 #ifdef TOOLS_ENABLED
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const;
+	virtual void get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const;
 	void editor_set_section_unfold(const String &p_section, bool p_unfolded, bool p_initializing = false);
 	bool editor_is_section_unfolded(const String &p_section);
 	const HashSet<String> &editor_get_section_folding() const { return editor_section_folding; }

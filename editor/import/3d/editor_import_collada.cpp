@@ -53,7 +53,7 @@ struct ColladaImport {
 		//String path;
 		Node3D *node = nullptr;
 		int bone = -1;
-		List<int> anim_tracks;
+		LocalVector<int> anim_tracks;
 	};
 
 	bool found_ambient = false;
@@ -725,7 +725,7 @@ Error ColladaImport::_create_mesh_surfaces(bool p_optimize, Ref<ImporterMesh> &p
 		}
 
 		RBSet<Collada::Vertex> vertex_set; //vertex set will be the vertices
-		List<int> indices_list; //indices will be the indices
+		LocalVector<int> indices_list; //indices will be the indices
 
 		/**************************/
 		/* CREATE PRIMITIVE ARRAY */
@@ -1634,7 +1634,7 @@ void ColladaImport::create_animation(int p_clip, bool p_import_value_tracks) {
 
 		if (nm.anim_tracks.size() == 1) {
 			//use snapshot keys from anim track instead, because this was most likely exported baked
-			const Collada::AnimationTrack &at = collada.state.animation_tracks[nm.anim_tracks.front()->get()];
+			const Collada::AnimationTrack &at = collada.state.animation_tracks[nm.anim_tracks[0]];
 			snapshots.clear();
 			for (int i = 0; i < at.keys.size(); i++) {
 				snapshots.push_back(at.keys[i].time);
@@ -1796,11 +1796,11 @@ void ColladaImport::create_animation(int p_clip, bool p_import_value_tracks) {
 /*************************************** SCENE ***********************************/
 /*********************************************************************************/
 
-void EditorSceneFormatImporterCollada::get_extensions(List<String> *r_extensions) const {
-	r_extensions->push_back("dae");
+void EditorSceneFormatImporterCollada::get_extensions(LocalVector<String> &r_extensions) const {
+	r_extensions.push_back("dae");
 }
 
-Node *EditorSceneFormatImporterCollada::import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, List<String> *r_missing_deps, Error *r_err) {
+Node *EditorSceneFormatImporterCollada::import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, LocalVector<String> *r_missing_deps, Error *r_err) {
 	if (r_err) {
 		*r_err = OK;
 	}

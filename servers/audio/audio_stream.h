@@ -208,7 +208,7 @@ public:
 		}
 	};
 
-	virtual void get_parameter_list(List<Parameter> *r_parameters);
+	virtual void get_parameter_list(LocalVector<Parameter> &r_parameters);
 
 	virtual bool can_be_sampled() const { return false; }
 	virtual Ref<AudioSample> generate_sample() const;

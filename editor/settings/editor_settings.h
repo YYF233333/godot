@@ -99,7 +99,7 @@ private:
 
 	Ref<Resource> clipboard;
 	mutable HashMap<String, Ref<Shortcut>> shortcuts;
-	HashMap<String, List<Ref<InputEvent>>> builtin_action_overrides;
+	HashMap<String, LocalVector<Ref<InputEvent>>> builtin_action_overrides;
 
 	Vector<String> favorites;
 	HashMap<String, PackedStringArray> favorite_properties;
@@ -202,14 +202,14 @@ public:
 	bool is_shortcut(const String &p_path, const Ref<InputEvent> &p_event) const;
 	bool has_shortcut(const String &p_path) const;
 	Ref<Shortcut> get_shortcut(const String &p_path) const;
-	void get_shortcut_list(List<String> *r_shortcuts);
+	LocalVector<String> get_shortcut_list();
 
 	void set_builtin_action_override(const String &p_name, const TypedArray<InputEvent> &p_events);
 	const Array get_builtin_action_overrides(const String &p_name) const;
 
 	void notify_changes();
 
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	virtual void get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const override;
 
 	EditorSettings();
 };

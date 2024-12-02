@@ -548,7 +548,7 @@ void ProjectList::_scan_thread(void *p_scan_data) {
 
 	for (const String &base_path : scan_data->paths_to_scan) {
 		print_verbose(vformat("Scanning for projects in \"%s\".", base_path));
-		_scan_folder_recursive(base_path, &scan_data->found_projects, scan_data->scan_in_progress);
+		_scan_folder_recursive(base_path, scan_data->found_projects, scan_data->scan_in_progress);
 
 		if (!scan_data->scan_in_progress.is_set()) {
 			print_verbose("Scan aborted.");
@@ -911,15 +911,14 @@ void ProjectList::find_projects_multiple(const PackedStringArray &p_paths) {
 
 void ProjectList::load_project_list() {
 	_config.load(_config_path);
-	Vector<String> sections = _config.get_sections();
 
-	for (const String &path : sections) {
+	for (const String &path : _config.get_sections()) {
 		bool favorite = _config.get_value(path, "favorite", false);
 		_projects.push_back(load_project_data(path, favorite));
 	}
 }
 
-void ProjectList::_scan_folder_recursive(const String &p_path, List<String> *r_projects, const SafeFlag &p_scan_active) {
+void ProjectList::_scan_folder_recursive(const String &p_path, LocalVector<String> &r_projects, const SafeFlag &p_scan_active) {
 	if (!p_scan_active.is_set()) {
 		return;
 	}
@@ -938,7 +937,7 @@ void ProjectList::_scan_folder_recursive(const String &p_path, List<String> *r_p
 		if (da->current_is_dir() && n[0] != '.') {
 			_scan_folder_recursive(da->get_current_dir().path_join(n), r_projects, p_scan_active);
 		} else if (n == "project.godot") {
-			r_projects->push_back(da->get_current_dir());
+			r_projects.push_back(da->get_current_dir());
 		}
 		n = da->get_next();
 	}

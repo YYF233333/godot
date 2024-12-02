@@ -34,11 +34,11 @@
 #include "scene/animation/animation_player.h"
 #include "scene/resources/bone_map.h"
 
-void PostImportPluginSkeletonTrackOrganizer::get_internal_import_options(InternalImportCategory p_category, List<ResourceImporter::ImportOption> *r_options) {
+void PostImportPluginSkeletonTrackOrganizer::get_internal_import_options(InternalImportCategory p_category, LocalVector<ResourceImporter::ImportOption> &r_options) {
 	if (p_category == INTERNAL_IMPORT_CATEGORY_SKELETON_3D_NODE) {
-		r_options->push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::BOOL, "retarget/remove_tracks/except_bone_transform"), false));
-		r_options->push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::BOOL, "retarget/remove_tracks/unimportant_positions"), true));
-		r_options->push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::INT, "retarget/remove_tracks/unmapped_bones", PROPERTY_HINT_ENUM, "None,Remove,Separate Library"), 0));
+		r_options.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::BOOL, "retarget/remove_tracks/except_bone_transform"), false));
+		r_options.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::BOOL, "retarget/remove_tracks/unimportant_positions"), true));
+		r_options.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::INT, "retarget/remove_tracks/unmapped_bones", PROPERTY_HINT_ENUM, "None,Remove,Separate Library"), 0));
 	}
 }
 
@@ -69,13 +69,11 @@ void PostImportPluginSkeletonTrackOrganizer::internal_process(InternalImportCate
 		TypedArray<Node> nodes = p_base_scene->find_children("*", "AnimationPlayer");
 		while (nodes.size()) {
 			AnimationPlayer *ap = Object::cast_to<AnimationPlayer>(nodes.pop_back());
-			List<StringName> anims;
-			ap->get_animation_list(&anims);
 
 			Ref<AnimationLibrary> unmapped_al;
 			unmapped_al.instantiate();
 
-			for (const StringName &name : anims) {
+			for (const StringName &name : ap->get_animation_list()) {
 				Ref<Animation> anim = ap->get_animation(name);
 				int track_len = anim->get_track_count();
 				Vector<int> remove_indices;

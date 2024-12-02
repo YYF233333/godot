@@ -726,8 +726,8 @@ Ref<Resource> ResourceFormatDDS::load(const String &p_path, const String &p_orig
 	return _dds_load_from_file(p_path, r_error);
 }
 
-void ResourceFormatDDS::get_recognized_extensions(List<String> *p_extensions) const {
-	p_extensions->push_back("dds");
+void ResourceFormatDDS::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("dds");
 }
 
 bool ResourceFormatDDS::handles_type(const String &p_type) const {

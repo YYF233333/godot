@@ -288,7 +288,7 @@ void FileSystemDock::_create_tree(TreeItem *p_parent, EditorFileSystemDirectory 
 	// Create all items for the files in the subdirectory.
 	if (display_mode == DISPLAY_MODE_TREE_ONLY) {
 		// Build the list of the files to display.
-		List<FileInfo> file_list;
+		LocalVector<FileInfo> file_list;
 		for (int i = 0; i < p_dir->get_file_count(); i++) {
 			String file_type = p_dir->get_file_type(i);
 			if (_is_file_type_disabled_by_feature_profile(file_type)) {
@@ -359,11 +359,11 @@ Vector<String> FileSystemDock::get_uncollapsed_paths() const {
 		// BFS to find all uncollapsed paths of the resource directory.
 		TreeItem *res_subtree = root->get_first_child()->get_next();
 		if (res_subtree) {
-			List<TreeItem *> queue;
+			LocalVector<TreeItem *> queue;
 			queue.push_back(res_subtree);
 
 			while (!queue.is_empty()) {
-				TreeItem *ti = queue.back()->get();
+				TreeItem *ti = queue.back();
 				queue.pop_back();
 				if (!ti->is_collapsed() && ti->get_child_count() > 0) {
 					Variant path = ti->get_metadata(0);
@@ -915,8 +915,8 @@ bool FileSystemDock::_is_file_type_disabled_by_feature_profile(const StringName 
 	return false;
 }
 
-void FileSystemDock::_search(EditorFileSystemDirectory *p_path, List<FileInfo> *matches, int p_max_items) {
-	if (matches->size() > p_max_items) {
+void FileSystemDock::_search(EditorFileSystemDirectory *p_path, LocalVector<FileInfo> &matches, uint32_t p_max_items) {
+	if (matches.size() > p_max_items) {
 		return;
 	}
 
@@ -940,8 +940,8 @@ void FileSystemDock::_search(EditorFileSystemDirectory *p_path, List<FileInfo> *
 				continue;
 			}
 
-			matches->push_back(file_info);
-			if (matches->size() > p_max_items) {
+			matches.push_back(file_info);
+			if (matches.size() > p_max_items) {
 				return;
 			}
 		}
@@ -1008,7 +1008,7 @@ void FileSystemDock::_update_file_list(bool p_keep_selection) {
 	const Color default_folder_color = get_theme_color(SNAME("folder_icon_color"), SNAME("FileDialog"));
 
 	// Build the FileInfo list.
-	List<FileInfo> file_list;
+	LocalVector<FileInfo> file_list;
 	if (current_path == "Favorites") {
 		// Display the favorites.
 		Vector<String> favorites_list = EditorSettings::get_singleton()->get_favorites();
@@ -1076,7 +1076,7 @@ void FileSystemDock::_update_file_list(bool p_keep_selection) {
 		if (!searched_tokens.is_empty()) {
 			// Display the search results.
 			// Limit the number of results displayed to avoid an infinite loop.
-			_search(EditorFileSystem::get_singleton()->get_filesystem(), &file_list, 10000);
+			_search(EditorFileSystem::get_singleton()->get_filesystem(), file_list, 10000);
 		} else {
 			if (display_mode == DISPLAY_MODE_TREE_ONLY || always_show_folders) {
 				// Check for a folder color to inherit (if one is assigned).
@@ -1287,8 +1287,8 @@ void FileSystemDock::_select_file(const String &p_path, bool p_select_in_favorit
 		if (resource_type == "PackedScene" || resource_type == "AnimationLibrary") {
 			bool is_imported = false;
 			{
-				List<String> importer_exts;
-				ResourceImporterScene::get_scene_importer_extensions(&importer_exts);
+				LocalVector<String> importer_exts;
+				ResourceImporterScene::get_scene_importer_extensions(importer_exts);
 				String extension = fpath.get_extension();
 				for (const String &E : importer_exts) {
 					if (extension.nocasecmp_to(E) == 0) {
@@ -1600,8 +1600,8 @@ void FileSystemDock::_update_resource_paths_after_move(const HashMap<String, Str
 	}
 
 	// Rename all resources loaded, be it subresources or actual resources.
-	List<Ref<Resource>> cached;
-	ResourceCache::get_cached_resources(&cached);
+	LocalVector<Ref<Resource>> cached;
+	ResourceCache::get_cached_resources(cached);
 
 	for (Ref<Resource> &r : cached) {
 		String base_path = r->get_path();
@@ -3517,8 +3517,8 @@ void FileSystemDock::_file_and_folders_fill_popup(PopupMenu *p_popup, const Vect
 		}
 
 		{
-			List<String> resource_extensions;
-			ResourceFormatImporter::get_singleton()->get_recognized_extensions_for_type("Resource", &resource_extensions);
+			LocalVector<String> resource_extensions;
+			ResourceFormatImporter::get_singleton()->get_recognized_extensions_for_type("Resource", resource_extensions);
 			HashSet<String> extension_list;
 			for (const String &extension : resource_extensions) {
 				extension_list.insert(extension);

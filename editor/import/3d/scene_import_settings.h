@@ -102,7 +102,7 @@ class SceneImportSettingsDialog : public ConfirmationDialog {
 	Ref<SphereMesh> material_preview;
 
 	AnimationPlayer *animation_player = nullptr;
-	List<Skeleton3D *> skeletons;
+	LocalVector<Skeleton3D *> skeletons;
 	PanelContainer *animation_preview = nullptr;
 	HSlider *animation_slider = nullptr;
 	Button *animation_play_button = nullptr;

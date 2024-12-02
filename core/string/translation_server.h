@@ -170,7 +170,7 @@ public:
 	void load_project_translations(Ref<TranslationDomain> p_domain);
 
 #ifdef TOOLS_ENABLED
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	virtual void get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const override;
 #endif // TOOLS_ENABLED
 
 	TranslationServer();

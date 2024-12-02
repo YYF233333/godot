@@ -3758,7 +3758,7 @@ void EditorInspector::_parse_added_editors(VBoxContainer *current_vbox, EditorIn
 					String prop = F.properties[i];
 
 					if (!editor_property_map.has(prop)) {
-						editor_property_map[prop] = List<EditorProperty *>();
+						editor_property_map[prop] = LocalVector<EditorProperty *>();
 					}
 					editor_property_map[prop].push_back(ep);
 				}
@@ -4587,7 +4587,7 @@ void EditorInspector::update_tree() {
 						String prop = properties[j];
 
 						if (!editor_property_map.has(prop)) {
-							editor_property_map[prop] = List<EditorProperty *>();
+							editor_property_map[prop] = LocalVector<EditorProperty *>();
 						}
 						editor_property_map[prop].push_back(ep);
 					}
@@ -4956,7 +4956,7 @@ void EditorInspector::set_keying(bool p_active) {
 }
 
 void EditorInspector::_keying_changed() {
-	for (const KeyValue<StringName, List<EditorProperty *>> &F : editor_property_map) {
+	for (const KeyValue<StringName, LocalVector<EditorProperty *>> &F : editor_property_map) {
 		for (EditorProperty *E : F.value) {
 			if (E) {
 				E->set_keying(keying);
@@ -5053,7 +5053,7 @@ void EditorInspector::collapse_all_folding() {
 		E->fold();
 	}
 
-	for (const KeyValue<StringName, List<EditorProperty *>> &F : editor_property_map) {
+	for (const KeyValue<StringName, LocalVector<EditorProperty *>> &F : editor_property_map) {
 		for (EditorProperty *E : F.value) {
 			E->collapse_all_folding();
 		}
@@ -5064,7 +5064,7 @@ void EditorInspector::expand_all_folding() {
 	for (EditorInspectorSection *E : sections) {
 		E->unfold();
 	}
-	for (const KeyValue<StringName, List<EditorProperty *>> &F : editor_property_map) {
+	for (const KeyValue<StringName, LocalVector<EditorProperty *>> &F : editor_property_map) {
 		for (EditorProperty *E : F.value) {
 			E->expand_all_folding();
 		}
@@ -5102,7 +5102,7 @@ void EditorInspector::expand_revertable() {
 		SWAP(a, b);
 	}
 
-	for (const KeyValue<StringName, List<EditorProperty *>> &F : editor_property_map) {
+	for (const KeyValue<StringName, LocalVector<EditorProperty *>> &F : editor_property_map) {
 		for (EditorProperty *E : F.value) {
 			E->expand_revertable();
 		}
@@ -5212,10 +5212,7 @@ void EditorInspector::_edit_set(const String &p_name, const Variant &p_value, bo
 			}
 		}
 
-		List<StringName> linked_properties;
-		ClassDB::get_linked_properties_info(object->get_class_name(), p_name, &linked_properties);
-
-		for (const StringName &linked_prop : linked_properties) {
+		for (const StringName &linked_prop : ClassDB::get_linked_properties_info(object->get_class_name(), p_name)) {
 			valid = false;
 			Variant undo_value = object->get(linked_prop, &valid);
 			if (valid) {
@@ -5437,9 +5434,9 @@ void EditorInspector::_property_pinned(const String &p_path, bool p_pinned) {
 	undo_redo->add_do_method(node, "_set_property_pinned", p_path, p_pinned);
 	undo_redo->add_undo_method(node, "_set_property_pinned", p_path, !p_pinned);
 	if (editor_property_map.has(p_path)) {
-		for (List<EditorProperty *>::Element *E = editor_property_map[p_path].front(); E; E = E->next()) {
-			undo_redo->add_do_method(E->get(), "_update_editor_property_status");
-			undo_redo->add_undo_method(E->get(), "_update_editor_property_status");
+		for (EditorProperty *E : editor_property_map[p_path]) {
+			undo_redo->add_do_method(E, "_update_editor_property_status");
+			undo_redo->add_undo_method(E, "_update_editor_property_status");
 		}
 	}
 	undo_redo->commit_action();
@@ -5449,7 +5446,7 @@ void EditorInspector::_property_selected(const String &p_path, int p_focusable) 
 	property_selected = p_path;
 	property_focusable = p_focusable;
 	// Deselect the others.
-	for (const KeyValue<StringName, List<EditorProperty *>> &F : editor_property_map) {
+	for (const KeyValue<StringName, LocalVector<EditorProperty *>> &F : editor_property_map) {
 		if (F.key == property_selected) {
 			continue;
 		}
@@ -5704,7 +5701,7 @@ void EditorInspector::_notification(int p_what) {
 			} else if (refresh_countdown > 0) {
 				refresh_countdown -= get_process_delta_time();
 				if (refresh_countdown <= 0) {
-					for (const KeyValue<StringName, List<EditorProperty *>> &F : editor_property_map) {
+					for (const KeyValue<StringName, LocalVector<EditorProperty *>> &F : editor_property_map) {
 						for (EditorProperty *E : F.value) {
 							if (E && !E->is_cache_valid()) {
 								E->update_property();
@@ -5844,8 +5841,7 @@ void EditorInspector::_show_add_meta_dialog() {
 	// If object is derived from Node use node name, if derived from Resource use classname.
 	dialog_title = node ? node->get_name() : StringName(object->get_class());
 
-	List<StringName> existing_meta_keys;
-	object->get_meta_list(&existing_meta_keys);
+	LocalVector<StringName> existing_meta_keys = object->get_meta_list();
 	add_meta_dialog->open(dialog_title, existing_meta_keys);
 }
 

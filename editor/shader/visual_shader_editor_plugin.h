@@ -434,7 +434,7 @@ class VisualShaderEditor : public ShaderEditor {
 	int curve_node_option_idx;
 	int curve_xyz_node_option_idx;
 	int mesh_emitter_option_idx;
-	List<String> keyword_list;
+	LocalVector<String> keyword_list;
 
 	List<VisualShaderNodeParameterRef> uniform_refs;
 
@@ -483,7 +483,7 @@ class VisualShaderEditor : public ShaderEditor {
 	void _scroll_offset_changed(const Vector2 &p_scroll);
 	void _node_selected(Object *p_node);
 
-	void _delete_nodes(int p_type, const List<int> &p_nodes);
+	void _delete_nodes(int p_type, const LocalVector<int> &p_nodes);
 	void _delete_node_request(int p_type, int p_node);
 	void _delete_nodes_request(const TypedArray<StringName> &p_nodes);
 
@@ -510,7 +510,7 @@ class VisualShaderEditor : public ShaderEditor {
 
 	void _convert_constants_to_parameters(bool p_vice_versa);
 	void _detach_nodes_from_frame_request();
-	void _detach_nodes_from_frame(int p_type, const List<int> &p_nodes);
+	void _detach_nodes_from_frame(int p_type, const LocalVector<int> &p_nodes);
 	void _replace_node(VisualShader::Type p_type_id, int p_node_id, const StringName &p_from, const StringName &p_to);
 	void _update_constant(VisualShader::Type p_type_id, int p_node_id, const Variant &p_var, int p_preview_port);
 	void _update_parameter(VisualShader::Type p_type_id, int p_node_id, const Variant &p_var, int p_preview_port);
@@ -553,14 +553,14 @@ class VisualShaderEditor : public ShaderEditor {
 		bool disabled = false;
 	};
 
-	void _dup_copy_nodes(int p_type, List<CopyItem> &r_nodes, List<VisualShader::Connection> &r_connections);
-	void _dup_paste_nodes(int p_type, List<CopyItem> &r_items, const List<VisualShader::Connection> &p_connections, const Vector2 &p_offset, bool p_duplicate);
+	void _dup_copy_nodes(int p_type, LocalVector<CopyItem> &r_nodes, LocalVector<VisualShader::Connection> &r_connections);
+	void _dup_paste_nodes(int p_type, const LocalVector<CopyItem> &r_items, const LocalVector<VisualShader::Connection> &p_connections, const Vector2 &p_offset, bool p_duplicate);
 
 	void _duplicate_nodes();
 
 	static Vector2 selection_center;
-	static List<CopyItem> copy_items_buffer;
-	static List<VisualShader::Connection> copy_connections_buffer;
+	static LocalVector<CopyItem> copy_items_buffer;
+	static LocalVector<VisualShader::Connection> copy_connections_buffer;
 
 	void _clear_copy_buffer();
 	void _copy_nodes(bool p_cut);

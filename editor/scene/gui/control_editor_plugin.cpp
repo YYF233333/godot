@@ -826,8 +826,7 @@ void ControlEditorToolbar::_anchors_to_current_ratio() {
 }
 
 void ControlEditorToolbar::_anchor_mode_toggled(bool p_status) {
-	List<Control *> selection = _get_edited_controls();
-	for (Control *E : selection) {
+	for (Control *E : _get_edited_controls()) {
 		if (Object::cast_to<Container>(E->get_parent())) {
 			continue;
 		}
@@ -924,8 +923,8 @@ bool ControlEditorToolbar::_is_node_locked(const Node *p_node) {
 	return p_node->get_meta("_edit_lock_", false);
 }
 
-List<Control *> ControlEditorToolbar::_get_edited_controls() {
-	List<Control *> selection;
+LocalVector<Control *> ControlEditorToolbar::_get_edited_controls() {
+	LocalVector<Control *> selection;
 	for (const KeyValue<ObjectID, Object *> &E : editor_selection->get_selection()) {
 		Control *control = ObjectDB::get_instance<Control>(E.key);
 		if (control && control->is_visible_in_tree() && control->get_viewport() == EditorNode::get_singleton()->get_scene_root() && !_is_node_locked(control)) {

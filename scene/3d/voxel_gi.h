@@ -127,7 +127,7 @@ private:
 		Transform3D local_xform;
 	};
 
-	void _find_meshes(Node *p_at_node, List<PlotMesh> &plot_meshes);
+	void _find_meshes(Node *p_at_node, LocalVector<PlotMesh> &plot_meshes);
 	void _debug_bake();
 
 	float _get_camera_exposure_normalization();

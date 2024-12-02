@@ -581,11 +581,11 @@ void add_exposed_classes(Context &r_context) {
 
 		// Add methods
 
-		List<MethodInfo> virtual_method_list;
-		ClassDB::get_virtual_methods(class_name, &virtual_method_list, true);
+		LocalVector<MethodInfo> virtual_method_list;
+		ClassDB::get_virtual_methods(class_name, virtual_method_list, true);
 
-		List<MethodInfo> method_list;
-		ClassDB::get_method_list(class_name, &method_list, true);
+		LocalVector<MethodInfo> method_list;
+		ClassDB::get_method_list(class_name, method_list, true);
 		method_list.sort();
 
 		for (const MethodInfo &E : method_list) {
@@ -611,7 +611,7 @@ void add_exposed_classes(Context &r_context) {
 			method.is_vararg = m && m->is_vararg();
 
 			if (!m && !method.is_virtual) {
-				TEST_FAIL_COND(!virtual_method_list.find(method_info),
+				TEST_FAIL_COND(!virtual_method_list.has(method_info),
 						"Missing MethodBind for non-virtual method: '", exposed_class.name, ".", method.name, "'.");
 
 				// A virtual method without the virtual flag. This is a special case.
@@ -764,8 +764,8 @@ void add_exposed_classes(Context &r_context) {
 
 		// Add enums and constants
 
-		List<String> constants;
-		ClassDB::get_integer_constant_list(class_name, &constants, true);
+		LocalVector<String> constants;
+		ClassDB::get_integer_constant_list(class_name, constants, true);
 
 		const HashMap<StringName, ClassDB::ClassInfo::EnumInfo> &enum_map = class_info->enum_map;
 
@@ -861,10 +861,7 @@ void add_global_enums(Context &r_context) {
 
 		const Variant::Type type = Variant::Type(i);
 
-		List<StringName> enum_names;
-		Variant::get_enums_for_type(type, &enum_names);
-
-		for (const StringName &enum_name : enum_names) {
+		for (const StringName &enum_name : Variant::get_enums_for_type(type)) {
 			r_context.enum_types.push_back(Variant::get_type_name(type) + "." + enum_name);
 		}
 	}

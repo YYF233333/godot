@@ -667,13 +667,15 @@ TypedArray<StringName> Skeleton3D::_get_bone_meta_list_bind(int p_bone) const {
 	return _metaret;
 }
 
-void Skeleton3D::get_bone_meta_list(int p_bone, List<StringName> *p_list) const {
+LocalVector<StringName> Skeleton3D::get_bone_meta_list(int p_bone) const {
 	const int bone_size = bones.size();
-	ERR_FAIL_INDEX(p_bone, bone_size);
+	ERR_FAIL_INDEX_V(p_bone, bone_size, LocalVector<StringName>());
 
+	LocalVector<StringName> ret;
 	for (const KeyValue<StringName, Variant> &K : bones[p_bone].metadata) {
-		p_list->push_back(K.key);
+		ret.push_back(K.key);
 	}
+	return ret;
 }
 
 bool Skeleton3D::has_bone_meta(int p_bone, const StringName &p_key) const {

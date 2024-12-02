@@ -143,7 +143,7 @@ GPUParticlesCollisionBox3D::~GPUParticlesCollisionBox3D() {
 ///////////////////////////////
 ///////////////////////////
 
-void GPUParticlesCollisionSDF3D::_find_meshes(const AABB &p_aabb, Node *p_at_node, List<PlotMesh> &plot_meshes) {
+void GPUParticlesCollisionSDF3D::_find_meshes(const AABB &p_aabb, Node *p_at_node, LocalVector<PlotMesh> &plot_meshes) {
 	MeshInstance3D *mi = Object::cast_to<MeshInstance3D>(p_at_node);
 	if (mi && mi->is_visible_in_tree()) {
 		if ((mi->get_layer_mask() & bake_mask) == 0) {
@@ -403,7 +403,7 @@ Ref<Image> GPUParticlesCollisionSDF3D::bake() {
 
 	aabb.size = Vector3(sdf_size) * cell_size;
 
-	List<PlotMesh> plot_meshes;
+	LocalVector<PlotMesh> plot_meshes;
 	_find_meshes(aabb, get_parent(), plot_meshes);
 
 	LocalVector<Face3> faces;

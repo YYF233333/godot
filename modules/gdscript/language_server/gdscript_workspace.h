@@ -41,7 +41,7 @@ class GDScriptWorkspace : public RefCounted {
 	GDCLASS(GDScriptWorkspace, RefCounted);
 
 private:
-	void _get_owners(EditorFileSystemDirectory *efsd, String p_path, List<String> &owners);
+	void _get_owners(EditorFileSystemDirectory *efsd, String p_path, LocalVector<String> &owners);
 	Node *_get_owner_scene_node(String p_path);
 
 #ifndef DISABLE_DEPRECATED
@@ -71,7 +71,7 @@ protected:
 
 	void reload_all_workspace_scripts();
 
-	void list_script_files(const String &p_root_dir, List<String> &r_files);
+	void list_script_files(const String &p_root_dir, LocalVector<String> &r_files);
 
 	void apply_new_signal(Object *obj, String function, PackedStringArray args);
 
@@ -88,12 +88,12 @@ public:
 	String get_file_uri(const String &p_path) const;
 
 	void publish_diagnostics(const String &p_path);
-	void completion(const LSP::CompletionParams &p_params, List<ScriptLanguage::CodeCompletionOption> *r_options);
+	void completion(const LSP::CompletionParams &p_params, LocalVector<ScriptLanguage::CodeCompletionOption> &r_options);
 
 	const LSP::DocumentSymbol *resolve_symbol(const LSP::TextDocumentPositionParams &p_doc_pos, const String &p_symbol_name = "", bool p_func_required = false);
 
 	const LSP::DocumentSymbol *resolve_native_symbol(const LSP::NativeSymbolInspectParams &p_params);
-	void resolve_document_links(const String &p_uri, List<LSP::DocumentLink> &r_list);
+	LocalVector<LSP::DocumentLink> resolve_document_links(const String &p_uri);
 	Dictionary generate_script_api(const String &p_path);
 	Error resolve_signature(const LSP::TextDocumentPositionParams &p_doc_pos, LSP::SignatureHelp &r_signature);
 	Dictionary rename(const LSP::TextDocumentPositionParams &p_doc_pos, const String &new_name);

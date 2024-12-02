@@ -404,13 +404,12 @@ Rect2 AnimationTrackEditSpriteFrame::get_key_rect(int p_index, float p_pixels_se
 			return AnimationTrackEdit::get_key_rect(p_index, p_pixels_sec);
 		}
 
-		List<StringName> animations;
-		sf->get_animation_list(&animations);
+		LocalVector<StringName> animations = sf->get_animation_list();
 
 		int frame = get_animation()->track_get_key_value(get_track(), p_index);
 		String animation_name;
 		if (animations.size() == 1) {
-			animation_name = animations.front()->get();
+			animation_name = animations[0];
 		} else {
 			// Go through other track to find if animation is set
 			String animation_path = String(get_animation()->track_get_path(get_track()));
@@ -496,13 +495,12 @@ void AnimationTrackEditSpriteFrame::draw_key(int p_index, float p_pixels_sec, in
 			return;
 		}
 
-		List<StringName> animations;
-		sf->get_animation_list(&animations);
+		LocalVector<StringName> animations = sf->get_animation_list();
 
 		int frame = get_animation()->track_get_key_value(get_track(), p_index);
 		String animation_name;
 		if (animations.size() == 1) {
-			animation_name = animations.front()->get();
+			animation_name = animations[0];
 		} else {
 			// Go through other track to find if animation is set
 			String animation_path = String(get_animation()->track_get_path(get_track()));

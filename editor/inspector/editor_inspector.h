@@ -723,7 +723,7 @@ class EditorInspector : public ScrollContainer {
 	VBoxContainer *main_vbox = nullptr;
 
 	// Map used to cache the instantiated editors.
-	HashMap<StringName, List<EditorProperty *>> editor_property_map;
+	HashMap<StringName, LocalVector<EditorProperty *>> editor_property_map;
 	List<EditorInspectorSection *> sections;
 	HashSet<StringName> pending;
 

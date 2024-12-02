@@ -156,7 +156,7 @@ private:
 	HashSet<ObjectID> inheriters_cache;
 	bool source_changed_cache = false;
 	bool placeholder_fallback_enabled = false;
-	void _update_exports_values(HashMap<StringName, Variant> &values, List<PropertyInfo> &propnames);
+	void _update_exports_values(HashMap<StringName, Variant> &values, LocalVector<PropertyInfo> &propnames);
 
 	StringName doc_class_name;
 	DocData::ClassDoc doc;
@@ -204,7 +204,7 @@ private:
 #endif
 
 #ifdef DEBUG_ENABLED
-	HashMap<ObjectID, List<Pair<StringName, Variant>>> pending_reload_state;
+	HashMap<ObjectID, LocalVector<Pair<StringName, Variant>>> pending_reload_state;
 #endif
 
 	bool _update_exports(bool *r_err = nullptr, bool p_recursive_call = false, PlaceHolderScriptInstance *p_instance_to_update = nullptr, bool p_base_exports_changed = false);
@@ -212,7 +212,7 @@ private:
 	void _save_orphaned_subclasses(GDScript::ClearData *p_clear_data);
 
 	void _get_script_property_list(List<PropertyInfo> *r_list, bool p_include_base) const;
-	void _get_script_method_list(List<MethodInfo> *r_list, bool p_include_base) const;
+	void _get_script_method_list(LocalVector<MethodInfo> &r_list, bool p_include_base) const;
 	void _get_script_signal_list(List<MethodInfo> *r_list, bool p_include_base) const;
 
 	GDScript *_get_gdscript_from_variant(const Variant &p_variant);
@@ -321,7 +321,7 @@ public:
 
 	bool get_property_default_value(const StringName &p_property, Variant &r_value) const override;
 
-	virtual void get_script_method_list(List<MethodInfo> *p_list) const override;
+	virtual void get_script_method_list(LocalVector<MethodInfo> &p_list) const override;
 	virtual bool has_method(const StringName &p_method) const override;
 	virtual bool has_static_method(const StringName &p_method) const override;
 
@@ -390,7 +390,7 @@ public:
 	virtual bool property_can_revert(const StringName &p_name) const;
 	virtual bool property_get_revert(const StringName &p_name, Variant &r_ret) const;
 
-	virtual void get_method_list(List<MethodInfo> *p_list) const;
+	virtual void get_method_list(LocalVector<MethodInfo> &p_list) const;
 	virtual bool has_method(const StringName &p_method) const;
 
 	virtual int get_method_argument_count(const StringName &p_method, bool *r_is_valid = nullptr) const;
@@ -614,7 +614,7 @@ public:
 	virtual bool can_inherit_from_file() const override { return true; }
 	virtual int find_function(const String &p_function, const String &p_code) const override;
 	virtual String make_function(const String &p_class, const String &p_name, const PackedStringArray &p_args) const override;
-	virtual Error complete_code(const String &p_code, const String &p_path, Object *p_owner, List<ScriptLanguage::CodeCompletionOption> *r_options, bool &r_forced, String &r_call_hint) override;
+	virtual Error complete_code(const String &p_code, const String &p_path, Object *p_owner, LocalVector<ScriptLanguage::CodeCompletionOption> &r_options, bool &r_forced, String &r_call_hint) override;
 #ifdef TOOLS_ENABLED
 	virtual Error lookup_code(const String &p_code, const String &p_symbol, const String &p_path, Object *p_owner, LookupResult &r_result) override;
 #endif
@@ -643,9 +643,9 @@ public:
 
 	virtual void frame() override;
 
-	virtual void get_public_functions(List<MethodInfo> *p_functions) const override;
-	virtual void get_public_constants(List<Pair<String, Variant>> *p_constants) const override;
-	virtual void get_public_annotations(List<MethodInfo> *p_annotations) const override;
+	virtual LocalVector<MethodInfo> get_public_functions() const override;
+	virtual LocalVector<Pair<String, Variant>> get_public_constants() const override;
+	virtual LocalVector<MethodInfo> get_public_annotations() const override;
 
 	virtual void profiling_start() override;
 	virtual void profiling_stop() override;
@@ -657,7 +657,7 @@ public:
 
 	/* LOADER FUNCTIONS */
 
-	virtual void get_recognized_extensions(List<String> *p_extensions) const override;
+	virtual void get_recognized_extensions(LocalVector<String> &p_extensions) const override;
 
 	/* GLOBAL CLASSES */
 
@@ -678,10 +678,10 @@ class ResourceFormatLoaderGDScript : public ResourceFormatLoader {
 
 public:
 	virtual Ref<Resource> load(const String &p_path, const String &p_original_path = "", Error *r_error = nullptr, bool p_use_sub_threads = false, float *r_progress = nullptr, CacheMode p_cache_mode = CACHE_MODE_REUSE) override;
-	virtual void get_recognized_extensions(List<String> *p_extensions) const override;
+	virtual void get_recognized_extensions(LocalVector<String> &p_extensions) const override;
 	virtual bool handles_type(const String &p_type) const override;
 	virtual String get_resource_type(const String &p_path) const override;
-	virtual void get_dependencies(const String &p_path, List<String> *p_dependencies, bool p_add_types = false) override;
+	virtual void get_dependencies(const String &p_path, LocalVector<String> &p_dependencies, bool p_add_types = false) override;
 	virtual void get_classes_used(const String &p_path, HashSet<StringName> *r_classes) override;
 };
 
@@ -690,6 +690,6 @@ class ResourceFormatSaverGDScript : public ResourceFormatSaver {
 
 public:
 	virtual Error save(const Ref<Resource> &p_resource, const String &p_path, uint32_t p_flags = 0) override;
-	virtual void get_recognized_extensions(const Ref<Resource> &p_resource, List<String> *p_extensions) const override;
+	virtual void get_recognized_extensions(const Ref<Resource> &p_resource, LocalVector<String> &p_extensions) const override;
 	virtual bool recognize(const Ref<Resource> &p_resource) const override;
 };

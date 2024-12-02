@@ -99,7 +99,7 @@ public:
 	static bool is_global_class_abstract(const String &p_class);
 	static bool is_global_class_tool(const String &p_class);
 	static void get_global_class_list(LocalVector<StringName> &r_global_classes);
-	static void get_inheriters_list(const StringName &p_base_type, List<StringName> *r_classes);
+	static Vector<StringName> get_inheriters_list(const StringName &p_base_type);
 	static void get_indirect_inheriters_list(const StringName &p_base_type, List<StringName> *r_classes);
 	static void save_global_classes();
 
@@ -188,7 +188,7 @@ public:
 	virtual bool get_property_default_value(const StringName &p_property, Variant &r_value) const = 0;
 
 	virtual void update_exports() {} //editor tool
-	virtual void get_script_method_list(List<MethodInfo> *p_list) const = 0;
+	virtual void get_script_method_list(LocalVector<MethodInfo> &p_list) const = 0;
 	virtual void get_script_property_list(List<PropertyInfo> *p_list) const = 0;
 
 	virtual int get_member_line(const StringName &p_member) const { return -1; }
@@ -262,7 +262,7 @@ public:
 		}
 	};
 
-	void get_core_type_words(List<String> *p_core_type_words) const;
+	const Span<StringName> get_core_type_words() const;
 	virtual Vector<String> get_reserved_words() const = 0;
 	virtual bool is_control_flow_keyword(const String &p_string) const = 0;
 	virtual Vector<String> get_comment_delimiters() const = 0;
@@ -338,7 +338,7 @@ public:
 		TypedArray<int> charac;
 	};
 
-	virtual Error complete_code(const String &p_code, const String &p_path, Object *p_owner, List<CodeCompletionOption> *r_options, bool &r_force, String &r_call_hint) { return ERR_UNAVAILABLE; }
+	virtual Error complete_code(const String &p_code, const String &p_path, Object *p_owner, LocalVector<CodeCompletionOption> &r_options, bool &r_force, String &r_call_hint) { return ERR_UNAVAILABLE; }
 
 	enum LookupResultType {
 		LOOKUP_RESULT_SCRIPT_LOCATION, // Use if none of the options below apply.
@@ -421,10 +421,10 @@ public:
 	virtual void reload_tool_script(const Ref<Script> &p_script, bool p_soft_reload) = 0;
 	/* LOADER FUNCTIONS */
 
-	virtual void get_recognized_extensions(List<String> *p_extensions) const = 0;
-	virtual void get_public_functions(List<MethodInfo> *p_functions) const = 0;
-	virtual void get_public_constants(List<Pair<String, Variant>> *p_constants) const = 0;
-	virtual void get_public_annotations(List<MethodInfo> *p_annotations) const = 0;
+	virtual void get_recognized_extensions(LocalVector<String> &p_extensions) const = 0;
+	virtual LocalVector<MethodInfo> get_public_functions() const = 0;
+	virtual LocalVector<Pair<String, Variant>> get_public_constants() const = 0;
+	virtual LocalVector<MethodInfo> get_public_annotations() const = 0;
 
 	struct ProfilingInfo {
 		StringName signature;
@@ -455,7 +455,7 @@ extern uint8_t script_encryption_key[32];
 
 class PlaceHolderScriptInstance : public ScriptInstance {
 	Object *owner = nullptr;
-	List<PropertyInfo> properties;
+	LocalVector<PropertyInfo> properties;
 	HashMap<StringName, Variant> values;
 	HashMap<StringName, Variant> constants;
 	ScriptLanguage *language = nullptr;
@@ -471,7 +471,7 @@ public:
 	virtual bool property_can_revert(const StringName &p_name) const override { return false; }
 	virtual bool property_get_revert(const StringName &p_name, Variant &r_ret) const override { return false; }
 
-	virtual void get_method_list(List<MethodInfo> *p_list) const override;
+	virtual void get_method_list(LocalVector<MethodInfo> &p_list) const override;
 	virtual bool has_method(const StringName &p_method) const override;
 
 	virtual int get_method_argument_count(const StringName &p_method, bool *r_is_valid = nullptr) const override {
@@ -490,7 +490,7 @@ public:
 
 	Object *get_owner() override { return owner; }
 
-	void update(const List<PropertyInfo> &p_properties, const HashMap<StringName, Variant> &p_values); //likely changed in editor
+	void update(const LocalVector<PropertyInfo> &p_properties, const HashMap<StringName, Variant> &p_values); //likely changed in editor
 
 	virtual bool is_placeholder() const override { return true; }
 

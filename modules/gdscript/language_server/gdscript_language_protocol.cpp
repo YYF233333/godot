@@ -493,7 +493,7 @@ void GDScriptLanguageProtocol::lsp_did_close(const Dictionary &p_params) {
 	ERR_FAIL_COND_MSG(!was_opened, "LSP: Client is closing file without opening it.");
 }
 
-void GDScriptLanguageProtocol::resolve_related_symbols(const LSP::TextDocumentPositionParams &p_doc_pos, List<const LSP::DocumentSymbol *> &r_list) {
+void GDScriptLanguageProtocol::resolve_related_symbols(const LSP::TextDocumentPositionParams &p_doc_pos, LocalVector<const LSP::DocumentSymbol *> &r_list) {
 	LSP_CLIENT;
 
 	String path = workspace->get_file_path(p_doc_pos.textDocument.uri);

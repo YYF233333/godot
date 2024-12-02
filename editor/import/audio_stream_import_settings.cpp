@@ -475,8 +475,7 @@ void AudioStreamImportSettingsDialog::edit(const String &p_path, const String &p
 			loop_offset->set_value(config_file->get_value("params", "loop_offset", 0));
 			bar_beats_edit->set_value(config_file->get_value("params", "bar_beats", 4));
 
-			Vector<String> keys = config_file->get_section_keys("params");
-			for (const String &K : keys) {
+			for (const String &K : config_file->get_section_keys("params")) {
 				params[K] = config_file->get_value("params", K);
 			}
 		} else {

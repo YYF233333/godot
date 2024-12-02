@@ -85,10 +85,13 @@ void GDScriptParser::cleanup() {
 	valid_annotations.clear();
 }
 
-void GDScriptParser::get_annotation_list(List<MethodInfo> *r_annotations) const {
+LocalVector<MethodInfo> GDScriptParser::get_annotation_list() const {
+	LocalVector<MethodInfo> annotations;
+	annotations.reserve(valid_annotations.size());
 	for (const KeyValue<StringName, AnnotationInfo> &E : valid_annotations) {
-		r_annotations->push_back(E.value.info);
+		annotations.push_back(E.value.info);
 	}
+	return annotations;
 }
 
 bool GDScriptParser::annotation_exists(const String &p_annotation_name) const {
@@ -1577,11 +1580,6 @@ GDScriptParser::EnumNode *GDScriptParser::parse_enum(bool p_is_static) {
 
 	HashMap<StringName, int> elements;
 
-#ifdef DEBUG_ENABLED
-	List<MethodInfo> gdscript_funcs;
-	GDScriptLanguage::get_singleton()->get_public_functions(&gdscript_funcs);
-#endif
-
 	do {
 		if (check(GDScriptTokenizer::Token::BRACE_CLOSE)) {
 			break; // Allow trailing comma.
@@ -2397,7 +2395,7 @@ GDScriptParser::MatchNode *GDScriptParser::parse_match() {
 	bool all_have_return = true;
 	bool have_wildcard = false;
 
-	List<AnnotationNode *> match_branch_annotation_stack;
+	LocalVector<AnnotationNode *> match_branch_annotation_stack;
 
 	while (!check(GDScriptTokenizer::Token::DEDENT) && !is_at_end()) {
 		if (match(GDScriptTokenizer::Token::PASS)) {

@@ -55,20 +55,20 @@ TEST_CASE("[Translation] Messages") {
 	// The message no longer exists, so it returns an empty string instead.
 	CHECK(translation->get_message("Hello") == "");
 
-	List<StringName> messages;
-	translation->get_message_list(&messages);
+	LocalVector<StringName> messages;
+	translation->get_message_list(messages);
 	CHECK(translation->get_message_count() == 0);
 	CHECK(messages.size() == 0);
 
 	translation->add_message("Hello2", "Bonjour2");
 	translation->add_message("Hello3", "Bonjour3");
 	messages.clear();
-	translation->get_message_list(&messages);
+	translation->get_message_list(messages);
 	CHECK(translation->get_message_count() == 2);
 	CHECK(messages.size() == 2);
 	// Messages are stored in a Map, don't assume ordering.
-	CHECK(messages.find("Hello2"));
-	CHECK(messages.find("Hello3"));
+	CHECK(messages.has("Hello2"));
+	CHECK(messages.has("Hello3"));
 }
 
 TEST_CASE("[Translation] Messages with context") {
@@ -88,8 +88,8 @@ TEST_CASE("[Translation] Messages with context") {
 	CHECK(translation->get_message("Hello", "friendly") == "Salut");
 	CHECK(translation->get_message("Hello", "nonexistent_context") == "");
 
-	List<StringName> messages;
-	translation->get_message_list(&messages);
+	LocalVector<StringName> messages;
+	translation->get_message_list(messages);
 
 	CHECK(translation->get_message_count() == 1);
 	CHECK(messages.size() == 1);
@@ -98,15 +98,15 @@ TEST_CASE("[Translation] Messages with context") {
 	translation->add_message("Hello2", "Salut2", "friendly");
 	translation->add_message("Hello3", "Bonjour3");
 	messages.clear();
-	translation->get_message_list(&messages);
+	translation->get_message_list(messages);
 
 	CHECK(translation->get_message_count() == 4);
 	CHECK(messages.size() == 4);
 	// Messages are stored in a Map, don't assume ordering.
-	CHECK(messages.find("Hello2"));
-	CHECK(messages.find("Hello3"));
+	CHECK(messages.has("Hello2"));
+	CHECK(messages.has("Hello3"));
 	// Context and untranslated string are separated by EOT.
-	CHECK(messages.find("friendly\x04Hello2"));
+	CHECK(messages.has("friendly\x04Hello2"));
 }
 
 TEST_CASE("[Translation] Plural messages") {
@@ -207,9 +207,9 @@ TEST_CASE("[OptimizedTranslation] Generate from Translation and read messages") 
 	CHECK(optimized_translation->get_message("Hello3") == "Bonjour3");
 	CHECK(optimized_translation->get_message("DoesNotExist") == "");
 
-	List<StringName> messages;
+	LocalVector<StringName> messages;
 	// `get_message_list()` can't return the list of messages stored in an OptimizedTranslation.
-	optimized_translation->get_message_list(&messages);
+	optimized_translation->get_message_list(messages);
 	CHECK(optimized_translation->get_message_count() == 0);
 	CHECK(messages.size() == 0);
 }
@@ -221,10 +221,11 @@ TEST_CASE("[TranslationCSV] CSV import") {
 	options["compress"] = false;
 	options["delimiter"] = 0;
 
-	List<String> gen_files;
+	LocalVector<String> _platform_variants; // placeholder, unused.
+	LocalVector<String> gen_files;
 
 	Error result = import_csv_translation->import(0, TestUtils::get_data_path("translations.csv"),
-			"", options, nullptr, &gen_files);
+			"", options, _platform_variants, gen_files);
 	CHECK(result == OK);
 	CHECK(gen_files.size() == 4);
 

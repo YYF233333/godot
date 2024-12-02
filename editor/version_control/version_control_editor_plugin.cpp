@@ -190,7 +190,7 @@ void VersionControlEditorPlugin::_update_set_up_warning(const String &p_new_text
 void VersionControlEditorPlugin::_refresh_branch_list() {
 	CHECK_PLUGIN_INITIALIZED();
 
-	List<String> branch_list = EditorVCSInterface::get_singleton()->get_branch_list();
+	LocalVector<String> branch_list = EditorVCSInterface::get_singleton()->get_branch_list();
 	branch_select->clear();
 
 	branch_select->set_disabled(branch_list.is_empty());
@@ -198,12 +198,14 @@ void VersionControlEditorPlugin::_refresh_branch_list() {
 	String current_branch = EditorVCSInterface::get_singleton()->get_current_branch_name();
 
 	int i = 0;
-	for (List<String>::ConstIterator itr = branch_list.begin(); itr != branch_list.end(); ++itr, ++i) {
-		branch_select->add_icon_item(EditorNode::get_singleton()->get_editor_theme()->get_icon(SNAME("VcsBranches"), EditorStringName(EditorIcons)), *itr, i);
+	for (const String &branch : branch_list) {
+		branch_select->add_icon_item(EditorNode::get_singleton()->get_editor_theme()->get_icon(SNAME("VcsBranches"), EditorStringName(EditorIcons)), branch, i);
 
-		if (*itr == current_branch) {
+		if (branch == current_branch) {
 			branch_select->select(i);
 		}
+
+		i++;
 	}
 }
 
@@ -223,7 +225,7 @@ void VersionControlEditorPlugin::_refresh_commit_list() {
 
 	commit_list->get_root()->clear_children();
 
-	List<EditorVCSInterface::Commit> commit_info_list = EditorVCSInterface::get_singleton()->get_previous_commits(commit_list_size_button->get_selected_metadata());
+	LocalVector<EditorVCSInterface::Commit> commit_info_list = EditorVCSInterface::get_singleton()->get_previous_commits(commit_list_size_button->get_selected_metadata());
 
 	for (const EditorVCSInterface::Commit &commit : commit_info_list) {
 		TreeItem *item = commit_list->create_item();
@@ -250,7 +252,7 @@ void VersionControlEditorPlugin::_refresh_commit_list() {
 void VersionControlEditorPlugin::_refresh_remote_list() {
 	CHECK_PLUGIN_INITIALIZED();
 
-	List<String> remotes = EditorVCSInterface::get_singleton()->get_remotes();
+	LocalVector<String> remotes = EditorVCSInterface::get_singleton()->get_remotes();
 
 	String current_remote = remote_select->get_selected_metadata();
 	remote_select->clear();
@@ -258,13 +260,14 @@ void VersionControlEditorPlugin::_refresh_remote_list() {
 	remote_select->set_disabled(remotes.is_empty());
 
 	int i = 0;
-	for (List<String>::ConstIterator itr = remotes.begin(); itr != remotes.end(); ++itr, ++i) {
-		remote_select->add_icon_item(EditorNode::get_singleton()->get_editor_theme()->get_icon(SNAME("ArrowUp"), EditorStringName(EditorIcons)), *itr, i);
-		remote_select->set_item_metadata(i, *itr);
+	for (const String &remote : remotes) {
+		remote_select->add_icon_item(EditorNode::get_singleton()->get_editor_theme()->get_icon(SNAME("ArrowUp"), EditorStringName(EditorIcons)), remote, i);
+		remote_select->set_item_metadata(i, remote);
 
-		if (*itr == current_remote) {
+		if (remote == current_remote) {
 			remote_select->select(i);
 		}
+		i++;
 	}
 }
 
@@ -371,7 +374,7 @@ void VersionControlEditorPlugin::_refresh_stage_area() {
 	staged_files->get_root()->clear_children();
 	unstaged_files->get_root()->clear_children();
 
-	List<EditorVCSInterface::StatusFile> status_files = EditorVCSInterface::get_singleton()->get_modified_files_data();
+	LocalVector<EditorVCSInterface::StatusFile> status_files = EditorVCSInterface::get_singleton()->get_modified_files_data();
 	for (const EditorVCSInterface::StatusFile &sf : status_files) {
 		if (sf.area == EditorVCSInterface::TREE_AREA_STAGED) {
 			_add_new_item(staged_files, sf.file_path, sf.change_type);
@@ -627,7 +630,7 @@ void VersionControlEditorPlugin::_display_diff(int p_idx) {
 	}
 }
 
-void VersionControlEditorPlugin::_display_diff_split_view(List<EditorVCSInterface::DiffLine> &p_diff_content) {
+void VersionControlEditorPlugin::_display_diff_split_view(LocalVector<EditorVCSInterface::DiffLine> &p_diff_content) {
 	LocalVector<EditorVCSInterface::DiffLine> parsed_diff;
 
 	for (EditorVCSInterface::DiffLine diff_line : p_diff_content) {
@@ -746,7 +749,7 @@ void VersionControlEditorPlugin::_display_diff_split_view(List<EditorVCSInterfac
 	diff->pop();
 }
 
-void VersionControlEditorPlugin::_display_diff_unified_view(List<EditorVCSInterface::DiffLine> &p_diff_content) {
+void VersionControlEditorPlugin::_display_diff_unified_view(LocalVector<EditorVCSInterface::DiffLine> &p_diff_content) {
 	diff->push_table(4);
 	diff->set_table_column_expand(3, true);
 
@@ -905,7 +908,7 @@ void VersionControlEditorPlugin::_toggle_vcs_integration(bool p_toggled) {
 
 void VersionControlEditorPlugin::fetch_available_vcs_plugin_names() {
 	available_plugins.clear();
-	ClassDB::get_direct_inheriters_from_class(EditorVCSInterface::get_class_static(), &available_plugins);
+	ClassDB::get_direct_inheriters_from_class(EditorVCSInterface::get_class_static(), available_plugins);
 }
 
 void VersionControlEditorPlugin::register_editor() {

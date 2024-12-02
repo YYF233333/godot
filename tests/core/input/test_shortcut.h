@@ -87,12 +87,12 @@ TEST_CASE("[Shortcut] 'set_events_list' should result in the same events as the 
 	Ref<InputEvent> e1 = k1;
 	Ref<InputEvent> e2 = k2;
 
-	List<Ref<InputEvent>> list;
+	LocalVector<Ref<InputEvent>> list;
 	list.push_back(e1);
 	list.push_back(e2);
 
 	Shortcut s;
-	s.set_events_list(&list);
+	s.set_events_list(list);
 
 	// Get result, read it out, check whether it equals the input.
 	Array result_array = s.get_events();

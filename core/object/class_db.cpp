@@ -283,8 +283,10 @@ void ClassDB::get_extensions_class_list(LocalVector<StringName> &p_classes) {
 	sorter.sort(&p_classes[original_size], p_classes.size() - original_size);
 }
 
-void ClassDB::get_extension_class_list(const Ref<GDExtension> &p_extension, List<StringName> *p_classes) {
+LocalVector<StringName> ClassDB::get_extension_class_list(const Ref<GDExtension> &p_extension) {
 	Locker::Lock lock(Locker::STATE_READ);
+
+	LocalVector<StringName> p_classes;
 
 	for (const KeyValue<StringName, ClassInfo> &E : classes) {
 		if (E.value.api != API_EXTENSION && E.value.api != API_EDITOR_EXTENSION) {
@@ -293,10 +295,11 @@ void ClassDB::get_extension_class_list(const Ref<GDExtension> &p_extension, List
 		if (!E.value.gdextension || E.value.gdextension->library != p_extension.ptr()) {
 			continue;
 		}
-		p_classes->push_back(E.key);
+		p_classes.push_back(E.key);
 	}
 
-	p_classes->sort_custom<StringName::AlphCompare>();
+	p_classes.sort_custom<StringName::AlphCompare>();
+	return p_classes;
 }
 #endif
 
@@ -310,12 +313,12 @@ void ClassDB::get_inheriters_from_class(const StringName &p_class, LocalVector<S
 	}
 }
 
-void ClassDB::get_direct_inheriters_from_class(const StringName &p_class, List<StringName> *p_classes) {
+void ClassDB::get_direct_inheriters_from_class(const StringName &p_class, LocalVector<StringName> &p_classes) {
 	Locker::Lock lock(Locker::STATE_READ);
 
 	for (const KeyValue<StringName, ClassInfo> &E : classes) {
 		if (E.value.inherits == p_class) {
-			p_classes->push_back(E.key);
+			p_classes.push_back(E.key);
 		}
 	}
 }
@@ -396,7 +399,8 @@ uint32_t ClassDB::get_api_hash(APIType p_api) {
 
 	uint64_t hash = hash_murmur3_one_64(HashMapHasherDefault::hash(GODOT_VERSION_FULL_CONFIG));
 
-	List<StringName> class_list;
+	LocalVector<StringName> class_list;
+	class_list.reserve(classes.size());
 	for (const KeyValue<StringName, ClassInfo> &E : classes) {
 		class_list.push_back(E.key);
 	}
@@ -414,7 +418,7 @@ uint32_t ClassDB::get_api_hash(APIType p_api) {
 
 		{ //methods
 
-			List<StringName> snames;
+			LocalVector<StringName> snames;
 
 			for (const KeyValue<StringName, MethodBind *> &F : t->method_map) {
 				String name = F.key.operator String();
@@ -459,7 +463,8 @@ uint32_t ClassDB::get_api_hash(APIType p_api) {
 
 		{ //constants
 
-			List<StringName> snames;
+			LocalVector<StringName> snames;
+			snames.reserve(t->constant_map.size());
 
 			for (const KeyValue<StringName, int64_t> &F : t->constant_map) {
 				snames.push_back(F.key);
@@ -475,7 +480,8 @@ uint32_t ClassDB::get_api_hash(APIType p_api) {
 
 		{ //signals
 
-			List<StringName> snames;
+			LocalVector<StringName> snames;
+			snames.reserve(t->signal_map.size());
 
 			for (const KeyValue<StringName, MethodInfo> &F : t->signal_map) {
 				snames.push_back(F.key);
@@ -494,7 +500,8 @@ uint32_t ClassDB::get_api_hash(APIType p_api) {
 
 		{ //properties
 
-			List<StringName> snames;
+			LocalVector<StringName> snames;
+			snames.reserve(t->property_setget.size());
 
 			for (const KeyValue<StringName, PropertySetGet> &F : t->property_setget) {
 				snames.push_back(F.key);
@@ -929,7 +936,7 @@ static MethodInfo info_from_bind(MethodBind *p_method) {
 	return minfo;
 }
 
-void ClassDB::get_method_list(const StringName &p_class, List<MethodInfo> *p_methods, bool p_no_inheritance, bool p_exclude_from_properties) {
+void ClassDB::get_method_list(const StringName &p_class, LocalVector<MethodInfo> &p_methods, bool p_no_inheritance, bool p_exclude_from_properties) {
 	Locker::Lock lock(Locker::STATE_READ);
 
 	ClassInfo *type = classes.getptr(p_class);
@@ -946,7 +953,7 @@ void ClassDB::get_method_list(const StringName &p_class, List<MethodInfo> *p_met
 
 #ifdef DEBUG_ENABLED
 		for (const MethodInfo &E : type->virtual_methods) {
-			p_methods->push_back(E);
+			p_methods.push_back(E);
 		}
 
 		for (const StringName &E : type->method_order) {
@@ -957,13 +964,13 @@ void ClassDB::get_method_list(const StringName &p_class, List<MethodInfo> *p_met
 			MethodBind *method = type->method_map.get(E);
 			MethodInfo minfo = info_from_bind(method);
 
-			p_methods->push_back(minfo);
+			p_methods.push_back(minfo);
 		}
 #else
 		for (KeyValue<StringName, MethodBind *> &E : type->method_map) {
 			MethodBind *m = E.value;
 			MethodInfo minfo = info_from_bind(m);
-			p_methods->push_back(minfo);
+			p_methods.push_back(minfo);
 		}
 #endif // DEBUG_ENABLED
 
@@ -975,7 +982,7 @@ void ClassDB::get_method_list(const StringName &p_class, List<MethodInfo> *p_met
 	}
 }
 
-void ClassDB::get_method_list_with_compatibility(const StringName &p_class, List<Pair<MethodInfo, uint32_t>> *p_methods, bool p_no_inheritance, bool p_exclude_from_properties) {
+void ClassDB::get_method_list_with_compatibility(const StringName &p_class, LocalVector<Pair<MethodInfo, uint32_t>> &p_methods, bool p_no_inheritance, bool p_exclude_from_properties) {
 	Locker::Lock lock(Locker::STATE_READ);
 
 	ClassInfo *type = classes.getptr(p_class);
@@ -993,7 +1000,7 @@ void ClassDB::get_method_list_with_compatibility(const StringName &p_class, List
 #ifdef DEBUG_ENABLED
 		for (const MethodInfo &E : type->virtual_methods) {
 			Pair<MethodInfo, uint32_t> pair(E, E.get_compatibility_hash());
-			p_methods->push_back(pair);
+			p_methods.push_back(pair);
 		}
 
 		for (const StringName &E : type->method_order) {
@@ -1005,7 +1012,7 @@ void ClassDB::get_method_list_with_compatibility(const StringName &p_class, List
 			MethodInfo minfo = info_from_bind(method);
 
 			Pair<MethodInfo, uint32_t> pair(minfo, method->get_hash());
-			p_methods->push_back(pair);
+			p_methods.push_back(pair);
 		}
 #else
 		for (KeyValue<StringName, MethodBind *> &E : type->method_map) {
@@ -1013,7 +1020,7 @@ void ClassDB::get_method_list_with_compatibility(const StringName &p_class, List
 			MethodInfo minfo = info_from_bind(method);
 
 			Pair<MethodInfo, uint32_t> pair(minfo, method->get_hash());
-			p_methods->push_back(pair);
+			p_methods.push_back(pair);
 		}
 #endif // DEBUG_ENABLED
 
@@ -1023,7 +1030,7 @@ void ClassDB::get_method_list_with_compatibility(const StringName &p_class, List
 				MethodInfo minfo = info_from_bind(method);
 
 				Pair<MethodInfo, uint32_t> pair(minfo, method->get_hash());
-				p_methods->push_back(pair);
+				p_methods.push_back(pair);
 			}
 		}
 
@@ -1191,7 +1198,7 @@ void ClassDB::bind_integer_constant(const StringName &p_class, const StringName 
 #endif // DEBUG_ENABLED
 }
 
-void ClassDB::get_integer_constant_list(const StringName &p_class, List<String> *p_constants, bool p_no_inheritance) {
+void ClassDB::get_integer_constant_list(const StringName &p_class, LocalVector<String> &p_constants, bool p_no_inheritance) {
 	Locker::Lock lock(Locker::STATE_READ);
 
 	ClassInfo *type = classes.getptr(p_class);
@@ -1199,12 +1206,12 @@ void ClassDB::get_integer_constant_list(const StringName &p_class, List<String> 
 	while (type) {
 #ifdef DEBUG_ENABLED
 		for (const StringName &E : type->constant_order) {
-			p_constants->push_back(E);
+			p_constants.push_back(E);
 		}
 #else
 
 		for (const KeyValue<StringName, int64_t> &E : type->constant_map) {
-			p_constants->push_back(E.key);
+			p_constants.push_back(E.key);
 		}
 
 #endif // DEBUG_ENABLED
@@ -1266,9 +1273,7 @@ StringName ClassDB::get_integer_constant_enum(const StringName &p_class, const S
 
 	while (type) {
 		for (KeyValue<StringName, ClassInfo::EnumInfo> &E : type->enum_map) {
-			List<StringName> &constants_list = E.value.constants;
-			const List<StringName>::Element *found = constants_list.find(p_name);
-			if (found) {
+			if (E.value.constants.has(p_name)) {
 				return E.key;
 			}
 		}
@@ -1283,14 +1288,14 @@ StringName ClassDB::get_integer_constant_enum(const StringName &p_class, const S
 	return StringName();
 }
 
-void ClassDB::get_enum_list(const StringName &p_class, List<StringName> *p_enums, bool p_no_inheritance) {
+void ClassDB::get_enum_list(const StringName &p_class, LocalVector<StringName> &p_enums, bool p_no_inheritance) {
 	Locker::Lock lock(Locker::STATE_READ);
 
 	ClassInfo *type = classes.getptr(p_class);
 
 	while (type) {
 		for (KeyValue<StringName, ClassInfo::EnumInfo> &E : type->enum_map) {
-			p_enums->push_back(E.key);
+			p_enums.push_back(E.key);
 		}
 
 		if (p_no_inheritance) {
@@ -1301,7 +1306,7 @@ void ClassDB::get_enum_list(const StringName &p_class, List<StringName> *p_enums
 	}
 }
 
-void ClassDB::get_enum_constants(const StringName &p_class, const StringName &p_enum, List<StringName> *p_constants, bool p_no_inheritance) {
+void ClassDB::get_enum_constants(const StringName &p_class, const StringName &p_enum, LocalVector<StringName> &p_constants, bool p_no_inheritance) {
 	Locker::Lock lock(Locker::STATE_READ);
 
 	ClassInfo *type = classes.getptr(p_class);
@@ -1310,8 +1315,8 @@ void ClassDB::get_enum_constants(const StringName &p_class, const StringName &p_
 		const ClassInfo::EnumInfo *constants = type->enum_map.getptr(p_enum);
 
 		if (constants) {
-			for (const List<StringName>::Element *E = constants->constants.front(); E; E = E->next()) {
-				p_constants->push_back(E->get());
+			for (const StringName &E : constants->constants) {
+				p_constants.push_back(E);
 			}
 		}
 
@@ -1574,7 +1579,7 @@ void ClassDB::add_linked_property(const StringName &p_class, const String &p_pro
 	ERR_FAIL_COND(!type->property_map.has(p_linked_property));
 
 	if (!type->linked_properties.has(p_property)) {
-		type->linked_properties.insert(p_property, List<StringName>());
+		type->linked_properties.insert(p_property, LocalVector<StringName>());
 	}
 	type->linked_properties[p_property].push_back(p_linked_property);
 
@@ -1601,15 +1606,16 @@ void ClassDB::get_property_list(const StringName &p_class, List<PropertyInfo> *p
 	}
 }
 
-void ClassDB::get_linked_properties_info(const StringName &p_class, const StringName &p_property, List<StringName> *r_properties, bool p_no_inheritance) {
+LocalVector<StringName> ClassDB::get_linked_properties_info(const StringName &p_class, const StringName &p_property, bool p_no_inheritance) {
+	LocalVector<StringName> r_properties;
 #ifdef TOOLS_ENABLED
 	ClassInfo *check = classes.getptr(p_class);
 	while (check) {
 		if (!check->linked_properties.has(p_property)) {
-			return;
+			return r_properties;
 		}
 		for (const StringName &E : check->linked_properties[p_property]) {
-			r_properties->push_back(E);
+			r_properties.push_back(E);
 		}
 
 		if (p_no_inheritance) {
@@ -1618,6 +1624,7 @@ void ClassDB::get_linked_properties_info(const StringName &p_class, const String
 		check = check->inherits_ptr;
 	}
 #endif
+	return r_properties;
 }
 
 bool ClassDB::get_property_info(const StringName &p_class, const StringName &p_property, PropertyInfo *r_info, bool p_no_inheritance, const Object *p_validator) {
@@ -2087,7 +2094,7 @@ void ClassDB::add_virtual_compatibility_method(const StringName &p_class, const 
 	compat_hashes->push_back(p_method.get_compatibility_hash());
 }
 
-void ClassDB::get_virtual_methods(const StringName &p_class, List<MethodInfo> *p_methods, bool p_no_inheritance) {
+void ClassDB::get_virtual_methods(const StringName &p_class, LocalVector<MethodInfo> &p_methods, bool p_no_inheritance) {
 	ERR_FAIL_COND_MSG(!classes.has(p_class), vformat("Request for nonexistent class '%s'.", p_class));
 
 #ifdef DEBUG_ENABLED
@@ -2096,7 +2103,7 @@ void ClassDB::get_virtual_methods(const StringName &p_class, List<MethodInfo> *p
 	ClassInfo *check = type;
 	while (check) {
 		for (const MethodInfo &E : check->virtual_methods) {
-			p_methods->push_back(E);
+			p_methods.push_back(E);
 		}
 
 		if (p_no_inheritance) {
@@ -2226,9 +2233,9 @@ void ClassDB::add_resource_base_extension(const StringName &p_extension, const S
 	resource_base_extensions[p_extension] = p_class;
 }
 
-void ClassDB::get_resource_base_extensions(List<String> *p_extensions) {
+void ClassDB::get_resource_base_extensions(LocalVector<String> &p_extensions) {
 	for (const KeyValue<StringName, StringName> &E : resource_base_extensions) {
-		p_extensions->push_back(E.key);
+		p_extensions.push_back(E.key);
 	}
 }
 
@@ -2236,10 +2243,10 @@ bool ClassDB::is_resource_extension(const StringName &p_extension) {
 	return resource_base_extensions.has(p_extension);
 }
 
-void ClassDB::get_extensions_for_type(const StringName &p_class, List<String> *p_extensions) {
+void ClassDB::get_extensions_for_type(const StringName &p_class, LocalVector<String> &p_extensions) {
 	for (const KeyValue<StringName, StringName> &E : resource_base_extensions) {
 		if (is_parent_class(p_class, E.value) || is_parent_class(E.value, p_class)) {
-			p_extensions->push_back(E.key);
+			p_extensions.push_back(E.key);
 		}
 	}
 }
@@ -2395,10 +2402,13 @@ void ClassDB::register_native_struct(const StringName &p_name, const String &p_c
 	native_structs[p_name] = ns;
 }
 
-void ClassDB::get_native_struct_list(List<StringName> *r_names) {
+LocalVector<StringName> ClassDB::get_native_struct_list() {
+	LocalVector<StringName> r_names;
+	r_names.reserve(native_structs.size());
 	for (const KeyValue<StringName, NativeStruct> &E : native_structs) {
-		r_names->push_back(E.key);
+		r_names.push_back(E.key);
 	}
+	return r_names;
 }
 
 String ClassDB::get_native_struct_code(const StringName &p_name) {

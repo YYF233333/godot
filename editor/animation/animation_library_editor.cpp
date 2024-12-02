@@ -136,8 +136,8 @@ void AnimationLibraryEditor::_add_library_confirm() {
 }
 
 void AnimationLibraryEditor::_load_library() {
-	List<String> extensions;
-	ResourceLoader::get_recognized_extensions_for_type("AnimationLibrary", &extensions);
+	LocalVector<String> extensions;
+	ResourceLoader::get_recognized_extensions_for_type("AnimationLibrary", extensions);
 
 	file_dialog->set_title(TTR("Load Animation"));
 	file_dialog->clear_filters();
@@ -198,8 +198,8 @@ void AnimationLibraryEditor::_file_popup_selected(int p_id) {
 				file_dialog->set_current_file(String(file_dialog_library) + ".res");
 			}
 			file_dialog->clear_filters();
-			List<String> exts;
-			ResourceLoader::get_recognized_extensions_for_type("AnimationLibrary", &exts);
+			LocalVector<String> exts;
+			ResourceLoader::get_recognized_extensions_for_type("AnimationLibrary", exts);
 			for (const String &K : exts) {
 				file_dialog->add_filter("*." + K);
 			}
@@ -209,11 +209,9 @@ void AnimationLibraryEditor::_file_popup_selected(int p_id) {
 		} break;
 		case FILE_MENU_MAKE_LIBRARY_UNIQUE: {
 			StringName lib_name = file_dialog_library;
-			List<StringName> animation_list;
 
 			Ref<AnimationLibrary> ald = memnew(AnimationLibrary);
-			al->get_animation_list(&animation_list);
-			for (const StringName &animation_name : animation_list) {
+			for (const StringName &animation_name : al->get_animation_list()) {
 				Ref<Animation> animation = al->get_animation(animation_name);
 				if (EditorNode::get_singleton()->is_resource_read_only(animation)) {
 					animation = animation->duplicate();
@@ -276,8 +274,8 @@ void AnimationLibraryEditor::_file_popup_selected(int p_id) {
 				file_dialog->set_current_file(String(file_dialog_animation) + ".res");
 			}
 			file_dialog->clear_filters();
-			List<String> exts;
-			ResourceLoader::get_recognized_extensions_for_type("Animation", &exts);
+			LocalVector<String> exts;
+			ResourceLoader::get_recognized_extensions_for_type("Animation", exts);
 			for (const String &K : exts) {
 				file_dialog->add_filter("*." + K);
 			}
@@ -356,7 +354,7 @@ void AnimationLibraryEditor::_load_files(const PackedStringArray &p_paths) {
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 	bool has_created_action = false;
 	bool show_error_diag = false;
-	List<String> name_list;
+	LocalVector<String> name_list;
 
 	switch (file_dialog_action) {
 		case FILE_DIALOG_ACTION_OPEN_LIBRARY: {
@@ -374,10 +372,8 @@ void AnimationLibraryEditor::_load_files(const PackedStringArray &p_paths) {
 					continue;
 				}
 
-				List<StringName> libs;
-				mixer->get_animation_library_list(&libs);
 				bool is_already_added = false;
-				for (const StringName &K : libs) {
+				for (const StringName &K : mixer->get_animation_library_list()) {
 					if (mixer->get_animation_library(K) == anim_library) {
 						// Prioritize the "invalid" error message.
 						if (!show_error_diag) {
@@ -396,7 +392,7 @@ void AnimationLibraryEditor::_load_files(const PackedStringArray &p_paths) {
 
 				String name = AnimationLibrary::validate_library_name(path.get_file().get_basename());
 				int attempt = 1;
-				while (bool(mixer->has_animation_library(name)) || name_list.find(name)) {
+				while (bool(mixer->has_animation_library(name)) || name_list.has(name)) {
 					attempt++;
 					name = path.get_file().get_basename() + " " + itos(attempt);
 				}
@@ -420,10 +416,8 @@ void AnimationLibraryEditor::_load_files(const PackedStringArray &p_paths) {
 					continue;
 				}
 
-				List<StringName> anims;
-				al->get_animation_list(&anims);
 				bool is_already_added = false;
-				for (const StringName &K : anims) {
+				for (const StringName &K : al->get_animation_list()) {
 					if (al->get_animation(K) == anim) {
 						// Prioritize the "invalid" error message.
 						if (!show_error_diag) {
@@ -442,7 +436,7 @@ void AnimationLibraryEditor::_load_files(const PackedStringArray &p_paths) {
 
 				String name = path.get_file().get_basename();
 				int attempt = 1;
-				while (al->has_animation(name) || name_list.find(name)) {
+				while (al->has_animation(name) || name_list.has(name)) {
 					attempt++;
 					name = path.get_file().get_basename() + " " + itos(attempt);
 				}
@@ -552,8 +546,8 @@ void AnimationLibraryEditor::_button_pressed(TreeItem *p_item, int p_column, int
 			} break;
 			case LIB_BUTTON_LOAD: {
 				adding_animation_to_library = p_item->get_metadata(0);
-				List<String> extensions;
-				ResourceLoader::get_recognized_extensions_for_type("Animation", &extensions);
+				LocalVector<String> extensions;
+				ResourceLoader::get_recognized_extensions_for_type("Animation", extensions);
 
 				file_dialog->clear_filters();
 				for (const String &K : extensions) {
@@ -684,12 +678,9 @@ void AnimationLibraryEditor::update_tree() {
 	Color ss_color = get_theme_color(SNAME("prop_subsection"), EditorStringName(Editor));
 
 	TreeItem *root = tree->create_item();
-	List<StringName> libs;
 	Vector<uint64_t> collapsed_lib_ids = _load_mixer_libs_folding();
 
-	mixer->get_animation_library_list(&libs);
-
-	for (const StringName &K : libs) {
+	for (const StringName &K : mixer->get_animation_library_list()) {
 		TreeItem *libitem = tree->create_item(root);
 		libitem->set_text(0, K);
 		if (K == StringName()) {
@@ -741,9 +732,7 @@ void AnimationLibraryEditor::update_tree() {
 
 		libitem->set_custom_bg_color(0, ss_color);
 
-		List<StringName> animations;
-		al->get_animation_list(&animations);
-		for (const StringName &L : animations) {
+		for (const StringName &L : al->get_animation_list()) {
 			TreeItem *anitem = tree->create_item(libitem);
 			anitem->set_text(0, L);
 			anitem->set_editable(0, !animation_library_is_foreign);
@@ -899,7 +888,7 @@ Vector<uint64_t> AnimationLibraryEditor::_load_mixer_libs_folding() {
 		String current_mixer_signature = _get_mixer_signature();
 		Vector<String> sections = config->get_sections();
 
-		for (const String &section : sections) {
+		for (const String &section : config->get_sections()) {
 			Variant mixer_id = config->get_value(section, "mixer");
 			if ((mixer_id.get_type() == Variant::INT && uint64_t(mixer_id) == current_mixer_id) || config->get_value(section, "mixer_signature") == current_mixer_signature) { // Ensure value exists and is correct type
 				// Found the mixer in a different section!
@@ -951,8 +940,7 @@ String AnimationLibraryEditor::_get_mixer_signature() const {
 	String signature = String();
 
 	// Get all libraries sorted for consistency
-	List<StringName> libs;
-	mixer->get_animation_library_list(&libs);
+	LocalVector<StringName> libs = mixer->get_animation_library_list();
 	libs.sort_custom<StringName::AlphCompare>();
 
 	// Add libraries and their animations to signature
@@ -960,10 +948,8 @@ String AnimationLibraryEditor::_get_mixer_signature() const {
 		signature += "::" + String(lib_name);
 		Ref<AnimationLibrary> lib = mixer->get_animation_library(lib_name);
 		if (lib.is_valid()) {
-			List<StringName> anims;
-			lib->get_animation_list(&anims);
-			anims.sort_custom<StringName::AlphCompare>();
-			for (const StringName &anim_name : anims) {
+			// Animations have already been sorted, so no need to sort them again
+			for (const StringName &anim_name : lib->get_animation_list()) {
 				signature += "," + String(anim_name);
 			}
 		}

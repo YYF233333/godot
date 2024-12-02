@@ -143,8 +143,8 @@ Dictionary DebugAdapterParser::req_initialize(const Dictionary &p_params) const 
 
 	if (DebugAdapterProtocol::get_singleton()->_sync_breakpoints) {
 		// Send all current breakpoints
-		List<String> breakpoints;
-		ScriptEditor::get_singleton()->get_breakpoints(&breakpoints);
+		LocalVector<String> breakpoints;
+		ScriptEditor::get_singleton()->get_breakpoints(breakpoints);
 		for (const String &breakpoint : breakpoints) {
 			String path = breakpoint.left(breakpoint.find_char(':', 6)); // Skip initial part of path, aka "res://"
 			int line = breakpoint.substr(path.size()).to_int();

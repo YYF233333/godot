@@ -1209,7 +1209,7 @@ void EditorNode::_plugin_over_self_own(EditorPlugin *p_plugin) {
 }
 
 void EditorNode::_resources_changed(const Vector<String> &p_resources) {
-	List<Ref<Resource>> changed;
+	LocalVector<Ref<Resource>> changed;
 
 	int rc = p_resources.size();
 	for (int i = 0; i < rc; i++) {
@@ -1754,8 +1754,8 @@ void EditorNode::save_resource_as(const Ref<Resource> &p_resource, const String 
 	saving_resource = p_resource;
 
 	current_menu_option = RESOURCE_SAVE_AS;
-	List<String> extensions;
-	ResourceSaver::get_recognized_extensions(p_resource, &extensions);
+	LocalVector<String> extensions;
+	ResourceSaver::get_recognized_extensions(p_resource, extensions);
 	file->clear_filters();
 
 	List<String> preferred;
@@ -1790,8 +1790,8 @@ void EditorNode::save_resource_as(const Ref<Resource> &p_resource, const String 
 		if (is_resource) {
 			if (!extensions.is_empty()) {
 				const String ext = resource_path.get_extension().to_lower();
-				if (extensions.find(ext) == nullptr) {
-					file->set_current_path(resource_path.replacen("." + ext, "." + extensions.front()->get()));
+				if (!extensions.has(ext)) {
+					file->set_current_path(resource_path.replacen("." + ext, "." + extensions[0]));
 				}
 			}
 		} else {
@@ -2024,10 +2024,8 @@ void EditorNode::_load_editor_plugin_states_from_config(const Ref<ConfigFile> &p
 		return;
 	}
 
-	Vector<String> esl = p_config_file->get_section_keys("editor_states");
-
 	Dictionary md;
-	for (const String &E : esl) {
+	for (const String &E : p_config_file->get_section_keys("editor_states")) {
 		Variant st = p_config_file->get_value("editor_states", E);
 		if (st.get_type() != Variant::NIL) {
 			md[E] = st;
@@ -2290,8 +2288,8 @@ int EditorNode::_save_external_resources(bool p_also_save_external_data) {
 
 	HashSet<String> edited_resources;
 	int saved = 0;
-	List<Ref<Resource>> cached;
-	ResourceCache::get_cached_resources(&cached);
+	LocalVector<Ref<Resource>> cached;
+	ResourceCache::get_cached_resources(cached);
 
 	for (Ref<Resource> res : cached) {
 		if (!res->is_edited()) {
@@ -2362,7 +2360,7 @@ void EditorNode::_save_scene_silently() {
 	}
 }
 
-static void _reset_animation_mixers(Node *p_node, List<Pair<AnimationMixer *, Ref<AnimatedValuesBackup>>> *r_anim_backups) {
+static void _reset_animation_mixers(Node *p_node, LocalVector<Pair<AnimationMixer *, Ref<AnimatedValuesBackup>>> &r_anim_backups) {
 	for (int i = 0; i < p_node->get_child_count(); i++) {
 		AnimationMixer *mixer = Object::cast_to<AnimationMixer>(p_node->get_child(i));
 		if (mixer && mixer->is_active() && mixer->is_reset_on_save_enabled() && mixer->can_apply_reset()) {
@@ -2378,7 +2376,7 @@ static void _reset_animation_mixers(Node *p_node, List<Pair<AnimationMixer *, Re
 				Pair<AnimationMixer *, Ref<AnimatedValuesBackup>> pair;
 				pair.first = mixer;
 				pair.second = backup;
-				r_anim_backups->push_back(pair);
+				r_anim_backups.push_back(pair);
 			}
 		}
 		_reset_animation_mixers(p_node->get_child(i), r_anim_backups);
@@ -2404,8 +2402,8 @@ void EditorNode::_save_scene(String p_file, int idx) {
 
 	editor_data.apply_changes_in_editors();
 	save_default_environment();
-	List<Pair<AnimationMixer *, Ref<AnimatedValuesBackup>>> anim_backups;
-	_reset_animation_mixers(scene, &anim_backups);
+	LocalVector<Pair<AnimationMixer *, Ref<AnimatedValuesBackup>>> anim_backups;
+	_reset_animation_mixers(scene, anim_backups);
 	_save_editor_states(p_file, idx);
 
 	Ref<PackedScene> sdata;
@@ -2773,8 +2771,7 @@ void EditorNode::_dialog_action(String p_file) {
 			}
 
 			// Erase key values.
-			Vector<String> keys = config->get_section_keys(p_file);
-			for (const String &key : keys) {
+			for (const String &key : config->get_section_keys(p_file)) {
 				config->set_value(p_file, key, Variant());
 			}
 
@@ -2842,7 +2839,7 @@ void EditorNode::edit_item(Object *p_object, Object *p_editing_owner) {
 	// Remove editor plugins no longer used by this editing owner. Keep the ones that can
 	// still be reused by the new edited object.
 
-	List<EditorPlugin *> to_remove;
+	LocalVector<EditorPlugin *> to_remove;
 	for (EditorPlugin *plugin : active_plugins[owner_id]) {
 		if (!available_plugins.has(plugin)) {
 			to_remove.push_back(plugin);
@@ -2973,7 +2970,7 @@ void EditorNode::hide_unused_editors(const Object *p_editing_owner) {
 	} else {
 		// If no editing owner is provided, this method will go over all owners and check if they are valid.
 		// This is to sweep properties that were removed from the inspector.
-		List<ObjectID> to_remove;
+		LocalVector<ObjectID> to_remove;
 		for (KeyValue<ObjectID, HashSet<EditorPlugin *>> &kv : active_plugins) {
 			Object *context = ObjectDB::get_instance(kv.key);
 			if (context) {
@@ -3283,8 +3280,8 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 		case SCENE_NEW_INHERITED_SCENE:
 		case SCENE_OPEN_SCENE: {
 			file->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_FILE);
-			List<String> extensions;
-			ResourceLoader::get_recognized_extensions_for_type("PackedScene", &extensions);
+			LocalVector<String> extensions;
+			ResourceLoader::get_recognized_extensions_for_type("PackedScene", extensions);
 			file->clear_filters();
 			for (const String &extension : extensions) {
 				file->add_filter("*." + extension, extension.to_upper());
@@ -3390,9 +3387,9 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 
 			file->set_file_mode(EditorFileDialog::FILE_MODE_SAVE_FILE);
 
-			List<String> extensions;
+			LocalVector<String> extensions;
 			Ref<PackedScene> sd = memnew(PackedScene);
-			ResourceSaver::get_recognized_extensions(sd, &extensions);
+			ResourceSaver::get_recognized_extensions(sd, extensions);
 			file->clear_filters();
 			for (const String &extension : extensions) {
 				file->add_filter("*." + extension, extension.to_upper());
@@ -3406,14 +3403,14 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 
 				file->set_current_path(path);
 				if (extensions.size()) {
-					if (extensions.find(ext) == nullptr) {
-						file->set_current_path(path.replacen("." + ext, "." + extensions.front()->get()));
+					if (!extensions.has(ext)) {
+						file->set_current_path(path.replacen("." + ext, "." + extensions[0]));
 					}
 				}
 			} else if (extensions.size()) {
 				String root_name = scene->get_name();
 				root_name = EditorNode::adjust_scene_name_casing(root_name);
-				file->set_current_path(root_name + "." + extensions.front()->get().to_lower());
+				file->set_current_path(root_name + "." + extensions[0].to_lower());
 			}
 			file->set_title(TTR("Save Scene As..."));
 			file->popup_file_dialog();
@@ -3758,8 +3755,8 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 		} break;
 		case SETTINGS_PICK_MAIN_SCENE: {
 			file->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_FILE);
-			List<String> extensions;
-			ResourceLoader::get_recognized_extensions_for_type("PackedScene", &extensions);
+			LocalVector<String> extensions;
+			ResourceLoader::get_recognized_extensions_for_type("PackedScene", extensions);
 			file->clear_filters();
 			for (const String &extension : extensions) {
 				file->add_filter("*." + extension, extension.to_upper());
@@ -3981,9 +3978,9 @@ void EditorNode::_export_as_menu_option(int p_idx) {
 			return;
 		}
 
-		List<String> extensions;
+		LocalVector<String> extensions;
 		Ref<MeshLibrary> ml(memnew(MeshLibrary));
-		ResourceSaver::get_recognized_extensions(ml, &extensions);
+		ResourceSaver::get_recognized_extensions(ml, extensions);
 		file_export_lib->clear_filters();
 		for (const String &E : extensions) {
 			file_export_lib->add_filter("*." + E);
@@ -4889,7 +4886,7 @@ HashMap<StringName, Variant> EditorNode::get_modified_properties_for_node(Node *
 	return modified_property_map;
 }
 
-HashMap<StringName, Variant> EditorNode::get_modified_properties_reference_to_nodes(Node *p_node, List<Node *> &p_nodes_referenced_by) {
+HashMap<StringName, Variant> EditorNode::get_modified_properties_reference_to_nodes(Node *p_node, LocalVector<Node *> &p_nodes_referenced_by) {
 	HashMap<StringName, Variant> modified_property_map;
 
 	List<PropertyInfo> pinfo;
@@ -4901,7 +4898,7 @@ HashMap<StringName, Variant> EditorNode::get_modified_properties_reference_to_no
 			}
 			Variant current_value = p_node->get(E.name);
 			Node *target_node = Object::cast_to<Node>(current_value);
-			if (target_node && p_nodes_referenced_by.find(target_node)) {
+			if (target_node && p_nodes_referenced_by.has(target_node)) {
 				modified_property_map[E.name] = p_node->get_path_to(target_node);
 			}
 		}
@@ -5089,8 +5086,8 @@ void EditorNode::get_preload_scene_modification_table(
 		HashMap<StringName, Variant> modified_properties = get_modified_properties_for_node(p_node, false);
 
 		// Find all valid connections to other nodes.
-		List<Connection> connections_to;
-		p_node->get_all_signal_connections(&connections_to);
+		LocalVector<Connection> connections_to;
+		p_node->get_all_signal_connections(connections_to);
 
 		List<ConnectionWithNodePath> valid_connections_to;
 		for (const Connection &c : connections_to) {
@@ -5107,8 +5104,8 @@ void EditorNode::get_preload_scene_modification_table(
 		}
 
 		// Find all valid connections from other nodes.
-		List<Connection> connections_from;
-		p_node->get_signals_connected_to_this(&connections_from);
+		LocalVector<Connection> connections_from;
+		p_node->get_signals_connected_to_this(connections_from);
 
 		List<Connection> valid_connections_from;
 		for (const Connection &c : connections_from) {
@@ -5134,8 +5131,8 @@ void EditorNode::get_preload_scene_modification_table(
 		}
 
 		// Find all node groups.
-		List<Node::GroupInfo> groups;
-		p_node->get_groups(&groups);
+		LocalVector<Node::GroupInfo> groups;
+		p_node->get_groups(groups);
 
 		if (!modified_properties.is_empty() || !valid_connections_to.is_empty() || !valid_connections_from.is_empty() || !groups.is_empty()) {
 			ModificationNodeEntry modification_node_entry;
@@ -5157,7 +5154,7 @@ void EditorNode::get_preload_modifications_reference_to_nodes(
 		Node *p_root,
 		Node *p_node,
 		HashSet<Node *> &p_excluded_nodes,
-		List<Node *> &p_instance_list_with_children,
+		LocalVector<Node *> &p_instance_list_with_children,
 		HashMap<NodePath, ModificationNodeEntry> &p_modification_table) {
 	if (!p_excluded_nodes.find(p_node)) {
 		HashMap<StringName, Variant> modified_properties = get_modified_properties_reference_to_nodes(p_node, p_instance_list_with_children);
@@ -5175,7 +5172,7 @@ void EditorNode::get_preload_modifications_reference_to_nodes(
 	}
 }
 
-void EditorNode::get_children_nodes(Node *p_node, List<Node *> &p_nodes) {
+void EditorNode::get_children_nodes(Node *p_node, LocalVector<Node *> &p_nodes) {
 	for (int i = 0; i < p_node->get_child_count(); i++) {
 		Node *child = p_node->get_child(i);
 		p_nodes.push_back(child);
@@ -5957,8 +5954,8 @@ void EditorNode::_file_dialog_thumbnail_callback(const String &p_path, const Ref
 }
 
 void EditorNode::_build_icon_type_cache() {
-	List<StringName> tl;
-	theme->get_icon_list(EditorStringName(EditorIcons), &tl);
+	LocalVector<StringName> tl;
+	theme->get_icon_list(EditorStringName(EditorIcons), tl);
 	for (const StringName &E : tl) {
 		if (!ClassDB::class_exists(E)) {
 			continue;
@@ -6956,7 +6953,7 @@ void EditorNode::find_all_instances_inheriting_path_in_node(Node *p_root, Node *
 	}
 }
 
-void EditorNode::preload_reimporting_with_path_in_edited_scenes(const List<String> &p_scenes) {
+void EditorNode::preload_reimporting_with_path_in_edited_scenes(const LocalVector<String> &p_scenes) {
 	EditorProgress progress("preload_reimporting_scene", TTR("Preparing scenes for reload"), editor_data.get_edited_scene_count());
 
 	int original_edited_scene_idx = editor_data.get_edited_scene();
@@ -6981,7 +6978,7 @@ void EditorNode::preload_reimporting_with_path_in_edited_scenes(const List<Strin
 				if (instances_to_reimport.size() > 0) {
 					editor_data.set_edited_scene(current_scene_idx);
 
-					List<Node *> instance_list_with_children;
+					LocalVector<Node *> instance_list_with_children;
 					for (Node *original_node : instances_to_reimport) {
 						InstanceModificationsEntry instance_modifications;
 
@@ -7181,7 +7178,7 @@ void EditorNode::reload_instances_with_path_in_edited_scenes() {
 			}
 
 			// Store all the paths for any selected nodes which are ancestors of the node we're replacing.
-			List<NodePath> selected_node_paths;
+			LocalVector<NodePath> selected_node_paths;
 			for (Node *selected_node : editor_selection->get_top_selected_node_list()) {
 				if (selected_node == original_node || original_node->is_ancestor_of(selected_node)) {
 					selected_node_paths.push_back(original_node->get_path_to(selected_node));
@@ -7197,8 +7194,8 @@ void EditorNode::reload_instances_with_path_in_edited_scenes() {
 
 			// Clear ownership of the nodes (kind of hack to workaround an issue with
 			// replace_by when called on nodes in other tabs).
-			List<Node *> nodes_owned_by_original_node;
-			original_node->get_owned_by(original_node, &nodes_owned_by_original_node);
+			LocalVector<Node *> nodes_owned_by_original_node;
+			original_node->get_owned_by(original_node, nodes_owned_by_original_node);
 			for (Node *owned_node : nodes_owned_by_original_node) {
 				owned_node->set_owner(nullptr);
 			}

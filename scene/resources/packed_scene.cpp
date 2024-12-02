@@ -152,7 +152,7 @@ static Node *_find_node_by_id(Node *p_owner, Node *p_node, int32_t p_id) {
 
 Node *SceneState::instantiate(GenEditState p_edit_state) const {
 	// Nodes where instantiation failed (because something is missing.)
-	List<Node *> stray_instances;
+	LocalVector<Node *> stray_instances;
 
 #define NODE_FROM_ID(p_name, p_id)                                             \
 	Node *p_name;                                                              \
@@ -400,7 +400,7 @@ Node *SceneState::instantiate(GenEditState p_edit_state) const {
 						//https://github.com/godotengine/godot/issues/2958
 
 						//store old state
-						List<Pair<StringName, Variant>> old_state;
+						LocalVector<Pair<StringName, Variant>> old_state;
 						if (node->get_script_instance()) {
 							node->get_script_instance()->get_property_state(old_state);
 						}
@@ -686,9 +686,8 @@ Node *SceneState::instantiate(GenEditState p_edit_state) const {
 	//Node *s = ret_nodes[0];
 
 	//remove nodes that could not be added, likely as a result that
-	while (stray_instances.size()) {
-		memdelete(stray_instances.front()->get());
-		stray_instances.pop_front();
+	for (Node *&node : stray_instances) {
+		memdelete(node);
 	}
 
 	for (int i = 0; i < editable_instances.size(); i++) {
@@ -1008,8 +1007,8 @@ Error SceneState::_parse_node(Node *p_owner, Node *p_node, int p_parent_idx, Has
 	// save the groups this node is into
 	// discard groups that come from the original scene
 
-	List<Node::GroupInfo> groups;
-	p_node->get_groups(&groups);
+	LocalVector<Node::GroupInfo> groups;
+	p_node->get_groups(groups);
 	for (const Node::GroupInfo &gi : groups) {
 		if (!gi.persistent) {
 			continue;
@@ -1152,8 +1151,8 @@ Error SceneState::_parse_connections(Node *p_owner, Node *p_node, HashMap<String
 	//NodeData &nd = nodes[node_map[p_node]];
 
 	for (const MethodInfo &E : _signals) {
-		List<Node::Connection> conns;
-		p_node->get_signal_connection_list(E.name, &conns);
+		LocalVector<Node::Connection> conns;
+		p_node->get_signal_connection_list(E.name, conns);
 
 		conns.sort();
 

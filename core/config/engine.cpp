@@ -382,7 +382,8 @@ bool Engine::has_singleton(const StringName &p_name) const {
 	return singleton_ptrs.has(p_name);
 }
 
-void Engine::get_singletons(List<Singleton> *p_singletons) {
+LocalVector<Engine::Singleton> Engine::get_singletons() {
+	LocalVector<Singleton> ret;
 	for (const Singleton &E : singletons) {
 #ifdef TOOLS_ENABLED
 		if (!is_editor_hint() && E.editor_only) {
@@ -390,8 +391,9 @@ void Engine::get_singletons(List<Singleton> *p_singletons) {
 		}
 #endif
 
-		p_singletons->push_back(E);
+		ret.push_back(E);
 	}
+	return ret;
 }
 
 String Engine::get_write_movie_path() const {

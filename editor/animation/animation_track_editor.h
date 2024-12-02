@@ -101,7 +101,7 @@ public:
 
 	Ref<Animation> animation;
 
-	RBMap<int, List<float>> key_ofs_map;
+	RBMap<int, LocalVector<float>> key_ofs_map;
 	RBMap<int, NodePath> base_map;
 	PropertyInfo hint;
 
@@ -706,7 +706,7 @@ class AnimationTrackEditor : public VBoxContainer {
 	CheckBox *insert_confirm_reset = nullptr;
 	ConfirmationDialog *insert_confirm = nullptr;
 	bool insert_queue = false;
-	List<InsertData> insert_data;
+	LocalVector<InsertData> insert_data;
 
 	void _query_insert(const InsertData &p_id);
 	Ref<Animation> _create_and_get_reset_animation();

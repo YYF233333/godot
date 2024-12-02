@@ -53,19 +53,17 @@ TEST_CASE("[Skeleton3D] Test per-bone meta") {
 	CHECK_MESSAGE(skeleton->get_bone_meta(0, "key2") == Variant(12345), "Bone meta missing.");
 
 	// Retrieve list of keys.
-	List<StringName> keys;
-	skeleton->get_bone_meta_list(0, &keys);
+	LocalVector<StringName> keys = skeleton->get_bone_meta_list(0);
 	CHECK_MESSAGE(keys.size() == 2, "Wrong number of bone meta keys.");
-	CHECK_MESSAGE(keys.find("key1"), "key1 not found in bone meta list");
-	CHECK_MESSAGE(keys.find("key2"), "key2 not found in bone meta list");
+	CHECK_MESSAGE(keys.has("key1"), "key1 not found in bone meta list");
+	CHECK_MESSAGE(keys.has("key2"), "key2 not found in bone meta list");
 
 	// Removing meta.
 	skeleton->set_bone_meta(0, "key1", Variant());
 	skeleton->set_bone_meta(0, "key2", Variant());
 	CHECK_MESSAGE(!skeleton->has_bone_meta(0, "key1"), "Bone meta key1 should be deleted.");
 	CHECK_MESSAGE(!skeleton->has_bone_meta(0, "key2"), "Bone meta key2 should be deleted.");
-	List<StringName> should_be_empty_keys;
-	skeleton->get_bone_meta_list(0, &should_be_empty_keys);
+	LocalVector<StringName> should_be_empty_keys = skeleton->get_bone_meta_list(0);
 	CHECK_MESSAGE(should_be_empty_keys.size() == 0, "Wrong number of bone meta keys.");
 
 	// Deleting non-existing key should succeed.

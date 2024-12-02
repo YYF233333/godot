@@ -66,17 +66,15 @@ TEST_CASE("[SpriteFrames] Animation addition, list getter, renaming, removal, an
 			!frames.has_animation("999"),
 			"Return false when checking for animation that does not exist");
 
-	List<StringName> sname_list;
-	frames.get_animation_list(&sname_list);
+	LocalVector<StringName> sname_list = frames.get_animation_list();
 
 	CHECK_MESSAGE(
 			sname_list.size() == test_names.size(),
 			"StringName List getter returned list of expected size");
 
-	int idx = 0;
-	for (List<StringName>::ConstIterator itr = sname_list.begin(); itr != sname_list.end(); ++itr, ++idx) {
+	for (uint32_t idx = 0; idx < sname_list.size(); ++idx) {
 		CHECK_MESSAGE(
-				*itr == StringName(test_names[idx]),
+				sname_list[idx] == StringName(test_names[idx]),
 				"StringName List getter returned expected values");
 	}
 

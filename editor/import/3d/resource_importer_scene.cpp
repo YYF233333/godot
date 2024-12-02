@@ -57,15 +57,15 @@
 #include "scene/resources/packed_scene.h"
 #include "scene/resources/resource_format_text.h"
 
-void EditorSceneFormatImporter::get_extensions(List<String> *r_extensions) const {
+void EditorSceneFormatImporter::get_extensions(LocalVector<String> &r_extensions) const {
 	Vector<String> arr;
 	GDVIRTUAL_CALL(_get_extensions, arr);
 	for (int i = 0; i < arr.size(); i++) {
-		r_extensions->push_back(arr[i]);
+		r_extensions.push_back(arr[i]);
 	}
 }
 
-Node *EditorSceneFormatImporter::import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, List<String> *r_missing_deps, Error *r_err) {
+Node *EditorSceneFormatImporter::import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, LocalVector<String> *r_missing_deps, Error *r_err) {
 	Dictionary options_dict;
 	for (const KeyValue<StringName, Variant> &elem : p_options) {
 		options_dict[elem.key] = elem.value;
@@ -85,8 +85,8 @@ void EditorSceneFormatImporter::add_import_option_advanced(Variant::Type p_type,
 	current_option_list->push_back(ResourceImporter::ImportOption(PropertyInfo(p_type, p_name, p_hint, p_hint_string, p_usage_flags), p_default_value));
 }
 
-void EditorSceneFormatImporter::get_import_options(const String &p_path, List<ResourceImporter::ImportOption> *r_options) {
-	current_option_list = r_options;
+void EditorSceneFormatImporter::get_import_options(const String &p_path, LocalVector<ResourceImporter::ImportOption> &r_options) {
+	current_option_list = &r_options;
 	GDVIRTUAL_CALL(_get_import_options, p_path);
 	current_option_list = nullptr;
 }
@@ -162,8 +162,8 @@ void EditorScenePostImportPlugin::add_import_option_advanced(Variant::Type p_typ
 	current_option_list->push_back(ResourceImporter::ImportOption(PropertyInfo(p_type, p_name, p_hint, p_hint_string, p_usage_flags), p_default_value));
 }
 
-void EditorScenePostImportPlugin::get_internal_import_options(InternalImportCategory p_category, List<ResourceImporter::ImportOption> *r_options) {
-	current_option_list = r_options;
+void EditorScenePostImportPlugin::get_internal_import_options(InternalImportCategory p_category, LocalVector<ResourceImporter::ImportOption> &r_options) {
+	current_option_list = &r_options;
 	GDVIRTUAL_CALL(_get_internal_import_options, p_category);
 	current_option_list = nullptr;
 }
@@ -191,8 +191,8 @@ void EditorScenePostImportPlugin::internal_process(InternalImportCategory p_cate
 	current_options_dict = nullptr;
 }
 
-void EditorScenePostImportPlugin::get_import_options(const String &p_path, List<ResourceImporter::ImportOption> *r_options) {
-	current_option_list = r_options;
+void EditorScenePostImportPlugin::get_import_options(const String &p_path, LocalVector<ResourceImporter::ImportOption> &r_options) {
+	current_option_list = &r_options;
 	GDVIRTUAL_CALL(_get_import_options, p_path);
 	current_option_list = nullptr;
 }
@@ -263,7 +263,7 @@ String ResourceImporterScene::get_visible_name() const {
 	return _scene_import_type.capitalize();
 }
 
-void ResourceImporterScene::get_recognized_extensions(List<String> *p_extensions) const {
+void ResourceImporterScene::get_recognized_extensions(LocalVector<String> &p_extensions) const {
 	get_scene_importer_extensions(p_extensions);
 }
 
@@ -615,10 +615,7 @@ void _populate_scalable_nodes_collection(Node *p_node, ScalableNodeCollection &p
 	}
 	AnimationPlayer *animation_player = Object::cast_to<AnimationPlayer>(p_node);
 	if (animation_player) {
-		List<StringName> animation_list;
-		animation_player->get_animation_list(&animation_list);
-
-		for (const StringName &E : animation_list) {
+		for (const StringName &E : animation_player->get_animation_list()) {
 			Ref<Animation> animation = animation_player->get_animation(E);
 			p_collection.animations.insert(animation);
 		}
@@ -636,7 +633,7 @@ void _apply_permanent_scale_to_descendants(Node *p_root_node, Vector3 p_scale) {
 	_apply_scale_to_scalable_node_collection(scalable_node_collection, p_scale);
 }
 
-Node *ResourceImporterScene::_pre_fix_node(Node *p_node, Node *p_root, HashMap<Ref<ImporterMesh>, Vector<Ref<Shape3D>>> &r_collision_map, Pair<PackedVector3Array, PackedInt32Array> *r_occluder_arrays, List<Pair<NodePath, Node *>> &r_node_renames, const HashMap<StringName, Variant> &p_options) {
+Node *ResourceImporterScene::_pre_fix_node(Node *p_node, Node *p_root, HashMap<Ref<ImporterMesh>, Vector<Ref<Shape3D>>> &r_collision_map, Pair<PackedVector3Array, PackedInt32Array> *r_occluder_arrays, LocalVector<Pair<NodePath, Node *>> &r_node_renames, const HashMap<StringName, Variant> &p_options) {
 	bool use_name_suffixes = true;
 	if (p_options.has("nodes/use_name_suffixes")) {
 		use_name_suffixes = p_options["nodes/use_name_suffixes"];
@@ -701,9 +698,7 @@ Node *ResourceImporterScene::_pre_fix_node(Node *p_node, Node *p_root, HashMap<R
 
 		bool nodes_were_renamed = r_node_renames.size() != 0;
 
-		List<StringName> anims;
-		ap->get_animation_list(&anims);
-		for (const StringName &E : anims) {
+		for (const StringName &E : ap->get_animation_list()) {
 			Ref<Animation> anim = ap->get_animation(E);
 			ERR_CONTINUE(anim.is_null());
 
@@ -1067,8 +1062,8 @@ Node *ResourceImporterScene::_pre_fix_animations(Node *p_node, Node *p_root, con
 		//make sure this is unique
 		node_settings = node_settings.duplicate(true);
 		//fill node settings for this node with default values
-		List<ImportOption> iopts;
-		get_internal_import_options(INTERNAL_IMPORT_CATEGORY_ANIMATION_NODE, &iopts);
+		LocalVector<ImportOption> iopts;
+		get_internal_import_options(INTERNAL_IMPORT_CATEGORY_ANIMATION_NODE, iopts);
 		for (const ImportOption &E : iopts) {
 			if (!node_settings.has(E.option.name)) {
 				node_settings[E.option.name] = E.default_value;
@@ -1078,8 +1073,7 @@ Node *ResourceImporterScene::_pre_fix_animations(Node *p_node, Node *p_root, con
 
 	if (Object::cast_to<AnimationPlayer>(p_node)) {
 		AnimationPlayer *ap = Object::cast_to<AnimationPlayer>(p_node);
-		List<StringName> anims;
-		ap->get_animation_list(&anims);
+		LocalVector<StringName> anims = ap->get_animation_list();
 
 		AnimationImportTracks import_tracks_mode[TRACK_CHANNEL_MAX] = {
 			AnimationImportTracks(int(node_settings["import_tracks/position"])),
@@ -1115,8 +1109,8 @@ Node *ResourceImporterScene::_post_fix_animations(Node *p_node, Node *p_root, co
 		//make sure this is unique
 		node_settings = node_settings.duplicate(true);
 		//fill node settings for this node with default values
-		List<ImportOption> iopts;
-		get_internal_import_options(INTERNAL_IMPORT_CATEGORY_ANIMATION_NODE, &iopts);
+		LocalVector<ImportOption> iopts;
+		get_internal_import_options(INTERNAL_IMPORT_CATEGORY_ANIMATION_NODE, iopts);
 		for (const ImportOption &E : iopts) {
 			if (!node_settings.has(E.option.name)) {
 				node_settings[E.option.name] = E.default_value;
@@ -1126,8 +1120,7 @@ Node *ResourceImporterScene::_post_fix_animations(Node *p_node, Node *p_root, co
 
 	if (Object::cast_to<AnimationPlayer>(p_node)) {
 		AnimationPlayer *ap = Object::cast_to<AnimationPlayer>(p_node);
-		List<StringName> anims;
-		ap->get_animation_list(&anims);
+		LocalVector<StringName> anims = ap->get_animation_list();
 
 		if (p_remove_immutable_tracks) {
 			AnimationImportTracks import_tracks_mode[TRACK_CHANNEL_MAX] = {
@@ -1335,8 +1328,8 @@ Node *ResourceImporterScene::_post_fix_animations(Node *p_node, Node *p_root, co
 				}
 				{
 					//fill with default values
-					List<ImportOption> iopts;
-					get_internal_import_options(INTERNAL_IMPORT_CATEGORY_ANIMATION, &iopts);
+					LocalVector<ImportOption> iopts;
+					get_internal_import_options(INTERNAL_IMPORT_CATEGORY_ANIMATION, iopts);
 					for (const ImportOption &F : iopts) {
 						if (!anim_settings.has(F.option.name)) {
 							anim_settings[F.option.name] = F.default_value;
@@ -1455,15 +1448,15 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 		//make sure this is unique
 		node_settings = node_settings.duplicate(true);
 		//fill node settings for this node with default values
-		List<ImportOption> iopts;
+		LocalVector<ImportOption> iopts;
 		if (Object::cast_to<ImporterMeshInstance3D>(p_node)) {
-			get_internal_import_options(INTERNAL_IMPORT_CATEGORY_MESH_3D_NODE, &iopts);
+			get_internal_import_options(INTERNAL_IMPORT_CATEGORY_MESH_3D_NODE, iopts);
 		} else if (Object::cast_to<AnimationPlayer>(p_node)) {
-			get_internal_import_options(INTERNAL_IMPORT_CATEGORY_ANIMATION_NODE, &iopts);
+			get_internal_import_options(INTERNAL_IMPORT_CATEGORY_ANIMATION_NODE, iopts);
 		} else if (Object::cast_to<Skeleton3D>(p_node)) {
-			get_internal_import_options(INTERNAL_IMPORT_CATEGORY_SKELETON_3D_NODE, &iopts);
+			get_internal_import_options(INTERNAL_IMPORT_CATEGORY_SKELETON_3D_NODE, iopts);
 		} else {
-			get_internal_import_options(INTERNAL_IMPORT_CATEGORY_NODE, &iopts);
+			get_internal_import_options(INTERNAL_IMPORT_CATEGORY_NODE, iopts);
 		}
 		for (const ImportOption &E : iopts) {
 			if (!node_settings.has(E.option.name)) {
@@ -1503,10 +1496,9 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 				for (int node_i = 0; node_i < children.size(); node_i++) {
 					AnimationPlayer *anim_player = cast_to<AnimationPlayer>(children[node_i]);
 					ERR_CONTINUE(anim_player == nullptr);
-					List<StringName> anim_list;
-					anim_player->get_animation_list(&anim_list);
+					LocalVector<StringName> anim_list = anim_player->get_animation_list();
 					if (anim_list.size() == 1) {
-						selected_animation_name = anim_list.front()->get();
+						selected_animation_name = anim_list[0];
 					}
 					rest_animation = anim_player->get_animation(selected_animation_name);
 					if (rest_animation.is_valid()) {
@@ -1519,10 +1511,9 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 				if (rest_animation.is_null()) {
 					Ref<AnimationLibrary> library(external_object);
 					if (library.is_valid()) {
-						List<StringName> anim_list;
-						library->get_animation_list(&anim_list);
+						LocalVector<StringName> anim_list = library->get_animation_list();
 						if (anim_list.size() == 1) {
-							selected_animation_name = String(anim_list.front()->get());
+							selected_animation_name = String(anim_list[0]);
 						}
 						rest_animation = library->get_animation(selected_animation_name);
 					}
@@ -1585,8 +1576,8 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 							Dictionary matdata = p_material_data[mat_id];
 							{
 								//fill node settings for this node with default values
-								List<ImportOption> iopts;
-								get_internal_import_options(INTERNAL_IMPORT_CATEGORY_MATERIAL, &iopts);
+								LocalVector<ImportOption> iopts;
+								get_internal_import_options(INTERNAL_IMPORT_CATEGORY_MATERIAL, iopts);
 								for (const ImportOption &E : iopts) {
 									if (!matdata.has(E.option.name)) {
 										matdata[E.option.name] = E.default_value;
@@ -1872,16 +1863,14 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 		}
 
 		if (post_importer_plugins.size()) {
-			List<StringName> anims;
-			ap->get_animation_list(&anims);
-			for (const StringName &name : anims) {
+			for (const StringName &name : ap->get_animation_list()) {
 				if (p_animation_data.has(name)) {
 					Ref<Animation> anim = ap->get_animation(name);
 					Dictionary anim_settings = p_animation_data[name];
 					{
 						//fill with default values
-						List<ImportOption> iopts;
-						get_internal_import_options(INTERNAL_IMPORT_CATEGORY_ANIMATION, &iopts);
+						LocalVector<ImportOption> iopts;
+						get_internal_import_options(INTERNAL_IMPORT_CATEGORY_ANIMATION, iopts);
 						for (const ImportOption &F : iopts) {
 							if (!anim_settings.has(F.option.name)) {
 								anim_settings[F.option.name] = F.default_value;
@@ -1959,7 +1948,6 @@ void ResourceImporterScene::_create_slices(AnimationPlayer *ap, Ref<Animation> a
 		Ref<Animation> new_anim = memnew(Animation);
 
 		for (int j = 0; j < anim->get_track_count(); j++) {
-			List<float> keys;
 			int kc = anim->track_get_key_count(j);
 			int dtrack = -1;
 			for (int k = 0; k < kc; k++) {
@@ -2097,135 +2085,131 @@ void ResourceImporterScene::_create_slices(AnimationPlayer *ap, Ref<Animation> a
 }
 
 void ResourceImporterScene::_optimize_animations(AnimationPlayer *anim, float p_max_vel_error, float p_max_ang_error, int p_prc_error) {
-	List<StringName> anim_names;
-	anim->get_animation_list(&anim_names);
-	for (const StringName &E : anim_names) {
+	for (const StringName &E : anim->get_animation_list()) {
 		Ref<Animation> a = anim->get_animation(E);
 		a->optimize(p_max_vel_error, p_max_ang_error, p_prc_error);
 	}
 }
 
 void ResourceImporterScene::_compress_animations(AnimationPlayer *anim, int p_page_size_kb) {
-	List<StringName> anim_names;
-	anim->get_animation_list(&anim_names);
-	for (const StringName &E : anim_names) {
+	for (const StringName &E : anim->get_animation_list()) {
 		Ref<Animation> a = anim->get_animation(E);
 		a->compress(p_page_size_kb * 1024);
 	}
 }
 
-void ResourceImporterScene::get_internal_import_options(InternalImportCategory p_category, List<ImportOption> *r_options) const {
+void ResourceImporterScene::get_internal_import_options(InternalImportCategory p_category, LocalVector<ImportOption> &r_options) const {
 	switch (p_category) {
 		case INTERNAL_IMPORT_CATEGORY_NODE: {
-			r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "node/node_type", PROPERTY_HINT_TYPE_STRING, "Node"), ""));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::OBJECT, "node/script", PROPERTY_HINT_RESOURCE_TYPE, "Script"), Variant()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "import/skip_import", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "node/node_type", PROPERTY_HINT_TYPE_STRING, "Node"), ""));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::OBJECT, "node/script", PROPERTY_HINT_RESOURCE_TYPE, "Script"), Variant()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "import/skip_import", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
 		} break;
 		case INTERNAL_IMPORT_CATEGORY_MESH_3D_NODE: {
-			r_options->push_back(ImportOption(PropertyInfo(Variant::OBJECT, "node/script", PROPERTY_HINT_RESOURCE_TYPE, "Script"), Variant()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "import/skip_import", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "generate/physics", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "generate/navmesh", PROPERTY_HINT_ENUM, "Disabled,Mesh + NavMesh,NavMesh Only"), 0));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "physics/body_type", PROPERTY_HINT_ENUM, "StaticBody3D,RigidBody3D,Area3D"), 0));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "physics/shape_type", PROPERTY_HINT_ENUM, "Decompose Convex (Slow),Single Convex (Average),Trimesh (Slow),Box (Fast),Sphere (Fast),Cylinder (Average),Capsule (Fast),Automatic", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), 7));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::OBJECT, "physics/physics_material_override", PROPERTY_HINT_RESOURCE_TYPE, "PhysicsMaterial"), Variant()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "physics/layer", PROPERTY_HINT_LAYERS_3D_PHYSICS), 1));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "physics/mask", PROPERTY_HINT_LAYERS_3D_PHYSICS), 1));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::OBJECT, "node/script", PROPERTY_HINT_RESOURCE_TYPE, "Script"), Variant()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "import/skip_import", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "generate/physics", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "generate/navmesh", PROPERTY_HINT_ENUM, "Disabled,Mesh + NavMesh,NavMesh Only"), 0));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "physics/body_type", PROPERTY_HINT_ENUM, "StaticBody3D,RigidBody3D,Area3D"), 0));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "physics/shape_type", PROPERTY_HINT_ENUM, "Decompose Convex (Slow),Single Convex (Average),Trimesh (Slow),Box (Fast),Sphere (Fast),Cylinder (Average),Capsule (Fast),Automatic", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), 7));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::OBJECT, "physics/physics_material_override", PROPERTY_HINT_RESOURCE_TYPE, "PhysicsMaterial"), Variant()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "physics/layer", PROPERTY_HINT_LAYERS_3D_PHYSICS), 1));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "physics/mask", PROPERTY_HINT_LAYERS_3D_PHYSICS), 1));
 
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "mesh_instance/layers", PROPERTY_HINT_LAYERS_3D_RENDER), 1));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "mesh_instance/visibility_range_begin", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater,suffix:m"), 0.0f));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "mesh_instance/visibility_range_begin_margin", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater,suffix:m"), 0.0f));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "mesh_instance/visibility_range_end", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater,suffix:m"), 0.0f));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "mesh_instance/visibility_range_end_margin", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater,suffix:m"), 0.0f));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "mesh_instance/visibility_range_fade_mode", PROPERTY_HINT_ENUM, "Disabled,Self,Dependencies"), GeometryInstance3D::VISIBILITY_RANGE_FADE_DISABLED));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "mesh_instance/cast_shadow", PROPERTY_HINT_ENUM, "Off,On,Double-Sided,Shadows Only"), GeometryInstance3D::SHADOW_CASTING_SETTING_ON));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "mesh_instance/layers", PROPERTY_HINT_LAYERS_3D_RENDER), 1));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "mesh_instance/visibility_range_begin", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater,suffix:m"), 0.0f));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "mesh_instance/visibility_range_begin_margin", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater,suffix:m"), 0.0f));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "mesh_instance/visibility_range_end", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater,suffix:m"), 0.0f));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "mesh_instance/visibility_range_end_margin", PROPERTY_HINT_RANGE, "0.0,4096.0,0.01,or_greater,suffix:m"), 0.0f));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "mesh_instance/visibility_range_fade_mode", PROPERTY_HINT_ENUM, "Disabled,Self,Dependencies"), GeometryInstance3D::VISIBILITY_RANGE_FADE_DISABLED));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "mesh_instance/cast_shadow", PROPERTY_HINT_ENUM, "Off,On,Double-Sided,Shadows Only"), GeometryInstance3D::SHADOW_CASTING_SETTING_ON));
 
 			// Decomposition
 			Ref<MeshConvexDecompositionSettings> decomposition_default = Ref<MeshConvexDecompositionSettings>();
 			decomposition_default.instantiate();
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "decomposition/advanced", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "decomposition/precision", PROPERTY_HINT_RANGE, "1,10,1"), 5));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "decomposition/max_concavity", PROPERTY_HINT_RANGE, "0.0,1.0,0.001", PROPERTY_USAGE_DEFAULT), decomposition_default->get_max_concavity()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "decomposition/symmetry_planes_clipping_bias", PROPERTY_HINT_RANGE, "0.0,1.0,0.001", PROPERTY_USAGE_DEFAULT), decomposition_default->get_symmetry_planes_clipping_bias()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "decomposition/revolution_axes_clipping_bias", PROPERTY_HINT_RANGE, "0.0,1.0,0.001", PROPERTY_USAGE_DEFAULT), decomposition_default->get_revolution_axes_clipping_bias()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "decomposition/min_volume_per_convex_hull", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), decomposition_default->get_min_volume_per_convex_hull()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "decomposition/resolution", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), decomposition_default->get_resolution()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "decomposition/max_num_vertices_per_convex_hull", PROPERTY_HINT_RANGE, "5,512,1", PROPERTY_USAGE_DEFAULT), decomposition_default->get_max_num_vertices_per_convex_hull()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "decomposition/plane_downsampling", PROPERTY_HINT_RANGE, "1,16,1", PROPERTY_USAGE_DEFAULT), decomposition_default->get_plane_downsampling()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "decomposition/convexhull_downsampling", PROPERTY_HINT_RANGE, "1,16,1", PROPERTY_USAGE_DEFAULT), decomposition_default->get_convex_hull_downsampling()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "decomposition/normalize_mesh", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), decomposition_default->get_normalize_mesh()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "decomposition/mode", PROPERTY_HINT_ENUM, "Voxel,Tetrahedron", PROPERTY_USAGE_DEFAULT), static_cast<int>(decomposition_default->get_mode())));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "decomposition/convexhull_approximation", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), decomposition_default->get_convex_hull_approximation()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "decomposition/max_convex_hulls", PROPERTY_HINT_RANGE, "1,100,1", PROPERTY_USAGE_DEFAULT), decomposition_default->get_max_convex_hulls()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "decomposition/project_hull_vertices", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), decomposition_default->get_project_hull_vertices()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "decomposition/advanced", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "decomposition/precision", PROPERTY_HINT_RANGE, "1,10,1"), 5));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "decomposition/max_concavity", PROPERTY_HINT_RANGE, "0.0,1.0,0.001", PROPERTY_USAGE_DEFAULT), decomposition_default->get_max_concavity()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "decomposition/symmetry_planes_clipping_bias", PROPERTY_HINT_RANGE, "0.0,1.0,0.001", PROPERTY_USAGE_DEFAULT), decomposition_default->get_symmetry_planes_clipping_bias()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "decomposition/revolution_axes_clipping_bias", PROPERTY_HINT_RANGE, "0.0,1.0,0.001", PROPERTY_USAGE_DEFAULT), decomposition_default->get_revolution_axes_clipping_bias()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "decomposition/min_volume_per_convex_hull", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), decomposition_default->get_min_volume_per_convex_hull()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "decomposition/resolution", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), decomposition_default->get_resolution()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "decomposition/max_num_vertices_per_convex_hull", PROPERTY_HINT_RANGE, "5,512,1", PROPERTY_USAGE_DEFAULT), decomposition_default->get_max_num_vertices_per_convex_hull()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "decomposition/plane_downsampling", PROPERTY_HINT_RANGE, "1,16,1", PROPERTY_USAGE_DEFAULT), decomposition_default->get_plane_downsampling()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "decomposition/convexhull_downsampling", PROPERTY_HINT_RANGE, "1,16,1", PROPERTY_USAGE_DEFAULT), decomposition_default->get_convex_hull_downsampling()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "decomposition/normalize_mesh", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), decomposition_default->get_normalize_mesh()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "decomposition/mode", PROPERTY_HINT_ENUM, "Voxel,Tetrahedron", PROPERTY_USAGE_DEFAULT), static_cast<int>(decomposition_default->get_mode())));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "decomposition/convexhull_approximation", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), decomposition_default->get_convex_hull_approximation()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "decomposition/max_convex_hulls", PROPERTY_HINT_RANGE, "1,100,1", PROPERTY_USAGE_DEFAULT), decomposition_default->get_max_convex_hulls()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "decomposition/project_hull_vertices", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), decomposition_default->get_project_hull_vertices()));
 
 			// Primitives: Box, Sphere, Cylinder, Capsule.
-			r_options->push_back(ImportOption(PropertyInfo(Variant::VECTOR3, "primitive/size", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), Vector3(2.0, 2.0, 2.0)));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "primitive/height", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), 1.0));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "primitive/radius", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), 1.0));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::VECTOR3, "primitive/position", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), Vector3()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::VECTOR3, "primitive/rotation", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), Vector3()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::VECTOR3, "primitive/size", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), Vector3(2.0, 2.0, 2.0)));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "primitive/height", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), 1.0));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "primitive/radius", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), 1.0));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::VECTOR3, "primitive/position", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), Vector3()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::VECTOR3, "primitive/rotation", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT), Vector3()));
 
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "generate/occluder", PROPERTY_HINT_ENUM, "Disabled,Mesh + Occluder,Occluder Only", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), 0));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "occluder/simplification_distance", PROPERTY_HINT_RANGE, "0.0,2.0,0.01", PROPERTY_USAGE_DEFAULT), 0.1f));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "generate/occluder", PROPERTY_HINT_ENUM, "Disabled,Mesh + Occluder,Occluder Only", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), 0));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "occluder/simplification_distance", PROPERTY_HINT_RANGE, "0.0,2.0,0.01", PROPERTY_USAGE_DEFAULT), 0.1f));
 		} break;
 		case INTERNAL_IMPORT_CATEGORY_MESH: {
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "save_to_file/enabled", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "save_to_file/path", PROPERTY_HINT_SAVE_FILE, "*.res,*.tres"), ""));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "save_to_file/fallback_path", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), ""));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "generate/shadow_meshes", PROPERTY_HINT_ENUM, "Default,Enable,Disable"), 0));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "generate/lightmap_uv", PROPERTY_HINT_ENUM, "Default,Enable,Disable"), 0));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "generate/lods", PROPERTY_HINT_ENUM, "Default,Enable,Disable"), 0));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "lods/normal_merge_angle", PROPERTY_HINT_RANGE, "0,180,1,degrees"), 20.0f));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "save_to_file/enabled", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "save_to_file/path", PROPERTY_HINT_SAVE_FILE, "*.res,*.tres"), ""));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "save_to_file/fallback_path", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), ""));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "generate/shadow_meshes", PROPERTY_HINT_ENUM, "Default,Enable,Disable"), 0));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "generate/lightmap_uv", PROPERTY_HINT_ENUM, "Default,Enable,Disable"), 0));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "generate/lods", PROPERTY_HINT_ENUM, "Default,Enable,Disable"), 0));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "lods/normal_merge_angle", PROPERTY_HINT_RANGE, "0,180,1,degrees"), 20.0f));
 		} break;
 		case INTERNAL_IMPORT_CATEGORY_MATERIAL: {
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "use_external/enabled", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "use_external/path", PROPERTY_HINT_FILE, "*.material,*.res,*.tres"), ""));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "use_external/fallback_path", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), ""));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "use_external/enabled", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "use_external/path", PROPERTY_HINT_FILE, "*.material,*.res,*.tres"), ""));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "use_external/fallback_path", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), ""));
 		} break;
 		case INTERNAL_IMPORT_CATEGORY_ANIMATION: {
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "settings/loop_mode", PROPERTY_HINT_ENUM, "None,Linear,Pingpong"), 0));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "save_to_file/enabled", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "save_to_file/path", PROPERTY_HINT_SAVE_FILE, "*.res,*.anim,*.tres"), ""));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "save_to_file/fallback_path", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), ""));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "save_to_file/keep_custom_tracks"), ""));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "slices/amount", PROPERTY_HINT_RANGE, "0,256,1", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), 0));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "settings/loop_mode", PROPERTY_HINT_ENUM, "None,Linear,Pingpong"), 0));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "save_to_file/enabled", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "save_to_file/path", PROPERTY_HINT_SAVE_FILE, "*.res,*.anim,*.tres"), ""));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "save_to_file/fallback_path", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), ""));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "save_to_file/keep_custom_tracks"), ""));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "slices/amount", PROPERTY_HINT_RANGE, "0,256,1", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), 0));
 
 			for (int i = 0; i < 256; i++) {
-				r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "slice_" + itos(i + 1) + "/name"), ""));
-				r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "slice_" + itos(i + 1) + "/start_frame"), 0));
-				r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "slice_" + itos(i + 1) + "/end_frame"), 0));
-				r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "slice_" + itos(i + 1) + "/loop_mode", PROPERTY_HINT_ENUM, "None,Linear,Pingpong"), 0));
-				r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "slice_" + itos(i + 1) + "/save_to_file/enabled", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
-				r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "slice_" + itos(i + 1) + "/save_to_file/path", PROPERTY_HINT_SAVE_FILE, "*.res,*.anim,*.tres"), ""));
-				r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "slice_" + itos(i + 1) + "/save_to_file/fallback_path", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), ""));
-				r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "slice_" + itos(i + 1) + "/save_to_file/keep_custom_tracks"), false));
+				r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "slice_" + itos(i + 1) + "/name"), ""));
+				r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "slice_" + itos(i + 1) + "/start_frame"), 0));
+				r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "slice_" + itos(i + 1) + "/end_frame"), 0));
+				r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "slice_" + itos(i + 1) + "/loop_mode", PROPERTY_HINT_ENUM, "None,Linear,Pingpong"), 0));
+				r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "slice_" + itos(i + 1) + "/save_to_file/enabled", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
+				r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "slice_" + itos(i + 1) + "/save_to_file/path", PROPERTY_HINT_SAVE_FILE, "*.res,*.anim,*.tres"), ""));
+				r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "slice_" + itos(i + 1) + "/save_to_file/fallback_path", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), ""));
+				r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "slice_" + itos(i + 1) + "/save_to_file/keep_custom_tracks"), false));
 			}
 		} break;
 		case INTERNAL_IMPORT_CATEGORY_ANIMATION_NODE: {
-			r_options->push_back(ImportOption(PropertyInfo(Variant::OBJECT, "node/script", PROPERTY_HINT_RESOURCE_TYPE, "Script"), Variant()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "import/skip_import", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "optimizer/enabled", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), true));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "optimizer/max_velocity_error", PROPERTY_HINT_RANGE, "0,1,0.01"), 0.01));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "optimizer/max_angular_error", PROPERTY_HINT_RANGE, "0,1,0.01"), 0.01));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "optimizer/max_precision_error", PROPERTY_HINT_NONE, "1,6,1"), 3));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "compression/enabled", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "compression/page_size", PROPERTY_HINT_RANGE, "4,512,1,suffix:kb"), 8));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "import_tracks/position", PROPERTY_HINT_ENUM, "IfPresent,IfPresentForAll,Never"), 1));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "import_tracks/rotation", PROPERTY_HINT_ENUM, "IfPresent,IfPresentForAll,Never"), 1));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "import_tracks/scale", PROPERTY_HINT_ENUM, "IfPresent,IfPresentForAll,Never"), 1));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::OBJECT, "node/script", PROPERTY_HINT_RESOURCE_TYPE, "Script"), Variant()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "import/skip_import", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "optimizer/enabled", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), true));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "optimizer/max_velocity_error", PROPERTY_HINT_RANGE, "0,1,0.01"), 0.01));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "optimizer/max_angular_error", PROPERTY_HINT_RANGE, "0,1,0.01"), 0.01));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "optimizer/max_precision_error", PROPERTY_HINT_NONE, "1,6,1"), 3));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "compression/enabled", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "compression/page_size", PROPERTY_HINT_RANGE, "4,512,1,suffix:kb"), 8));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "import_tracks/position", PROPERTY_HINT_ENUM, "IfPresent,IfPresentForAll,Never"), 1));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "import_tracks/rotation", PROPERTY_HINT_ENUM, "IfPresent,IfPresentForAll,Never"), 1));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "import_tracks/scale", PROPERTY_HINT_ENUM, "IfPresent,IfPresentForAll,Never"), 1));
 		} break;
 		case INTERNAL_IMPORT_CATEGORY_SKELETON_3D_NODE: {
-			r_options->push_back(ImportOption(PropertyInfo(Variant::OBJECT, "node/script", PROPERTY_HINT_RESOURCE_TYPE, "Script"), Variant()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "import/skip_import", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "rest_pose/load_pose", PROPERTY_HINT_ENUM, "Default Pose,Use AnimationPlayer,Load External Animation", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), 0));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::OBJECT, "rest_pose/external_animation_library", PROPERTY_HINT_RESOURCE_TYPE, "Animation,AnimationLibrary", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), Variant()));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "rest_pose/selected_animation", PROPERTY_HINT_ENUM, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), ""));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "rest_pose/selected_timestamp", PROPERTY_HINT_RANGE, "0,1,0.001,or_greater,suffix:s", PROPERTY_USAGE_DEFAULT), 0.0f));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::OBJECT, "node/script", PROPERTY_HINT_RESOURCE_TYPE, "Script"), Variant()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "import/skip_import", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "rest_pose/load_pose", PROPERTY_HINT_ENUM, "Default Pose,Use AnimationPlayer,Load External Animation", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), 0));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::OBJECT, "rest_pose/external_animation_library", PROPERTY_HINT_RESOURCE_TYPE, "Animation,AnimationLibrary", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), Variant()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "rest_pose/selected_animation", PROPERTY_HINT_ENUM, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), ""));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "rest_pose/selected_timestamp", PROPERTY_HINT_RANGE, "0,1,0.001,or_greater,suffix:s", PROPERTY_USAGE_DEFAULT), 0.0f));
 			String mismatched_or_empty_profile_warning = String(
 					"The external rest animation is missing some bones. "
 					"Consider disabling Remove Immutable Tracks on the other file."); // TODO: translate.
-			r_options->push_back(ImportOption(
+			r_options.push_back(ImportOption(
 					PropertyInfo(
 							Variant::STRING, U"rest_pose/\u26A0_validation_warning/mismatched_or_empty_profile",
 							PROPERTY_HINT_MULTILINE_TEXT, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_READ_ONLY),
@@ -2233,7 +2217,7 @@ void ResourceImporterScene::get_internal_import_options(InternalImportCategory p
 			String profile_must_not_be_retargeted_warning = String(
 					"This external rest animation appears to have been imported with a BoneMap. "
 					"Disable the bone map when exporting a rest animation from the reference model."); // TODO: translate.
-			r_options->push_back(ImportOption(
+			r_options.push_back(ImportOption(
 					PropertyInfo(
 							Variant::STRING, U"rest_pose/\u26A0_validation_warning/profile_must_not_be_retargeted",
 							PROPERTY_HINT_MULTILINE_TEXT, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_READ_ONLY),
@@ -2241,12 +2225,12 @@ void ResourceImporterScene::get_internal_import_options(InternalImportCategory p
 			String no_animation_warning = String(
 					"Select an animation: Find a FBX or glTF in a compatible rest pose "
 					"and export a compatible animation from its import settings."); // TODO: translate.
-			r_options->push_back(ImportOption(
+			r_options.push_back(ImportOption(
 					PropertyInfo(
 							Variant::STRING, U"rest_pose//no_animation_chosen",
 							PROPERTY_HINT_MULTILINE_TEXT, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_READ_ONLY),
 					Variant(no_animation_warning)));
-			r_options->push_back(ImportOption(PropertyInfo(Variant::OBJECT, "retarget/bone_map", PROPERTY_HINT_RESOURCE_TYPE, "BoneMap", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), Variant()));
+			r_options.push_back(ImportOption(PropertyInfo(Variant::OBJECT, "retarget/bone_map", PROPERTY_HINT_RESOURCE_TYPE, "BoneMap", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), Variant()));
 		} break;
 		default: {
 		}
@@ -2383,10 +2367,9 @@ bool ResourceImporterScene::get_internal_option_visibility(InternalImportCategor
 					Ref<AnimationLibrary> library(res);
 					String selected_animation_name = p_options["rest_pose/selected_animation"];
 					if (library.is_valid()) {
-						List<StringName> anim_list;
-						library->get_animation_list(&anim_list);
+						LocalVector<StringName> anim_list = library->get_animation_list();
 						if (anim_list.size() == 1) {
-							selected_animation_name = String(anim_list.front()->get());
+							selected_animation_name = String(anim_list[0]);
 						}
 						if (library->has_animation(selected_animation_name)) {
 							anim = library->get_animation(selected_animation_name);
@@ -2498,13 +2481,13 @@ bool ResourceImporterScene::get_internal_option_update_view_required(InternalImp
 	return false;
 }
 
-void ResourceImporterScene::get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset) const {
-	r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "nodes/root_type", PROPERTY_HINT_TYPE_STRING, "Node"), ""));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "nodes/root_name"), ""));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::OBJECT, "nodes/root_script", PROPERTY_HINT_RESOURCE_TYPE, "Script"), Variant()));
+void ResourceImporterScene::get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset) const {
+	r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "nodes/root_type", PROPERTY_HINT_TYPE_STRING, "Node"), ""));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "nodes/root_name"), ""));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::OBJECT, "nodes/root_script", PROPERTY_HINT_RESOURCE_TYPE, "Script"), Variant()));
 
-	List<String> script_extensions;
-	ResourceLoader::get_recognized_extensions_for_type("Script", &script_extensions);
+	LocalVector<String> script_extensions;
+	ResourceLoader::get_recognized_extensions_for_type("Script", script_extensions);
 
 	String script_ext_hint;
 
@@ -2516,29 +2499,29 @@ void ResourceImporterScene::get_import_options(const String &p_path, List<Import
 	}
 	bool trimming_defaults_on = p_path.has_extension("fbx");
 
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "nodes/apply_root_scale"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "nodes/root_scale", PROPERTY_HINT_RANGE, "0.001,1000,0.001"), 1.0));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "nodes/import_as_skeleton_bones"), false));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "nodes/use_name_suffixes", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "nodes/use_node_type_suffixes"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "meshes/ensure_tangents"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "meshes/generate_lods"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "meshes/create_shadow_meshes"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "meshes/light_baking", PROPERTY_HINT_ENUM, "Disabled,Static,Static Lightmaps,Dynamic", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), 1));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "meshes/lightmap_texel_size", PROPERTY_HINT_RANGE, "0.001,100,0.001"), 0.2));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "meshes/force_disable_compression"), false));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "skins/use_named_skins"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "animation/import"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "animation/fps", PROPERTY_HINT_RANGE, "1,120,1"), 30));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "animation/trimming"), trimming_defaults_on));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "animation/remove_immutable_tracks"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "animation/import_rest_as_RESET"), false));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "import_script/path", PROPERTY_HINT_FILE, script_ext_hint), ""));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "materials/extract", PROPERTY_HINT_ENUM, "Keep Internal,Extract Once,Extract and Overwrite"), 0));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "materials/extract_format", PROPERTY_HINT_ENUM, "Text (*.tres),Binary (*.res),Material (*.material)"), 0));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::STRING, "materials/extract_path", PROPERTY_HINT_DIR, ""), ""));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "nodes/apply_root_scale"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "nodes/root_scale", PROPERTY_HINT_RANGE, "0.001,1000,0.001"), 1.0));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "nodes/import_as_skeleton_bones"), false));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "nodes/use_name_suffixes", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "nodes/use_node_type_suffixes"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "meshes/ensure_tangents"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "meshes/generate_lods"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "meshes/create_shadow_meshes"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "meshes/light_baking", PROPERTY_HINT_ENUM, "Disabled,Static,Static Lightmaps,Dynamic", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), 1));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "meshes/lightmap_texel_size", PROPERTY_HINT_RANGE, "0.001,100,0.001"), 0.2));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "meshes/force_disable_compression"), false));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "skins/use_named_skins"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "animation/import"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "animation/fps", PROPERTY_HINT_RANGE, "1,120,1"), 30));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "animation/trimming"), trimming_defaults_on));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "animation/remove_immutable_tracks"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "animation/import_rest_as_RESET"), false));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "import_script/path", PROPERTY_HINT_FILE, script_ext_hint), ""));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "materials/extract", PROPERTY_HINT_ENUM, "Keep Internal,Extract Once,Extract and Overwrite"), 0));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "materials/extract_format", PROPERTY_HINT_ENUM, "Text (*.tres),Binary (*.res),Material (*.material)"), 0));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::STRING, "materials/extract_path", PROPERTY_HINT_DIR, ""), ""));
 
-	r_options->push_back(ImportOption(PropertyInfo(Variant::DICTIONARY, "_subresources", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), Dictionary()));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::DICTIONARY, "_subresources", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), Dictionary()));
 
 	for (int i = 0; i < post_importer_plugins.size(); i++) {
 		post_importer_plugins.write[i]->get_import_options(p_path, r_options);
@@ -2628,8 +2611,8 @@ Node *ResourceImporterScene::_generate_meshes(Node *p_node, const Dictionary &p_
 					Dictionary mesh_settings = p_mesh_data[mesh_id];
 					{
 						//fill node settings for this node with default values
-						List<ImportOption> iopts;
-						get_internal_import_options(INTERNAL_IMPORT_CATEGORY_MESH, &iopts);
+						LocalVector<ImportOption> iopts;
+						get_internal_import_options(INTERNAL_IMPORT_CATEGORY_MESH, iopts);
 						for (const ImportOption &E : iopts) {
 							if (!mesh_settings.has(E.option.name)) {
 								mesh_settings[E.option.name] = E.default_value;
@@ -2808,17 +2791,14 @@ void ResourceImporterScene::_add_shapes(Node *p_node, const Vector<Ref<Shape3D>>
 }
 
 void ResourceImporterScene::_copy_meta(Object *p_src_object, Object *p_dst_object) {
-	List<StringName> meta_list;
-	p_src_object->get_meta_list(&meta_list);
-	for (const StringName &meta_key : meta_list) {
+	for (const StringName &meta_key : p_src_object->get_meta_list()) {
 		Variant meta_value = p_src_object->get_meta(meta_key);
 		p_dst_object->set_meta(meta_key, meta_value);
 	}
 }
 
 void ResourceImporterScene::_optimize_track_usage(AnimationPlayer *p_player, AnimationImportTracks *p_track_actions) {
-	List<StringName> anims;
-	p_player->get_animation_list(&anims);
+	LocalVector<StringName> anims = p_player->get_animation_list();
 	Node *parent = p_player->get_parent();
 	ERR_FAIL_NULL(parent);
 	HashMap<NodePath, uint32_t> used_tracks[TRACK_CHANNEL_MAX];
@@ -2976,8 +2956,8 @@ Node *ResourceImporterScene::pre_import(const String &p_source_file, const HashM
 	progress.step(TTR("Importing Scene..."), 0);
 
 	for (Ref<EditorSceneFormatImporter> importer_elem : scene_importers) {
-		List<String> extensions;
-		importer_elem->get_extensions(&extensions);
+		LocalVector<String> extensions;
+		importer_elem->get_extensions(extensions);
 
 		for (const String &F : extensions) {
 			if (F.to_lower() == ext) {
@@ -3004,7 +2984,7 @@ Node *ResourceImporterScene::pre_import(const String &p_source_file, const HashM
 	_pre_fix_global(scene, p_options);
 
 	HashMap<Ref<ImporterMesh>, Vector<Ref<Shape3D>>> collision_map;
-	List<Pair<NodePath, Node *>> node_renames;
+	LocalVector<Pair<NodePath, Node *>> node_renames;
 	_pre_fix_node(scene, scene, collision_map, nullptr, node_renames, p_options);
 
 	return scene;
@@ -3075,7 +3055,7 @@ Error ResourceImporterScene::_check_resource_save_paths(ResourceUID::ID p_source
 	return OK;
 }
 
-Error ResourceImporterScene::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
+Error ResourceImporterScene::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
 	const String &src_path = p_source_file;
 
 	Ref<EditorSceneFormatImporter> importer;
@@ -3085,8 +3065,8 @@ Error ResourceImporterScene::import(ResourceUID::ID p_source_id, const String &p
 	progress.step(TTR("Importing Scene..."), 0);
 
 	for (Ref<EditorSceneFormatImporter> importer_elem : scene_importers) {
-		List<String> extensions;
-		importer_elem->get_extensions(&extensions);
+		LocalVector<String> extensions;
+		importer_elem->get_extensions(extensions);
 
 		for (const String &F : extensions) {
 			if (F.to_lower() == ext) {
@@ -3146,7 +3126,7 @@ Error ResourceImporterScene::import(ResourceUID::ID p_source_id, const String &p
 		}
 	}
 
-	List<String> missing_deps; // for now, not much will be done with this
+	LocalVector<String> missing_deps; // for now, not much will be done with this
 	Node *scene = importer->import_scene(src_path, import_flags, p_options, &missing_deps, &err);
 	if (!scene || err != OK) {
 		return err;
@@ -3175,7 +3155,7 @@ Error ResourceImporterScene::import(ResourceUID::ID p_source_id, const String &p
 	HashSet<Ref<ImporterMesh>> scanned_meshes;
 	HashMap<Ref<ImporterMesh>, Vector<Ref<Shape3D>>> collision_map;
 	Pair<PackedVector3Array, PackedInt32Array> occluder_arrays;
-	List<Pair<NodePath, Node *>> node_renames;
+	LocalVector<Pair<NodePath, Node *>> node_renames;
 
 	_pre_fix_node(scene, scene, collision_map, &occluder_arrays, node_renames, p_options);
 
@@ -3332,10 +3312,9 @@ Error ResourceImporterScene::import(ResourceUID::ID p_source_id, const String &p
 		for (int i = 0; i < scene->get_child_count(); i++) {
 			AnimationPlayer *ap = Object::cast_to<AnimationPlayer>(scene->get_child(i));
 			if (ap) {
-				List<StringName> libs;
-				ap->get_animation_library_list(&libs);
+				LocalVector<StringName> libs = ap->get_animation_library_list();
 				if (libs.size()) {
-					library = ap->get_animation_library(libs.front()->get());
+					library = ap->get_animation_library(libs[0]);
 					break;
 				}
 			}
@@ -3413,7 +3392,7 @@ void ResourceImporterScene::clean_up_importer_plugins() {
 	post_importer_plugins.clear();
 }
 
-void ResourceImporterScene::get_scene_importer_extensions(List<String> *p_extensions) {
+void ResourceImporterScene::get_scene_importer_extensions(LocalVector<String> &p_extensions) {
 	for (Ref<EditorSceneFormatImporter> importer_elem : scene_importers) {
 		importer_elem->get_extensions(p_extensions);
 	}
@@ -3421,11 +3400,11 @@ void ResourceImporterScene::get_scene_importer_extensions(List<String> *p_extens
 
 ///////////////////////////////////////
 
-void EditorSceneFormatImporterESCN::get_extensions(List<String> *r_extensions) const {
-	r_extensions->push_back("escn");
+void EditorSceneFormatImporterESCN::get_extensions(LocalVector<String> &r_extensions) const {
+	r_extensions.push_back("escn");
 }
 
-Node *EditorSceneFormatImporterESCN::import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, List<String> *r_missing_deps, Error *r_err) {
+Node *EditorSceneFormatImporterESCN::import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, LocalVector<String> *r_missing_deps, Error *r_err) {
 	Error error;
 	Ref<PackedScene> ps = ResourceFormatLoaderText::singleton->load(p_path, p_path, &error);
 	ERR_FAIL_COND_V_MSG(ps.is_null(), nullptr, "Cannot load scene as text resource from path '" + p_path + "'.");

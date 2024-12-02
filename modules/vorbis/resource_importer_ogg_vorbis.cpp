@@ -48,8 +48,8 @@ String ResourceImporterOggVorbis::get_visible_name() const {
 	return "Ogg Vorbis";
 }
 
-void ResourceImporterOggVorbis::get_recognized_extensions(List<String> *p_extensions) const {
-	p_extensions->push_back("ogg");
+void ResourceImporterOggVorbis::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("ogg");
 }
 
 String ResourceImporterOggVorbis::get_save_extension() const {
@@ -72,12 +72,12 @@ String ResourceImporterOggVorbis::get_preset_name(int p_idx) const {
 	return String();
 }
 
-void ResourceImporterOggVorbis::get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset) const {
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "loop"), false));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "loop_offset"), 0));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "bpm", PROPERTY_HINT_RANGE, "0,400,0.01,or_greater"), 0));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "beat_count", PROPERTY_HINT_RANGE, "0,512,or_greater"), 0));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "bar_beats", PROPERTY_HINT_RANGE, "2,32,or_greater"), 4));
+void ResourceImporterOggVorbis::get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset) const {
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "loop"), false));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "loop_offset"), 0));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "bpm", PROPERTY_HINT_RANGE, "0,400,0.01,or_greater"), 0));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "beat_count", PROPERTY_HINT_RANGE, "0,512,or_greater"), 0));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "bar_beats", PROPERTY_HINT_RANGE, "2,32,or_greater"), 4));
 }
 
 #ifdef TOOLS_ENABLED
@@ -93,7 +93,7 @@ void ResourceImporterOggVorbis::show_advanced_options(const String &p_path) {
 }
 #endif
 
-Error ResourceImporterOggVorbis::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
+Error ResourceImporterOggVorbis::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
 	bool loop = p_options["loop"];
 	double loop_offset = p_options["loop_offset"];
 	double bpm = p_options["bpm"];

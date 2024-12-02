@@ -126,9 +126,7 @@ void AnimationNodeBlendSpace2DEditor::_blend_space_gui_input(const Ref<InputEven
 
 			menu->add_submenu_node_item(TTR("Add Animation"), animations_menu);
 
-			List<StringName> names;
-			tree->get_animation_list(&names);
-			for (const StringName &E : names) {
+			for (const StringName &E : tree->get_animation_list()) {
 				animations_menu->add_icon_item(get_editor_theme_icon(SNAME("Animation")), E);
 				animations_to_add.push_back(E);
 			}
@@ -341,8 +339,8 @@ void AnimationNodeBlendSpace2DEditor::_add_menu_type(int p_index) {
 	Ref<AnimationRootNode> node;
 	if (p_index == MENU_LOAD_FILE) {
 		open_file->clear_filters();
-		List<String> filters;
-		ResourceLoader::get_recognized_extensions_for_type("AnimationRootNode", &filters);
+		LocalVector<String> filters;
+		ResourceLoader::get_recognized_extensions_for_type("AnimationRootNode", filters);
 		for (const String &E : filters) {
 			open_file->add_filter("*." + E);
 		}

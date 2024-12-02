@@ -2186,9 +2186,9 @@ bool Node::is_greater_than(RequiredParam<const Node> rp_node) const {
 	return (deep->get_index() > shallow->get_index()) == this_is_deeper;
 }
 
-void Node::get_owned_by(Node *p_by, List<Node *> *p_owned) {
+void Node::get_owned_by(Node *p_by, LocalVector<Node *> &p_owned) {
 	if (data.owner == p_by) {
-		p_owned->push_back(this);
+		p_owned.push_back(this);
 	}
 
 	for (KeyValue<StringName, Node *> &K : data.children) {
@@ -2494,8 +2494,8 @@ void Node::remove_from_group(const StringName &p_identifier) {
 
 TypedArray<StringName> Node::_get_groups() const {
 	TypedArray<StringName> groups;
-	List<GroupInfo> gi;
-	get_groups(&gi);
+	LocalVector<GroupInfo> gi;
+	get_groups(gi);
 	for (const GroupInfo &E : gi) {
 		groups.push_back(E.name);
 	}
@@ -2503,13 +2503,13 @@ TypedArray<StringName> Node::_get_groups() const {
 	return groups;
 }
 
-void Node::get_groups(List<GroupInfo> *p_groups) const {
+void Node::get_groups(LocalVector<GroupInfo> &p_groups) const {
 	ERR_THREAD_GUARD
 	for (const KeyValue<StringName, GroupData> &E : data.grouped) {
 		GroupInfo gi;
 		gi.name = E.key;
 		gi.persistent = E.value.persistent;
-		p_groups->push_back(gi);
+		p_groups.push_back(gi);
 	}
 }
 
@@ -2835,7 +2835,7 @@ Node *Node::_duplicate(int p_flags, HashMap<const Node *, Node *> *r_duplimap) c
 		node->data.editable_instance = data.editable_instance;
 	}
 
-	List<const Node *> hidden_roots;
+	LocalVector<const Node *> hidden_roots;
 	List<const Node *> node_tree;
 	node_tree.push_front(this);
 
@@ -2879,8 +2879,8 @@ Node *Node::_duplicate(int p_flags, HashMap<const Node *, Node *> *r_duplimap) c
 #endif
 
 	if (p_flags & DUPLICATE_GROUPS) {
-		List<GroupInfo> gi;
-		get_groups(&gi);
+		LocalVector<GroupInfo> gi;
+		get_groups(gi);
 		for (const GroupInfo &E : gi) {
 #ifdef TOOLS_ENABLED
 			if ((p_flags & DUPLICATE_FROM_EDITOR) && !E.persistent) {
@@ -3145,8 +3145,8 @@ void Node::_duplicate_signals(const Node *p_original, Node *p_copy) const {
 		const Node *n = process_list.front()->get();
 		process_list.pop_front();
 
-		List<Connection> conns;
-		n->get_all_signal_connections(&conns);
+		LocalVector<Connection> conns;
+		n->get_all_signal_connections(conns);
 
 		for (const Connection &E : conns) {
 			if (E.flags & CONNECT_PERSIST) {
@@ -3196,9 +3196,9 @@ void Node::_duplicate_signals(const Node *p_original, Node *p_copy) const {
 	}
 }
 
-static void find_owned_by(Node *p_by, Node *p_node, List<Node *> *p_owned) {
+static void find_owned_by(Node *p_by, Node *p_node, LocalVector<Node *> &p_owned) {
 	if (p_node->get_owner() == p_by) {
-		p_owned->push_back(p_node);
+		p_owned.push_back(p_node);
 	}
 
 	for (int i = 0; i < p_node->get_child_count(); i++) {
@@ -3212,12 +3212,12 @@ void Node::replace_by(RequiredParam<Node> rp_node, bool p_keep_groups) {
 	ERR_FAIL_COND(p_node->data.parent);
 
 	List<Node *> owned = data.owned;
-	List<Node *> owned_by_owner;
+	LocalVector<Node *> owned_by_owner;
 	Node *owner = (data.owner == this) ? p_node : data.owner;
 
 	if (p_keep_groups) {
-		List<GroupInfo> groups;
-		get_groups(&groups);
+		LocalVector<GroupInfo> groups;
+		get_groups(groups);
 
 		for (const GroupInfo &E : groups) {
 			p_node->add_to_group(E.name, E.persistent);
@@ -3228,7 +3228,7 @@ void Node::replace_by(RequiredParam<Node> rp_node, bool p_keep_groups) {
 
 	if (data.owner) {
 		for (int i = 0; i < get_child_count(); i++) {
-			find_owned_by(data.owner, get_child(i), &owned_by_owner);
+			find_owned_by(data.owner, get_child(i), owned_by_owner);
 		}
 
 		_clean_up_owner();
@@ -3274,8 +3274,8 @@ void Node::replace_by(RequiredParam<Node> rp_node, bool p_keep_groups) {
 }
 
 void Node::_replace_connections_target(Node *p_new_target) {
-	List<Connection> cl;
-	get_signals_connected_to_this(&cl);
+	LocalVector<Connection> cl;
+	get_signals_connected_to_this(cl);
 
 	for (const Connection &c : cl) {
 		if (c.flags & CONNECT_PERSIST) {
@@ -3391,7 +3391,7 @@ void Node::_set_tree(SceneTree *p_tree) {
 }
 
 #ifdef DEBUG_ENABLED
-static HashMap<ObjectID, List<String>> _print_orphan_nodes_map;
+static HashMap<ObjectID, LocalVector<String>> _print_orphan_nodes_map;
 
 static void _print_orphan_nodes_routine(Object *p_obj, void *p_user_data) {
 	Node *n = Object::cast_to<Node>(p_obj);
@@ -3422,7 +3422,7 @@ static void _print_orphan_nodes_routine(Object *p_obj, void *p_user_data) {
 		source = obj->get_path();
 	}
 
-	List<String> info_strings;
+	LocalVector<String> info_strings;
 	info_strings.push_back(path);
 	info_strings.push_back(n->get_class());
 	info_strings.push_back(source);
@@ -3439,8 +3439,8 @@ void Node::print_orphan_nodes() {
 	// Collect and print information about orphan nodes.
 	ObjectDB::debug_objects(_print_orphan_nodes_routine, nullptr);
 
-	for (const KeyValue<ObjectID, List<String>> &E : _print_orphan_nodes_map) {
-		print_line(itos(E.key) + " - Stray Node: " + E.value.get(0) + " (Type: " + E.value.get(1) + ") (Source:" + E.value.get(2) + ")");
+	for (const KeyValue<ObjectID, LocalVector<String>> &E : _print_orphan_nodes_map) {
+		print_line(itos(E.key) + " - Stray Node: " + E.value[0] + " (Type: " + E.value[1] + ") (Source:" + E.value[2] + ")");
 	}
 
 	// Flush it after use.
@@ -3456,7 +3456,7 @@ TypedArray<int> Node::get_orphan_node_ids() {
 	// Collect and return information about orphan nodes.
 	ObjectDB::debug_objects(_print_orphan_nodes_routine, nullptr);
 
-	for (const KeyValue<ObjectID, List<String>> &E : _print_orphan_nodes_map) {
+	for (const KeyValue<ObjectID, LocalVector<String>> &E : _print_orphan_nodes_map) {
 		ret.push_back(E.key);
 	}
 
@@ -3479,29 +3479,29 @@ void Node::queue_free() {
 }
 
 #ifdef TOOLS_ENABLED
-static void _add_nodes_to_options(const Node *p_base, const Node *p_node, List<String> *r_options) {
+static void _add_nodes_to_options(const Node *p_base, const Node *p_node, LocalVector<String> &r_options) {
 	if (p_node != p_base && !p_node->get_owner()) {
 		return;
 	}
 	if (p_node->is_unique_name_in_owner() && p_node->get_owner() == p_base) {
 		String n = "%" + p_node->get_name();
-		r_options->push_back(n.quote());
+		r_options.push_back(n.quote());
 	}
 	String n = String(p_base->get_path_to(p_node));
-	r_options->push_back(n.quote());
+	r_options.push_back(n.quote());
 	for (int i = 0; i < p_node->get_child_count(); i++) {
 		_add_nodes_to_options(p_base, p_node->get_child(i), r_options);
 	}
 }
 
-void Node::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void Node::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0 && (pf == "has_node" || pf == "get_node" || pf == "get_node_or_null")) {
 		_add_nodes_to_options(this, this, r_options);
 	} else if (p_idx == 0 && (pf == "add_to_group" || pf == "remove_from_group" || pf == "is_in_group")) {
 		HashMap<StringName, String> global_groups = ProjectSettings::get_singleton()->get_global_groups_list();
 		for (const KeyValue<StringName, String> &E : global_groups) {
-			r_options->push_back(E.key.operator String().quote());
+			r_options.push_back(E.key.operator String().quote());
 		}
 	}
 	Object::get_argument_options(p_function, p_idx, r_options);
@@ -4179,9 +4179,9 @@ Variant Node::get_meta(const StringName &p_name, const Variant &p_default) const
 	return Object::get_meta(p_name, p_default);
 }
 
-void Node::get_meta_list(List<StringName> *p_list) const {
-	ERR_THREAD_GUARD;
-	Object::get_meta_list(p_list);
+LocalVector<StringName> Node::get_meta_list() const {
+	ERR_THREAD_GUARD_V(LocalVector<StringName>());
+	return Object::get_meta_list();
 }
 
 Error Node::emit_signalp(const StringName &p_name, const Variant **p_args, int p_argcount) {
@@ -4199,12 +4199,12 @@ void Node::get_signal_list(List<MethodInfo> *p_signals) const {
 	Object::get_signal_list(p_signals);
 }
 
-void Node::get_signal_connection_list(const StringName &p_signal, List<Connection> *p_connections) const {
+void Node::get_signal_connection_list(const StringName &p_signal, LocalVector<Connection> &p_connections) const {
 	ERR_THREAD_GUARD;
 	Object::get_signal_connection_list(p_signal, p_connections);
 }
 
-void Node::get_all_signal_connections(List<Connection> *p_connections) const {
+void Node::get_all_signal_connections(LocalVector<Connection> &p_connections) const {
 	ERR_THREAD_GUARD;
 	Object::get_all_signal_connections(p_connections);
 }
@@ -4219,7 +4219,7 @@ uint32_t Node::get_signal_connection_flags(const StringName &p_signal, const Cal
 	return Object::get_signal_connection_flags(p_signal, p_callable);
 }
 
-void Node::get_signals_connected_to_this(List<Connection> *p_connections) const {
+void Node::get_signals_connected_to_this(LocalVector<Connection> &p_connections) const {
 	ERR_THREAD_GUARD;
 	Object::get_signals_connected_to_this(p_connections);
 }

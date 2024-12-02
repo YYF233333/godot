@@ -142,7 +142,7 @@ public:
 	 * The result fulfills no semantic guarantees, nor is it guaranteed to be complete.
 	 * Should only be used for "smart resolve".
 	 */
-	void resolve_related_symbols(const LSP::TextDocumentPositionParams &p_doc_pos, List<const LSP::DocumentSymbol *> &r_list);
+	void resolve_related_symbols(const LSP::TextDocumentPositionParams &p_doc_pos, LocalVector<const LSP::DocumentSymbol *> &r_list);
 
 	/**
 	 * Returns parse results for the given path, using the cache if available.

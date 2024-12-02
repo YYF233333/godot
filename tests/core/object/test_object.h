@@ -98,7 +98,7 @@ public:
 	bool property_get_revert(const StringName &p_name, Variant &r_ret) const override {
 		return false;
 	}
-	void get_method_list(List<MethodInfo> *p_list) const override {
+	void get_method_list(LocalVector<MethodInfo> &p_list) const override {
 	}
 	bool has_method(const StringName &p_method) const override {
 		return false;
@@ -154,8 +154,7 @@ TEST_CASE("[Object] Metadata") {
 			Color(object.get_meta(meta_path)).is_equal_approx(Color(0, 1, 0)),
 			"The returned object metadata after setting should match the expected value.");
 
-	List<StringName> meta_list;
-	object.get_meta_list(&meta_list);
+	LocalVector<StringName> meta_list = object.get_meta_list();
 	CHECK_MESSAGE(
 			meta_list.size() == 1,
 			"The metadata list should only contain 1 item after adding one metadata item.");
@@ -169,8 +168,7 @@ TEST_CASE("[Object] Metadata") {
 			"The returned object metadata after removing should match the expected value.");
 	ERR_PRINT_ON;
 
-	List<StringName> meta_list2;
-	object.get_meta_list(&meta_list2);
+	LocalVector<StringName> meta_list2 = object.get_meta_list();
 	CHECK_MESSAGE(
 			meta_list2.size() == 0,
 			"The metadata list should contain 0 items after removing all metadata items.");
@@ -194,8 +192,7 @@ TEST_CASE("[Object] Metadata") {
 			object.get_meta("other_meta", String()) == "other",
 			"Not conflicting meta name on source should merged.");
 
-	List<StringName> meta_list3;
-	object.get_meta_list(&meta_list3);
+	LocalVector<StringName> meta_list3 = object.get_meta_list();
 	CHECK_MESSAGE(
 			meta_list3.size() == 3,
 			"The metadata list should contain 3 items after merging meta from two objects.");
@@ -374,7 +371,7 @@ TEST_CASE("[Object] Signals") {
 	}
 
 	SUBCASE("Deleting an object with connected signals should disconnect them") {
-		List<Object::Connection> signal_connections;
+		LocalVector<Object::Connection> signal_connections;
 
 		{
 			Object target;
@@ -387,10 +384,10 @@ TEST_CASE("[Object] Signals") {
 			ERR_PRINT_ON;
 
 			signal_connections.clear();
-			object.get_all_signal_connections(&signal_connections);
+			object.get_all_signal_connections(signal_connections);
 			CHECK(signal_connections.size() == 0);
 			signal_connections.clear();
-			object.get_signals_connected_to_this(&signal_connections);
+			object.get_signals_connected_to_this(signal_connections);
 			CHECK(signal_connections.size() == 1);
 
 			ERR_PRINT_OFF;
@@ -400,18 +397,18 @@ TEST_CASE("[Object] Signals") {
 			ERR_PRINT_ON;
 
 			signal_connections.clear();
-			object.get_all_signal_connections(&signal_connections);
+			object.get_all_signal_connections(signal_connections);
 			CHECK(signal_connections.size() == 1);
 			signal_connections.clear();
-			object.get_signals_connected_to_this(&signal_connections);
+			object.get_signals_connected_to_this(signal_connections);
 			CHECK(signal_connections.size() == 1);
 		}
 
 		signal_connections.clear();
-		object.get_all_signal_connections(&signal_connections);
+		object.get_all_signal_connections(signal_connections);
 		CHECK(signal_connections.size() == 0);
 		signal_connections.clear();
-		object.get_signals_connected_to_this(&signal_connections);
+		object.get_signals_connected_to_this(signal_connections);
 		CHECK(signal_connections.size() == 0);
 	}
 
@@ -434,7 +431,7 @@ TEST_CASE("[Object] Signals") {
 	}
 
 	SUBCASE("Connecting and then disconnecting many signals should not leave anything behind") {
-		List<Object::Connection> signal_connections;
+		LocalVector<Object::Connection> signal_connections;
 		Object targets[100];
 
 		for (int i = 0; i < 10; i++) {
@@ -444,7 +441,7 @@ TEST_CASE("[Object] Signals") {
 			}
 			ERR_PRINT_ON;
 			signal_connections.clear();
-			object.get_all_signal_connections(&signal_connections);
+			object.get_all_signal_connections(signal_connections);
 			CHECK(signal_connections.size() == 100);
 		}
 
@@ -452,7 +449,7 @@ TEST_CASE("[Object] Signals") {
 			object.disconnect("my_custom_signal", callable_mp(&target, &Object::notify_property_list_changed));
 		}
 		signal_connections.clear();
-		object.get_all_signal_connections(&signal_connections);
+		object.get_all_signal_connections(signal_connections);
 		CHECK(signal_connections.size() == 0);
 	}
 }

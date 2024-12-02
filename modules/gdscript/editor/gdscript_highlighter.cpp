@@ -775,9 +775,7 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 	}
 
 	/* Global enums. */
-	List<StringName> global_enums;
-	CoreConstants::get_global_enums(&global_enums);
-	for (const StringName &enum_name : global_enums) {
+	for (const StringName &enum_name : CoreConstants::get_global_enums()) {
 		class_names[enum_name] = types_color;
 	}
 
@@ -801,10 +799,8 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 
 	/* Core types. */
 	const Color basetype_color = EDITOR_GET("text_editor/theme/highlighting/base_type_color");
-	List<String> core_types;
-	gdscript->get_core_type_words(&core_types);
-	for (const String &E : core_types) {
-		class_names[StringName(E)] = basetype_color;
+	for (const StringName &keyword : gdscript->get_core_type_words()) {
+		class_names[keyword] = basetype_color;
 	}
 	class_names[SNAME("Variant")] = basetype_color;
 	class_names[SNAME("void")] = basetype_color;
@@ -829,13 +825,13 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 	reserved_keywords[SNAME("get")] = function_color;
 
 	/* Global functions. */
-	List<StringName> global_function_list;
-	GDScriptUtilityFunctions::get_function_list(&global_function_list);
-	Variant::get_utility_function_list(&global_function_list);
 	// "assert" and "preload" are not utility functions, but are global nonetheless, so insert them.
 	global_functions.insert(SNAME("assert"));
 	global_functions.insert(SNAME("preload"));
-	for (const StringName &E : global_function_list) {
+	for (const StringName &E : GDScriptUtilityFunctions::get_function_list()) {
+		global_functions.insert(E);
+	}
+	for (const StringName &E : Variant::get_utility_function_list()) {
 		global_functions.insert(E);
 	}
 
@@ -897,20 +893,20 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 			}
 
 			// For callables.
-			List<MethodInfo> method_list;
-			ClassDB::get_method_list(instance_base, &method_list);
+			LocalVector<MethodInfo> method_list;
+			ClassDB::get_method_list(instance_base, method_list);
 			for (const MethodInfo &E : method_list) {
 				member_keywords[E.name] = member_variable_color;
 			}
 
-			List<String> constant_list;
-			ClassDB::get_integer_constant_list(instance_base, &constant_list);
+			LocalVector<String> constant_list;
+			ClassDB::get_integer_constant_list(instance_base, constant_list);
 			for (const String &E : constant_list) {
 				member_keywords[E] = member_variable_color;
 			}
 
-			List<StringName> builtin_enums;
-			ClassDB::get_enum_list(instance_base, &builtin_enums);
+			LocalVector<StringName> builtin_enums;
+			ClassDB::get_enum_list(instance_base, builtin_enums);
 			for (const StringName &E : builtin_enums) {
 				member_keywords[E] = types_color;
 			}
@@ -936,8 +932,8 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 		}
 
 		// For callables.
-		List<MethodInfo> scr_method_list;
-		scr->get_script_method_list(&scr_method_list);
+		LocalVector<MethodInfo> scr_method_list;
+		scr->get_script_method_list(scr_method_list);
 		for (const MethodInfo &E : scr_method_list) {
 			member_keywords[E.name] = member_variable_color;
 		}

@@ -38,6 +38,7 @@
 #include "core/os/os.h"
 #include "core/string/print_string.h"
 #include "core/string/translation_server.h"
+#include "core/templates/local_vector.h"
 #include "core/variant/typed_array.h"
 
 #ifdef DEBUG_ENABLED
@@ -508,7 +509,7 @@ void Object::set_indexed(const Vector<StringName> &p_names, const Variant &p_val
 		r_valid = &valid;
 	}
 
-	List<Variant> value_stack;
+	LocalVector<Variant> value_stack;
 
 	value_stack.push_back(get(p_names[0], r_valid));
 
@@ -518,7 +519,7 @@ void Object::set_indexed(const Vector<StringName> &p_names, const Variant &p_val
 	}
 
 	for (int i = 1; i < p_names.size() - 1; i++) {
-		value_stack.push_back(value_stack.back()->get().get_named(p_names[i], valid));
+		value_stack.push_back(value_stack.back().get_named(p_names[i], valid));
 		if (r_valid) {
 			*r_valid = valid;
 		}
@@ -532,7 +533,7 @@ void Object::set_indexed(const Vector<StringName> &p_names, const Variant &p_val
 	value_stack.push_back(p_value); // p_names[p_names.size() - 1]
 
 	for (int i = p_names.size() - 1; i > 0; i--) {
-		value_stack.back()->prev()->get().set_named(p_names[i], value_stack.back()->get(), valid);
+		value_stack[value_stack.size() - 2].set_named(p_names[i], value_stack.back(), valid);
 		value_stack.pop_back();
 
 		if (r_valid) {
@@ -544,7 +545,7 @@ void Object::set_indexed(const Vector<StringName> &p_names, const Variant &p_val
 		}
 	}
 
-	set(p_names[0], value_stack.back()->get(), r_valid);
+	set(p_names[0], value_stack.back(), r_valid);
 	value_stack.pop_back();
 
 	ERR_FAIL_COND(!value_stack.is_empty());
@@ -706,7 +707,7 @@ Variant Object::property_get_revert(const StringName &p_name) const {
 	return Variant();
 }
 
-void Object::get_method_list(List<MethodInfo> *p_list) const {
+void Object::get_method_list(LocalVector<MethodInfo> &p_list) const {
 	ClassDB::get_method_list(get_class_name(), p_list);
 	if (script_instance) {
 		script_instance->get_method_list(p_list);
@@ -1163,9 +1164,7 @@ void Object::remove_meta(const StringName &p_name) {
 }
 
 void Object::merge_meta_from(const Object *p_src) {
-	List<StringName> meta_keys;
-	p_src->get_meta_list(&meta_keys);
-	for (const StringName &key : meta_keys) {
+	for (const StringName &key : p_src->get_meta_list()) {
 		set_meta(key, p_src->get_meta(key));
 	}
 }
@@ -1177,8 +1176,8 @@ TypedArray<Dictionary> Object::_get_property_list_bind() const {
 }
 
 TypedArray<Dictionary> Object::_get_method_list_bind() const {
-	List<MethodInfo> ml;
-	get_method_list(&ml);
+	LocalVector<MethodInfo> ml;
+	get_method_list(ml);
 	TypedArray<Dictionary> ret;
 
 	for (const MethodInfo &mi : ml) {
@@ -1200,10 +1199,12 @@ TypedArray<StringName> Object::_get_meta_list_bind() const {
 	return _metaret;
 }
 
-void Object::get_meta_list(List<StringName> *p_list) const {
+LocalVector<StringName> Object::get_meta_list() const {
+	LocalVector<StringName> ret;
 	for (const KeyValue<StringName, Variant> &K : metadata) {
-		p_list->push_back(K.key);
+		ret.push_back(K.key);
 	}
+	return ret;
 }
 
 void Object::add_user_signal(const MethodInfo &p_signal) {
@@ -1457,8 +1458,8 @@ TypedArray<Dictionary> Object::_get_signal_list() const {
 }
 
 TypedArray<Dictionary> Object::_get_signal_connection_list(const StringName &p_signal) const {
-	List<Connection> conns;
-	get_all_signal_connections(&conns);
+	LocalVector<Connection> conns;
+	get_all_signal_connections(conns);
 
 	TypedArray<Dictionary> ret;
 
@@ -1514,19 +1515,19 @@ void Object::get_signal_list(List<MethodInfo> *p_signals) const {
 	}
 }
 
-void Object::get_all_signal_connections(List<Connection> *p_connections) const {
+void Object::get_all_signal_connections(LocalVector<Connection> &p_connections) const {
 	OBJ_SIGNAL_LOCK
 
 	for (const KeyValue<StringName, SignalData> &E : signal_map) {
 		const SignalData *s = &E.value;
 
 		for (const KeyValue<Callable, SignalData::Slot> &slot_kv : s->slot_map) {
-			p_connections->push_back(slot_kv.value.conn);
+			p_connections.push_back(slot_kv.value.conn);
 		}
 	}
 }
 
-void Object::get_signal_connection_list(const StringName &p_signal, List<Connection> *p_connections) const {
+void Object::get_signal_connection_list(const StringName &p_signal, LocalVector<Connection> &p_connections) const {
 	OBJ_SIGNAL_LOCK
 
 	const SignalData *s = signal_map.getptr(p_signal);
@@ -1535,7 +1536,7 @@ void Object::get_signal_connection_list(const StringName &p_signal, List<Connect
 	}
 
 	for (const KeyValue<Callable, SignalData::Slot> &slot_kv : s->slot_map) {
-		p_connections->push_back(slot_kv.value.conn);
+		p_connections.push_back(slot_kv.value.conn);
 	}
 }
 
@@ -1568,11 +1569,11 @@ uint32_t Object::get_signal_connection_flags(const StringName &p_name, const Cal
 	return 0;
 }
 
-void Object::get_signals_connected_to_this(List<Connection> *p_connections) const {
+void Object::get_signals_connected_to_this(LocalVector<Connection> &p_connections) const {
 	OBJ_SIGNAL_LOCK
 
 	for (const Connection &E : connections) {
-		p_connections->push_back(E);
+		p_connections.push_back(E);
 	}
 }
 
@@ -2468,45 +2469,45 @@ void ObjectDB::debug_objects(DebugFunc p_func, void *p_user_data) {
 }
 
 #ifdef TOOLS_ENABLED
-void Object::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void Object::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0) {
 		if (pf == "connect" || pf == "is_connected" || pf == "disconnect" || pf == "emit_signal" || pf == "has_signal") {
 			List<MethodInfo> signals;
 			get_signal_list(&signals);
 			for (const MethodInfo &E : signals) {
-				r_options->push_back(E.name.quote());
+				r_options.push_back(E.name.quote());
 			}
 		} else if (pf == "call" || pf == "call_deferred" || pf == "callv" || pf == "has_method") {
-			List<MethodInfo> methods;
-			get_method_list(&methods);
+			LocalVector<MethodInfo> methods;
+			get_method_list(methods);
 			for (const MethodInfo &E : methods) {
 				if (E.name.begins_with("_") && !(E.flags & METHOD_FLAG_VIRTUAL)) {
 					continue;
 				}
-				r_options->push_back(E.name.quote());
+				r_options.push_back(E.name.quote());
 			}
 		} else if (pf == "set" || pf == "set_deferred" || pf == "get") {
 			List<PropertyInfo> properties;
 			get_property_list(&properties);
 			for (const PropertyInfo &E : properties) {
 				if (E.usage & PROPERTY_USAGE_DEFAULT && !(E.usage & PROPERTY_USAGE_INTERNAL)) {
-					r_options->push_back(E.name.quote());
+					r_options.push_back(E.name.quote());
 				}
 			}
 		} else if (pf == "set_meta" || pf == "get_meta" || pf == "has_meta" || pf == "remove_meta") {
 			for (const KeyValue<StringName, Variant> &K : metadata) {
-				r_options->push_back(String(K.key).quote());
+				r_options.push_back(String(K.key).quote());
 			}
 		}
 	} else if (p_idx == 2) {
 		if (pf == "connect") {
 			// Ideally, the constants should be inferred by the parameter.
 			// But a parameter's PropertyInfo does not store the enum they come from, so this will do for now.
-			List<StringName> constants;
-			ClassDB::get_enum_constants("Object", "ConnectFlags", &constants);
+			LocalVector<StringName> constants;
+			ClassDB::get_enum_constants("Object", "ConnectFlags", constants);
 			for (const StringName &E : constants) {
-				r_options->push_back(String(E));
+				r_options.push_back(String(E));
 			}
 		}
 	}

@@ -185,9 +185,7 @@ void MeshLibraryEditor::_import_scene_parse_node(Ref<MeshLibrary> p_library, Has
 		if (!static_body_node) {
 			continue;
 		}
-		List<uint32_t> shapes;
-		static_body_node->get_shape_owners(&shapes);
-		for (uint32_t &E : shapes) {
+		for (uint32_t &E : static_body_node->get_shape_owners()) {
 			if (static_body_node->is_shape_owner_disabled(E)) {
 				continue;
 			}
@@ -263,8 +261,8 @@ MeshLibraryEditor::MeshLibraryEditor() {
 	file = memnew(EditorFileDialog);
 	file->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_FILE);
 	//not for now?
-	List<String> extensions;
-	ResourceLoader::get_recognized_extensions_for_type("PackedScene", &extensions);
+	LocalVector<String> extensions;
+	ResourceLoader::get_recognized_extensions_for_type("PackedScene", extensions);
 	file->clear_filters();
 	file->set_title(TTR("Import Scene"));
 	for (const String &extension : extensions) {

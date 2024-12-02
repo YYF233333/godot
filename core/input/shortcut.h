@@ -45,7 +45,7 @@ public:
 	void set_events(const Array &p_events);
 	Array get_events() const;
 
-	void set_events_list(const List<Ref<InputEvent>> *p_events);
+	void set_events_list(const LocalVector<Ref<InputEvent>> &p_events);
 
 	bool matches_event(const Ref<InputEvent> &p_event) const;
 	bool has_valid_event() const;

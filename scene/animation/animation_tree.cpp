@@ -34,20 +34,20 @@
 #include "animation_blend_tree.h"
 #include "scene/animation/animation_player.h"
 
-void AnimationNode::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNode::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	Array parameters;
 
 	if (GDVIRTUAL_CALL(_get_parameter_list, parameters)) {
 		for (int i = 0; i < parameters.size(); i++) {
 			Dictionary d = parameters[i];
 			ERR_CONTINUE(d.is_empty());
-			r_list->push_back(PropertyInfo::from_dict(d));
+			r_list.push_back(PropertyInfo::from_dict(d));
 		}
 	}
 
-	r_list->push_back(PropertyInfo(Variant::FLOAT, current_length, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY));
-	r_list->push_back(PropertyInfo(Variant::FLOAT, current_position, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY));
-	r_list->push_back(PropertyInfo(Variant::FLOAT, current_delta, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, current_length, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, current_position, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, current_delta, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY));
 }
 
 Variant AnimationNode::get_parameter_default_value(const StringName &p_parameter) const {
@@ -125,16 +125,19 @@ AnimationNode::NodeTimeInfo AnimationNode::get_node_time_info() const {
 	return nti;
 }
 
-void AnimationNode::get_child_nodes(List<ChildNode> *r_child_nodes) {
+LocalVector<AnimationNode::ChildNode> AnimationNode::get_child_nodes() {
+	LocalVector<ChildNode> r_child_nodes;
 	Dictionary cn;
 	if (GDVIRTUAL_CALL(_get_child_nodes, cn)) {
+		r_child_nodes.reserve(cn.size());
 		for (const KeyValue<Variant, Variant> &kv : cn) {
 			ChildNode child;
 			child.name = kv.key;
 			child.node = kv.value;
-			r_child_nodes->push_back(child);
+			r_child_nodes.push_back(child);
 		}
 	}
+	return r_child_nodes;
 }
 
 void AnimationNode::blend_animation(const StringName &p_animation, AnimationMixer::PlaybackInfo p_playback_info) {
@@ -517,26 +520,26 @@ double AnimationNode::blend_input_ex(int p_input, double p_time, bool p_seek, bo
 }
 
 #ifdef TOOLS_ENABLED
-void AnimationNode::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void AnimationNode::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0) {
 		if (pf == "find_input") {
 			for (const AnimationNode::Input &E : inputs) {
-				r_options->push_back(E.name.quote());
+				r_options.push_back(E.name.quote());
 			}
 		} else if (pf == "get_parameter" || pf == "set_parameter") {
 			bool is_setter = pf == "set_parameter";
-			List<PropertyInfo> parameters;
-			get_parameter_list(&parameters);
+			LocalVector<PropertyInfo> parameters;
+			get_parameter_list(parameters);
 			for (const PropertyInfo &E : parameters) {
 				if (is_setter && is_parameter_read_only(E.name)) {
 					continue;
 				}
-				r_options->push_back(E.name.quote());
+				r_options.push_back(E.name.quote());
 			}
 		} else if (pf == "set_filter_path" || pf == "is_path_filtered") {
 			for (const KeyValue<NodePath, bool> &E : filter) {
-				r_options->push_back(String(E.key).quote());
+				r_options.push_back(String(E.key).quote());
 			}
 		}
 	}
@@ -784,8 +787,8 @@ void AnimationTree::_update_properties_for_node(const String &p_base_path, Ref<A
 		input_activity_map_get[String(p_base_path).substr(0, String(p_base_path).length() - 1)] = input_activity_map.get_index(p_base_path);
 	}
 
-	List<PropertyInfo> plist;
-	p_node->get_parameter_list(&plist);
+	LocalVector<PropertyInfo> plist;
+	p_node->get_parameter_list(plist);
 	for (PropertyInfo &pinfo : plist) {
 		StringName key = pinfo.name;
 
@@ -802,10 +805,8 @@ void AnimationTree::_update_properties_for_node(const String &p_base_path, Ref<A
 		properties.push_back(pinfo);
 	}
 	p_node->make_cache_dirty();
-	List<AnimationNode::ChildNode> children;
-	p_node->get_child_nodes(&children);
 
-	for (const AnimationNode::ChildNode &E : children) {
+	for (const AnimationNode::ChildNode &E : p_node->get_child_nodes()) {
 		_update_properties_for_node(p_base_path + E.name + "/", E.node);
 	}
 }
@@ -886,9 +887,7 @@ void AnimationTree::_setup_animation_player() {
 		while (animation_libraries.size()) {
 			remove_animation_library(animation_libraries[0].name);
 		}
-		List<StringName> list;
-		player->get_animation_library_list(&list);
-		for (const StringName &E : list) {
+		for (const StringName &E : player->get_animation_library_list()) {
 			Ref<AnimationLibrary> lib = player->get_animation_library(E);
 			if (lib.is_valid()) {
 				add_animation_library(E, lib);

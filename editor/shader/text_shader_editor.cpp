@@ -237,10 +237,7 @@ void ShaderTextEditor::_load_theme_settings() {
 	const Color keyword_color = EDITOR_GET("text_editor/theme/highlighting/keyword_color");
 	const Color control_flow_keyword_color = EDITOR_GET("text_editor/theme/highlighting/control_flow_keyword_color");
 
-	List<String> keywords;
-	ShaderLanguage::get_keyword_list(&keywords);
-
-	for (const String &E : keywords) {
+	for (const String &E : ShaderLanguage::get_keyword_list()) {
 		if (ShaderLanguage::is_control_flow_keyword(E)) {
 			syntax_highlighter->add_keyword_color(E, control_flow_keyword_color);
 		} else {
@@ -420,7 +417,7 @@ static void _complete_include_paths(List<ScriptLanguage::CodeCompletionOption> *
 	_complete_include_paths_search(EditorFileSystem::get_singleton()->get_filesystem(), r_options);
 }
 
-void ShaderTextEditor::_code_complete_script(const String &p_code, List<ScriptLanguage::CodeCompletionOption> *r_options) {
+void ShaderTextEditor::_code_complete_script(const String &p_code, LocalVector<ScriptLanguage::CodeCompletionOption> &r_options) {
 	List<ScriptLanguage::CodeCompletionOption> pp_options;
 	List<ScriptLanguage::CodeCompletionOption> pp_defines;
 	ShaderPreprocessor preprocessor;
@@ -434,12 +431,12 @@ void ShaderTextEditor::_code_complete_script(const String &p_code, List<ScriptLa
 	complete_from_path = String();
 	if (pp_options.size()) {
 		for (const ScriptLanguage::CodeCompletionOption &E : pp_options) {
-			r_options->push_back(E);
+			r_options.push_back(E);
 		}
 		return;
 	}
 	for (const ScriptLanguage::CodeCompletionOption &E : pp_defines) {
-		r_options->push_back(E);
+		r_options.push_back(E);
 	}
 
 	ShaderLanguage sl;

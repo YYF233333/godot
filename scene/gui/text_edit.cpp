@@ -7969,18 +7969,17 @@ void TextEdit::_paste_primary_clipboard_internal(int p_caret) {
 // Context menu.
 
 Key TextEdit::_get_menu_action_accelerator(const String &p_action) {
-	const List<Ref<InputEvent>> *events = InputMap::get_singleton()->action_get_events(p_action);
+	const LocalVector<Ref<InputEvent>> *events = InputMap::get_singleton()->action_get_events(p_action);
 	if (!events) {
 		return Key::NONE;
 	}
 
 	// Use first event in the list for the accelerator.
-	const List<Ref<InputEvent>>::Element *first_event = events->front();
-	if (!first_event) {
+	if (events->is_empty()) {
 		return Key::NONE;
 	}
 
-	const Ref<InputEventKey> event = first_event->get();
+	const Ref<InputEventKey> event = (*events)[0];
 	if (event.is_null()) {
 		return Key::NONE;
 	}

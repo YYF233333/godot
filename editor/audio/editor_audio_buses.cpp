@@ -1450,8 +1450,8 @@ EditorAudioBuses::EditorAudioBuses() {
 	set_v_size_flags(SIZE_EXPAND_FILL);
 
 	file_dialog = memnew(EditorFileDialog);
-	List<String> ext;
-	ResourceLoader::get_recognized_extensions_for_type("AudioBusLayout", &ext);
+	LocalVector<String> ext;
+	ResourceLoader::get_recognized_extensions_for_type("AudioBusLayout", ext);
 	for (const String &E : ext) {
 		file_dialog->add_filter("*." + E, TTR("Audio Bus Layout"));
 	}

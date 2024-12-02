@@ -49,7 +49,7 @@ public:
 	struct Action {
 		int id;
 		float deadzone;
-		List<Ref<InputEvent>> inputs;
+		LocalVector<Ref<InputEvent>> inputs;
 	};
 
 	static constexpr float DEFAULT_DEADZONE = 0.2f;
@@ -60,10 +60,10 @@ private:
 	static inline InputMap *singleton = nullptr;
 
 	mutable HashMap<StringName, Action> input_map;
-	HashMap<String, List<Ref<InputEvent>>> default_builtin_cache;
-	HashMap<String, List<Ref<InputEvent>>> default_builtin_with_overrides_cache;
+	HashMap<String, LocalVector<Ref<InputEvent>>> default_builtin_cache;
+	HashMap<String, LocalVector<Ref<InputEvent>>> default_builtin_with_overrides_cache;
 
-	List<Ref<InputEvent>>::Element *_find_event(Action &p_action, const Ref<InputEvent> &p_event, bool p_exact_match = false, bool *r_pressed = nullptr, float *r_strength = nullptr, float *r_raw_strength = nullptr, int *r_event_index = nullptr) const;
+	Ref<InputEvent> *_find_event(Action &p_action, const Ref<InputEvent> &p_event, bool p_exact_match = false, bool *r_pressed = nullptr, float *r_strength = nullptr, float *r_raw_strength = nullptr, int *r_event_index = nullptr) const;
 
 	TypedArray<InputEvent> _action_get_events(const StringName &p_action);
 
@@ -92,7 +92,7 @@ public:
 	void action_erase_event(const StringName &p_action, RequiredParam<InputEvent> rp_event);
 	void action_erase_events(const StringName &p_action);
 
-	const List<Ref<InputEvent>> *action_get_events(const StringName &p_action);
+	const LocalVector<Ref<InputEvent>> *action_get_events(const StringName &p_action);
 	bool event_is_action(RequiredParam<InputEvent> rp_event, const StringName &p_action, bool p_exact_match = false) const;
 	int event_get_index(const Ref<InputEvent> &p_event, const StringName &p_action, bool p_exact_match = false) const;
 	bool event_get_action_status(const Ref<InputEvent> &p_event, const StringName &p_action, bool p_exact_match = false, bool *r_pressed = nullptr, float *r_strength = nullptr, float *r_raw_strength = nullptr, int *r_event_index = nullptr) const;
@@ -104,13 +104,13 @@ public:
 	String suggest_actions(const StringName &p_action) const;
 
 #ifdef TOOLS_ENABLED
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	virtual void get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const override;
 #endif
 
 	String get_builtin_display_name(const String &p_name) const;
 	// Use an Ordered Map so insertion order is preserved. We want the elements to be 'grouped' somewhat.
-	const HashMap<String, List<Ref<InputEvent>>> &get_builtins();
-	const HashMap<String, List<Ref<InputEvent>>> &get_builtins_with_feature_overrides_applied();
+	const HashMap<String, LocalVector<Ref<InputEvent>>> &get_builtins();
+	const HashMap<String, LocalVector<Ref<InputEvent>>> &get_builtins_with_feature_overrides_applied();
 
 	InputMap();
 	~InputMap();

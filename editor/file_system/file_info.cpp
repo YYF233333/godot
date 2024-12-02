@@ -30,7 +30,7 @@
 
 #include "file_info.h"
 
-void sort_file_info_list(List<FileInfo> &r_file_list, FileSortOption p_file_sort_option) {
+void sort_file_info_list(LocalVector<FileInfo> &r_file_list, FileSortOption p_file_sort_option) {
 	// Sort the file list if needed.
 	switch (p_file_sort_option) {
 		case FileSortOption::FILE_SORT_TYPE:

@@ -43,8 +43,8 @@ String ResourceImporterCSVTranslation::get_visible_name() const {
 	return "CSV Translation";
 }
 
-void ResourceImporterCSVTranslation::get_recognized_extensions(List<String> *p_extensions) const {
-	p_extensions->push_back("csv");
+void ResourceImporterCSVTranslation::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("csv");
 }
 
 String ResourceImporterCSVTranslation::get_save_extension() const {
@@ -67,14 +67,14 @@ String ResourceImporterCSVTranslation::get_preset_name(int p_idx) const {
 	return "";
 }
 
-void ResourceImporterCSVTranslation::get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset) const {
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "compress", PROPERTY_HINT_ENUM, "Disabled,Auto"), 1)); // Enum for compatibility with previous versions.
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "delimiter", PROPERTY_HINT_ENUM, "Comma,Semicolon,Tab"), 0));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "unescape_keys"), false));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "unescape_translations"), true));
+void ResourceImporterCSVTranslation::get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset) const {
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "compress", PROPERTY_HINT_ENUM, "Disabled,Auto"), 1)); // Enum for compatibility with previous versions.
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "delimiter", PROPERTY_HINT_ENUM, "Comma,Semicolon,Tab"), 0));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "unescape_keys"), false));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "unescape_translations"), true));
 }
 
-Error ResourceImporterCSVTranslation::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
+Error ResourceImporterCSVTranslation::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
 	Ref<FileAccess> f = FileAccess::open(p_source_file, FileAccess::READ);
 	ERR_FAIL_COND_V_MSG(f.is_null(), ERR_INVALID_PARAMETER, "Cannot open file from path '" + p_source_file + "'.");
 
@@ -251,9 +251,7 @@ Error ResourceImporterCSVTranslation::import(ResourceUID::ID p_source_id, const 
 		}
 
 		ResourceSaver::save(xlt, save_path);
-		if (r_gen_files) {
-			r_gen_files->push_back(save_path);
-		}
+		r_gen_files.push_back(save_path);
 		if (!uid_already_exists) {
 			// No need to call set_uid if save_path already refers to save_id.
 			ResourceSaver::set_uid(save_path, save_id);

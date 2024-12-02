@@ -163,10 +163,8 @@ void EditorStandardSyntaxHighlighter::_update_cache() {
 	if (scr_lang != nullptr) {
 		/* Core types. */
 		const Color basetype_color = EDITOR_GET("text_editor/theme/highlighting/base_type_color");
-		List<String> core_types;
-		scr_lang->get_core_type_words(&core_types);
-		for (const String &E : core_types) {
-			highlighter->add_keyword_color(E, basetype_color);
+		for (const StringName &keyword : scr_lang->get_core_type_words()) {
+			highlighter->add_keyword_color(keyword, basetype_color);
 		}
 
 		/* Reserved words. */
@@ -196,8 +194,8 @@ void EditorStandardSyntaxHighlighter::_update_cache() {
 				highlighter->add_member_keyword_color(prop_name, member_variable_color);
 			}
 
-			List<String> clist;
-			ClassDB::get_integer_constant_list(instance_base, &clist);
+			LocalVector<String> clist;
+			ClassDB::get_integer_constant_list(instance_base, clist);
 			for (const String &E : clist) {
 				highlighter->add_member_keyword_color(E, member_variable_color);
 			}
@@ -820,9 +818,9 @@ void ScriptEditor::_open_recent_script(int p_idx) {
 	String path = rc[p_idx];
 	// if its not on disk its a help file or deleted
 	if (FileAccess::exists(path)) {
-		List<String> extensions;
-		ResourceLoader::get_recognized_extensions_for_type("Script", &extensions);
-		ResourceLoader::get_recognized_extensions_for_type("JSON", &extensions);
+		LocalVector<String> extensions;
+		ResourceLoader::get_recognized_extensions_for_type("Script", extensions);
+		ResourceLoader::get_recognized_extensions_for_type("JSON", extensions);
 
 		if (extensions.find(path.get_extension())) {
 			Ref<Resource> scr = ResourceLoader::load(path);
@@ -1396,8 +1394,8 @@ void ScriptEditor::_menu_option(int p_option) {
 			file_dialog->set_access(EditorFileDialog::ACCESS_FILESYSTEM);
 			file_dialog_option = FILE_MENU_OPEN;
 
-			List<String> extensions;
-			ResourceLoader::get_recognized_extensions_for_type("Script", &extensions);
+			LocalVector<String> extensions;
+			ResourceLoader::get_recognized_extensions_for_type("Script", extensions);
 			file_dialog->clear_filters();
 			for (const String &extension : extensions) {
 				file_dialog->add_filter("*." + extension, extension.to_upper());
@@ -1419,9 +1417,9 @@ void ScriptEditor::_menu_option(int p_option) {
 			String path = previous_scripts.back()->get();
 			previous_scripts.pop_back();
 
-			List<String> extensions;
-			ResourceLoader::get_recognized_extensions_for_type("Script", &extensions);
-			ResourceLoader::get_recognized_extensions_for_type("JSON", &extensions);
+			LocalVector<String> extensions;
+			ResourceLoader::get_recognized_extensions_for_type("Script", extensions);
+			ResourceLoader::get_recognized_extensions_for_type("JSON", extensions);
 			bool built_in = !path.is_resource_file();
 
 			if (extensions.find(path.get_extension()) || built_in) {
@@ -1545,8 +1543,8 @@ void ScriptEditor::_menu_option(int p_option) {
 					file_dialog->set_access(EditorFileDialog::ACCESS_FILESYSTEM);
 					file_dialog_option = FILE_MENU_SAVE_AS;
 
-					List<String> extensions;
-					ResourceLoader::get_recognized_extensions_for_type("Script", &extensions);
+					LocalVector<String> extensions;
+					ResourceLoader::get_recognized_extensions_for_type("Script", extensions);
 					file_dialog->clear_filters();
 					file_dialog->set_current_dir(text_file->get_path().get_base_dir());
 					file_dialog->set_current_file(text_file->get_path().get_file());
@@ -1995,7 +1993,7 @@ Vector<String> ScriptEditor::_get_breakpoints() {
 	return ret;
 }
 
-void ScriptEditor::get_breakpoints(List<String> *p_breakpoints) {
+void ScriptEditor::get_breakpoints(LocalVector<String> &p_breakpoints) {
 	HashSet<String> loaded_scripts;
 	for (int i = 0; i < tab_container->get_tab_count(); i++) {
 		ScriptEditorBase *se = Object::cast_to<ScriptEditorBase>(tab_container->get_tab_control(i));
@@ -2016,7 +2014,7 @@ void ScriptEditor::get_breakpoints(List<String> *p_breakpoints) {
 
 		PackedInt32Array bpoints = se->get_breakpoints();
 		for (int32_t bpoint : bpoints) {
-			p_breakpoints->push_back(base + ":" + itos((int)bpoint + 1));
+			p_breakpoints.push_back(base + ":" + itos((int)bpoint + 1));
 		}
 	}
 
@@ -2029,7 +2027,7 @@ void ScriptEditor::get_breakpoints(List<String> *p_breakpoints) {
 
 		Array breakpoints = _get_cached_breakpoints_for_script(E);
 		for (int breakpoint : breakpoints) {
-			p_breakpoints->push_back(E + ":" + itos((int)breakpoint + 1));
+			p_breakpoints.push_back(E + ":" + itos((int)breakpoint + 1));
 		}
 	}
 }
@@ -2949,9 +2947,9 @@ void ScriptEditor::open_text_file_create_dialog(const String &p_base_path, const
 }
 
 Ref<Resource> ScriptEditor::open_file(const String &p_file) {
-	List<String> extensions;
-	ResourceLoader::get_recognized_extensions_for_type("Script", &extensions);
-	ResourceLoader::get_recognized_extensions_for_type("JSON", &extensions);
+	LocalVector<String> extensions;
+	ResourceLoader::get_recognized_extensions_for_type("Script", extensions);
+	ResourceLoader::get_recognized_extensions_for_type("JSON", extensions);
 	if (extensions.find(p_file.get_extension())) {
 		Ref<Resource> scr = ResourceLoader::load(p_file);
 		if (scr.is_null()) {
@@ -3569,9 +3567,9 @@ void ScriptEditor::set_window_layout(Ref<ConfigFile> p_layout) {
 	restoring_layout = true;
 
 	HashSet<String> loaded_scripts;
-	List<String> extensions;
-	ResourceLoader::get_recognized_extensions_for_type("Script", &extensions);
-	ResourceLoader::get_recognized_extensions_for_type("JSON", &extensions);
+	LocalVector<String> extensions;
+	ResourceLoader::get_recognized_extensions_for_type("Script", extensions);
+	ResourceLoader::get_recognized_extensions_for_type("JSON", extensions);
 
 	for (const Variant &v : scripts) {
 		String path = v;
@@ -4789,7 +4787,7 @@ void ScriptEditorPlugin::get_window_layout(Ref<ConfigFile> p_layout) {
 	}
 }
 
-void ScriptEditorPlugin::get_breakpoints(List<String> *p_breakpoints) {
+void ScriptEditorPlugin::get_breakpoints(LocalVector<String> &p_breakpoints) {
 	script_editor->get_breakpoints(p_breakpoints);
 }
 
