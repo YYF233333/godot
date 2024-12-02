@@ -45,11 +45,11 @@ String EditorImportPlugin::get_visible_name() const {
 	return ret;
 }
 
-void EditorImportPlugin::get_recognized_extensions(List<String> *p_extensions) const {
+void EditorImportPlugin::get_recognized_extensions(LocalVector<String> &p_extensions) const {
 	Vector<String> extensions;
 	GDVIRTUAL_CALL(_get_recognized_extensions, extensions);
 	for (int i = 0; i < extensions.size(); i++) {
-		p_extensions->push_back(extensions[i]);
+		p_extensions.push_back(extensions[i]);
 	}
 }
 
