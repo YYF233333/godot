@@ -193,9 +193,7 @@ public:
 	virtual void get_constants(HashMap<StringName, Variant> *p_constants) override {
 		Dictionary constants;
 		GDVIRTUAL_CALL(_get_constants, constants);
-		List<Variant> keys;
-		constants.get_key_list(&keys);
-		for (const Variant &K : keys) {
+		for (const Variant &K : constants.get_key_list()) {
 			p_constants->insert(K, constants[K]);
 		}
 	}
@@ -608,11 +606,11 @@ public:
 
 	GDVIRTUAL0RC_REQUIRED(PackedStringArray, _get_recognized_extensions)
 
-	virtual void get_recognized_extensions(List<String> *p_extensions) const override {
+	virtual void get_recognized_extensions(LocalVector<String> &p_extensions) const override {
 		PackedStringArray ret;
 		GDVIRTUAL_CALL(_get_recognized_extensions, ret);
 		for (int i = 0; i < ret.size(); i++) {
-			p_extensions->push_back(ret[i]);
+			p_extensions.push_back(ret[i]);
 		}
 	}
 

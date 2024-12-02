@@ -431,7 +431,7 @@ void Object::set_indexed(const Vector<StringName> &p_names, const Variant &p_val
 		r_valid = &valid;
 	}
 
-	List<Variant> value_stack;
+	LocalVector<Variant> value_stack;
 
 	value_stack.push_back(get(p_names[0], r_valid));
 
@@ -441,7 +441,7 @@ void Object::set_indexed(const Vector<StringName> &p_names, const Variant &p_val
 	}
 
 	for (int i = 1; i < p_names.size() - 1; i++) {
-		value_stack.push_back(value_stack.back()->get().get_named(p_names[i], valid));
+		value_stack.push_back(value_stack.back().get_named(p_names[i], valid));
 		if (r_valid) {
 			*r_valid = valid;
 		}
@@ -455,7 +455,7 @@ void Object::set_indexed(const Vector<StringName> &p_names, const Variant &p_val
 	value_stack.push_back(p_value); // p_names[p_names.size() - 1]
 
 	for (int i = p_names.size() - 1; i > 0; i--) {
-		value_stack.back()->prev()->get().set_named(p_names[i], value_stack.back()->get(), valid);
+		value_stack[value_stack.size() - 2].set_named(p_names[i], value_stack.back(), valid);
 		value_stack.pop_back();
 
 		if (r_valid) {
@@ -467,7 +467,7 @@ void Object::set_indexed(const Vector<StringName> &p_names, const Variant &p_val
 		}
 	}
 
-	set(p_names[0], value_stack.back()->get(), r_valid);
+	set(p_names[0], value_stack.back(), r_valid);
 	value_stack.pop_back();
 
 	ERR_FAIL_COND(!value_stack.is_empty());
@@ -1640,10 +1640,8 @@ void Object::_clear_internal_resource_paths(const Variant &p_var) {
 		} break;
 		case Variant::DICTIONARY: {
 			Dictionary d = p_var;
-			List<Variant> keys;
-			d.get_key_list(&keys);
 
-			for (const Variant &E : keys) {
+			for (const Variant &E : d.get_key_list()) {
 				_clear_internal_resource_paths(E);
 				_clear_internal_resource_paths(d[E]);
 			}

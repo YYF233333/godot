@@ -52,12 +52,12 @@ String EditorImportPlugin::get_visible_name() const {
 	ERR_FAIL_V_MSG(String(), "Unimplemented _get_visible_name in add-on.");
 }
 
-void EditorImportPlugin::get_recognized_extensions(List<String> *p_extensions) const {
+void EditorImportPlugin::get_recognized_extensions(LocalVector<String> &p_extensions) const {
 	Vector<String> extensions;
 
 	if (GDVIRTUAL_CALL(_get_recognized_extensions, extensions)) {
 		for (int i = 0; i < extensions.size(); i++) {
-			p_extensions->push_back(extensions[i]);
+			p_extensions.push_back(extensions[i]);
 		}
 		return;
 	}
@@ -205,9 +205,7 @@ bool EditorImportPlugin::can_import_threaded() const {
 
 Error EditorImportPlugin::_append_import_external_resource(const String &p_file, const Dictionary &p_custom_options, const String &p_custom_importer, Variant p_generator_parameters) {
 	HashMap<StringName, Variant> options;
-	List<Variant> keys;
-	p_custom_options.get_key_list(&keys);
-	for (const Variant &K : keys) {
+	for (const Variant &K : p_custom_options.get_key_list()) {
 		options.insert(K, p_custom_options[K]);
 	}
 	return append_import_external_resource(p_file, options, p_custom_importer, p_generator_parameters);

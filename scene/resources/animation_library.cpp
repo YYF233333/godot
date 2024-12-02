@@ -112,7 +112,8 @@ void AnimationLibrary::_animation_changed(const StringName &p_name) {
 }
 
 void AnimationLibrary::get_animation_list(List<StringName> *p_animations) const {
-	List<StringName> anims;
+	LocalVector<StringName> anims;
+	anims.reserve(animations.size());
 
 	for (const KeyValue<StringName, Ref<Animation>> &E : animations) {
 		anims.push_back(E.key);
@@ -134,9 +135,7 @@ void AnimationLibrary::_set_data(const Dictionary &p_data) {
 		K.value->disconnect_changed(callable_mp(this, &AnimationLibrary::_animation_changed));
 	}
 	animations.clear();
-	List<Variant> keys;
-	p_data.get_key_list(&keys);
-	for (const Variant &K : keys) {
+	for (const Variant &K : p_data.get_key_list()) {
 		add_animation(K, p_data[K]);
 	}
 }

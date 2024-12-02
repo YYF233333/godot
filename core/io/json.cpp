@@ -122,8 +122,7 @@ String JSON::_stringify(const Variant &p_var, const String &p_indent, int p_cur_
 			ERR_FAIL_COND_V_MSG(p_markers.has(d.id()), "\"{...}\"", "Converting circular structure to JSON.");
 			p_markers.insert(d.id());
 
-			List<Variant> keys;
-			d.get_key_list(&keys);
+			LocalVector<Variant> keys = d.get_key_list();
 
 			if (p_sort_keys) {
 				keys.sort_custom<StringLikeVariantOrder>();
@@ -922,10 +921,7 @@ Variant JSON::_from_native(const Variant &p_variant, bool p_full_objects, int p_
 
 			ERR_FAIL_COND_V_MSG(p_depth > Variant::MAX_RECURSION_DEPTH, ret, "Variant is too deep. Bailing.");
 
-			List<Variant> keys;
-			dict.get_key_list(&keys);
-
-			for (const Variant &key : keys) {
+			for (const Variant &key : dict.get_key_list()) {
 				args.push_back(_from_native(key, p_full_objects, p_depth + 1));
 				args.push_back(_from_native(dict[key], p_full_objects, p_depth + 1));
 			}
@@ -1642,8 +1638,8 @@ Ref<Resource> ResourceFormatLoaderJSON::load(const String &p_path, const String 
 	return json;
 }
 
-void ResourceFormatLoaderJSON::get_recognized_extensions(List<String> *p_extensions) const {
-	p_extensions->push_back("json");
+void ResourceFormatLoaderJSON::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("json");
 }
 
 bool ResourceFormatLoaderJSON::handles_type(const String &p_type) const {
@@ -1677,10 +1673,10 @@ Error ResourceFormatSaverJSON::save(const Ref<Resource> &p_resource, const Strin
 	return OK;
 }
 
-void ResourceFormatSaverJSON::get_recognized_extensions(const Ref<Resource> &p_resource, List<String> *p_extensions) const {
+void ResourceFormatSaverJSON::get_recognized_extensions(const Ref<Resource> &p_resource, LocalVector<String> &p_extensions) const {
 	Ref<JSON> json = p_resource;
 	if (json.is_valid()) {
-		p_extensions->push_back("json");
+		p_extensions.push_back("json");
 	}
 }
 
