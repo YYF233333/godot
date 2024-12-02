@@ -403,15 +403,15 @@ void EditorResourcePicker::_update_menu_items() {
 void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 	switch (p_which) {
 		case OBJ_MENU_LOAD: {
-			List<String> extensions;
+			LocalVector<String> extensions;
 			for (int i = 0; i < base_type.get_slice_count(","); i++) {
 				String base = base_type.get_slicec(',', i);
 				if (base == "Resource") {
 					base = "";
 				}
-				ResourceLoader::get_recognized_extensions_for_type(base, &extensions);
+				ResourceLoader::get_recognized_extensions_for_type(base, extensions);
 				if (ScriptServer::is_global_class(base)) {
-					ResourceLoader::get_recognized_extensions_for_type(ScriptServer::get_global_class_native_base(base), &extensions);
+					ResourceLoader::get_recognized_extensions_for_type(ScriptServer::get_global_class_native_base(base), extensions);
 				}
 			}
 
