@@ -1210,7 +1210,7 @@ void EditorNode::_plugin_over_self_own(EditorPlugin *p_plugin) {
 }
 
 void EditorNode::_resources_changed(const Vector<String> &p_resources) {
-	List<Ref<Resource>> changed;
+	LocalVector<Ref<Resource>> changed;
 
 	int rc = p_resources.size();
 	for (int i = 0; i < rc; i++) {
@@ -1734,9 +1734,9 @@ void EditorNode::save_resource_as(const Ref<Resource> &p_resource, const String 
 	saving_resource = p_resource;
 
 	current_menu_option = RESOURCE_SAVE_AS;
-	List<String> extensions;
+	LocalVector<String> extensions;
 	Ref<PackedScene> sd = memnew(PackedScene);
-	ResourceSaver::get_recognized_extensions(p_resource, &extensions);
+	ResourceSaver::get_recognized_extensions(p_resource, extensions);
 	file->clear_filters();
 
 	List<String> preferred;
@@ -1770,8 +1770,8 @@ void EditorNode::save_resource_as(const Ref<Resource> &p_resource, const String 
 		file->set_current_path(p_resource->get_path());
 		if (!extensions.is_empty()) {
 			const String ext = p_resource->get_path().get_extension().to_lower();
-			if (extensions.find(ext) == nullptr) {
-				file->set_current_path(p_resource->get_path().replacen("." + ext, "." + extensions.front()->get()));
+			if (!extensions.has(ext)) {
+				file->set_current_path(p_resource->get_path().replacen("." + ext, "." + extensions[0]));
 			}
 		}
 	} else if (!preferred.is_empty()) {
@@ -2820,7 +2820,7 @@ void EditorNode::edit_item(Object *p_object, Object *p_editing_owner) {
 	// Remove editor plugins no longer used by this editing owner. Keep the ones that can
 	// still be reused by the new edited object.
 
-	List<EditorPlugin *> to_remove;
+	LocalVector<EditorPlugin *> to_remove;
 	for (EditorPlugin *plugin : active_plugins[owner_id]) {
 		if (!available_plugins.has(plugin)) {
 			to_remove.push_back(plugin);
@@ -2951,7 +2951,7 @@ void EditorNode::hide_unused_editors(const Object *p_editing_owner) {
 	} else {
 		// If no editing owner is provided, this method will go over all owners and check if they are valid.
 		// This is to sweep properties that were removed from the inspector.
-		List<ObjectID> to_remove;
+		LocalVector<ObjectID> to_remove;
 		for (KeyValue<ObjectID, HashSet<EditorPlugin *>> &kv : active_plugins) {
 			Object *context = ObjectDB::get_instance(kv.key);
 			if (context) {
@@ -3261,8 +3261,8 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 		case SCENE_NEW_INHERITED_SCENE:
 		case SCENE_OPEN_SCENE: {
 			file->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_FILE);
-			List<String> extensions;
-			ResourceLoader::get_recognized_extensions_for_type("PackedScene", &extensions);
+			LocalVector<String> extensions;
+			ResourceLoader::get_recognized_extensions_for_type("PackedScene", extensions);
 			file->clear_filters();
 			for (const String &extension : extensions) {
 				file->add_filter("*." + extension, extension.to_upper());
@@ -3368,9 +3368,9 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 
 			file->set_file_mode(EditorFileDialog::FILE_MODE_SAVE_FILE);
 
-			List<String> extensions;
+			LocalVector<String> extensions;
 			Ref<PackedScene> sd = memnew(PackedScene);
-			ResourceSaver::get_recognized_extensions(sd, &extensions);
+			ResourceSaver::get_recognized_extensions(sd, extensions);
 			file->clear_filters();
 			for (const String &extension : extensions) {
 				file->add_filter("*." + extension, extension.to_upper());
@@ -3384,14 +3384,14 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 
 				file->set_current_path(path);
 				if (extensions.size()) {
-					if (extensions.find(ext) == nullptr) {
-						file->set_current_path(path.replacen("." + ext, "." + extensions.front()->get()));
+					if (!extensions.has(ext)) {
+						file->set_current_path(path.replacen("." + ext, "." + extensions[0]));
 					}
 				}
 			} else if (extensions.size()) {
 				String root_name = scene->get_name();
 				root_name = EditorNode::adjust_scene_name_casing(root_name);
-				file->set_current_path(root_name + "." + extensions.front()->get().to_lower());
+				file->set_current_path(root_name + "." + extensions[0].to_lower());
 			}
 			file->set_title(TTR("Save Scene As..."));
 			file->popup_file_dialog();
@@ -3736,8 +3736,8 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 		} break;
 		case SETTINGS_PICK_MAIN_SCENE: {
 			file->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_FILE);
-			List<String> extensions;
-			ResourceLoader::get_recognized_extensions_for_type("PackedScene", &extensions);
+			LocalVector<String> extensions;
+			ResourceLoader::get_recognized_extensions_for_type("PackedScene", extensions);
 			file->clear_filters();
 			for (const String &extension : extensions) {
 				file->add_filter("*." + extension, extension.to_upper());
@@ -3960,9 +3960,9 @@ void EditorNode::_export_as_menu_option(int p_idx) {
 			return;
 		}
 
-		List<String> extensions;
+		LocalVector<String> extensions;
 		Ref<MeshLibrary> ml(memnew(MeshLibrary));
-		ResourceSaver::get_recognized_extensions(ml, &extensions);
+		ResourceSaver::get_recognized_extensions(ml, extensions);
 		file_export_lib->clear_filters();
 		for (const String &E : extensions) {
 			file_export_lib->add_filter("*." + E);
@@ -7160,7 +7160,7 @@ void EditorNode::reload_instances_with_path_in_edited_scenes() {
 			}
 
 			// Store all the paths for any selected nodes which are ancestors of the node we're replacing.
-			List<NodePath> selected_node_paths;
+			LocalVector<NodePath> selected_node_paths;
 			for (Node *selected_node : editor_selection->get_top_selected_node_list()) {
 				if (selected_node == original_node || original_node->is_ancestor_of(selected_node)) {
 					selected_node_paths.push_back(original_node->get_path_to(selected_node));

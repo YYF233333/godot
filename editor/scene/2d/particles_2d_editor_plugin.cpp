@@ -232,8 +232,8 @@ void Particles2DEditorPlugin::_process_emission_masks(PackedVector2Array &r_vali
 Particles2DEditorPlugin::Particles2DEditorPlugin() {
 	file_dialog = memnew(EditorFileDialog);
 
-	List<String> ext;
-	ImageLoader::get_recognized_extensions(&ext);
+	LocalVector<String> ext;
+	ImageLoader::get_recognized_extensions(ext);
 	for (const String &E : ext) {
 		file_dialog->add_filter("*." + E, E.to_upper());
 	}

@@ -1239,10 +1239,10 @@ AnimationNodeStateMachinePlayback::AnimationNodeStateMachinePlayback() {
 void AnimationNodeStateMachine::get_parameter_list(List<PropertyInfo> *r_list) const {
 	AnimationNode::get_parameter_list(r_list);
 	r_list->push_back(PropertyInfo(Variant::OBJECT, playback, PROPERTY_HINT_RESOURCE_TYPE, "AnimationNodeStateMachinePlayback", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_ALWAYS_DUPLICATE)); // Don't store this object in .tres, it always needs to be made as unique object.
-	List<StringName> advance_conditions;
+	LocalVector<StringName> advance_conditions;
 	for (int i = 0; i < transitions.size(); i++) {
 		StringName ac = transitions[i].transition->get_advance_condition_name();
-		if (ac != StringName() && advance_conditions.find(ac) == nullptr) {
+		if (ac != StringName() && advance_conditions.find(ac) == -1) {
 			advance_conditions.push_back(ac);
 		}
 	}

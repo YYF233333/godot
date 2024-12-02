@@ -92,7 +92,7 @@ void ThemeItemImportTree::_update_items_tree() {
 
 	List<StringName> types;
 	List<StringName> names;
-	List<StringName> filtered_names;
+	LocalVector<StringName> filtered_names;
 	base_theme->get_type_list(&types);
 	types.sort_custom<StringName::AlphCompare>();
 
@@ -2158,8 +2158,8 @@ ThemeItemEditorDialog::ThemeItemEditorDialog(ThemeTypeEditor *p_theme_type_edito
 	import_another_theme_dialog = memnew(EditorFileDialog);
 	import_another_theme_dialog->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_FILE);
 	import_another_theme_dialog->set_title(TTR("Select Another Theme Resource:"));
-	List<String> ext;
-	ResourceLoader::get_recognized_extensions_for_type("Theme", &ext);
+	LocalVector<String> ext;
+	ResourceLoader::get_recognized_extensions_for_type("Theme", ext);
 	for (const String &E : ext) {
 		import_another_theme_dialog->add_filter("*." + E, TTR("Theme Resource"));
 	}
@@ -4057,8 +4057,8 @@ ThemeEditor::ThemeEditor() {
 	preview_scene_dialog = memnew(EditorFileDialog);
 	preview_scene_dialog->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_FILE);
 	preview_scene_dialog->set_title(TTR("Select UI Scene:"));
-	List<String> ext;
-	ResourceLoader::get_recognized_extensions_for_type("PackedScene", &ext);
+	LocalVector<String> ext;
+	ResourceLoader::get_recognized_extensions_for_type("PackedScene", ext);
 	for (const String &E : ext) {
 		preview_scene_dialog->add_filter("*." + E, TTR("Scene"));
 	}

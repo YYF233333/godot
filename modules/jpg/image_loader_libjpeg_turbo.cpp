@@ -92,9 +92,9 @@ Error ImageLoaderLibJPEGTurbo::load_image(Ref<Image> p_image, Ref<FileAccess> f,
 	return err;
 }
 
-void ImageLoaderLibJPEGTurbo::get_recognized_extensions(List<String> *p_extensions) const {
-	p_extensions->push_back("jpg");
-	p_extensions->push_back("jpeg");
+void ImageLoaderLibJPEGTurbo::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("jpg");
+	p_extensions.push_back("jpeg");
 }
 
 static Ref<Image> _jpeg_turbo_mem_loader_func(const uint8_t *p_data, int p_size) {

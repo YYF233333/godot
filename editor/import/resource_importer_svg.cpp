@@ -41,8 +41,8 @@ String ResourceImporterSVG::get_visible_name() const {
 	return "DPITexture";
 }
 
-void ResourceImporterSVG::get_recognized_extensions(List<String> *p_extensions) const {
-	p_extensions->push_back("svg");
+void ResourceImporterSVG::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("svg");
 }
 
 String ResourceImporterSVG::get_save_extension() const {

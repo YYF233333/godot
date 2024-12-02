@@ -278,11 +278,11 @@ String ScriptCreateDialog::_validate_path(const String &p_path, bool p_file_must
 
 	// Check file extension.
 	String extension = p.get_extension();
-	List<String> extensions;
+	LocalVector<String> extensions;
 
 	// Get all possible extensions for script.
 	for (int l = 0; l < language_menu->get_item_count(); l++) {
-		ScriptServer::get_language(l)->get_recognized_extensions(&extensions);
+		ScriptServer::get_language(l)->get_recognized_extensions(extensions);
 	}
 
 	bool found = false;
@@ -461,10 +461,10 @@ void ScriptCreateDialog::_browse_path(bool browse_parent, bool p_save) {
 
 	file_browse->set_customization_flag_enabled(FileDialog::CUSTOMIZATION_OVERWRITE_WARNING, false);
 	file_browse->clear_filters();
-	List<String> extensions;
+	LocalVector<String> extensions;
 
 	int lang = language_menu->get_selected();
-	ScriptServer::get_language(lang)->get_recognized_extensions(&extensions);
+	ScriptServer::get_language(lang)->get_recognized_extensions(extensions);
 
 	for (const String &E : extensions) {
 		file_browse->add_filter("*." + E);

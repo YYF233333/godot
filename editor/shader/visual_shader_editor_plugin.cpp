@@ -4510,7 +4510,7 @@ void VisualShaderEditor::_delete_nodes(int p_type, const List<int> &p_nodes) {
 		}
 	}
 
-	List<VisualShader::Connection> used_conns;
+	LocalVector<VisualShader::Connection> used_conns;
 	for (const int &F : p_nodes) {
 		for (const VisualShader::Connection &E : conns) {
 			if (E.from_node == F || E.to_node == F) {
@@ -4902,8 +4902,8 @@ void VisualShaderEditor::_graph_gui_input(const Ref<InputEvent> &p_event) {
 		selected_frame = -1;
 		selected_float_constant = -1;
 
-		List<int> selected_deletable_graph_elements;
-		List<GraphElement *> selected_graph_elements;
+		LocalVector<int> selected_deletable_graph_elements;
+		LocalVector<GraphElement *> selected_graph_elements;
 		for (int i = 0; i < graph->get_child_count(); i++) {
 			GraphElement *graph_element = Object::cast_to<GraphElement>(graph->get_child(i));
 			if (!graph_element) {

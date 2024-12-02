@@ -1273,7 +1273,7 @@ RBSet<GDScript *> GDScript::get_dependencies() {
 HashMap<GDScript *, RBSet<GDScript *>> GDScript::get_all_dependencies() {
 	HashMap<GDScript *, RBSet<GDScript *>> all_dependencies;
 
-	List<GDScript *> scripts;
+	LocalVector<GDScript *> scripts;
 	{
 		MutexLock lock(GDScriptLanguage::singleton->mutex);
 
@@ -2584,7 +2584,7 @@ void GDScriptLanguage::reload_all_scripts() {
 void GDScriptLanguage::reload_scripts(const Array &p_scripts, bool p_soft_reload) {
 #ifdef DEBUG_ENABLED
 
-	List<Ref<GDScript>> scripts;
+	LocalVector<Ref<GDScript>> scripts;
 	{
 		MutexLock lock(mutex);
 
@@ -3069,9 +3069,9 @@ Ref<Resource> ResourceFormatLoaderGDScript::load(const String &p_path, const Str
 	return scr;
 }
 
-void ResourceFormatLoaderGDScript::get_recognized_extensions(List<String> *p_extensions) const {
-	p_extensions->push_back("gd");
-	p_extensions->push_back("gdc");
+void ResourceFormatLoaderGDScript::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("gd");
+	p_extensions.push_back("gdc");
 }
 
 bool ResourceFormatLoaderGDScript::handles_type(const String &p_type) const {
@@ -3186,9 +3186,9 @@ Error ResourceFormatSaverGDScript::save(const Ref<Resource> &p_resource, const S
 	return OK;
 }
 
-void ResourceFormatSaverGDScript::get_recognized_extensions(const Ref<Resource> &p_resource, List<String> *p_extensions) const {
+void ResourceFormatSaverGDScript::get_recognized_extensions(const Ref<Resource> &p_resource, LocalVector<String> &p_extensions) const {
 	if (Object::cast_to<GDScript>(*p_resource)) {
-		p_extensions->push_back("gd");
+		p_extensions.push_back("gd");
 	}
 }
 

@@ -152,7 +152,7 @@ static Node *_find_node_by_id(Node *p_owner, Node *p_node, int32_t p_id) {
 
 Node *SceneState::instantiate(GenEditState p_edit_state) const {
 	// Nodes where instantiation failed (because something is missing.)
-	List<Node *> stray_instances;
+	LocalVector<Node *> stray_instances;
 
 #define NODE_FROM_ID(p_name, p_id)                                             \
 	Node *p_name;                                                              \
@@ -686,9 +686,8 @@ Node *SceneState::instantiate(GenEditState p_edit_state) const {
 	//Node *s = ret_nodes[0];
 
 	//remove nodes that could not be added, likely as a result that
-	while (stray_instances.size()) {
-		memdelete(stray_instances.front()->get());
-		stray_instances.pop_front();
+	for (Node *&node : stray_instances) {
+		memdelete(node);
 	}
 
 	for (int i = 0; i < editable_instances.size(); i++) {

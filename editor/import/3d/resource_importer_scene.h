@@ -75,7 +75,7 @@ public:
 
 	void add_import_option(const String &p_name, const Variant &p_default_value);
 	void add_import_option_advanced(Variant::Type p_type, const String &p_name, const Variant &p_default_value, PropertyHint p_hint = PROPERTY_HINT_NONE, const String &p_hint_string = String(), int p_usage_flags = PROPERTY_USAGE_DEFAULT);
-	virtual void get_extensions(List<String> *r_extensions) const;
+	virtual void get_extensions(LocalVector<String> &r_extensions) const;
 	virtual Node *import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, List<String> *r_missing_deps, Error *r_err = nullptr);
 	virtual void get_import_options(const String &p_path, List<ResourceImporter::ImportOption> *r_options);
 	virtual Variant get_option_visibility(const String &p_path, const String &p_scene_import_type, const String &p_option, const HashMap<StringName, Variant> &p_options);
@@ -240,7 +240,7 @@ public:
 	const Vector<Ref<EditorSceneFormatImporter>> &get_scene_importers() const { return scene_importers; }
 	static void add_scene_importer(Ref<EditorSceneFormatImporter> p_importer, bool p_first_priority = false);
 	static void remove_scene_importer(Ref<EditorSceneFormatImporter> p_importer);
-	static void get_scene_importer_extensions(List<String> *p_extensions);
+	static void get_scene_importer_extensions(LocalVector<String> &p_extensions);
 
 	static void clean_up_importer_plugins();
 
@@ -249,7 +249,7 @@ public:
 
 	virtual String get_importer_name() const override;
 	virtual String get_visible_name() const override;
-	virtual void get_recognized_extensions(List<String> *p_extensions) const override;
+	virtual void get_recognized_extensions(LocalVector<String> &p_extensions) const override;
 	virtual String get_save_extension() const override;
 	virtual String get_resource_type() const override;
 	virtual int get_format_version() const override;
@@ -308,7 +308,7 @@ class EditorSceneFormatImporterESCN : public EditorSceneFormatImporter {
 	GDCLASS(EditorSceneFormatImporterESCN, EditorSceneFormatImporter);
 
 public:
-	virtual void get_extensions(List<String> *r_extensions) const override;
+	virtual void get_extensions(LocalVector<String> &r_extensions) const override;
 	virtual Node *import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, List<String> *r_missing_deps, Error *r_err = nullptr) override;
 };
 

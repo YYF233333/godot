@@ -359,11 +359,11 @@ Vector<String> FileSystemDock::get_uncollapsed_paths() const {
 		// BFS to find all uncollapsed paths of the resource directory.
 		TreeItem *res_subtree = root->get_first_child()->get_next();
 		if (res_subtree) {
-			List<TreeItem *> queue;
+			LocalVector<TreeItem *> queue;
 			queue.push_back(res_subtree);
 
 			while (!queue.is_empty()) {
-				TreeItem *ti = queue.back()->get();
+				TreeItem *ti = queue.back();
 				queue.pop_back();
 				if (!ti->is_collapsed() && ti->get_child_count() > 0) {
 					Variant path = ti->get_metadata(0);
@@ -1275,8 +1275,8 @@ void FileSystemDock::_select_file(const String &p_path, bool p_select_in_favorit
 		if (resource_type == "PackedScene" || resource_type == "AnimationLibrary") {
 			bool is_imported = false;
 			{
-				List<String> importer_exts;
-				ResourceImporterScene::get_scene_importer_extensions(&importer_exts);
+				LocalVector<String> importer_exts;
+				ResourceImporterScene::get_scene_importer_extensions(importer_exts);
 				String extension = fpath.get_extension();
 				for (const String &E : importer_exts) {
 					if (extension.nocasecmp_to(E) == 0) {
@@ -3497,8 +3497,8 @@ void FileSystemDock::_file_and_folders_fill_popup(PopupMenu *p_popup, const Vect
 		}
 
 		{
-			List<String> resource_extensions;
-			ResourceFormatImporter::get_singleton()->get_recognized_extensions_for_type("Resource", &resource_extensions);
+			LocalVector<String> resource_extensions;
+			ResourceFormatImporter::get_singleton()->get_recognized_extensions_for_type("Resource", resource_extensions);
 			HashSet<String> extension_list;
 			for (const String &extension : resource_extensions) {
 				extension_list.insert(extension);

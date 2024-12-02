@@ -686,7 +686,7 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 				ERR_CONTINUE(!dup);
 
 				// Preserve ownership relations ready for pasting.
-				List<Node *> owned;
+				LocalVector<Node *> owned;
 				Node *owner = node;
 				while (owner) {
 					List<Node *> cur_owned;
@@ -912,7 +912,7 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 			for (Node *node : selection) {
 				Node *parent = node->get_parent();
 
-				List<Node *> owned;
+				LocalVector<Node *> owned;
 				Node *owner = node;
 				while (owner) {
 					List<Node *> cur_owned;
@@ -1197,9 +1197,9 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 				determine_path_automatically = true;
 			}
 
-			List<String> extensions;
+			LocalVector<String> extensions;
 			Ref<PackedScene> sd = memnew(PackedScene);
-			ResourceSaver::get_recognized_extensions(sd, &extensions);
+			ResourceSaver::get_recognized_extensions(sd, extensions);
 			new_scene_from_dialog->clear_filters();
 			for (const String &extension : extensions) {
 				new_scene_from_dialog->add_filter("*." + extension, extension.to_upper());
@@ -1209,7 +1209,7 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 			if (extensions.size()) {
 				String root_name(tocopy->get_name());
 				root_name = EditorNode::adjust_scene_name_casing(root_name);
-				existing = root_name + "." + extensions.front()->get().to_lower();
+				existing = root_name + "." + extensions[0].to_lower();
 			}
 			new_scene_from_dialog->set_current_path(existing);
 
@@ -2654,7 +2654,8 @@ void SceneTreeDock::_toggle_placeholder_from_selection() {
 }
 
 void SceneTreeDock::_reparent_nodes_to_root(Node *p_root, const Array &p_nodes, Node *p_owner) {
-	List<Node *> nodes;
+	LocalVector<Node *> nodes;
+	nodes.reserve(p_nodes.size());
 	for (int i = 0; i < p_nodes.size(); i++) {
 		Node *node = Object::cast_to<Node>(p_nodes[i]);
 		ERR_FAIL_NULL(node);
@@ -3245,7 +3246,7 @@ void SceneTreeDock::_replace_node(Node *p_node, Node *p_by_node, bool p_keep_pro
 
 	String newname = oldnode->get_name();
 
-	List<Node *> to_erase;
+	LocalVector<Node *> to_erase;
 	for (int i = 0; i < oldnode->get_child_count(); i++) {
 		if (oldnode->get_child(i)->get_owner() == nullptr && oldnode->is_internal()) {
 			to_erase.push_back(oldnode->get_child(i));
@@ -3279,9 +3280,8 @@ void SceneTreeDock::_replace_node(Node *p_node, Node *p_by_node, bool p_keep_pro
 	if (p_remove_old) {
 		memdelete(oldnode);
 
-		while (to_erase.front()) {
-			memdelete(to_erase.front()->get());
-			to_erase.pop_front();
+		for (Node *&oldnode_child : to_erase) {
+			memdelete(oldnode_child);
 		}
 	}
 }
