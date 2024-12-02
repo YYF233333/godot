@@ -43,7 +43,7 @@ class PackedSceneEditorTranslationParserPlugin : public EditorTranslationParserP
 public:
 	virtual Error parse_file(const String &p_path, Vector<Vector<String>> *r_translations) override;
 	bool match_property(const String &p_property_name, const String &p_node_type);
-	virtual void get_recognized_extensions(List<String> *r_extensions) const override;
+	virtual void get_recognized_extensions(LocalVector<String> &p_extensions) const override;
 
 	PackedSceneEditorTranslationParserPlugin();
 };
