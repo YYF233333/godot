@@ -87,8 +87,8 @@ void ResourcePreloaderEditor::_load_pressed() {
 	loading_scene = false;
 
 	file->clear_filters();
-	List<String> extensions;
-	ResourceLoader::get_recognized_extensions_for_type("", &extensions);
+	LocalVector<String> extensions;
+	ResourceLoader::get_recognized_extensions_for_type("", extensions);
 	for (const String &extension : extensions) {
 		file->add_filter("*." + extension);
 	}
@@ -182,7 +182,8 @@ void ResourcePreloaderEditor::_update_library() {
 	List<StringName> rnames;
 	preloader->get_resource_list(&rnames);
 
-	List<String> names;
+	LocalVector<String> names;
+	names.reserve(rnames.size());
 	for (const StringName &E : rnames) {
 		names.push_back(E);
 	}
