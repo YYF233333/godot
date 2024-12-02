@@ -1213,11 +1213,11 @@ struct _VariantCall {
 	struct ConstantData {
 		HashMap<StringName, int64_t> value;
 #ifdef DEBUG_ENABLED
-		List<StringName> value_ordered;
+		LocalVector<StringName> value_ordered;
 #endif // DEBUG_ENABLED
 		HashMap<StringName, Variant> variant_value;
 #ifdef DEBUG_ENABLED
-		List<StringName> variant_value_ordered;
+		LocalVector<StringName> variant_value_ordered;
 #endif // DEBUG_ENABLED
 	};
 
@@ -1350,7 +1350,7 @@ struct VariantBuiltInMethodInfo {
 
 typedef AHashMap<StringName, VariantBuiltInMethodInfo> BuiltinMethodMap;
 static BuiltinMethodMap *builtin_method_info;
-static List<StringName> *builtin_method_names;
+static LocalVector<StringName> *builtin_method_names;
 
 #ifndef DISABLE_DEPRECATED
 typedef AHashMap<StringName, LocalVector<VariantBuiltInMethodInfo>> BuiltinCompatMethodMap;
@@ -1601,11 +1601,13 @@ bool Variant::has_builtin_method_return_value(Variant::Type p_type, const String
 	return method->has_return_type;
 }
 
-void Variant::get_builtin_method_list(Variant::Type p_type, List<StringName> *p_list) {
-	ERR_FAIL_INDEX(p_type, Variant::VARIANT_MAX);
+LocalVector<StringName> Variant::get_builtin_method_list(Variant::Type p_type) {
+	LocalVector<StringName> p_list;
+	ERR_FAIL_INDEX_V(p_type, Variant::VARIANT_MAX, p_list);
 	for (const StringName &E : builtin_method_names[p_type]) {
-		p_list->push_back(E);
+		p_list.push_back(E);
 	}
+	return p_list;
 }
 
 int Variant::get_builtin_method_count(Variant::Type p_type) {
@@ -1662,7 +1664,7 @@ Vector<uint32_t> Variant::get_builtin_method_compatibility_hashes(Variant::Type 
 	return method_hashes;
 }
 
-void Variant::get_method_list(List<MethodInfo> *p_list) const {
+void Variant::get_method_list(LocalVector<MethodInfo> &p_list) const {
 	if (type == OBJECT) {
 		Object *obj = get_validated_object();
 		if (obj) {
@@ -1672,33 +1674,35 @@ void Variant::get_method_list(List<MethodInfo> *p_list) const {
 		for (const StringName &E : builtin_method_names[type]) {
 			const VariantBuiltInMethodInfo *method = builtin_method_info[type].getptr(E);
 			ERR_CONTINUE(!method);
-			p_list->push_back(method->get_method_info(E));
+			p_list.push_back(method->get_method_info(E));
 		}
 	}
 }
 
-void Variant::get_constants_for_type(Variant::Type p_type, List<StringName> *p_constants) {
-	ERR_FAIL_INDEX(p_type, Variant::VARIANT_MAX);
+LocalVector<StringName> Variant::get_constants_for_type(Variant::Type p_type) {
+	LocalVector<StringName> p_constants;
+	ERR_FAIL_INDEX_V(p_type, Variant::VARIANT_MAX, p_constants);
 
 	const _VariantCall::ConstantData &cd = _VariantCall::constant_data[p_type];
 
 #ifdef DEBUG_ENABLED
-	for (const List<StringName>::Element *E = cd.value_ordered.front(); E; E = E->next()) {
-		p_constants->push_back(E->get());
+	for (const StringName &E : cd.value_ordered) {
+		p_constants.push_back(E);
 #else
 	for (const KeyValue<StringName, int64_t> &E : cd.value) {
-		p_constants->push_back(E.key);
+		p_constants.push_back(E.key);
 #endif // DEBUG_ENABLED
 	}
 
 #ifdef DEBUG_ENABLED
-	for (const List<StringName>::Element *E = cd.variant_value_ordered.front(); E; E = E->next()) {
-		p_constants->push_back(E->get());
+	for (const StringName &E : cd.variant_value_ordered) {
+		p_constants.push_back(E);
 #else
 	for (const KeyValue<StringName, Variant> &E : cd.variant_value) {
-		p_constants->push_back(E.key);
+		p_constants.push_back(E.key);
 #endif // DEBUG_ENABLED
 	}
+	return p_constants;
 }
 
 int Variant::get_constants_count_for_type(Variant::Type p_type) {
@@ -1741,26 +1745,32 @@ Variant Variant::get_constant_value(Variant::Type p_type, const StringName &p_va
 	return E->value;
 }
 
-void Variant::get_enums_for_type(Variant::Type p_type, List<StringName> *p_enums) {
-	ERR_FAIL_INDEX(p_type, Variant::VARIANT_MAX);
+LocalVector<StringName> Variant::get_enums_for_type(Variant::Type p_type) {
+	LocalVector<StringName> p_enums;
+	ERR_FAIL_INDEX_V(p_type, Variant::VARIANT_MAX, p_enums);
 
 	_VariantCall::EnumData &enum_data = _VariantCall::enum_data[p_type];
 
+	p_enums.reserve(enum_data.value.size());
+
 	for (const KeyValue<StringName, HashMap<StringName, int>> &E : enum_data.value) {
-		p_enums->push_back(E.key);
+		p_enums.push_back(E.key);
 	}
+	return p_enums;
 }
 
-void Variant::get_enumerations_for_enum(Variant::Type p_type, const StringName &p_enum_name, List<StringName> *p_enumerations) {
-	ERR_FAIL_INDEX(p_type, Variant::VARIANT_MAX);
+LocalVector<StringName> Variant::get_enumerations_for_enum(Variant::Type p_type, const StringName &p_enum_name) {
+	LocalVector<StringName> p_enumerations;
+	ERR_FAIL_INDEX_V(p_type, Variant::VARIANT_MAX, p_enumerations);
 
 	_VariantCall::EnumData &enum_data = _VariantCall::enum_data[p_type];
 
 	for (const KeyValue<StringName, HashMap<StringName, int>> &E : enum_data.value) {
 		for (const KeyValue<StringName, int> &V : E.value) {
-			p_enumerations->push_back(V.key);
+			p_enumerations.push_back(V.key);
 		}
 	}
+	return p_enumerations;
 }
 
 int Variant::get_enum_value(Variant::Type p_type, const StringName &p_enum_name, const StringName &p_enumeration, bool *r_valid) {
@@ -2002,7 +2012,7 @@ static void _register_variant_builtin_methods_string() {
 	_VariantCall::constant_data = memnew_arr(_VariantCall::ConstantData, Variant::VARIANT_MAX);
 	_VariantCall::enum_data = memnew_arr(_VariantCall::EnumData, Variant::VARIANT_MAX);
 	builtin_method_info = memnew_arr(BuiltinMethodMap, Variant::VARIANT_MAX);
-	builtin_method_names = memnew_arr(List<StringName>, Variant::VARIANT_MAX);
+	builtin_method_names = memnew_arr(LocalVector<StringName>, Variant::VARIANT_MAX);
 #ifndef DISABLE_DEPRECATED
 	builtin_compat_method_info = memnew_arr(BuiltinCompatMethodMap, Variant::VARIANT_MAX);
 #endif

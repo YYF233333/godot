@@ -64,9 +64,6 @@ public:
 	Transform2D pre_drag_xform;
 	Rect2 pre_drag_rect;
 
-	List<real_t> pre_drag_bones_length;
-	List<Dictionary> pre_drag_bones_undo_state;
-
 	Dictionary undo_state;
 };
 
@@ -319,7 +316,7 @@ private:
 		real_t rot = 0;
 		ObjectID id;
 	};
-	List<PoseClipboard> pose_clipboard;
+	LocalVector<PoseClipboard> pose_clipboard;
 
 	Button *select_button = nullptr;
 
@@ -402,7 +399,7 @@ private:
 	void _find_canvas_items_at_pos(const Point2 &p_pos, Node *p_node, Vector<_SelectResult> &r_items, const Transform2D &p_parent_xform = Transform2D(), const Transform2D &p_canvas_xform = Transform2D());
 	void _get_canvas_items_at_pos(const Point2 &p_pos, Vector<_SelectResult> &r_items, bool p_allow_locked = false);
 
-	void _find_canvas_items_in_rect(const Rect2 &p_rect, Node *p_node, List<CanvasItem *> *r_items, const Transform2D &p_parent_xform = Transform2D(), const Transform2D &p_canvas_xform = Transform2D());
+	void _find_canvas_items_in_rect(const Rect2 &p_rect, Node *p_node, LocalVector<CanvasItem *> &r_items, const Transform2D &p_parent_xform = Transform2D(), const Transform2D &p_canvas_xform = Transform2D());
 	bool _select_click_on_item(CanvasItem *item, Point2 p_click_pos, bool p_append);
 
 	ConfirmationDialog *snap_dialog = nullptr;
@@ -523,7 +520,7 @@ private:
 			const Point2 p_value,
 			const Transform2D p_transform_to_snap,
 			Point2 &r_current_snap, SnapTarget (&r_current_snap_target)[2],
-			const SnapTarget p_snap_target, List<const CanvasItem *> p_exceptions,
+			const SnapTarget p_snap_target, const LocalVector<const CanvasItem *> &p_exceptions,
 			const Node *p_current);
 
 	VBoxContainer *controls_vb = nullptr;

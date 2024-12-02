@@ -38,7 +38,7 @@
 #include "scene/resources/mesh.h"
 #include "scene/resources/surface_tool.h"
 
-static Error _parse_material_library(const String &p_path, HashMap<String, Ref<StandardMaterial3D>> &material_map, List<String> *r_missing_deps) {
+static Error _parse_material_library(const String &p_path, HashMap<String, Ref<StandardMaterial3D>> &material_map, LocalVector<String> *r_missing_deps) {
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ);
 	ERR_FAIL_COND_V_MSG(f.is_null(), ERR_CANT_OPEN, vformat("Couldn't open MTL file '%s', it may not exist or not be readable.", p_path));
 
@@ -217,7 +217,7 @@ static Error _parse_material_library(const String &p_path, HashMap<String, Ref<S
 	return OK;
 }
 
-static Error _parse_obj(const String &p_path, List<Ref<ImporterMesh>> &r_meshes, bool p_single_mesh, bool p_generate_tangents, bool p_generate_lods, bool p_generate_shadow_mesh, bool p_generate_lightmap_uv2, float p_generate_lightmap_uv2_texel_size, const PackedByteArray &p_src_lightmap_cache, Vector3 p_scale_mesh, Vector3 p_offset_mesh, bool p_disable_compression, Vector<Vector<uint8_t>> &r_lightmap_caches, List<String> *r_missing_deps) {
+static Error _parse_obj(const String &p_path, LocalVector<Ref<ImporterMesh>> &r_meshes, bool p_single_mesh, bool p_generate_tangents, bool p_generate_lods, bool p_generate_shadow_mesh, bool p_generate_lightmap_uv2, float p_generate_lightmap_uv2_texel_size, const PackedByteArray &p_src_lightmap_cache, Vector3 p_scale_mesh, Vector3 p_offset_mesh, bool p_disable_compression, Vector<Vector<uint8_t>> &r_lightmap_caches, LocalVector<String> *r_missing_deps) {
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ);
 	ERR_FAIL_COND_V_MSG(f.is_null(), ERR_CANT_OPEN, vformat("Couldn't open OBJ file '%s', it may not exist or not be readable.", p_path));
 
@@ -568,8 +568,8 @@ static Error _parse_obj(const String &p_path, List<Ref<ImporterMesh>> &r_meshes,
 	return OK;
 }
 
-Node *EditorOBJImporter::import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, List<String> *r_missing_deps, Error *r_err) {
-	List<Ref<ImporterMesh>> meshes;
+Node *EditorOBJImporter::import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, LocalVector<String> *r_missing_deps, Error *r_err) {
+	LocalVector<Ref<ImporterMesh>> meshes;
 
 	// LOD, shadow mesh and lightmap UV2 generation are handled by ResourceImporterScene in this case,
 	// so disable it within the OBJ mesh import.
@@ -600,8 +600,8 @@ Node *EditorOBJImporter::import_scene(const String &p_path, uint32_t p_flags, co
 	return scene;
 }
 
-void EditorOBJImporter::get_extensions(List<String> *r_extensions) const {
-	r_extensions->push_back("obj");
+void EditorOBJImporter::get_extensions(LocalVector<String> &r_extensions) const {
+	r_extensions.push_back("obj");
 }
 
 ////////////////////////////////////////////////////
@@ -614,8 +614,8 @@ String ResourceImporterOBJ::get_visible_name() const {
 	return "OBJ as Mesh";
 }
 
-void ResourceImporterOBJ::get_recognized_extensions(List<String> *p_extensions) const {
-	p_extensions->push_back("obj");
+void ResourceImporterOBJ::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("obj");
 }
 
 String ResourceImporterOBJ::get_save_extension() const {
@@ -638,15 +638,15 @@ String ResourceImporterOBJ::get_preset_name(int p_idx) const {
 	return "";
 }
 
-void ResourceImporterOBJ::get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset) const {
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "generate_tangents"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "generate_lods"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "generate_shadow_mesh"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "generate_lightmap_uv2", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::FLOAT, "generate_lightmap_uv2_texel_size", PROPERTY_HINT_RANGE, "0.001,100,0.001"), 0.2));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::VECTOR3, "scale_mesh"), Vector3(1, 1, 1)));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::VECTOR3, "offset_mesh"), Vector3(0, 0, 0)));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "force_disable_mesh_compression"), false));
+void ResourceImporterOBJ::get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset) const {
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "generate_tangents"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "generate_lods"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "generate_shadow_mesh"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "generate_lightmap_uv2", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), false));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::FLOAT, "generate_lightmap_uv2_texel_size", PROPERTY_HINT_RANGE, "0.001,100,0.001"), 0.2));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::VECTOR3, "scale_mesh"), Vector3(1, 1, 1)));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::VECTOR3, "offset_mesh"), Vector3(0, 0, 0)));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "force_disable_mesh_compression"), false));
 }
 
 bool ResourceImporterOBJ::get_option_visibility(const String &p_path, const String &p_option, const HashMap<StringName, Variant> &p_options) const {
@@ -658,8 +658,8 @@ bool ResourceImporterOBJ::get_option_visibility(const String &p_path, const Stri
 	return true;
 }
 
-Error ResourceImporterOBJ::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
-	List<Ref<ImporterMesh>> meshes;
+Error ResourceImporterOBJ::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
+	LocalVector<Ref<ImporterMesh>> meshes;
 
 	Vector<uint8_t> src_lightmap_cache;
 	Vector<Vector<uint8_t>> mesh_lightmap_caches;
@@ -691,11 +691,11 @@ Error ResourceImporterOBJ::import(ResourceUID::ID p_source_id, const String &p_s
 
 	String save_path = p_save_path + ".mesh";
 
-	err = ResourceSaver::save(meshes.front()->get()->get_mesh(), save_path);
+	err = ResourceSaver::save(meshes[0]->get_mesh(), save_path);
 
 	ERR_FAIL_COND_V_MSG(err != OK, err, "Cannot save Mesh to file '" + save_path + "'.");
 
-	r_gen_files->push_back(save_path);
+	r_gen_files.push_back(save_path);
 
 	return OK;
 }

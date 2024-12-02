@@ -48,10 +48,10 @@ void OptimizedTranslation::generate(const Ref<Translation> &p_from) {
 #ifdef TOOLS_ENABLED
 	ERR_FAIL_COND(p_from.is_null());
 
-	List<StringName> keys;
+	LocalVector<StringName> keys;
 	{
-		List<StringName> raw_keys;
-		p_from->get_message_list(&raw_keys);
+		LocalVector<StringName> raw_keys;
+		p_from->get_message_list(raw_keys);
 
 		for (const StringName &key : raw_keys) {
 			const String key_str = key.operator String();
@@ -319,7 +319,7 @@ Vector<String> OptimizedTranslation::_get_message_list() const {
 	return {};
 }
 
-void OptimizedTranslation::get_message_list(List<StringName> *r_messages) const {
+void OptimizedTranslation::get_message_list(LocalVector<StringName> &r_messages) const {
 	WARN_PRINT_ONCE("OptimizedTranslation does not store the message texts to be translated.");
 }
 

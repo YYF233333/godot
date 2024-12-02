@@ -657,7 +657,7 @@ public:
 	static bool is_builtin_method_const(Variant::Type p_type, const StringName &p_method);
 	static bool is_builtin_method_static(Variant::Type p_type, const StringName &p_method);
 	static bool is_builtin_method_vararg(Variant::Type p_type, const StringName &p_method);
-	static void get_builtin_method_list(Variant::Type p_type, List<StringName> *p_list);
+	static LocalVector<StringName> get_builtin_method_list(Variant::Type p_type);
 	static int get_builtin_method_count(Variant::Type p_type);
 	static uint32_t get_builtin_method_hash(Variant::Type p_type, const StringName &p_method);
 	static Vector<uint32_t> get_builtin_method_compatibility_hashes(Variant::Type p_type, const StringName &p_method);
@@ -688,7 +688,7 @@ public:
 	static String get_callable_error_text(const Callable &p_callable, const Variant **p_argptrs, int p_argcount, const Callable::CallError &ce);
 
 	//dynamic (includes Object)
-	void get_method_list(List<MethodInfo> *p_list) const;
+	void get_method_list(LocalVector<MethodInfo> &p_list) const;
 	bool has_method(const StringName &p_method) const;
 
 	/* Constructors */
@@ -704,7 +704,7 @@ public:
 	static String get_constructor_argument_name(Variant::Type p_type, int p_constructor, int p_argument);
 	static void construct(Variant::Type, Variant &base, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 
-	static void get_constructor_list(Type p_type, List<MethodInfo> *r_list); //convenience
+	static void get_constructor_list(Type p_type, LocalVector<MethodInfo> &r_list); //convenience
 
 	/* Destructors */
 
@@ -724,7 +724,7 @@ public:
 
 	static bool has_member(Variant::Type p_type, const StringName &p_member);
 	static Variant::Type get_member_type(Variant::Type p_type, const StringName &p_member);
-	static void get_member_list(Type p_type, List<StringName> *r_members);
+	static LocalVector<StringName> get_member_list(Type p_type);
 	static int get_member_count(Type p_type);
 
 	static ValidatedSetter get_member_validated_setter(Variant::Type p_type, const StringName &p_member);
@@ -832,7 +832,7 @@ public:
 	static bool is_utility_function_vararg(const StringName &p_name);
 	static uint32_t get_utility_function_hash(const StringName &p_name);
 
-	static void get_utility_function_list(List<StringName> *r_functions);
+	static Vector<StringName> get_utility_function_list();
 	static int get_utility_function_count();
 
 	//argsVariant call()
@@ -850,13 +850,13 @@ public:
 	String stringify(int recursion_count = 0) const;
 	String to_json_string() const;
 
-	static void get_constants_for_type(Variant::Type p_type, List<StringName> *p_constants);
+	static LocalVector<StringName> get_constants_for_type(Variant::Type p_type);
 	static int get_constants_count_for_type(Variant::Type p_type);
 	static bool has_constant(Variant::Type p_type, const StringName &p_value);
 	static Variant get_constant_value(Variant::Type p_type, const StringName &p_value, bool *r_valid = nullptr);
 
-	static void get_enums_for_type(Variant::Type p_type, List<StringName> *p_enums);
-	static void get_enumerations_for_enum(Variant::Type p_type, const StringName &p_enum_name, List<StringName> *p_enumerations);
+	static LocalVector<StringName> get_enums_for_type(Variant::Type p_type);
+	static LocalVector<StringName> get_enumerations_for_enum(Variant::Type p_type, const StringName &p_enum_name);
 	static int get_enum_value(Variant::Type p_type, const StringName &p_enum_name, const StringName &p_enumeration, bool *r_valid = nullptr);
 	static bool has_enum(Variant::Type p_type, const StringName &p_enum_name);
 	static StringName get_enum_for_enumeration(Variant::Type p_type, const StringName &p_enumeration);

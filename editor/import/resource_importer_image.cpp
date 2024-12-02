@@ -41,7 +41,7 @@ String ResourceImporterImage::get_visible_name() const {
 	return "Image";
 }
 
-void ResourceImporterImage::get_recognized_extensions(List<String> *p_extensions) const {
+void ResourceImporterImage::get_recognized_extensions(LocalVector<String> &p_extensions) const {
 	ImageLoader::get_recognized_extensions(p_extensions);
 }
 
@@ -65,10 +65,10 @@ String ResourceImporterImage::get_preset_name(int p_idx) const {
 	return String();
 }
 
-void ResourceImporterImage::get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset) const {
+void ResourceImporterImage::get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset) const {
 }
 
-Error ResourceImporterImage::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
+Error ResourceImporterImage::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
 	Ref<FileAccess> f = FileAccess::open(p_source_file, FileAccess::READ);
 
 	ERR_FAIL_COND_V_MSG(f.is_null(), ERR_CANT_OPEN, "Cannot open file from path '" + p_source_file + "'.");

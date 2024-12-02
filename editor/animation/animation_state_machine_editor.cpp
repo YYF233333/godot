@@ -821,8 +821,7 @@ void AnimationNodeStateMachineEditor::_open_menu(const Vector2 &p_position) {
 	animations_menu->clear();
 	animations_to_add.clear();
 
-	List<StringName> animation_names;
-	tree->get_animation_list(&animation_names);
+	LocalVector<StringName> animation_names = tree->get_animation_list();
 	menu->add_submenu_node_item(TTR("Add Animation"), animations_menu);
 	if (animation_names.is_empty()) {
 		menu->set_item_disabled(menu->get_item_idx_from_text(TTR("Add Animation")), true);
@@ -922,8 +921,8 @@ void AnimationNodeStateMachineEditor::_add_menu_type(int p_index) {
 
 	if (p_index == MENU_LOAD_FILE) {
 		open_file->clear_filters();
-		List<String> filters;
-		ResourceLoader::get_recognized_extensions_for_type("AnimationRootNode", &filters);
+		LocalVector<String> filters;
+		ResourceLoader::get_recognized_extensions_for_type("AnimationRootNode", filters);
 		for (const String &E : filters) {
 			open_file->add_filter("*." + E);
 		}

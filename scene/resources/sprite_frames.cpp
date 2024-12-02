@@ -125,10 +125,12 @@ void SpriteFrames::rename_animation(const StringName &p_prev, const StringName &
 	animations[p_next] = anim;
 }
 
-void SpriteFrames::get_animation_list(List<StringName> *r_animations) const {
+LocalVector<StringName> SpriteFrames::get_animation_list() const {
+	LocalVector<StringName> ret;
 	for (const KeyValue<StringName, Anim> &E : animations) {
-		r_animations->push_back(E.key);
+		ret.push_back(E.key);
 	}
+	return ret;
 }
 
 Vector<String> SpriteFrames::get_animation_names() const {
@@ -168,8 +170,7 @@ bool SpriteFrames::get_animation_loop(const StringName &p_anim) const {
 Array SpriteFrames::_get_animations() const {
 	Array anims;
 
-	List<StringName> sorted_names;
-	get_animation_list(&sorted_names);
+	LocalVector<StringName> sorted_names = get_animation_list();
 	sorted_names.sort_custom<StringName::AlphCompare>();
 
 	for (const StringName &anim_name : sorted_names) {
@@ -231,7 +232,7 @@ void SpriteFrames::_set_animations(const Array &p_animations) {
 }
 
 #ifdef TOOLS_ENABLED
-void SpriteFrames::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void SpriteFrames::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0) {
 		if (pf == "has_animation" || pf == "remove_animation" || pf == "rename_animation" ||
@@ -241,7 +242,7 @@ void SpriteFrames::get_argument_options(const StringName &p_function, int p_idx,
 				pf == "get_frame_count" || pf == "get_frame_texture" || pf == "get_frame_duration" ||
 				pf == "clear") {
 			for (const String &E : get_animation_names()) {
-				r_options->push_back(E.quote());
+				r_options.push_back(E.quote());
 			}
 		}
 	}

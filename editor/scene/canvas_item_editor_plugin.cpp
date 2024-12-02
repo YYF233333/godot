@@ -330,13 +330,13 @@ void CanvasItemEditor::_snap_other_nodes(
 		const Point2 p_value,
 		const Transform2D p_transform_to_snap,
 		Point2 &r_current_snap, SnapTarget (&r_current_snap_target)[2],
-		const SnapTarget p_snap_target, List<const CanvasItem *> p_exceptions,
+		const SnapTarget p_snap_target, const LocalVector<const CanvasItem *> &p_exceptions,
 		const Node *p_current) {
 	const CanvasItem *ci = Object::cast_to<CanvasItem>(p_current);
 
 	// Check if the element is in the exception
 	bool exception = false;
-	for (const CanvasItem *&E : p_exceptions) {
+	for (const CanvasItem *const &E : p_exceptions) {
 		if (E == p_current) {
 			exception = true;
 			break;
@@ -433,7 +433,7 @@ Point2 CanvasItemEditor::snap_point(Point2 p_target, unsigned int p_modes, unsig
 	// Other nodes sides
 	if ((is_snap_active && snap_other_nodes && (p_modes & SNAP_OTHER_NODES)) || (p_forced_modes & SNAP_OTHER_NODES)) {
 		Transform2D to_snap_transform;
-		List<const CanvasItem *> exceptions = List<const CanvasItem *>();
+		LocalVector<const CanvasItem *> exceptions;
 		for (const CanvasItem *E : p_other_nodes_exceptions) {
 			exceptions.push_back(E);
 		}
@@ -726,7 +726,7 @@ void CanvasItemEditor::_get_canvas_items_at_pos(const Point2 &p_pos, Vector<_Sel
 	}
 }
 
-void CanvasItemEditor::_find_canvas_items_in_rect(const Rect2 &p_rect, Node *p_node, List<CanvasItem *> *r_items, const Transform2D &p_parent_xform, const Transform2D &p_canvas_xform) {
+void CanvasItemEditor::_find_canvas_items_in_rect(const Rect2 &p_rect, Node *p_node, LocalVector<CanvasItem *> &r_items, const Transform2D &p_parent_xform, const Transform2D &p_canvas_xform) {
 	if (!p_node) {
 		return;
 	}
@@ -781,11 +781,11 @@ void CanvasItemEditor::_find_canvas_items_in_rect(const Rect2 &p_rect, Node *p_n
 					p_rect.has_point(xform.xform(rect.position + Vector2(rect.size.x, 0))) &&
 					p_rect.has_point(xform.xform(rect.position + Vector2(rect.size.x, rect.size.y))) &&
 					p_rect.has_point(xform.xform(rect.position + Vector2(0, rect.size.y)))) {
-				r_items->push_back(ci);
+				r_items.push_back(ci);
 			}
 		} else {
 			if (p_rect.has_point(xform.xform(Point2()))) {
-				r_items->push_back(ci);
+				r_items.push_back(ci);
 			}
 		}
 	}
@@ -919,7 +919,7 @@ void CanvasItemEditor::_restore_canvas_item_state(const List<CanvasItem *> &p_ca
 }
 
 void CanvasItemEditor::_commit_canvas_item_state(const List<CanvasItem *> &p_canvas_items, const String &action_name, bool commit_bones) {
-	List<CanvasItem *> modified_canvas_items;
+	LocalVector<CanvasItem *> modified_canvas_items;
 	for (CanvasItem *ci : p_canvas_items) {
 		Dictionary old_state = editor_selection->get_node_editor_data<CanvasItemEditorSelectedItem>(ci)->undo_state;
 		Dictionary new_state = ci->_edit_get_state();
@@ -940,13 +940,6 @@ void CanvasItemEditor::_commit_canvas_item_state(const List<CanvasItem *> &p_can
 		if (se) {
 			undo_redo->add_do_method(ci, "_edit_set_state", ci->_edit_get_state());
 			undo_redo->add_undo_method(ci, "_edit_set_state", se->undo_state);
-			if (commit_bones) {
-				for (const Dictionary &F : se->pre_drag_bones_undo_state) {
-					ci = Object::cast_to<CanvasItem>(ci->get_parent());
-					undo_redo->add_do_method(ci, "_edit_set_state", ci->_edit_get_state());
-					undo_redo->add_undo_method(ci, "_edit_set_state", F);
-				}
-			}
 		}
 	}
 	undo_redo->add_do_method(viewport, "queue_redraw");
@@ -998,7 +991,7 @@ void CanvasItemEditor::_add_node_pressed(int p_result) {
 			SceneTreeDock::get_singleton()->open_instance_child_dialog();
 		} break;
 		case ADD_PASTE: {
-			nodes_to_move = SceneTreeDock::get_singleton()->paste_nodes();
+			SceneTreeDock::get_singleton()->paste_nodes();
 			[[fallthrough]];
 		}
 		case ADD_MOVE: {
@@ -2593,7 +2586,7 @@ bool CanvasItemEditor::_gui_input_select(const Ref<InputEvent> &p_event) {
 			// Confirms box selection.
 			Node *scene = EditorNode::get_singleton()->get_edited_scene();
 			if (scene) {
-				List<CanvasItem *> selitems;
+				LocalVector<CanvasItem *> selitems;
 
 				Point2 bsfrom = drag_from;
 				Point2 bsto = box_selecting_to;
@@ -2604,9 +2597,9 @@ bool CanvasItemEditor::_gui_input_select(const Ref<InputEvent> &p_event) {
 					SWAP(bsfrom.y, bsto.y);
 				}
 
-				_find_canvas_items_in_rect(Rect2(bsfrom, bsto - bsfrom), scene, &selitems);
+				_find_canvas_items_in_rect(Rect2(bsfrom, bsto - bsfrom), scene, selitems);
 				if (selitems.size() == 1 && editor_selection->get_selection().is_empty()) {
-					EditorNode::get_singleton()->push_item(selitems.front()->get());
+					EditorNode::get_singleton()->push_item(selitems[0]);
 				}
 				for (CanvasItem *E : selitems) {
 					editor_selection->add_node(E);
@@ -4119,7 +4112,8 @@ void CanvasItemEditor::_draw_invisible_nodes_positions(Node *p_node, const Trans
 }
 
 void CanvasItemEditor::_draw_hover() {
-	List<Rect2> previous_rects;
+	LocalVector<Rect2> previous_rects;
+	previous_rects.reserve(hovering_results.size());
 	Vector2 icon_size = Vector2(1, 1) * get_theme_constant(SNAME("class_icon_size"), EditorStringName(Editor));
 
 	for (int i = 0; i < hovering_results.size(); i++) {
@@ -4699,7 +4693,7 @@ void CanvasItemEditor::_insert_animation_keys(bool p_location, bool p_rotation, 
 
 			if (n2d->has_meta("_edit_bone_") && n2d->get_parent_item()) {
 				//look for an IK chain
-				List<Node2D *> ik_chain;
+				LocalVector<Node2D *> ik_chain;
 
 				Node2D *n = Object::cast_to<Node2D>(n2d->get_parent_item());
 				bool has_chain = false;
@@ -5002,7 +4996,7 @@ void CanvasItemEditor::_popup_callback(int p_op) {
 
 		} break;
 		case ANIM_PASTE_POSE: {
-			if (!pose_clipboard.size()) {
+			if (pose_clipboard.is_empty()) {
 				break;
 			}
 
@@ -6543,10 +6537,8 @@ bool CanvasItemEditorViewport::can_drop_data(const Point2 &p_point, const Varian
 
 void CanvasItemEditorViewport::_show_texture_node_type_selector() {
 	_remove_preview();
-	List<BaseButton *> btn_list;
-	button_group->get_buttons(&btn_list);
 
-	for (BaseButton *btn : btn_list) {
+	for (BaseButton *btn : button_group->get_buttons()) {
 		CheckBox *check = Object::cast_to<CheckBox>(btn);
 		check->set_pressed(check->get_text() == default_texture_node_type);
 	}
@@ -6608,10 +6600,7 @@ void CanvasItemEditorViewport::drop_data(const Point2 &p_point, const Variant &p
 }
 
 void CanvasItemEditorViewport::_update_theme() {
-	List<BaseButton *> btn_list;
-	button_group->get_buttons(&btn_list);
-
-	for (BaseButton *btn : btn_list) {
+	for (BaseButton *btn : button_group->get_buttons()) {
 		CheckBox *check = Object::cast_to<CheckBox>(btn);
 		check->set_button_icon(get_editor_theme_icon(check->get_text()));
 	}

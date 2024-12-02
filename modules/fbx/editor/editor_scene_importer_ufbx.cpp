@@ -35,13 +35,13 @@
 
 #include "core/config/project_settings.h"
 
-void EditorSceneFormatImporterUFBX::get_extensions(List<String> *r_extensions) const {
-	r_extensions->push_back("fbx");
+void EditorSceneFormatImporterUFBX::get_extensions(LocalVector<String> &r_extensions) const {
+	r_extensions.push_back("fbx");
 }
 
 Node *EditorSceneFormatImporterUFBX::import_scene(const String &p_path, uint32_t p_flags,
 		const HashMap<StringName, Variant> &p_options,
-		List<String> *r_missing_deps, Error *r_err) {
+		LocalVector<String> *r_missing_deps, Error *r_err) {
 	// FIXME: Hack to work around GH-86309.
 	if (p_options.has("fbx/importer") && int(p_options["fbx/importer"]) == FBX_IMPORTER_FBX2GLTF && GLOBAL_GET_CACHED(bool, "filesystem/import/fbx2gltf/enabled")) {
 		Ref<EditorSceneFormatImporterFBX2GLTF> fbx2gltf_importer;
@@ -92,13 +92,13 @@ Variant EditorSceneFormatImporterUFBX::get_option_visibility(const String &p_pat
 }
 
 void EditorSceneFormatImporterUFBX::get_import_options(const String &p_path,
-		List<ResourceImporter::ImportOption> *r_options) {
+		LocalVector<ResourceImporter::ImportOption> &r_options) {
 	// Returns all the options when path is empty because that means it's for the Project Settings.
 	if (p_path.is_empty() || p_path.has_extension("fbx")) {
-		r_options->push_back(ResourceImporterScene::ImportOption(PropertyInfo(Variant::INT, "fbx/importer", PROPERTY_HINT_ENUM, "ufbx,FBX2glTF"), FBX_IMPORTER_UFBX));
-		r_options->push_back(ResourceImporterScene::ImportOption(PropertyInfo(Variant::BOOL, "fbx/allow_geometry_helper_nodes"), false));
-		r_options->push_back(ResourceImporterScene::ImportOption(PropertyInfo(Variant::INT, "fbx/embedded_image_handling", PROPERTY_HINT_ENUM, "Discard All Textures,Extract Textures,Embed as Basis Universal,Embed as Uncompressed", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), FBXState::HANDLE_BINARY_IMAGE_MODE_EXTRACT_TEXTURES));
-		r_options->push_back(ResourceImporterScene::ImportOption(PropertyInfo(Variant::INT, "fbx/naming_version", PROPERTY_HINT_ENUM, "Godot 4.0 or 4.1,Godot 4.2 to 4.4,Godot 4.5 or later"), 2));
+		r_options.push_back(ResourceImporterScene::ImportOption(PropertyInfo(Variant::INT, "fbx/importer", PROPERTY_HINT_ENUM, "ufbx,FBX2glTF"), FBX_IMPORTER_UFBX));
+		r_options.push_back(ResourceImporterScene::ImportOption(PropertyInfo(Variant::BOOL, "fbx/allow_geometry_helper_nodes"), false));
+		r_options.push_back(ResourceImporterScene::ImportOption(PropertyInfo(Variant::INT, "fbx/embedded_image_handling", PROPERTY_HINT_ENUM, "Discard All Textures,Extract Textures,Embed as Basis Universal,Embed as Uncompressed", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), FBXState::HANDLE_BINARY_IMAGE_MODE_EXTRACT_TEXTURES));
+		r_options.push_back(ResourceImporterScene::ImportOption(PropertyInfo(Variant::INT, "fbx/naming_version", PROPERTY_HINT_ENUM, "Godot 4.0 or 4.1,Godot 4.2 to 4.4,Godot 4.5 or later"), 2));
 	}
 }
 

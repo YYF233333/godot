@@ -345,7 +345,7 @@ bool EditorSettingsDialog::_is_in_project_manager() const {
 void EditorSettingsDialog::_update_builtin_action(const String &p_name, const Array &p_events) {
 	Array old_input_array = EditorSettings::get_singleton()->get_builtin_action_overrides(p_name);
 	if (old_input_array.is_empty()) {
-		List<Ref<InputEvent>> defaults = InputMap::get_singleton()->get_builtins_with_feature_overrides_applied()[current_edited_identifier];
+		LocalVector<Ref<InputEvent>> defaults = InputMap::get_singleton()->get_builtins_with_feature_overrides_applied()[current_edited_identifier];
 		old_input_array = _event_list_to_array_helper(defaults);
 	}
 
@@ -404,14 +404,14 @@ void EditorSettingsDialog::_update_shortcut_events(const String &p_path, const A
 	}
 }
 
-Array EditorSettingsDialog::_event_list_to_array_helper(const List<Ref<InputEvent>> &p_events) {
+Array EditorSettingsDialog::_event_list_to_array_helper(const LocalVector<Ref<InputEvent>> &p_events) {
 	Array events;
 
 	// Convert the list to an array, and only keep key events as this is for the editor.
-	for (const List<Ref<InputEvent>>::Element *E = p_events.front(); E; E = E->next()) {
-		Ref<InputEventKey> k = E->get();
+	for (const Ref<InputEvent> &E : p_events) {
+		Ref<InputEventKey> k = E;
 		if (k.is_valid()) {
-			events.append(E->get());
+			events.append(E);
 		}
 	}
 
@@ -579,7 +579,7 @@ void EditorSettingsDialog::_update_shortcuts() {
 			continue;
 		}
 
-		const List<Ref<InputEvent>> &all_default_events = InputMap::get_singleton()->get_builtins_with_feature_overrides_applied().find(action_name)->value;
+		const LocalVector<Ref<InputEvent>> &all_default_events = InputMap::get_singleton()->get_builtins_with_feature_overrides_applied().find(action_name)->value;
 		Array action_events = _event_list_to_array_helper(action.inputs);
 		if (!_should_display_shortcut(action_name, action_events, false)) {
 			continue;
@@ -598,8 +598,7 @@ void EditorSettingsDialog::_update_shortcuts() {
 
 	// Editor Shortcuts
 
-	List<String> slist;
-	EditorSettings::get_singleton()->get_shortcut_list(&slist);
+	LocalVector<String> slist = EditorSettings::get_singleton()->get_shortcut_list();
 	slist.sort(); // Sort alphabetically.
 
 	const EditorPropertyNameProcessor::Style name_style = EditorPropertyNameProcessor::get_settings_style();
@@ -725,7 +724,7 @@ void EditorSettingsDialog::_shortcut_button_pressed(Object *p_item, int p_column
 		case EditorSettingsDialog::SHORTCUT_REVERT: {
 			// Only for "shortcut" types
 			if (is_editing_action) {
-				List<Ref<InputEvent>> defaults = InputMap::get_singleton()->get_builtins_with_feature_overrides_applied()[current_edited_identifier];
+				LocalVector<Ref<InputEvent>> defaults = InputMap::get_singleton()->get_builtins_with_feature_overrides_applied()[current_edited_identifier];
 				Array events = _event_list_to_array_helper(defaults);
 
 				_update_builtin_action(current_edited_identifier, events);

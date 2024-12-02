@@ -569,7 +569,7 @@ public:
 		bool persistent = false;
 	};
 
-	void get_groups(List<GroupInfo> *p_groups) const;
+	void get_groups(LocalVector<GroupInfo> &p_groups) const;
 	int get_persistent_group_count() const;
 
 	void move_child(RequiredParam<Node> rp_child, int p_index);
@@ -577,7 +577,7 @@ public:
 
 	void set_owner(Node *p_owner);
 	Node *get_owner() const;
-	void get_owned_by(Node *p_by, List<Node *> *p_owned);
+	void get_owned_by(Node *p_by, LocalVector<Node *> &p_owned);
 
 	void set_unique_name_in_owner(bool p_enabled);
 	bool is_unique_name_in_owner() const;
@@ -769,7 +769,7 @@ public:
 #ifdef TOOLS_ENABLED
 	String validate_child_name(Node *p_child);
 	String prevalidate_child_name(Node *p_child, StringName p_name);
-	void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	void get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const override;
 #endif
 	static String adjust_name_casing(const String &p_name);
 
@@ -870,16 +870,16 @@ public:
 	virtual void set_meta(const StringName &p_name, const Variant &p_value) override;
 	virtual void remove_meta(const StringName &p_name) override;
 	virtual Variant get_meta(const StringName &p_name, const Variant &p_default = Variant()) const override;
-	virtual void get_meta_list(List<StringName> *p_list) const override;
+	virtual LocalVector<StringName> get_meta_list() const override;
 
 	virtual Error emit_signalp(const StringName &p_name, const Variant **p_args, int p_argcount) override;
 	virtual bool has_signal(const StringName &p_name) const override;
 	virtual void get_signal_list(List<MethodInfo> *p_signals) const override;
-	virtual void get_signal_connection_list(const StringName &p_signal, List<Connection> *p_connections) const override;
-	virtual void get_all_signal_connections(List<Connection> *p_connections) const override;
+	virtual void get_signal_connection_list(const StringName &p_signal, LocalVector<Connection> &p_connections) const override;
+	virtual void get_all_signal_connections(LocalVector<Connection> &p_connections) const override;
 	virtual int get_persistent_signal_connection_count() const override;
 	virtual uint32_t get_signal_connection_flags(const StringName &p_name, const Callable &p_callable) const override;
-	virtual void get_signals_connected_to_this(List<Connection> *p_connections) const override;
+	virtual void get_signals_connected_to_this(LocalVector<Connection> &p_connections) const override;
 
 	virtual Error connect(const StringName &p_signal, const Callable &p_callable, uint32_t p_flags = 0) override;
 	virtual void disconnect(const StringName &p_signal, const Callable &p_callable) override;

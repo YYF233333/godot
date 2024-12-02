@@ -44,8 +44,8 @@ String ResourceImporterShaderFile::get_visible_name() const {
 	return "GLSL Shader File";
 }
 
-void ResourceImporterShaderFile::get_recognized_extensions(List<String> *p_extensions) const {
-	p_extensions->push_back("glsl");
+void ResourceImporterShaderFile::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("glsl");
 }
 
 String ResourceImporterShaderFile::get_save_extension() const {
@@ -64,7 +64,7 @@ String ResourceImporterShaderFile::get_preset_name(int p_idx) const {
 	return String();
 }
 
-void ResourceImporterShaderFile::get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset) const {
+void ResourceImporterShaderFile::get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset) const {
 }
 
 bool ResourceImporterShaderFile::get_option_visibility(const String &p_path, const String &p_option, const HashMap<StringName, Variant> &p_options) const {
@@ -88,7 +88,7 @@ static String _include_function(const String &p_path, void *userpointer) {
 	return file_inc->get_as_utf8_string();
 }
 
-Error ResourceImporterShaderFile::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
+Error ResourceImporterShaderFile::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
 	Error err;
 	Ref<FileAccess> file = FileAccess::open(p_source_file, FileAccess::READ, &err);
 	ERR_FAIL_COND_V(err != OK, ERR_CANT_OPEN);

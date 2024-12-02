@@ -675,7 +675,7 @@ String ShaderCompiler::_dump_node_code(const SL::Node *p_node, int p_level, Gene
 
 			uint32_t index = p_default_actions.base_varying_index;
 
-			List<Pair<StringName, SL::ShaderNode::Varying>> var_frag_to_light;
+			LocalVector<Pair<StringName, SL::ShaderNode::Varying>> var_frag_to_light;
 
 			Vector<StringName> varying_names;
 
@@ -1606,11 +1606,7 @@ void ShaderCompiler::initialize(DefaultIdentifierActions p_actions) {
 
 	time_name = "TIME";
 
-	List<String> func_list;
-
-	ShaderLanguage::get_builtin_funcs(&func_list);
-
-	for (const String &E : func_list) {
+	for (const String &E : ShaderLanguage::get_builtin_funcs()) {
 		internal_functions.insert(E);
 	}
 	texture_functions.insert("texture");

@@ -213,13 +213,13 @@ void InspectorDock::_menu_option_confirm(int p_option, bool p_confirmed) {
 			if (p_option >= OBJECT_METHOD_BASE) {
 				ERR_FAIL_NULL(current);
 
-				int idx = p_option - OBJECT_METHOD_BASE;
+				uint32_t idx = p_option - OBJECT_METHOD_BASE;
 
-				List<MethodInfo> methods;
-				current->get_method_list(&methods);
+				LocalVector<MethodInfo> methods;
+				current->get_method_list(methods);
 
-				ERR_FAIL_INDEX(idx, methods.size());
-				String name = methods.get(idx).name;
+				ERR_FAIL_UNSIGNED_INDEX(idx, methods.size());
+				String name = methods[idx].name;
 
 				current->call(name);
 			}
@@ -234,8 +234,8 @@ void InspectorDock::_new_resource() {
 void InspectorDock::_load_resource(const String &p_type) {
 	load_resource_dialog->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_FILE);
 
-	List<String> extensions;
-	ResourceLoader::get_recognized_extensions_for_type(p_type, &extensions);
+	LocalVector<String> extensions;
+	ResourceLoader::get_recognized_extensions_for_type(p_type, extensions);
 
 	load_resource_dialog->clear_filters();
 	for (const String &extension : extensions) {
@@ -610,23 +610,21 @@ void InspectorDock::update(Object *p_object) {
 		p->add_shortcut(ED_SHORTCUT("property_editor/make_subresources_unique", TTRC("Make Sub-Resources Unique")), OBJECT_UNIQUE_RESOURCES);
 	}
 
-	List<MethodInfo> methods;
-	p_object->get_method_list(&methods);
+	LocalVector<MethodInfo> methods;
+	p_object->get_method_list(methods);
 
 	if (!methods.is_empty()) {
 		bool found = false;
-		List<MethodInfo>::Element *I = methods.front();
 		int i = 0;
-		while (I) {
-			if (I->get().flags & METHOD_FLAG_EDITOR) {
+		for (const MethodInfo &I : methods) {
+			if (I.flags & METHOD_FLAG_EDITOR) {
 				if (!found) {
 					p->add_separator();
 					found = true;
 				}
-				p->add_item(I->get().name.capitalize(), OBJECT_METHOD_BASE + i);
+				p->add_item(I.name.capitalize(), OBJECT_METHOD_BASE + i);
 			}
 			i++;
-			I = I->next();
 		}
 	}
 }

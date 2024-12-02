@@ -190,7 +190,7 @@ protected:
 	GDVIRTUAL0RC(bool, _has_filter)
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const;
 	virtual bool is_parameter_read_only(const StringName &p_parameter) const;
 
@@ -205,7 +205,7 @@ public:
 		Ref<AnimationNode> node;
 	};
 
-	virtual void get_child_nodes(List<ChildNode> *r_child_nodes);
+	virtual LocalVector<ChildNode> get_child_nodes();
 
 	virtual String get_caption() const;
 
@@ -232,7 +232,7 @@ public:
 	virtual bool has_filter() const;
 
 #ifdef TOOLS_ENABLED
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	virtual void get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const override;
 #endif
 
 	virtual Ref<AnimationNode> get_child_by_name(const StringName &p_name) const;

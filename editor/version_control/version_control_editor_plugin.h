@@ -64,7 +64,7 @@ public:
 private:
 	static VersionControlEditorPlugin *singleton;
 
-	List<StringName> available_plugins;
+	LocalVector<StringName> available_plugins;
 
 	PopupMenu *version_control_actions = nullptr;
 	ConfirmationDialog *metadata_dialog = nullptr;
@@ -134,7 +134,7 @@ private:
 	RichTextLabel *diff = nullptr;
 	OptionButton *diff_view_type_select = nullptr;
 	bool show_commit_diff_header = false;
-	List<EditorVCSInterface::DiffFile> diff_content;
+	LocalVector<EditorVCSInterface::DiffFile> diff_content;
 
 	void _notification(int p_what);
 	void _initialize_vcs();
@@ -179,8 +179,8 @@ private:
 	void _popup_branch_remove_confirm(int p_index);
 	void _popup_remote_remove_confirm(int p_index);
 	void _move_item(Tree *p_tree, TreeItem *p_itme);
-	void _display_diff_split_view(List<EditorVCSInterface::DiffLine> &p_diff_content);
-	void _display_diff_unified_view(List<EditorVCSInterface::DiffLine> &p_diff_content);
+	void _display_diff_split_view(LocalVector<EditorVCSInterface::DiffLine> &p_diff_content);
+	void _display_diff_unified_view(LocalVector<EditorVCSInterface::DiffLine> &p_diff_content);
 	void _discard_file(const String &p_file_path, EditorVCSInterface::ChangeType p_change);
 	void _cell_button_pressed(Object *p_item, int p_column, int p_id, int p_mouse_button_index);
 	void _add_new_item(Tree *p_tree, const String &p_file_path, EditorVCSInterface::ChangeType p_change);

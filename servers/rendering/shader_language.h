@@ -857,9 +857,9 @@ public:
 	static uint32_t get_datatype_size(DataType p_type);
 	static uint32_t get_datatype_component_count(DataType p_type);
 
-	static void get_keyword_list(List<String> *r_keywords);
+	static LocalVector<String> get_keyword_list();
 	static bool is_control_flow_keyword(String p_keyword);
-	static void get_builtin_funcs(List<String> *r_keywords);
+	static LocalVector<String> get_builtin_funcs();
 
 	static SafeNumeric<int> instance_counter;
 
@@ -1263,7 +1263,7 @@ public:
 	};
 
 	Error compile(const String &p_code, const ShaderCompileInfo &p_info);
-	Error complete(const String &p_code, const ShaderCompileInfo &p_info, List<ScriptLanguage::CodeCompletionOption> *r_options, String &r_call_hint);
+	Error complete(const String &p_code, const ShaderCompileInfo &p_info, LocalVector<ScriptLanguage::CodeCompletionOption> &r_options, String &r_call_hint);
 
 	String get_error_text();
 	Vector<FilePosition> get_include_positions();

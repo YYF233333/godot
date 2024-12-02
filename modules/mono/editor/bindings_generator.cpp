@@ -4015,11 +4015,11 @@ bool BindingsGenerator::_populate_object_type_interfaces() {
 
 		// Populate methods
 
-		List<MethodInfo> virtual_method_list;
-		ClassDB::get_virtual_methods(type_cname, &virtual_method_list, true);
+		LocalVector<MethodInfo> virtual_method_list;
+		ClassDB::get_virtual_methods(type_cname, virtual_method_list, true);
 
-		List<Pair<MethodInfo, uint32_t>> method_list_with_hashes;
-		ClassDB::get_method_list_with_compatibility(type_cname, &method_list_with_hashes, true);
+		LocalVector<Pair<MethodInfo, uint32_t>> method_list_with_hashes;
+		ClassDB::get_method_list_with_compatibility(type_cname, method_list_with_hashes, true);
 		method_list_with_hashes.sort_custom<SortMethodWithHashes>();
 
 		List<MethodInterface> compat_methods;
@@ -4066,7 +4066,7 @@ bool BindingsGenerator::_populate_object_type_interfaces() {
 				m = ClassDB::get_method_with_compatibility(type_cname, method_info.name, hash, &method_exists, &imethod.is_compat);
 
 				if (unlikely(!method_exists)) {
-					ERR_FAIL_COND_V_MSG(!virtual_method_list.find(method_info), false,
+					ERR_FAIL_COND_V_MSG(!virtual_method_list.has(method_info), false,
 							"Missing MethodBind for non-virtual method: '" + itype.name + "." + imethod.name + "'.");
 				}
 			}
@@ -4074,7 +4074,7 @@ bool BindingsGenerator::_populate_object_type_interfaces() {
 			imethod.is_vararg = m && m->is_vararg();
 
 			if (!m && !imethod.is_virtual) {
-				ERR_FAIL_COND_V_MSG(!virtual_method_list.find(method_info), false,
+				ERR_FAIL_COND_V_MSG(!virtual_method_list.has(method_info), false,
 						"Missing MethodBind for non-virtual method: '" + itype.name + "." + imethod.name + "'.");
 
 				// A virtual method without the virtual flag. This is a special case.
@@ -4344,8 +4344,8 @@ bool BindingsGenerator::_populate_object_type_interfaces() {
 
 		// Populate enums and constants
 
-		List<String> constants;
-		ClassDB::get_integer_constant_list(type_cname, &constants, true);
+		LocalVector<String> constants;
+		ClassDB::get_integer_constant_list(type_cname, constants, true);
 
 		const HashMap<StringName, ClassDB::ClassInfo::EnumInfo> &enum_map = class_info->enum_map;
 
@@ -4360,8 +4360,7 @@ bool BindingsGenerator::_populate_object_type_interfaces() {
 				enum_proxy_cname = StringName(enum_proxy_name);
 			}
 			EnumInterface ienum(enum_proxy_cname, enum_proxy_name, E.value.is_bitfield);
-			const List<StringName> &enum_constants = E.value.constants;
-			for (const StringName &constant_cname : enum_constants) {
+			for (const StringName &constant_cname : E.value.constants) {
 				String constant_name = constant_cname.operator String();
 				int64_t *value = class_info->constant_map.getptr(constant_cname);
 				ERR_FAIL_NULL_V(value, false);
@@ -5138,10 +5137,7 @@ void BindingsGenerator::_populate_global_constants() {
 
 		const Variant::Type type = Variant::Type(i);
 
-		List<StringName> enum_names;
-		Variant::get_enums_for_type(type, &enum_names);
-
-		for (const StringName &enum_name : enum_names) {
+		for (const StringName &enum_name : Variant::get_enums_for_type(type)) {
 			TypeInterface enum_itype;
 			enum_itype.is_enum = true;
 			enum_itype.name = Variant::get_type_name(type) + "." + enum_name;

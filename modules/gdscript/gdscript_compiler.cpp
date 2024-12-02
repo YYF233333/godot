@@ -1864,8 +1864,8 @@ GDScriptCodeGenerator::Address GDScriptCompiler::_parse_match_pattern(CodeGen &c
 	return p_previous_test;
 }
 
-List<GDScriptCodeGenerator::Address> GDScriptCompiler::_add_block_locals(CodeGen &codegen, const GDScriptParser::SuiteNode *p_block) {
-	List<GDScriptCodeGenerator::Address> addresses;
+LocalVector<GDScriptCodeGenerator::Address> GDScriptCompiler::_add_block_locals(CodeGen &codegen, const GDScriptParser::SuiteNode *p_block) {
+	LocalVector<GDScriptCodeGenerator::Address> addresses;
 	for (int i = 0; i < p_block->locals.size(); i++) {
 		if (p_block->locals[i].type == GDScriptParser::SuiteNode::Local::PARAMETER || p_block->locals[i].type == GDScriptParser::SuiteNode::Local::FOR_VARIABLE) {
 			// Parameters are added directly from function and loop variables are declared explicitly.
@@ -1877,7 +1877,7 @@ List<GDScriptCodeGenerator::Address> GDScriptCompiler::_add_block_locals(CodeGen
 }
 
 // Avoid keeping in the stack long-lived references to objects, which may prevent `RefCounted` objects from being freed.
-void GDScriptCompiler::_clear_block_locals(CodeGen &codegen, const List<GDScriptCodeGenerator::Address> &p_locals) {
+void GDScriptCompiler::_clear_block_locals(CodeGen &codegen, const LocalVector<GDScriptCodeGenerator::Address> &p_locals) {
 	for (const GDScriptCodeGenerator::Address &local : p_locals) {
 		if (local.type.can_contain_object()) {
 			codegen.generator->clear_address(local);
@@ -1888,7 +1888,7 @@ void GDScriptCompiler::_clear_block_locals(CodeGen &codegen, const List<GDScript
 Error GDScriptCompiler::_parse_block(CodeGen &codegen, const GDScriptParser::SuiteNode *p_block, bool p_add_locals, bool p_clear_locals) {
 	Error err = OK;
 	GDScriptCodeGenerator *gen = codegen.generator;
-	List<GDScriptCodeGenerator::Address> block_locals;
+	LocalVector<GDScriptCodeGenerator::Address> block_locals;
 
 	gen->clear_temporaries();
 	codegen.start_block();
@@ -1946,7 +1946,7 @@ Error GDScriptCompiler::_parse_block(CodeGen &codegen, const GDScriptParser::Sui
 					codegen.start_block(); // Add an extra block, since binds belong to the match branch scope.
 
 					// Add locals in block before patterns, so temporaries don't use the stack address for binds.
-					List<GDScriptCodeGenerator::Address> branch_locals = _add_block_locals(codegen, branch->block);
+					LocalVector<GDScriptCodeGenerator::Address> branch_locals = _add_block_locals(codegen, branch->block);
 
 					gen->write_newline(branch->start_line);
 
@@ -2101,7 +2101,7 @@ Error GDScriptCompiler::_parse_block(CodeGen &codegen, const GDScriptParser::Sui
 				gen->write_for(iterator, for_n->use_conversion_assign, range_call != nullptr);
 
 				// Loop variables must be cleared even when `break`/`continue` is used.
-				List<GDScriptCodeGenerator::Address> loop_locals = _add_block_locals(codegen, for_n->loop);
+				LocalVector<GDScriptCodeGenerator::Address> loop_locals = _add_block_locals(codegen, for_n->loop);
 
 				//_clear_block_locals(codegen, loop_locals); // Inside loop, before block - for `continue`. // TODO
 
@@ -2135,7 +2135,7 @@ Error GDScriptCompiler::_parse_block(CodeGen &codegen, const GDScriptParser::Sui
 				}
 
 				// Loop variables must be cleared even when `break`/`continue` is used.
-				List<GDScriptCodeGenerator::Address> loop_locals = _add_block_locals(codegen, while_n->loop);
+				LocalVector<GDScriptCodeGenerator::Address> loop_locals = _add_block_locals(codegen, while_n->loop);
 
 				//_clear_block_locals(codegen, loop_locals); // Inside loop, before block - for `continue`. // TODO
 

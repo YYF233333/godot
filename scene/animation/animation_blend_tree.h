@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/templates/local_vector.h"
 #include "scene/animation/animation_tree.h"
 #include "scene/resources/curve.h"
 
@@ -54,7 +55,7 @@ public:
 		PLAY_MODE_BACKWARD
 	};
 
-	void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual NodeTimeInfo get_node_time_info() const override; // Wrapper of get_parameter().
@@ -159,7 +160,7 @@ protected:
 	static void _bind_methods();
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 	virtual bool is_parameter_read_only(const StringName &p_parameter) const override;
 
@@ -209,7 +210,7 @@ class AnimationNodeAdd2 : public AnimationNodeSync {
 	StringName add_amount = PNAME("add_amount");
 
 public:
-	void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual String get_caption() const override;
@@ -226,7 +227,7 @@ class AnimationNodeAdd3 : public AnimationNodeSync {
 	StringName add_amount = PNAME("add_amount");
 
 public:
-	void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual String get_caption() const override;
@@ -243,7 +244,7 @@ class AnimationNodeBlend2 : public AnimationNodeSync {
 	StringName blend_amount = PNAME("blend_amount");
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual String get_caption() const override;
@@ -259,7 +260,7 @@ class AnimationNodeBlend3 : public AnimationNodeSync {
 	StringName blend_amount = PNAME("blend_amount");
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual String get_caption() const override;
@@ -274,7 +275,7 @@ class AnimationNodeSub2 : public AnimationNodeSync {
 	StringName sub_amount = PNAME("sub_amount");
 
 public:
-	void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual String get_caption() const override;
@@ -291,7 +292,7 @@ class AnimationNodeTimeScale : public AnimationNode {
 	StringName scale = PNAME("scale");
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual String get_caption() const override;
@@ -311,7 +312,7 @@ protected:
 	static void _bind_methods();
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual String get_caption() const override;
@@ -353,7 +354,7 @@ protected:
 	void _get_property_list(List<PropertyInfo> *p_list) const;
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 	virtual bool is_parameter_read_only(const StringName &p_parameter) const override;
 
@@ -450,7 +451,7 @@ public:
 	void set_node_position(const StringName &p_node, const Vector2 &p_position);
 	Vector2 get_node_position(const StringName &p_node) const;
 
-	virtual void get_child_nodes(List<ChildNode> *r_child_nodes) override;
+	virtual LocalVector<ChildNode> get_child_nodes() override;
 
 	void connect_node(const StringName &p_input_node, int p_input_index, const StringName &p_output_node);
 	void disconnect_node(const StringName &p_node, int p_input_index);
@@ -462,7 +463,7 @@ public:
 	};
 
 	ConnectionError can_connect_node(const StringName &p_input_node, int p_input_index, const StringName &p_output_node) const;
-	void get_node_connections(List<NodeConnection> *r_connections) const;
+	LocalVector<NodeConnection> get_node_connections() const;
 
 	virtual String get_caption() const override;
 	virtual NodeTimeInfo _process(const AnimationMixer::PlaybackInfo p_playback_info, bool p_test_only = false) override;
@@ -476,7 +477,7 @@ public:
 	virtual Ref<AnimationNode> get_child_by_name(const StringName &p_name) const override;
 
 #ifdef TOOLS_ENABLED
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	virtual void get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const override;
 #endif
 
 	AnimationNodeBlendTree();

@@ -110,7 +110,7 @@ bool Theme::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void Theme::_get_property_list(List<PropertyInfo> *p_list) const {
-	List<PropertyInfo> list;
+	LocalVector<PropertyInfo> list;
 
 	// Type variations.
 	for (const KeyValue<StringName, StringName> &E : variation_map) {
@@ -337,15 +337,13 @@ void Theme::clear_icon(const StringName &p_name, const StringName &p_theme_type)
 	_emit_theme_changed(true);
 }
 
-void Theme::get_icon_list(const StringName &p_theme_type, List<StringName> *p_list) const {
-	ERR_FAIL_NULL(p_list);
-
+void Theme::get_icon_list(const StringName &p_theme_type, LocalVector<StringName> &p_list) const {
 	if (!icon_map.has(p_theme_type)) {
 		return;
 	}
 
 	for (const KeyValue<StringName, Ref<Texture2D>> &E : icon_map[p_theme_type]) {
-		p_list->push_back(E.key);
+		p_list.push_back(E.key);
 	}
 }
 
@@ -458,15 +456,13 @@ void Theme::clear_stylebox(const StringName &p_name, const StringName &p_theme_t
 	_emit_theme_changed(true);
 }
 
-void Theme::get_stylebox_list(const StringName &p_theme_type, List<StringName> *p_list) const {
-	ERR_FAIL_NULL(p_list);
-
+void Theme::get_stylebox_list(const StringName &p_theme_type, LocalVector<StringName> &p_list) const {
 	if (!style_map.has(p_theme_type)) {
 		return;
 	}
 
 	for (const KeyValue<StringName, Ref<StyleBox>> &E : style_map[p_theme_type]) {
-		p_list->push_back(E.key);
+		p_list.push_back(E.key);
 	}
 }
 
@@ -585,15 +581,13 @@ void Theme::clear_font(const StringName &p_name, const StringName &p_theme_type)
 	_emit_theme_changed(true);
 }
 
-void Theme::get_font_list(const StringName &p_theme_type, List<StringName> *p_list) const {
-	ERR_FAIL_NULL(p_list);
-
+void Theme::get_font_list(const StringName &p_theme_type, LocalVector<StringName> &p_list) const {
 	if (!font_map.has(p_theme_type)) {
 		return;
 	}
 
 	for (const KeyValue<StringName, Ref<Font>> &E : font_map[p_theme_type]) {
-		p_list->push_back(E.key);
+		p_list.push_back(E.key);
 	}
 }
 
@@ -699,15 +693,13 @@ void Theme::clear_font_size(const StringName &p_name, const StringName &p_theme_
 	_emit_theme_changed(true);
 }
 
-void Theme::get_font_size_list(const StringName &p_theme_type, List<StringName> *p_list) const {
-	ERR_FAIL_NULL(p_list);
-
+void Theme::get_font_size_list(const StringName &p_theme_type, LocalVector<StringName> &p_list) const {
 	if (!font_size_map.has(p_theme_type)) {
 		return;
 	}
 
 	for (const KeyValue<StringName, int> &E : font_size_map[p_theme_type]) {
-		p_list->push_back(E.key);
+		p_list.push_back(E.key);
 	}
 }
 
@@ -796,15 +788,13 @@ void Theme::clear_color(const StringName &p_name, const StringName &p_theme_type
 	_emit_theme_changed(true);
 }
 
-void Theme::get_color_list(const StringName &p_theme_type, List<StringName> *p_list) const {
-	ERR_FAIL_NULL(p_list);
-
+void Theme::get_color_list(const StringName &p_theme_type, LocalVector<StringName> &p_list) const {
 	if (!color_map.has(p_theme_type)) {
 		return;
 	}
 
 	for (const KeyValue<StringName, Color> &E : color_map[p_theme_type]) {
-		p_list->push_back(E.key);
+		p_list.push_back(E.key);
 	}
 }
 
@@ -893,15 +883,13 @@ void Theme::clear_constant(const StringName &p_name, const StringName &p_theme_t
 	_emit_theme_changed(true);
 }
 
-void Theme::get_constant_list(const StringName &p_theme_type, List<StringName> *p_list) const {
-	ERR_FAIL_NULL(p_list);
-
+void Theme::get_constant_list(const StringName &p_theme_type, LocalVector<StringName> &p_list) const {
 	if (!constant_map.has(p_theme_type)) {
 		return;
 	}
 
 	for (const KeyValue<StringName, int> &E : constant_map[p_theme_type]) {
-		p_list->push_back(E.key);
+		p_list.push_back(E.key);
 	}
 }
 
@@ -1106,7 +1094,7 @@ void Theme::clear_theme_item(DataType p_data_type, const StringName &p_name, con
 	}
 }
 
-void Theme::get_theme_item_list(DataType p_data_type, const StringName &p_theme_type, List<StringName> *p_list) const {
+void Theme::get_theme_item_list(DataType p_data_type, const StringName &p_theme_type, LocalVector<StringName> &p_list) const {
 	switch (p_data_type) {
 		case DATA_TYPE_COLOR:
 			get_color_list(p_theme_type, p_list);
@@ -1272,20 +1260,18 @@ StringName Theme::get_type_variation_base(const StringName &p_theme_type) const 
 	return variation_map[p_theme_type];
 }
 
-void Theme::get_type_variation_list(const StringName &p_base_type, List<StringName> *p_list) const {
-	ERR_FAIL_NULL(p_list);
-
+void Theme::get_type_variation_list(const StringName &p_base_type, LocalVector<StringName> &p_list) const {
 	if (!variation_base_map.has(p_base_type)) {
 		return;
 	}
 
 	for (const StringName &E : variation_base_map[p_base_type]) {
 		// Prevent infinite loops if variants were set to be cross-dependent (that's still invalid usage, but handling for stability sake).
-		if (p_list->find(E)) {
+		if (p_list.has(E)) {
 			continue;
 		}
 
-		p_list->push_back(E);
+		p_list.push_back(E);
 		// Continue looking for sub-variations.
 		get_type_variation_list(E, p_list);
 	}
@@ -1315,8 +1301,8 @@ void Theme::remove_type(const StringName &p_theme_type) {
 	}
 
 	// If type is a variation base, remove all those connections.
-	List<StringName> names;
-	get_type_variation_list(p_theme_type, &names);
+	LocalVector<StringName> names;
+	get_type_variation_list(p_theme_type, names);
 	for (const StringName &E : names) {
 		clear_type_variation(E);
 	}
@@ -1341,8 +1327,8 @@ void Theme::rename_type(const StringName &p_old_theme_type, const StringName &p_
 	}
 
 	// If type is a variation base, replace all those connections.
-	List<StringName> names;
-	get_type_variation_list(p_old_theme_type, &names);
+	LocalVector<StringName> names;
+	get_type_variation_list(p_old_theme_type, names);
 	for (const StringName &E : names) {
 		clear_type_variation(E);
 		if (p_theme_type != StringName()) {
@@ -1423,15 +1409,14 @@ void Theme::get_type_dependencies(const StringName &p_base_type, const StringNam
 // Internal methods for getting lists as a Vector of String (compatible with public API).
 Vector<String> Theme::_get_icon_list(const String &p_theme_type) const {
 	Vector<String> ilret;
-	List<StringName> il;
+	LocalVector<StringName> il;
 
-	get_icon_list(p_theme_type, &il);
+	get_icon_list(p_theme_type, il);
 	ilret.resize(il.size());
 
-	int i = 0;
 	String *w = ilret.ptrw();
-	for (List<StringName>::Element *E = il.front(); E; E = E->next(), i++) {
-		w[i] = E->get();
+	for (uint32_t i = 0; i < il.size(); i++) {
+		w[i] = il[i];
 	}
 	return ilret;
 }
@@ -1453,15 +1438,14 @@ Vector<String> Theme::_get_icon_type_list() const {
 
 Vector<String> Theme::_get_stylebox_list(const String &p_theme_type) const {
 	Vector<String> ilret;
-	List<StringName> il;
+	LocalVector<StringName> il;
 
-	get_stylebox_list(p_theme_type, &il);
+	get_stylebox_list(p_theme_type, il);
 	ilret.resize(il.size());
 
-	int i = 0;
 	String *w = ilret.ptrw();
-	for (List<StringName>::Element *E = il.front(); E; E = E->next(), i++) {
-		w[i] = E->get();
+	for (uint32_t i = 0; i < il.size(); i++) {
+		w[i] = il[i];
 	}
 	return ilret;
 }
@@ -1483,15 +1467,14 @@ Vector<String> Theme::_get_stylebox_type_list() const {
 
 Vector<String> Theme::_get_font_list(const String &p_theme_type) const {
 	Vector<String> ilret;
-	List<StringName> il;
+	LocalVector<StringName> il;
 
-	get_font_list(p_theme_type, &il);
+	get_font_list(p_theme_type, il);
 	ilret.resize(il.size());
 
-	int i = 0;
 	String *w = ilret.ptrw();
-	for (List<StringName>::Element *E = il.front(); E; E = E->next(), i++) {
-		w[i] = E->get();
+	for (uint32_t i = 0; i < il.size(); i++) {
+		w[i] = il[i];
 	}
 	return ilret;
 }
@@ -1513,15 +1496,14 @@ Vector<String> Theme::_get_font_type_list() const {
 
 Vector<String> Theme::_get_font_size_list(const String &p_theme_type) const {
 	Vector<String> ilret;
-	List<StringName> il;
+	LocalVector<StringName> il;
 
-	get_font_size_list(p_theme_type, &il);
+	get_font_size_list(p_theme_type, il);
 	ilret.resize(il.size());
 
-	int i = 0;
 	String *w = ilret.ptrw();
-	for (List<StringName>::Element *E = il.front(); E; E = E->next(), i++) {
-		w[i] = E->get();
+	for (uint32_t i = 0; i < il.size(); i++) {
+		w[i] = il[i];
 	}
 	return ilret;
 }
@@ -1543,15 +1525,14 @@ Vector<String> Theme::_get_font_size_type_list() const {
 
 Vector<String> Theme::_get_color_list(const String &p_theme_type) const {
 	Vector<String> ilret;
-	List<StringName> il;
+	LocalVector<StringName> il;
 
-	get_color_list(p_theme_type, &il);
+	get_color_list(p_theme_type, il);
 	ilret.resize(il.size());
 
-	int i = 0;
 	String *w = ilret.ptrw();
-	for (List<StringName>::Element *E = il.front(); E; E = E->next(), i++) {
-		w[i] = E->get();
+	for (uint32_t i = 0; i < il.size(); i++) {
+		w[i] = il[i];
 	}
 	return ilret;
 }
@@ -1573,15 +1554,14 @@ Vector<String> Theme::_get_color_type_list() const {
 
 Vector<String> Theme::_get_constant_list(const String &p_theme_type) const {
 	Vector<String> ilret;
-	List<StringName> il;
+	LocalVector<StringName> il;
 
-	get_constant_list(p_theme_type, &il);
+	get_constant_list(p_theme_type, il);
 	ilret.resize(il.size());
 
-	int i = 0;
 	String *w = ilret.ptrw();
-	for (List<StringName>::Element *E = il.front(); E; E = E->next(), i++) {
-		w[i] = E->get();
+	for (uint32_t i = 0; i < il.size(); i++) {
+		w[i] = il[i];
 	}
 	return ilret;
 }
@@ -1645,15 +1625,16 @@ Vector<String> Theme::_get_theme_item_type_list(DataType p_data_type) const {
 
 Vector<String> Theme::_get_type_variation_list(const StringName &p_theme_type) const {
 	Vector<String> ilret;
-	List<StringName> il;
+	LocalVector<StringName> il;
 
-	get_type_variation_list(p_theme_type, &il);
+	get_type_variation_list(p_theme_type, il);
 	ilret.resize(il.size());
 
 	int i = 0;
 	String *w = ilret.ptrw();
-	for (List<StringName>::Element *E = il.front(); E; E = E->next(), i++) {
-		w[i] = E->get();
+	for (const StringName &E : il) {
+		w[i] = E;
+		i++;
 	}
 	return ilret;
 }

@@ -147,7 +147,7 @@ void Shader::inspect_native_shader_code() {
 	}
 }
 
-void Shader::get_shader_uniform_list(List<PropertyInfo> *p_params, bool p_get_groups) const {
+LocalVector<PropertyInfo> Shader::get_shader_uniform_list(bool p_get_groups) const {
 	_update_shader();
 	_check_shader_rid();
 
@@ -164,6 +164,7 @@ void Shader::get_shader_uniform_list(List<PropertyInfo> *p_params, bool p_get_gr
 	}
 #endif
 
+	LocalVector<PropertyInfo> params;
 	for (PropertyInfo &pi : local) {
 		bool is_group = pi.usage == PROPERTY_USAGE_GROUP || pi.usage == PROPERTY_USAGE_SUBGROUP;
 		if (!p_get_groups && is_group) {
@@ -174,11 +175,10 @@ void Shader::get_shader_uniform_list(List<PropertyInfo> *p_params, bool p_get_gr
 				continue;
 			}
 		}
-		if (p_params) {
-			//small little hack
-			if (pi.type == Variant::RID) {
-				pi.type = Variant::OBJECT;
-			}
+		//small little hack
+		if (pi.type == Variant::RID) {
+			pi.type = Variant::OBJECT;
+		}
 #ifdef TOOLS_ENABLED
 			if (generate_doc) {
 				DocData::PropertyDoc prop_doc;
@@ -198,14 +198,14 @@ void Shader::get_shader_uniform_list(List<PropertyInfo> *p_params, bool p_get_gr
 				}
 			}
 #endif
-			p_params->push_back(pi);
-		}
+		params.push_back(pi);
 	}
 #ifdef TOOLS_ENABLED
 	if (generate_doc && class_doc.properties.size() > 0) {
 		EditorHelp::add_doc(class_doc);
 	}
 #endif
+	return params;
 }
 
 RID Shader::get_rid() const {
@@ -245,10 +245,13 @@ Ref<Texture> Shader::get_default_texture_parameter(const StringName &p_name, int
 	return Ref<Texture2D>();
 }
 
-void Shader::get_default_texture_parameter_list(List<StringName> *r_textures) const {
+LocalVector<StringName> Shader::get_default_texture_parameter_list() const {
+	LocalVector<StringName> textures;
+	textures.reserve(default_textures.size());
 	for (const KeyValue<StringName, HashMap<int, Ref<Texture>>> &E : default_textures) {
-		r_textures->push_back(E.key);
+		textures.push_back(E.key);
 	}
+	return textures;
 }
 
 bool Shader::is_text_shader() const {
@@ -260,10 +263,8 @@ void Shader::_update_shader() const {
 }
 
 Array Shader::_get_shader_uniform_list(bool p_get_groups) {
-	List<PropertyInfo> uniform_list;
-	get_shader_uniform_list(&uniform_list, p_get_groups);
 	Array ret;
-	for (const PropertyInfo &pi : uniform_list) {
+	for (const PropertyInfo &pi : get_shader_uniform_list(p_get_groups)) {
 		ret.push_back(pi.operator Dictionary());
 	}
 	return ret;
@@ -333,8 +334,8 @@ Ref<Resource> ResourceFormatLoaderShader::load(const String &p_path, const Strin
 	return shader;
 }
 
-void ResourceFormatLoaderShader::get_recognized_extensions(List<String> *p_extensions) const {
-	p_extensions->push_back("gdshader");
+void ResourceFormatLoaderShader::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("gdshader");
 }
 
 bool ResourceFormatLoaderShader::handles_type(const String &p_type) const {
@@ -367,10 +368,10 @@ Error ResourceFormatSaverShader::save(const Ref<Resource> &p_resource, const Str
 	return OK;
 }
 
-void ResourceFormatSaverShader::get_recognized_extensions(const Ref<Resource> &p_resource, List<String> *p_extensions) const {
+void ResourceFormatSaverShader::get_recognized_extensions(const Ref<Resource> &p_resource, LocalVector<String> &p_extensions) const {
 	if (const Shader *shader = Object::cast_to<Shader>(*p_resource)) {
 		if (shader->is_text_shader()) {
-			p_extensions->push_back("gdshader");
+			p_extensions.push_back("gdshader");
 		}
 	}
 }

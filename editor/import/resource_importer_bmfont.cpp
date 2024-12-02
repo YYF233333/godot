@@ -41,11 +41,9 @@ String ResourceImporterBMFont::get_visible_name() const {
 	return "Font Data (AngelCode BMFont)";
 }
 
-void ResourceImporterBMFont::get_recognized_extensions(List<String> *p_extensions) const {
-	if (p_extensions) {
-		p_extensions->push_back("font");
-		p_extensions->push_back("fnt");
-	}
+void ResourceImporterBMFont::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("font");
+	p_extensions.push_back("fnt");
 }
 
 String ResourceImporterBMFont::get_save_extension() const {
@@ -60,14 +58,14 @@ bool ResourceImporterBMFont::get_option_visibility(const String &p_path, const S
 	return true;
 }
 
-void ResourceImporterBMFont::get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset) const {
-	r_options->push_back(ImportOption(PropertyInfo(Variant::ARRAY, "fallbacks", PROPERTY_HINT_ARRAY_TYPE, MAKE_RESOURCE_TYPE_HINT("Font")), Array()));
+void ResourceImporterBMFont::get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset) const {
+	r_options.push_back(ImportOption(PropertyInfo(Variant::ARRAY, "fallbacks", PROPERTY_HINT_ARRAY_TYPE, MAKE_RESOURCE_TYPE_HINT("Font")), Array()));
 
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "compress"), true));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "scaling_mode", PROPERTY_HINT_ENUM, "Disabled,Enabled (Integer),Enabled (Fractional)"), TextServer::FIXED_SIZE_SCALE_ENABLED));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "compress"), true));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "scaling_mode", PROPERTY_HINT_ENUM, "Disabled,Enabled (Integer),Enabled (Fractional)"), TextServer::FIXED_SIZE_SCALE_ENABLED));
 }
 
-Error ResourceImporterBMFont::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
+Error ResourceImporterBMFont::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
 	print_verbose("Importing BMFont font from: " + p_source_file);
 
 	Array fallbacks = p_options["fallbacks"];

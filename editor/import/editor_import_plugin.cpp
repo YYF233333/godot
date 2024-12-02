@@ -45,11 +45,11 @@ String EditorImportPlugin::get_visible_name() const {
 	return ret;
 }
 
-void EditorImportPlugin::get_recognized_extensions(List<String> *p_extensions) const {
+void EditorImportPlugin::get_recognized_extensions(LocalVector<String> &p_extensions) const {
 	Vector<String> extensions;
 	GDVIRTUAL_CALL(_get_recognized_extensions, extensions);
 	for (int i = 0; i < extensions.size(); i++) {
-		p_extensions->push_back(extensions[i]);
+		p_extensions.push_back(extensions[i]);
 	}
 }
 
@@ -103,7 +103,7 @@ int EditorImportPlugin::get_format_version() const {
 	return 0;
 }
 
-void EditorImportPlugin::get_import_options(const String &p_path, List<ResourceImporter::ImportOption> *r_options, int p_preset) const {
+void EditorImportPlugin::get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset) const {
 	Array needed = { "name", "default_value" };
 	TypedArray<Dictionary> options;
 	GDVIRTUAL_CALL(_get_import_options, p_path, p_preset, options);
@@ -129,7 +129,7 @@ void EditorImportPlugin::get_import_options(const String &p_path, List<ResourceI
 		}
 
 		ImportOption option(PropertyInfo(default_value.get_type(), name, hint, hint_string, usage), default_value);
-		r_options->push_back(option);
+		r_options.push_back(option);
 	}
 }
 
@@ -147,7 +147,7 @@ bool EditorImportPlugin::get_option_visibility(const String &p_path, const Strin
 	return true;
 }
 
-Error EditorImportPlugin::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
+Error EditorImportPlugin::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
 	Dictionary options;
 	TypedArray<String> platform_variants, gen_files;
 
@@ -160,10 +160,10 @@ Error EditorImportPlugin::import(ResourceUID::ID p_source_id, const String &p_so
 	Error err = OK;
 	GDVIRTUAL_CALL(_import, p_source_file, p_save_path, options, platform_variants, gen_files, err);
 	for (int i = 0; i < platform_variants.size(); i++) {
-		r_platform_variants->push_back(platform_variants[i]);
+		r_platform_variants.push_back(platform_variants[i]);
 	}
 	for (int i = 0; i < gen_files.size(); i++) {
-		r_gen_files->push_back(gen_files[i]);
+		r_gen_files.push_back(gen_files[i]);
 	}
 	return err;
 }

@@ -46,7 +46,7 @@ class ImportDockParameters : public Object {
 
 public:
 	HashMap<StringName, Variant> values;
-	List<PropertyInfo> properties;
+	LocalVector<PropertyInfo> properties;
 	Ref<ResourceImporter> importer;
 	Vector<String> paths;
 	HashSet<StringName> checked;
@@ -125,11 +125,9 @@ void ImportDock::set_edit_path(const String &p_path) {
 
 	_update_options(p_path, config);
 
-	List<Ref<ResourceImporter>> importers;
-	ResourceFormatImporter::get_singleton()->get_importers_for_file(p_path, &importers);
-	List<Pair<String, String>> importer_names;
+	LocalVector<Pair<String, String>> importer_names;
 
-	for (const Ref<ResourceImporter> &E : importers) {
+	for (const Ref<ResourceImporter> &E : ResourceFormatImporter::get_singleton()->get_importers_for_file(p_path)) {
 		importer_names.push_back(Pair<String, String>(E->get_visible_name(), E->get_importer_name()));
 	}
 
@@ -178,10 +176,10 @@ void ImportDock::_update_options(const String &p_path, const Ref<ConfigFile> &p_
 		import_opts->set_object_class(params->importer->get_class_name());
 	}
 
-	List<ResourceImporter::ImportOption> options;
+	LocalVector<ResourceImporter::ImportOption> options;
 
 	if (params->importer.is_valid()) {
-		params->importer->get_import_options(p_path, &options);
+		params->importer->get_import_options(p_path, options);
 	}
 
 	params->properties.clear();
@@ -192,8 +190,7 @@ void ImportDock::_update_options(const String &p_path, const Ref<ConfigFile> &p_
 
 	HashMap<StringName, Variant> import_options;
 	if (p_config.is_valid() && p_config->has_section("params")) {
-		Vector<String> section_keys = p_config->get_section_keys("params");
-		for (const String &section_key : section_keys) {
+		for (const String &section_key : p_config->get_section_keys("params")) {
 			import_options[section_key] = p_config->get_value("params", section_key);
 		}
 		if (params->importer.is_valid()) {
@@ -259,9 +256,7 @@ void ImportDock::set_edit_multiple_paths(const Vector<String> &p_paths) {
 			continue;
 		}
 
-		Vector<String> keys = config->get_section_keys("params");
-
-		for (const String &E : keys) {
+		for (const String &E : config->get_section_keys("params")) {
 			if (!value_frequency.has(E)) {
 				value_frequency[E] = Dictionary();
 			}
@@ -282,8 +277,8 @@ void ImportDock::set_edit_multiple_paths(const Vector<String> &p_paths) {
 	if (extensions.size() == 1 && p_paths.size() > 0) {
 		base_path = p_paths[0];
 	}
-	List<ResourceImporter::ImportOption> options;
-	params->importer->get_import_options(base_path, &options);
+	LocalVector<ResourceImporter::ImportOption> options;
+	params->importer->get_import_options(base_path, options);
 
 	params->properties.clear();
 	params->values.clear();
@@ -313,11 +308,9 @@ void ImportDock::set_edit_multiple_paths(const Vector<String> &p_paths) {
 
 	params->update();
 
-	List<Ref<ResourceImporter>> importers;
-	ResourceFormatImporter::get_singleton()->get_importers_for_file(p_paths[0], &importers);
-	List<Pair<String, String>> importer_names;
+	LocalVector<Pair<String, String>> importer_names;
 
-	for (const Ref<ResourceImporter> &E : importers) {
+	for (const Ref<ResourceImporter> &E : ResourceFormatImporter::get_singleton()->get_importers_for_file(p_paths[0])) {
 		importer_names.push_back(Pair<String, String>(E->get_visible_name(), E->get_importer_name()));
 	}
 
@@ -472,9 +465,9 @@ void ImportDock::_preset_selected(int p_idx) {
 			_update_preset_menu();
 		} break;
 		default: {
-			List<ResourceImporter::ImportOption> options;
+			LocalVector<ResourceImporter::ImportOption> options;
 
-			params->importer->get_import_options(params->base_options_path, &options, p_idx);
+			params->importer->get_import_options(params->base_options_path, options, p_idx);
 
 			if (params->checking) {
 				params->checked.clear();
@@ -599,8 +592,8 @@ void ImportDock::_reimport_and_cleanup() {
 	EditorNode::get_singleton()->push_item(nullptr);
 	EditorUndoRedoManager::get_singleton()->clear_history();
 
-	List<Ref<Resource>> external_resources;
-	ResourceCache::get_cached_resources(&external_resources);
+	LocalVector<Ref<Resource>> external_resources;
+	ResourceCache::get_cached_resources(external_resources);
 
 	Vector<Ref<Resource>> old_resources_to_replace;
 	Vector<Ref<Resource>> new_resources_to_replace;

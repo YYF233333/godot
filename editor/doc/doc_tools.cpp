@@ -394,8 +394,8 @@ static Variant get_documentation_default_value(const StringName &p_class_name, c
 			}
 		}
 
-		List<StringName> inheriting_classes;
-		ClassDB::get_direct_inheriters_from_class(p_class_name, &inheriting_classes);
+		LocalVector<StringName> inheriting_classes;
+		ClassDB::get_direct_inheriters_from_class(p_class_name, inheriting_classes);
 		for (const StringName &class_name : inheriting_classes) {
 			if (ClassDB::can_instantiate(class_name)) {
 				default_value = ClassDB::class_get_default_property_value(class_name, p_property_name, &r_default_value_valid);
@@ -469,8 +469,8 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 			} else if (ClassDB::is_parent_class(name, "ResourceImporter") && name != "EditorImportPlugin" && ClassDB::can_instantiate(name)) {
 				import_option = true;
 				ResourceImporter *resimp = Object::cast_to<ResourceImporter>(ClassDB::instantiate(name));
-				List<ResourceImporter::ImportOption> options;
-				resimp->get_import_options("", &options);
+				LocalVector<ResourceImporter::ImportOption> options;
+				resimp->get_import_options("", options);
 				for (const ResourceImporter::ImportOption &option : options) {
 					const PropertyInfo &prop = option.option;
 					properties.push_back(prop);
@@ -618,8 +618,8 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 
 			c.properties.sort();
 
-			List<MethodInfo> method_list;
-			ClassDB::get_method_list(name, &method_list, true);
+			LocalVector<MethodInfo> method_list;
+			ClassDB::get_method_list(name, method_list, true);
 
 			for (const MethodInfo &E : method_list) {
 				if (E.name.is_empty() || (E.name[0] == '_' && !(E.flags & METHOD_FLAG_VIRTUAL))) {
@@ -679,8 +679,8 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 				c.signals.sort_custom<MethodCompare>();
 			}
 
-			List<String> constant_list;
-			ClassDB::get_integer_constant_list(name, &constant_list, true);
+			LocalVector<String> constant_list;
+			ClassDB::get_integer_constant_list(name, constant_list, true);
 
 			for (const String &E : constant_list) {
 				DocData::ConstantDoc constant;
@@ -778,9 +778,9 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 		Variant v;
 		Variant::construct(Variant::Type(i), v, nullptr, 0, cerror);
 
-		List<MethodInfo> method_list;
-		v.get_method_list(&method_list);
-		Variant::get_constructor_list(Variant::Type(i), &method_list);
+		LocalVector<MethodInfo> method_list;
+		v.get_method_list(method_list);
+		Variant::get_constructor_list(Variant::Type(i), method_list);
 
 		for (int j = 0; j < Variant::OP_AND; j++) { // Showing above 'and' is pretty confusing and there are a lot of variations.
 			for (int k = 0; k < Variant::VARIANT_MAX; k++) {
@@ -919,14 +919,8 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 
 		c.properties.sort();
 
-		List<StringName> enums;
-		Variant::get_enums_for_type(Variant::Type(i), &enums);
-
-		for (const StringName &E : enums) {
-			List<StringName> enumerations;
-			Variant::get_enumerations_for_enum(Variant::Type(i), E, &enumerations);
-
-			for (const StringName &F : enumerations) {
+		for (const StringName &E : Variant::get_enums_for_type(Variant::Type(i))) {
+			for (const StringName &F : Variant::get_enumerations_for_enum(Variant::Type(i), E)) {
 				DocData::ConstantDoc constant;
 				constant.name = F;
 				constant.value = itos(Variant::get_enum_value(Variant::Type(i), E, F));
@@ -937,10 +931,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 			}
 		}
 
-		List<StringName> constants;
-		Variant::get_constants_for_type(Variant::Type(i), &constants);
-
-		for (const StringName &E : constants) {
+		for (const StringName &E : Variant::get_constants_for_type(Variant::Type(i))) {
 			DocData::ConstantDoc constant;
 			constant.name = E;
 			Variant value = Variant::get_constant_value(Variant::Type(i), E);
@@ -977,8 +968,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 		}
 
 		// Servers/engine singletons.
-		List<Engine::Singleton> singletons;
-		Engine::get_singleton()->get_singletons(&singletons);
+		LocalVector<Engine::Singleton> singletons = Engine::get_singleton()->get_singletons();
 
 		// FIXME: this is kind of hackish...
 		for (const Engine::Singleton &s : singletons) {
@@ -997,9 +987,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 		c.properties.sort();
 
 		// Variant utility functions.
-		List<StringName> utility_functions;
-		Variant::get_utility_function_list(&utility_functions);
-		for (const StringName &E : utility_functions) {
+		for (const StringName &E : Variant::get_utility_function_list()) {
 			DocData::MethodDoc md;
 			md.name = E;
 			// Utility function's return type.
@@ -1052,10 +1040,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 			inheriting[""].insert(cname);
 
 			// Get functions.
-			List<MethodInfo> minfo;
-			lang->get_public_functions(&minfo);
-
-			for (const MethodInfo &mi : minfo) {
+			for (const MethodInfo &mi : lang->get_public_functions()) {
 				DocData::MethodDoc md;
 				md.name = mi.name;
 
@@ -1084,10 +1069,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 			}
 
 			// Get constants.
-			List<Pair<String, Variant>> cinfo;
-			lang->get_public_constants(&cinfo);
-
-			for (const Pair<String, Variant> &E : cinfo) {
+			for (const Pair<String, Variant> &E : lang->get_public_constants()) {
 				DocData::ConstantDoc cd;
 				cd.name = E.first;
 				cd.value = E.second;
@@ -1097,10 +1079,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 			}
 
 			// Get annotations.
-			List<MethodInfo> ainfo;
-			lang->get_public_annotations(&ainfo);
-
-			for (const MethodInfo &ai : ainfo) {
+			for (const MethodInfo &ai : lang->get_public_annotations()) {
 				DocData::MethodDoc atd;
 				atd.name = ai.name;
 
@@ -1265,7 +1244,7 @@ Error DocTools::erase_classes(const String &p_dir) {
 		return err;
 	}
 
-	List<String> to_erase;
+	LocalVector<String> to_erase;
 
 	da->list_dir_begin();
 	String path;
@@ -1278,9 +1257,8 @@ Error DocTools::erase_classes(const String &p_dir) {
 	}
 	da->list_dir_end();
 
-	while (to_erase.size()) {
-		da->remove(to_erase.front()->get());
-		to_erase.pop_front();
+	for (String &E : to_erase) {
+		da->remove(E);
 	}
 
 	return OK;

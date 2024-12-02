@@ -36,11 +36,11 @@
 #include "scene/animation/animation_player.h"
 #include "scene/resources/bone_map.h"
 
-void PostImportPluginSkeletonRenamer::get_internal_import_options(InternalImportCategory p_category, List<ResourceImporter::ImportOption> *r_options) {
+void PostImportPluginSkeletonRenamer::get_internal_import_options(InternalImportCategory p_category, LocalVector<ResourceImporter::ImportOption> &r_options) {
 	if (p_category == INTERNAL_IMPORT_CATEGORY_SKELETON_3D_NODE) {
-		r_options->push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::BOOL, "retarget/bone_renamer/rename_bones", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), true));
-		r_options->push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::BOOL, "retarget/bone_renamer/unique_node/make_unique"), true));
-		r_options->push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::STRING, "retarget/bone_renamer/unique_node/skeleton_name"), "GeneralSkeleton"));
+		r_options.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::BOOL, "retarget/bone_renamer/rename_bones", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), true));
+		r_options.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::BOOL, "retarget/bone_renamer/unique_node/make_unique"), true));
+		r_options.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::STRING, "retarget/bone_renamer/unique_node/skeleton_name"), "GeneralSkeleton"));
 	}
 }
 
@@ -95,9 +95,7 @@ void PostImportPluginSkeletonRenamer::_internal_process(InternalImportCategory p
 		TypedArray<Node> nodes = p_base_scene->find_children("*", "AnimationPlayer");
 		while (nodes.size()) {
 			AnimationPlayer *ap = Object::cast_to<AnimationPlayer>(nodes.pop_back());
-			List<StringName> anims;
-			ap->get_animation_list(&anims);
-			for (const StringName &name : anims) {
+			for (const StringName &name : ap->get_animation_list()) {
 				Ref<Animation> anim = ap->get_animation(name);
 				int len = anim->get_track_count();
 				for (int i = 0; i < len; i++) {
@@ -208,9 +206,7 @@ void PostImportPluginSkeletonRenamer::internal_process(InternalImportCategory p_
 			TypedArray<Node> nodes = p_base_scene->find_children("*", "AnimationPlayer");
 			while (nodes.size()) {
 				AnimationPlayer *ap = Object::cast_to<AnimationPlayer>(nodes.pop_back());
-				List<StringName> anims;
-				ap->get_animation_list(&anims);
-				for (const StringName &name : anims) {
+				for (const StringName &name : ap->get_animation_list()) {
 					Ref<Animation> anim = ap->get_animation(name);
 					int track_len = anim->get_track_count();
 					for (int i = 0; i < track_len; i++) {

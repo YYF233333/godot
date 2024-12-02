@@ -49,26 +49,28 @@ void EditorVCSInterface::set_credentials(const String &p_username, const String 
 	GDVIRTUAL_CALL(_set_credentials, p_username, p_password, p_ssh_public_key, p_ssh_private_key, p_ssh_passphrase);
 }
 
-List<String> EditorVCSInterface::get_remotes() {
+LocalVector<String> EditorVCSInterface::get_remotes() {
 	TypedArray<String> result;
 	if (!GDVIRTUAL_CALL(_get_remotes, result)) {
 		return {};
 	}
 
-	List<String> remotes;
+	LocalVector<String> remotes;
+	remotes.reserve(result.size());
 	for (int i = 0; i < result.size(); i++) {
 		remotes.push_back(result[i]);
 	}
 	return remotes;
 }
 
-List<EditorVCSInterface::StatusFile> EditorVCSInterface::get_modified_files_data() {
+LocalVector<EditorVCSInterface::StatusFile> EditorVCSInterface::get_modified_files_data() {
 	TypedArray<Dictionary> result;
 	if (!GDVIRTUAL_CALL(_get_modified_files_data, result)) {
 		return {};
 	}
 
-	List<EditorVCSInterface::StatusFile> status_files;
+	LocalVector<EditorVCSInterface::StatusFile> status_files;
+	status_files.reserve(result.size());
 	for (int i = 0; i < result.size(); i++) {
 		status_files.push_back(_convert_status_file(result[i]));
 	}
@@ -91,39 +93,42 @@ void EditorVCSInterface::commit(const String &p_msg) {
 	GDVIRTUAL_CALL(_commit, p_msg);
 }
 
-List<EditorVCSInterface::DiffFile> EditorVCSInterface::get_diff(const String &p_identifier, TreeArea p_area) {
+LocalVector<EditorVCSInterface::DiffFile> EditorVCSInterface::get_diff(const String &p_identifier, TreeArea p_area) {
 	TypedArray<Dictionary> result;
 	if (!GDVIRTUAL_CALL(_get_diff, p_identifier, int(p_area), result)) {
 		return {};
 	}
 
-	List<DiffFile> diff_files;
+	LocalVector<DiffFile> diff_files;
+	diff_files.reserve(result.size());
 	for (int i = 0; i < result.size(); i++) {
 		diff_files.push_back(_convert_diff_file(result[i]));
 	}
 	return diff_files;
 }
 
-List<EditorVCSInterface::Commit> EditorVCSInterface::get_previous_commits(int p_max_commits) {
+LocalVector<EditorVCSInterface::Commit> EditorVCSInterface::get_previous_commits(int p_max_commits) {
 	TypedArray<Dictionary> result;
 	if (!GDVIRTUAL_CALL(_get_previous_commits, p_max_commits, result)) {
 		return {};
 	}
 
-	List<EditorVCSInterface::Commit> commits;
+	LocalVector<EditorVCSInterface::Commit> commits;
+	commits.reserve(result.size());
 	for (int i = 0; i < result.size(); i++) {
 		commits.push_back(_convert_commit(result[i]));
 	}
 	return commits;
 }
 
-List<String> EditorVCSInterface::get_branch_list() {
+LocalVector<String> EditorVCSInterface::get_branch_list() {
 	TypedArray<String> result;
 	if (!GDVIRTUAL_CALL(_get_branch_list, result)) {
 		return {};
 	}
 
-	List<String> branch_list;
+	LocalVector<String> branch_list;
+	branch_list.reserve(result.size());
 	for (int i = 0; i < result.size(); i++) {
 		branch_list.push_back(result[i]);
 	}
@@ -170,13 +175,14 @@ void EditorVCSInterface::fetch(const String &p_remote) {
 	GDVIRTUAL_CALL(_fetch, p_remote);
 }
 
-List<EditorVCSInterface::DiffHunk> EditorVCSInterface::get_line_diff(const String &p_file_path, const String &p_text) {
+LocalVector<EditorVCSInterface::DiffHunk> EditorVCSInterface::get_line_diff(const String &p_file_path, const String &p_text) {
 	TypedArray<Dictionary> result;
 	if (!GDVIRTUAL_CALL(_get_line_diff, p_file_path, p_text, result)) {
 		return {};
 	}
 
-	List<DiffHunk> diff_hunks;
+	LocalVector<DiffHunk> diff_hunks;
+	diff_hunks.reserve(result.size());
 	for (int i = 0; i < result.size(); i++) {
 		diff_hunks.push_back(_convert_diff_hunk(result[i]));
 	}

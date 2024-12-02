@@ -1625,9 +1625,6 @@ String VisualShader::validate_port_name(const String &p_port_name, VisualShaderN
 		return String();
 	}
 
-	List<String> input_names;
-	List<String> output_names;
-
 	for (int i = 0; i < p_node->get_input_port_count(); i++) {
 		if (!p_output && i == p_port_id) {
 			continue;
@@ -2790,7 +2787,7 @@ void VisualShader::_update_shader() const {
 
 	String global_expressions;
 	HashSet<String> used_parameter_names;
-	List<VisualShaderNodeParameter *> parameters;
+	LocalVector<VisualShaderNodeParameter *> parameters;
 	HashMap<int, List<int>> emitters;
 	HashMap<int, List<int>> varying_setters;
 
@@ -2835,7 +2832,7 @@ void VisualShader::_update_shader() const {
 	}
 
 	int idx = 0;
-	for (List<VisualShaderNodeParameter *>::Iterator itr = parameters.begin(); itr != parameters.end(); ++itr, ++idx) {
+	for (LocalVector<VisualShaderNodeParameter *>::Iterator itr = parameters.begin(); itr != parameters.end(); ++itr, ++idx) {
 		VisualShaderNodeParameter *parameter = *itr;
 		if (used_parameter_names.has(parameter->get_parameter_name())) {
 			global_code += parameter->generate_global(get_mode(), Type(idx), -1);
@@ -4461,9 +4458,7 @@ String VisualShaderNodeParameter::_get_qual_str() const {
 }
 
 String VisualShaderNodeParameter::get_warning(Shader::Mode p_mode, VisualShader::Type p_type) const {
-	List<String> keyword_list;
-	ShaderLanguage::get_keyword_list(&keyword_list);
-	if (keyword_list.find(parameter_name)) {
+	if (ShaderLanguage::get_keyword_list().has(parameter_name)) {
 		return RTR("Shader keywords cannot be used as parameter names.\nChoose another name.");
 	}
 	if (!is_qualifier_supported(qualifier)) {

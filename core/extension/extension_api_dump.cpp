@@ -487,7 +487,7 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 	{
 		// Global enums and constants.
 		Array constants;
-		HashMap<String, List<Pair<String, int64_t>>> enum_list;
+		HashMap<String, LocalVector<Pair<String, int64_t>>> enum_list;
 		HashMap<String, bool> enum_is_bitfield;
 
 		const DocData::ClassDoc *global_scope_doc = nullptr;
@@ -524,7 +524,7 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 		api_dump["global_constants"] = constants;
 
 		Array enums;
-		for (const KeyValue<String, List<Pair<String, int64_t>>> &E : enum_list) {
+		for (const KeyValue<String, LocalVector<Pair<String, int64_t>>> &E : enum_list) {
 			Dictionary d1;
 			d1["name"] = E.key;
 			d1["is_bitfield"] = enum_is_bitfield[E.key];
@@ -558,16 +558,13 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 	{
 		Array utility_funcs;
 
-		List<StringName> utility_func_names;
-		Variant::get_utility_function_list(&utility_func_names);
-
 		const DocData::ClassDoc *global_scope_doc = nullptr;
 		if (p_include_docs) {
 			global_scope_doc = EditorHelp::get_doc_data()->class_list.getptr("@GlobalScope");
 			CRASH_COND_MSG(!global_scope_doc, "Could not find '@GlobalScope' in DocData.");
 		}
 
-		for (const StringName &name : utility_func_names) {
+		for (const StringName &name : Variant::get_utility_function_list()) {
 			Dictionary func;
 			func["name"] = String(name);
 			if (Variant::has_utility_function_return_value(name)) {
@@ -648,9 +645,7 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 				//members
 				Array members;
 
-				List<StringName> member_names;
-				Variant::get_member_list(type, &member_names);
-				for (const StringName &member_name : member_names) {
+				for (const StringName &member_name : Variant::get_member_list(type)) {
 					Dictionary d2;
 					d2["name"] = String(member_name);
 					d2["type"] = get_builtin_or_variant_type_name(Variant::get_member_type(type, member_name));
@@ -672,9 +667,7 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 				//constants
 				Array constants;
 
-				List<StringName> constant_names;
-				Variant::get_constants_for_type(type, &constant_names);
-				for (const StringName &constant_name : constant_names) {
+				for (const StringName &constant_name : Variant::get_constants_for_type(type)) {
 					Dictionary d2;
 					d2["name"] = String(constant_name);
 					Variant constant = Variant::get_constant_value(type, constant_name);
@@ -698,18 +691,13 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 				//enums
 				Array enums;
 
-				List<StringName> enum_names;
-				Variant::get_enums_for_type(type, &enum_names);
-				for (const StringName &enum_name : enum_names) {
+				for (const StringName &enum_name : Variant::get_enums_for_type(type)) {
 					Dictionary enum_dict;
 					enum_dict["name"] = String(enum_name);
 
-					List<StringName> enumeration_names;
-					Variant::get_enumerations_for_enum(type, enum_name, &enumeration_names);
-
 					Array values;
 
-					for (const StringName &enumeration : enumeration_names) {
+					for (const StringName &enumeration : Variant::get_enumerations_for_enum(type, enum_name)) {
 						Dictionary values_dict;
 						values_dict["name"] = String(enumeration);
 						values_dict["value"] = Variant::get_enum_value(type, enum_name, enumeration);
@@ -783,9 +771,7 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 				//methods
 				Array methods;
 
-				List<StringName> method_names;
-				Variant::get_builtin_method_list(type, &method_names);
-				for (const StringName &method_name : method_names) {
+				for (const StringName &method_name : Variant::get_builtin_method_list(type)) {
 					Dictionary d2;
 					d2["name"] = String(method_name);
 					if (Variant::has_builtin_method_return_value(type, method_name)) {
@@ -943,8 +929,8 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 			{
 				//constants
 				Array constants;
-				List<String> constant_list;
-				ClassDB::get_integer_constant_list(class_name, &constant_list, true);
+				LocalVector<String> constant_list;
+				ClassDB::get_integer_constant_list(class_name, constant_list, true);
 				for (const String &F : constant_list) {
 					StringName enum_name = ClassDB::get_integer_constant_enum(class_name, F);
 					if (enum_name != StringName()) {
@@ -974,16 +960,16 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 			{
 				//enum
 				Array enums;
-				List<StringName> enum_list;
-				ClassDB::get_enum_list(class_name, &enum_list, true);
+				LocalVector<StringName> enum_list;
+				ClassDB::get_enum_list(class_name, enum_list, true);
 				for (const StringName &F : enum_list) {
 					Dictionary d2;
 					d2["name"] = String(F);
 					d2["is_bitfield"] = ClassDB::is_enum_bitfield(class_name, F);
 
 					Array values;
-					List<StringName> enum_constant_list;
-					ClassDB::get_enum_constants(class_name, F, &enum_constant_list, true);
+					LocalVector<StringName> enum_constant_list;
+					ClassDB::get_enum_constants(class_name, F, enum_constant_list, true);
 					for (const StringName &enum_constant : enum_constant_list) {
 						Dictionary d3;
 						d3["name"] = String(enum_constant);
@@ -1020,8 +1006,8 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 			{
 				//methods
 				Array methods;
-				List<MethodInfo> method_list;
-				ClassDB::get_method_list(class_name, &method_list, true);
+				LocalVector<MethodInfo> method_list;
+				ClassDB::get_method_list(class_name, method_list, true);
 				for (const MethodInfo &F : method_list) {
 					StringName method_name = F.name;
 					if ((F.flags & METHOD_FLAG_VIRTUAL) && !(F.flags & METHOD_FLAG_OBJECT_CORE)) {
@@ -1282,10 +1268,8 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 		// singletons
 
 		Array singletons;
-		List<Engine::Singleton> singleton_list;
-		Engine::get_singleton()->get_singletons(&singleton_list);
 
-		for (const Engine::Singleton &s : singleton_list) {
+		for (const Engine::Singleton &s : Engine::get_singleton()->get_singletons()) {
 			Dictionary d;
 			d["name"] = s.name;
 			if (s.class_name != StringName()) {
@@ -1304,8 +1288,7 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 	{
 		Array native_structures;
 
-		List<StringName> native_structs;
-		ClassDB::get_native_struct_list(&native_structs);
+		LocalVector<StringName> native_structs = ClassDB::get_native_struct_list();
 		native_structs.sort_custom<StringName::AlphCompare>();
 
 		for (const StringName &E : native_structs) {

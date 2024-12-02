@@ -487,8 +487,8 @@ void SceneTreeDock::_replace_with_branch_scene(const String &p_file, Node *base)
 	undo_redo->add_do_method(parent, "move_child", instantiated_scene, pos);
 	undo_redo->add_undo_method(parent, "move_child", base, pos);
 
-	List<Node *> owned;
-	base->get_owned_by(base->get_owner(), &owned);
+	LocalVector<Node *> owned;
+	base->get_owned_by(base->get_owner(), owned);
 	Array owners;
 	for (Node *F : owned) {
 		owners.push_back(F);
@@ -686,11 +686,11 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 				ERR_CONTINUE(!dup);
 
 				// Preserve ownership relations ready for pasting.
-				List<Node *> owned;
+				LocalVector<Node *> owned;
 				Node *owner = node;
 				while (owner) {
-					List<Node *> cur_owned;
-					node->get_owned_by(owner, &cur_owned);
+					LocalVector<Node *> cur_owned;
+					node->get_owned_by(owner, cur_owned);
 					owner = owner->get_owner();
 					for (Node *F : cur_owned) {
 						owned.push_back(F);
@@ -912,11 +912,11 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 			for (Node *node : selection) {
 				Node *parent = node->get_parent();
 
-				List<Node *> owned;
+				LocalVector<Node *> owned;
 				Node *owner = node;
 				while (owner) {
-					List<Node *> cur_owned;
-					node->get_owned_by(owner, &cur_owned);
+					LocalVector<Node *> cur_owned;
+					node->get_owned_by(owner, cur_owned);
 					owner = owner->get_owner();
 					for (Node *F : cur_owned) {
 						owned.push_back(F);
@@ -1197,9 +1197,9 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 				determine_path_automatically = true;
 			}
 
-			List<String> extensions;
+			LocalVector<String> extensions;
 			Ref<PackedScene> sd = memnew(PackedScene);
-			ResourceSaver::get_recognized_extensions(sd, &extensions);
+			ResourceSaver::get_recognized_extensions(sd, extensions);
 			new_scene_from_dialog->clear_filters();
 			for (const String &extension : extensions) {
 				new_scene_from_dialog->add_filter("*." + extension, extension.to_upper());
@@ -1209,7 +1209,7 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 			if (extensions.size()) {
 				String root_name(tocopy->get_name());
 				root_name = EditorNode::adjust_scene_name_casing(root_name);
-				existing = root_name + "." + extensions.front()->get().to_lower();
+				existing = root_name + "." + extensions[0].to_lower();
 			}
 			new_scene_from_dialog->set_current_path(existing);
 
@@ -1835,8 +1835,8 @@ void SceneTreeDock::_node_replace_owner(Node *p_base, Node *p_node, Node *p_root
 }
 
 void SceneTreeDock::_node_strip_signal_inheritance(Node *p_node) {
-	List<Object::Connection> conns;
-	p_node->get_all_signal_connections(&conns);
+	LocalVector<Object::Connection> conns;
+	p_node->get_all_signal_connections(conns);
 
 	for (Object::Connection conn : conns) {
 		conn.signal.disconnect(conn.callable);
@@ -1930,10 +1930,7 @@ bool SceneTreeDock::_has_tracks_to_delete(Node *p_node, List<Node *> &p_to_delet
 	if (ap) {
 		Node *root = ap->get_node(ap->get_root_node());
 		if (root && !p_to_delete.find(root)) {
-			List<StringName> anims;
-			ap->get_animation_list(&anims);
-
-			for (const StringName &E : anims) {
+			for (const StringName &E : ap->get_animation_list()) {
 				Ref<Animation> anim = ap->get_animation(E);
 				if (anim.is_null()) {
 					continue;
@@ -2185,15 +2182,13 @@ void SceneTreeDock::perform_node_renames(Node *p_base, HashMap<Node *, NodePath>
 		}
 
 		if (!points_to_other_animation_player) {
-			List<StringName> anims;
-			mixer->get_animation_list(&anims);
 			Node *root = mixer->get_node(mixer->get_root_node());
 
 			if (root) {
 				HashMap<Node *, NodePath>::Iterator found_root_path = p_renames->find(root);
 				NodePath new_root_path = found_root_path ? found_root_path->value : root->get_path();
 				if (!new_root_path.is_empty()) { // No renaming if root node is deleted.
-					for (const StringName &E : anims) {
+					for (const StringName &E : mixer->get_animation_list()) {
 						Ref<Animation> anim = mixer->get_animation(E);
 						if (!r_rem_anims->has(anim)) {
 							r_rem_anims->insert(anim, HashSet<int>());
@@ -2427,8 +2422,8 @@ void SceneTreeDock::_do_reparent(Node *p_new_parent, int p_position_in_parent, V
 		fill_path_renames(node, p_new_parent, &path_renames);
 		former_names.push_back(node->get_name());
 
-		List<Node *> owned;
-		node->get_owned_by(node->get_owner(), &owned);
+		LocalVector<Node *> owned;
+		node->get_owned_by(node->get_owner(), owned);
 		Array owners;
 		for (Node *E : owned) {
 			owners.push_back(E);
@@ -2515,8 +2510,8 @@ void SceneTreeDock::_do_reparent(Node *p_new_parent, int p_position_in_parent, V
 	for (int ni = 0; ni < p_nodes.size(); ni++) {
 		Node *node = p_nodes[ni];
 
-		List<Node *> owned;
-		node->get_owned_by(node->get_owner(), &owned);
+		LocalVector<Node *> owned;
+		node->get_owned_by(node->get_owner(), owned);
 		Array owners;
 		for (Node *E : owned) {
 			owners.push_back(E);
@@ -2656,7 +2651,8 @@ void SceneTreeDock::_toggle_placeholder_from_selection() {
 }
 
 void SceneTreeDock::_reparent_nodes_to_root(Node *p_root, const Array &p_nodes, Node *p_owner) {
-	List<Node *> nodes;
+	LocalVector<Node *> nodes;
+	nodes.reserve(p_nodes.size());
 	for (int i = 0; i < p_nodes.size(); i++) {
 		Node *node = Object::cast_to<Node>(p_nodes[i]);
 		ERR_FAIL_NULL(node);
@@ -2665,8 +2661,8 @@ void SceneTreeDock::_reparent_nodes_to_root(Node *p_root, const Array &p_nodes, 
 
 	for (Node *node : nodes) {
 		node->set_owner(p_owner);
-		List<Node *> owned;
-		node->get_owned_by(p_owner, &owned);
+		LocalVector<Node *> owned;
+		node->get_owned_by(p_owner, owned);
 		String original_name = node->get_name();
 		node->reparent(p_root);
 		node->set_name(original_name);
@@ -2689,8 +2685,8 @@ void SceneTreeDock::_reparent_nodes_to_paths_with_transform_and_name(Node *p_roo
 		Node *parent_node = p_root->get_node_or_null(np);
 		ERR_FAIL_NULL(parent_node);
 
-		List<Node *> owned;
-		node->get_owned_by(p_owner, &owned);
+		LocalVector<Node *> owned;
+		node->get_owned_by(p_owner, owned);
 		node->reparent(parent_node);
 		node->set_name(p_names[i]);
 		Node3D *node_3d = Object::cast_to<Node3D>(node);
@@ -2729,8 +2725,8 @@ void SceneTreeDock::_toggle_editable_children(Node *p_node) {
 		undo_redo->add_undo_method(p_node, "set_scene_instance_load_placeholder", original_scene_instance_load_placeholder);
 		undo_redo->add_do_method(p_node, "set_scene_instance_load_placeholder", false);
 	} else {
-		List<Node *> owned;
-		p_node->get_owned_by(edited_scene, &owned);
+		LocalVector<Node *> owned;
+		p_node->get_owned_by(edited_scene, owned);
 
 		// Get the original paths, transforms, and names for undo.
 		Array owned_nodes_array;
@@ -2829,8 +2825,8 @@ void SceneTreeDock::_delete_confirm(bool p_cut) {
 				continue;
 			}
 
-			List<Node *> owned;
-			n->get_owned_by(n->get_owner(), &owned);
+			LocalVector<Node *> owned;
+			n->get_owned_by(n->get_owner(), owned);
 			Array owners;
 			for (Node *F : owned) {
 				owners.push_back(F);
@@ -3227,8 +3223,8 @@ void SceneTreeDock::_replace_node(Node *p_node, Node *p_by_node, bool p_keep_pro
 
 	oldnode->get_signal_list(&sl);
 	for (const MethodInfo &E : sl) {
-		List<Object::Connection> cl;
-		oldnode->get_signal_connection_list(E.name, &cl);
+		LocalVector<Object::Connection> cl;
+		oldnode->get_signal_connection_list(E.name, cl);
 
 		for (const Object::Connection &c : cl) {
 			if (!(c.flags & Object::CONNECT_PERSIST)) {
@@ -3247,7 +3243,7 @@ void SceneTreeDock::_replace_node(Node *p_node, Node *p_by_node, bool p_keep_pro
 
 	String newname = oldnode->get_name();
 
-	List<Node *> to_erase;
+	LocalVector<Node *> to_erase;
 	for (int i = 0; i < oldnode->get_child_count(); i++) {
 		if (oldnode->get_child(i)->get_owner() == nullptr && oldnode->is_internal()) {
 			to_erase.push_back(oldnode->get_child(i));
@@ -3281,9 +3277,8 @@ void SceneTreeDock::_replace_node(Node *p_node, Node *p_by_node, bool p_keep_pro
 	if (p_remove_old) {
 		memdelete(oldnode);
 
-		while (to_erase.front()) {
-			memdelete(to_erase.front()->get());
-			to_erase.pop_front();
+		for (Node *&oldnode_child : to_erase) {
+			memdelete(oldnode_child);
 		}
 	}
 }
@@ -3607,7 +3602,7 @@ void SceneTreeDock::_files_dropped(const Vector<String> &p_files, NodePath p_to,
 
 	// Dropping as property.
 	if (p_type == 0 && p_files.size() == 1 && !is_dropping_scene) {
-		List<String> valid_properties;
+		LocalVector<String> valid_properties;
 
 		List<PropertyInfo> pinfo;
 		node->get_property_list(&pinfo);
@@ -3643,7 +3638,7 @@ void SceneTreeDock::_files_dropped(const Vector<String> &p_files, NodePath p_to,
 			return;
 		}
 		if (!valid_properties.is_empty()) {
-			_perform_property_drop(node, valid_properties.front()->get(), ResourceLoader::load(res_path));
+			_perform_property_drop(node, valid_properties[0], ResourceLoader::load(res_path));
 			return;
 		}
 	}
@@ -4289,8 +4284,8 @@ void SceneTreeDock::open_instance_child_dialog() {
 	_tool_selected(TOOL_INSTANTIATE, true);
 }
 
-List<Node *> SceneTreeDock::paste_nodes(bool p_paste_as_sibling) {
-	List<Node *> pasted_nodes;
+LocalVector<Node *> SceneTreeDock::paste_nodes(bool p_paste_as_sibling) {
+	LocalVector<Node *> pasted_nodes;
 
 	if (node_clipboard.is_empty()) {
 		return pasted_nodes;
@@ -4419,7 +4414,7 @@ List<Node *> SceneTreeDock::paste_nodes(bool p_paste_as_sibling) {
 	return pasted_nodes;
 }
 
-List<Node *> SceneTreeDock::get_node_clipboard() const {
+LocalVector<Node *> SceneTreeDock::get_node_clipboard() const {
 	return node_clipboard;
 }
 
@@ -4620,12 +4615,12 @@ void SceneTreeDock::_create_remap_for_resource(Ref<Resource> p_resource, HashMap
 void SceneTreeDock::_list_all_subresources(PopupMenu *p_menu) {
 	p_menu->clear();
 
-	List<Pair<Ref<Resource>, Node *>> all_resources;
+	LocalVector<Pair<Ref<Resource>, Node *>> all_resources;
 	if (edited_scene) {
 		_gather_resources(edited_scene, all_resources);
 	}
 
-	HashMap<String, List<Pair<Ref<Resource>, Node *>>> resources_by_type;
+	HashMap<String, LocalVector<Pair<Ref<Resource>, Node *>>> resources_by_type;
 	HashMap<Ref<Resource>, int> unique_resources;
 
 	for (const Pair<Ref<Resource>, Node *> &pair : all_resources) {
@@ -4635,7 +4630,7 @@ void SceneTreeDock::_list_all_subresources(PopupMenu *p_menu) {
 		unique_resources[pair.first]++;
 	}
 
-	for (KeyValue<String, List<Pair<Ref<Resource>, Node *>>> kv : resources_by_type) {
+	for (KeyValue<String, LocalVector<Pair<Ref<Resource>, Node *>>> kv : resources_by_type) {
 		p_menu->add_icon_item(EditorNode::get_singleton()->get_class_icon(kv.key), kv.key);
 		p_menu->set_item_as_separator(-1, true);
 
@@ -4665,7 +4660,7 @@ void SceneTreeDock::_list_all_subresources(PopupMenu *p_menu) {
 	p_menu->reset_size();
 }
 
-void SceneTreeDock::_gather_resources(Node *p_node, List<Pair<Ref<Resource>, Node *>> &r_resources) {
+void SceneTreeDock::_gather_resources(Node *p_node, LocalVector<Pair<Ref<Resource>, Node *>> &r_resources) {
 	if (p_node != edited_scene && p_node->get_owner() != edited_scene) {
 		return;
 	}

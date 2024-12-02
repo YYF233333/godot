@@ -46,9 +46,9 @@
 void EditorAutoloadSettings::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
-			List<String> afn;
-			ResourceLoader::get_recognized_extensions_for_type("Script", &afn);
-			ResourceLoader::get_recognized_extensions_for_type("PackedScene", &afn);
+			LocalVector<String> afn;
+			ResourceLoader::get_recognized_extensions_for_type("Script", afn);
+			ResourceLoader::get_recognized_extensions_for_type("PackedScene", afn);
 
 			for (const String &E : afn) {
 				file_dialog->add_filter("*." + E);
@@ -464,7 +464,7 @@ void EditorAutoloadSettings::update_autoload() {
 	updating_autoload = true;
 
 	HashMap<String, AutoloadInfo> to_remove;
-	List<AutoloadInfo *> to_add;
+	LocalVector<AutoloadInfo *> to_add;
 
 	for (const AutoloadInfo &info : autoload_cache) {
 		to_remove.insert(info.name, info);
@@ -564,7 +564,7 @@ void EditorAutoloadSettings::update_autoload() {
 	}
 
 	// Load new/changed autoloads
-	List<Node *> nodes_to_add;
+	LocalVector<Node *> nodes_to_add;
 	for (AutoloadInfo *info : to_add) {
 		info->node = _create_autoload(info->path);
 

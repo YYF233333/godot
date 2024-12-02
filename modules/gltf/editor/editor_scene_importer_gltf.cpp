@@ -33,14 +33,14 @@
 #include "../gltf_defines.h"
 #include "../gltf_document.h"
 
-void EditorSceneFormatImporterGLTF::get_extensions(List<String> *r_extensions) const {
-	r_extensions->push_back("gltf");
-	r_extensions->push_back("glb");
+void EditorSceneFormatImporterGLTF::get_extensions(LocalVector<String> &r_extensions) const {
+	r_extensions.push_back("gltf");
+	r_extensions.push_back("glb");
 }
 
 Node *EditorSceneFormatImporterGLTF::import_scene(const String &p_path, uint32_t p_flags,
 		const HashMap<StringName, Variant> &p_options,
-		List<String> *r_missing_deps, Error *r_err) {
+		LocalVector<String> *r_missing_deps, Error *r_err) {
 	Ref<GLTFDocument> gltf;
 	gltf.instantiate();
 	Ref<GLTFState> state;
@@ -80,12 +80,12 @@ Node *EditorSceneFormatImporterGLTF::import_scene(const String &p_path, uint32_t
 }
 
 void EditorSceneFormatImporterGLTF::get_import_options(const String &p_path,
-		List<ResourceImporter::ImportOption> *r_options) {
+		LocalVector<ResourceImporter::ImportOption> &r_options) {
 	String file_extension = p_path.get_extension().to_lower();
 	// Returns all the options when path is empty because that means it's for the Project Settings.
 	if (p_path.is_empty() || file_extension == "gltf" || file_extension == "glb") {
-		r_options->push_back(ResourceImporterScene::ImportOption(PropertyInfo(Variant::INT, "gltf/naming_version", PROPERTY_HINT_ENUM, "Godot 4.0 or 4.1,Godot 4.2 to 4.4,Godot 4.5 or later"), 2));
-		r_options->push_back(ResourceImporterScene::ImportOption(PropertyInfo(Variant::INT, "gltf/embedded_image_handling", PROPERTY_HINT_ENUM, "Discard All Textures,Extract Textures,Embed as Basis Universal,Embed as Uncompressed", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), GLTFState::HANDLE_BINARY_IMAGE_MODE_EXTRACT_TEXTURES));
+		r_options.push_back(ResourceImporterScene::ImportOption(PropertyInfo(Variant::INT, "gltf/naming_version", PROPERTY_HINT_ENUM, "Godot 4.0 or 4.1,Godot 4.2 to 4.4,Godot 4.5 or later"), 2));
+		r_options.push_back(ResourceImporterScene::ImportOption(PropertyInfo(Variant::INT, "gltf/embedded_image_handling", PROPERTY_HINT_ENUM, "Discard All Textures,Extract Textures,Embed as Basis Universal,Embed as Uncompressed", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED), GLTFState::HANDLE_BINARY_IMAGE_MODE_EXTRACT_TEXTURES));
 	}
 }
 

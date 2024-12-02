@@ -1597,7 +1597,7 @@ struct VariantUtilityFunctionInfo {
 };
 
 static AHashMap<StringName, VariantUtilityFunctionInfo> utility_function_table;
-static List<StringName> utility_function_name_table;
+static Vector<StringName> utility_function_name_table;
 
 template <typename T>
 static void register_utility_function(const String &p_name, const Vector<String> &argnames) {
@@ -1935,10 +1935,8 @@ uint32_t Variant::get_utility_function_hash(const StringName &p_name) {
 	return hash_fmix32(hash);
 }
 
-void Variant::get_utility_function_list(List<StringName> *r_functions) {
-	for (const StringName &E : utility_function_name_table) {
-		r_functions->push_back(E);
-	}
+Vector<StringName> Variant::get_utility_function_list() {
+	return utility_function_name_table;
 }
 
 int Variant::get_utility_function_count() {

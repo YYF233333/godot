@@ -131,23 +131,23 @@ public:
 		HashMap<StringName, LocalVector<MethodBind *>> method_map_compatibility;
 		AHashMap<StringName, int64_t> constant_map;
 		struct EnumInfo {
-			List<StringName> constants;
+			LocalVector<StringName> constants;
 			bool is_bitfield = false;
 		};
 
 		HashMap<StringName, EnumInfo> enum_map;
 		AHashMap<StringName, MethodInfo> signal_map;
-		List<PropertyInfo> property_list;
+		LocalVector<PropertyInfo> property_list;
 		HashMap<StringName, PropertyInfo> property_map;
 
 #ifdef DEBUG_ENABLED
-		List<StringName> constant_order;
-		List<StringName> method_order;
+		LocalVector<StringName> constant_order;
+		LocalVector<StringName> method_order;
 		HashSet<StringName> methods_in_properties;
-		List<MethodInfo> virtual_methods;
+		LocalVector<MethodInfo> virtual_methods;
 		HashMap<StringName, MethodInfo> virtual_methods_map;
 		HashMap<StringName, Vector<Error>> method_error_values;
-		HashMap<StringName, List<StringName>> linked_properties;
+		HashMap<StringName, LocalVector<StringName>> linked_properties;
 #endif // DEBUG_ENABLED
 
 #ifdef TOOLS_ENABLED
@@ -332,12 +332,12 @@ public:
 	static void get_class_list(LocalVector<StringName> &p_classes);
 #ifdef TOOLS_ENABLED
 	static void get_extensions_class_list(LocalVector<StringName> &p_classes);
-	static void get_extension_class_list(const Ref<GDExtension> &p_extension, List<StringName> *p_classes);
+	static LocalVector<StringName> get_extension_class_list(const Ref<GDExtension> &p_extension);
 	static ObjectGDExtension *get_placeholder_extension(const StringName &p_class);
 #endif
 	static const GDType *get_gdtype(const StringName &p_class);
 	static void get_inheriters_from_class(const StringName &p_class, LocalVector<StringName> &p_classes);
-	static void get_direct_inheriters_from_class(const StringName &p_class, List<StringName> *p_classes);
+	static void get_direct_inheriters_from_class(const StringName &p_class, LocalVector<StringName> &p_classes);
 	static StringName get_parent_class_nocheck(const StringName &p_class);
 	static bool get_inheritance_chain_nocheck(const StringName &p_class, Vector<StringName> &r_result);
 	static StringName get_parent_class(const StringName &p_class);
@@ -475,7 +475,7 @@ public:
 	static void add_linked_property(const StringName &p_class, const String &p_property, const String &p_linked_property);
 	static void get_property_list(const StringName &p_class, List<PropertyInfo> *p_list, bool p_no_inheritance = false, const Object *p_validator = nullptr);
 	static bool get_property_info(const StringName &p_class, const StringName &p_property, PropertyInfo *r_info, bool p_no_inheritance = false, const Object *p_validator = nullptr);
-	static void get_linked_properties_info(const StringName &p_class, const StringName &p_property, List<StringName> *r_properties, bool p_no_inheritance = false);
+	static LocalVector<StringName> get_linked_properties_info(const StringName &p_class, const StringName &p_property, bool p_no_inheritance = false);
 	static bool set_property(Object *p_object, const StringName &p_property, const Variant &p_value, bool *r_valid = nullptr);
 	static bool get_property(Object *p_object, const StringName &p_property, Variant &r_value);
 	static bool has_property(const StringName &p_class, const StringName &p_property, bool p_no_inheritance = false);
@@ -487,8 +487,8 @@ public:
 	static bool has_method(const StringName &p_class, const StringName &p_method, bool p_no_inheritance = false);
 	static void set_method_flags(const StringName &p_class, const StringName &p_method, int p_flags);
 
-	static void get_method_list(const StringName &p_class, List<MethodInfo> *p_methods, bool p_no_inheritance = false, bool p_exclude_from_properties = false);
-	static void get_method_list_with_compatibility(const StringName &p_class, List<Pair<MethodInfo, uint32_t>> *p_methods_with_hash, bool p_no_inheritance = false, bool p_exclude_from_properties = false);
+	static void get_method_list(const StringName &p_class, LocalVector<MethodInfo> &p_methods, bool p_no_inheritance = false, bool p_exclude_from_properties = false);
+	static void get_method_list_with_compatibility(const StringName &p_class, LocalVector<Pair<MethodInfo, uint32_t>> &p_methods_with_hash, bool p_no_inheritance = false, bool p_exclude_from_properties = false);
 	static bool get_method_info(const StringName &p_class, const StringName &p_method, MethodInfo *r_info, bool p_no_inheritance = false, bool p_exclude_from_properties = false);
 	static int get_method_argument_count(const StringName &p_class, const StringName &p_method, bool *r_is_valid = nullptr, bool p_no_inheritance = false);
 	static MethodBind *get_method(const StringName &p_class, const StringName &p_name);
@@ -497,19 +497,19 @@ public:
 
 	static void add_virtual_method(const StringName &p_class, const MethodInfo &p_method, bool p_virtual = true, const Vector<String> &p_arg_names = Vector<String>(), bool p_object_core = false);
 	static void add_virtual_compatibility_method(const StringName &p_class, const MethodInfo &p_method, bool p_virtual = true, const Vector<String> &p_arg_names = Vector<String>(), bool p_object_core = false);
-	static void get_virtual_methods(const StringName &p_class, List<MethodInfo> *p_methods, bool p_no_inheritance = false);
+	static void get_virtual_methods(const StringName &p_class, LocalVector<MethodInfo> &p_methods, bool p_no_inheritance = false);
 	static void add_extension_class_virtual_method(const StringName &p_class, const GDExtensionClassVirtualMethodInfo *p_method_info);
 	static Vector<uint32_t> get_virtual_method_compatibility_hashes(const StringName &p_class, const StringName &p_name);
 
 	static void bind_integer_constant(const StringName &p_class, const StringName &p_enum, const StringName &p_name, int64_t p_constant, bool p_is_bitfield = false);
-	static void get_integer_constant_list(const StringName &p_class, List<String> *p_constants, bool p_no_inheritance = false);
+	static void get_integer_constant_list(const StringName &p_class, LocalVector<String> &p_constants, bool p_no_inheritance = false);
 	static int64_t get_integer_constant(const StringName &p_class, const StringName &p_name, bool *p_success = nullptr);
 	static bool has_integer_constant(const StringName &p_class, const StringName &p_name, bool p_no_inheritance = false);
 
 	static StringName get_integer_constant_enum(const StringName &p_class, const StringName &p_name, bool p_no_inheritance = false);
 	static StringName get_integer_constant_bitfield(const StringName &p_class, const StringName &p_name, bool p_no_inheritance = false);
-	static void get_enum_list(const StringName &p_class, List<StringName> *p_enums, bool p_no_inheritance = false);
-	static void get_enum_constants(const StringName &p_class, const StringName &p_enum, List<StringName> *p_constants, bool p_no_inheritance = false);
+	static void get_enum_list(const StringName &p_class, LocalVector<StringName> &p_enums, bool p_no_inheritance = false);
+	static void get_enum_constants(const StringName &p_class, const StringName &p_enum, LocalVector<StringName> &p_constants, bool p_no_inheritance = false);
 	static bool has_enum(const StringName &p_class, const StringName &p_name, bool p_no_inheritance = false);
 	static bool is_enum_bitfield(const StringName &p_class, const StringName &p_name, bool p_no_inheritance = false);
 
@@ -530,8 +530,8 @@ public:
 #endif
 
 	static void add_resource_base_extension(const StringName &p_extension, const StringName &p_class);
-	static void get_resource_base_extensions(List<String> *p_extensions);
-	static void get_extensions_for_type(const StringName &p_class, List<String> *p_extensions);
+	static void get_resource_base_extensions(LocalVector<String> &p_extensions);
+	static void get_extensions_for_type(const StringName &p_class, LocalVector<String> &p_extensions);
 	static bool is_resource_extension(const StringName &p_extension);
 
 	static void add_compatibility_class(const StringName &p_class, const StringName &p_fallback);
@@ -543,7 +543,7 @@ public:
 	static void cleanup();
 
 	static void register_native_struct(const StringName &p_name, const String &p_code, uint64_t p_current_size);
-	static void get_native_struct_list(List<StringName> *r_names);
+	static LocalVector<StringName> get_native_struct_list();
 	static String get_native_struct_code(const StringName &p_name);
 	static uint64_t get_native_struct_size(const StringName &p_name); // Used for asserting
 

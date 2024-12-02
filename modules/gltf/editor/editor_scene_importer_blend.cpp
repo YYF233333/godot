@@ -95,13 +95,13 @@ static bool _get_blender_version(const String &p_path, int &r_major, int &r_mino
 	return true;
 }
 
-void EditorSceneFormatImporterBlend::get_extensions(List<String> *r_extensions) const {
-	r_extensions->push_back("blend");
+void EditorSceneFormatImporterBlend::get_extensions(LocalVector<String> &r_extensions) const {
+	r_extensions.push_back("blend");
 }
 
 Node *EditorSceneFormatImporterBlend::import_scene(const String &p_path, uint32_t p_flags,
 		const HashMap<StringName, Variant> &p_options,
-		List<String> *r_missing_deps, Error *r_err) {
+		LocalVector<String> *r_missing_deps, Error *r_err) {
 	String blender_path = EDITOR_GET("filesystem/import/blender/blender_path");
 
 	ERR_FAIL_COND_V_MSG(blender_path.is_empty(), nullptr, "Blender path is empty, check your Editor Settings.");
@@ -356,15 +356,15 @@ Variant EditorSceneFormatImporterBlend::get_option_visibility(const String &p_pa
 	return true;
 }
 
-void EditorSceneFormatImporterBlend::get_import_options(const String &p_path, List<ResourceImporter::ImportOption> *r_options) {
+void EditorSceneFormatImporterBlend::get_import_options(const String &p_path, LocalVector<ResourceImporter::ImportOption> &r_options) {
 	// Returns all the options when path is empty because that means it's for the Project Settings.
 	if (!p_path.is_empty() && !p_path.has_extension("blend")) {
 		return;
 	}
 #define ADD_OPTION_BOOL(PATH, VALUE) \
-	r_options->push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::BOOL, SNAME(PATH)), VALUE));
+	r_options.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::BOOL, SNAME(PATH)), VALUE));
 #define ADD_OPTION_ENUM(PATH, ENUM_HINT, VALUE) \
-	r_options->push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::INT, SNAME(PATH), PROPERTY_HINT_ENUM, ENUM_HINT), VALUE));
+	r_options.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::INT, SNAME(PATH), PROPERTY_HINT_ENUM, ENUM_HINT), VALUE));
 
 	ADD_OPTION_ENUM("blender/nodes/visible", "All,Visible Only,Renderable", BLEND_VISIBLE_ALL);
 	ADD_OPTION_BOOL("blender/nodes/active_collection_only", false);
@@ -386,7 +386,7 @@ void EditorSceneFormatImporterBlend::get_import_options(const String &p_path, Li
 	ADD_OPTION_BOOL("blender/animation/always_sample", true);
 	ADD_OPTION_BOOL("blender/animation/group_tracks", true);
 
-	r_options->push_back(ResourceImporterScene::ImportOption(PropertyInfo(Variant::INT, "gltf/naming_version", PROPERTY_HINT_ENUM, "Godot 4.0 or 4.1,Godot 4.2 to 4.4,Godot 4.5 or later"), 2));
+	r_options.push_back(ResourceImporterScene::ImportOption(PropertyInfo(Variant::INT, "gltf/naming_version", PROPERTY_HINT_ENUM, "Godot 4.0 or 4.1,Godot 4.2 to 4.4,Godot 4.5 or later"), 2));
 }
 
 void EditorSceneFormatImporterBlend::handle_compatibility_options(HashMap<StringName, Variant> &p_import_params) const {

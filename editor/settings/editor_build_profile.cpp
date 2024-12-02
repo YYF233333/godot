@@ -1102,8 +1102,8 @@ void EditorBuildProfileManager::_fill_classes_from(TreeItem *p_parent, const Str
 
 	class_item->set_checked(0, true); // If it's not disabled, its checked.
 
-	List<StringName> child_classes;
-	ClassDB::get_direct_inheriters_from_class(p_class, &child_classes);
+	LocalVector<StringName> child_classes;
+	ClassDB::get_direct_inheriters_from_class(p_class, child_classes);
 	child_classes.sort_custom<StringName::AlphCompare>();
 
 	for (const StringName &name : child_classes) {

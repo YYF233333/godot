@@ -1036,8 +1036,8 @@ void CSharpLanguage::reload_assemblies(bool p_soft_reload) {
 }
 #endif
 
-void CSharpLanguage::get_recognized_extensions(List<String> *p_extensions) const {
-	p_extensions->push_back("cs");
+void CSharpLanguage::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("cs");
 }
 
 #ifdef TOOLS_ENABLED
@@ -1693,7 +1693,7 @@ bool CSharpInstance::property_get_revert(const StringName &p_name, Variant &r_re
 	return true;
 }
 
-void CSharpInstance::get_method_list(List<MethodInfo> *p_list) const {
+void CSharpInstance::get_method_list(LocalVector<MethodInfo> &p_list) const {
 	if (!script->is_valid() || !script->valid) {
 		return;
 	}
@@ -2106,7 +2106,7 @@ void CSharpScript::_placeholder_erased(PlaceHolderScriptInstance *p_placeholder)
 #endif
 
 #ifdef TOOLS_ENABLED
-void CSharpScript::_update_exports_values(HashMap<StringName, Variant> &values, List<PropertyInfo> &propnames) {
+void CSharpScript::_update_exports_values(HashMap<StringName, Variant> &values, LocalVector<PropertyInfo> &propnames) {
 	for (const KeyValue<StringName, Variant> &E : exported_members_defval_cache) {
 		values[E.key] = E.value;
 	}
@@ -2213,7 +2213,7 @@ bool CSharpScript::_update_exports(PlaceHolderScriptInstance *p_instance_to_upda
 		if ((changed || p_instance_to_update) && placeholders.size()) {
 			// Update placeholders if any
 			HashMap<StringName, Variant> values;
-			List<PropertyInfo> propnames;
+			LocalVector<PropertyInfo> propnames;
 			_update_exports_values(values, propnames);
 
 			if (changed) {
@@ -2553,7 +2553,7 @@ void CSharpScript::set_source_code(const String &p_code) {
 #endif
 }
 
-void CSharpScript::get_script_method_list(List<MethodInfo> *p_list) const {
+void CSharpScript::get_script_method_list(LocalVector<MethodInfo> &p_list) const {
 	if (!valid) {
 		return;
 	}
@@ -2561,7 +2561,7 @@ void CSharpScript::get_script_method_list(List<MethodInfo> *p_list) const {
 	const CSharpScript *top = this;
 	while (top != nullptr) {
 		for (const CSharpMethodInfo &E : top->methods) {
-			p_list->push_back(E.method_info);
+			p_list.push_back(E.method_info);
 		}
 
 		top = top->base_script.ptr();
@@ -2918,8 +2918,8 @@ Ref<Resource> ResourceFormatLoaderCSharpScript::load(const String &p_path, const
 	return scr;
 }
 
-void ResourceFormatLoaderCSharpScript::get_recognized_extensions(List<String> *p_extensions) const {
-	p_extensions->push_back("cs");
+void ResourceFormatLoaderCSharpScript::get_recognized_extensions(LocalVector<String> &p_extensions) const {
+	p_extensions.push_back("cs");
 }
 
 bool ResourceFormatLoaderCSharpScript::handles_type(const String &p_type) const {
@@ -2967,9 +2967,9 @@ Error ResourceFormatSaverCSharpScript::save(const Ref<Resource> &p_resource, con
 	return OK;
 }
 
-void ResourceFormatSaverCSharpScript::get_recognized_extensions(const Ref<Resource> &p_resource, List<String> *p_extensions) const {
+void ResourceFormatSaverCSharpScript::get_recognized_extensions(const Ref<Resource> &p_resource, LocalVector<String> &p_extensions) const {
 	if (Object::cast_to<CSharpScript>(p_resource.ptr())) {
-		p_extensions->push_back("cs");
+		p_extensions.push_back("cs");
 	}
 }
 

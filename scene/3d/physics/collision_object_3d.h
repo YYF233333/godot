@@ -147,7 +147,7 @@ public:
 
 	uint32_t create_shape_owner(Object *p_owner);
 	void remove_shape_owner(uint32_t owner);
-	void get_shape_owners(List<uint32_t> *r_owners);
+	LocalVector<uint32_t> get_shape_owners();
 	PackedInt32Array _get_shape_owners();
 
 	void shape_owner_set_transform(uint32_t p_owner, const Transform3D &p_transform);

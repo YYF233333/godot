@@ -208,9 +208,7 @@ PluginConfigAppleEmbedded PluginConfigAppleEmbedded::load_plugin_config(Ref<Conf
 	}
 
 	if (config_file->has_section(PluginConfigAppleEmbedded::PLIST_SECTION)) {
-		Vector<String> keys = config_file->get_section_keys(PluginConfigAppleEmbedded::PLIST_SECTION);
-
-		for (const String &key : keys) {
+		for (const String &key : config_file->get_section_keys(PluginConfigAppleEmbedded::PLIST_SECTION)) {
 			Vector<String> key_components = key.split(":");
 
 			String key_value = "";

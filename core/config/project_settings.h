@@ -102,7 +102,7 @@ protected:
 	HashMap<StringName, PropertyInfo> custom_prop_info;
 	bool using_datapack = false;
 	bool project_loaded = false;
-	List<String> input_presets;
+	LocalVector<String> input_presets;
 
 	HashSet<String> custom_features;
 	HashMap<StringName, LocalVector<Pair<StringName, StringName>>> feature_overrides;
@@ -132,8 +132,8 @@ protected:
 	Error _load_settings_binary(const String &p_path);
 	Error _load_settings_text_or_binary(const String &p_text_path, const String &p_bin_path);
 
-	Error _save_settings_text(const String &p_file, const RBMap<String, List<String>> &props, const CustomMap &p_custom = CustomMap(), const String &p_custom_features = String());
-	Error _save_settings_binary(const String &p_file, const RBMap<String, List<String>> &props, const CustomMap &p_custom = CustomMap(), const String &p_custom_features = String());
+	Error _save_settings_text(const String &p_file, const RBMap<String, LocalVector<String>> &props, const CustomMap &p_custom = CustomMap(), const String &p_custom_features = String());
+	Error _save_settings_binary(const String &p_file, const RBMap<String, LocalVector<String>> &props, const CustomMap &p_custom = CustomMap(), const String &p_custom_features = String());
 
 	Error _save_custom_bnd(const String &p_file);
 
@@ -204,7 +204,7 @@ public:
 	const HashMap<StringName, PropertyInfo> &get_custom_property_info() const;
 	uint64_t get_last_saved_time() { return last_save_time; }
 
-	List<String> get_input_presets() const { return input_presets; }
+	LocalVector<String> get_input_presets() const { return input_presets; }
 
 	Variant get_setting_with_override(const StringName &p_name) const;
 	Variant get_setting_with_override_and_custom_features(const StringName &p_name, const Vector<String> &p_features) const;
@@ -241,7 +241,7 @@ public:
 	uint32_t get_version() const { return _version; }
 
 #ifdef TOOLS_ENABLED
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	virtual void get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const override;
 #endif
 
 	void set_editor_setting_override(const String &p_setting, const Variant &p_value);

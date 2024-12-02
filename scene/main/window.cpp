@@ -160,8 +160,8 @@ void Window::_get_property_list(List<PropertyInfo> *p_list) const {
 	p_list->push_back(PropertyInfo(Variant::NIL, GNAME("Theme Overrides", "theme_override_"), PROPERTY_HINT_NONE, "theme_override_", PROPERTY_USAGE_GROUP));
 
 	{
-		List<StringName> names;
-		default_theme->get_color_list(get_class_name(), &names);
+		LocalVector<StringName> names;
+		default_theme->get_color_list(get_class_name(), names);
 		for (const StringName &E : names) {
 			uint32_t usage = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
 			if (theme_color_override.has(E)) {
@@ -172,8 +172,8 @@ void Window::_get_property_list(List<PropertyInfo> *p_list) const {
 		}
 	}
 	{
-		List<StringName> names;
-		default_theme->get_constant_list(get_class_name(), &names);
+		LocalVector<StringName> names;
+		default_theme->get_constant_list(get_class_name(), names);
 		for (const StringName &E : names) {
 			uint32_t usage = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
 			if (theme_constant_override.has(E)) {
@@ -184,8 +184,8 @@ void Window::_get_property_list(List<PropertyInfo> *p_list) const {
 		}
 	}
 	{
-		List<StringName> names;
-		default_theme->get_font_list(get_class_name(), &names);
+		LocalVector<StringName> names;
+		default_theme->get_font_list(get_class_name(), names);
 		for (const StringName &E : names) {
 			uint32_t usage = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
 			if (theme_font_override.has(E)) {
@@ -196,8 +196,8 @@ void Window::_get_property_list(List<PropertyInfo> *p_list) const {
 		}
 	}
 	{
-		List<StringName> names;
-		default_theme->get_font_size_list(get_class_name(), &names);
+		LocalVector<StringName> names;
+		default_theme->get_font_size_list(get_class_name(), names);
 		for (const StringName &E : names) {
 			uint32_t usage = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
 			if (theme_font_size_override.has(E)) {
@@ -208,8 +208,8 @@ void Window::_get_property_list(List<PropertyInfo> *p_list) const {
 		}
 	}
 	{
-		List<StringName> names;
-		default_theme->get_icon_list(get_class_name(), &names);
+		LocalVector<StringName> names;
+		default_theme->get_icon_list(get_class_name(), names);
 		for (const StringName &E : names) {
 			uint32_t usage = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
 			if (theme_icon_override.has(E)) {
@@ -220,8 +220,8 @@ void Window::_get_property_list(List<PropertyInfo> *p_list) const {
 		}
 	}
 	{
-		List<StringName> names;
-		default_theme->get_stylebox_list(get_class_name(), &names);
+		LocalVector<StringName> names;
+		default_theme->get_stylebox_list(get_class_name(), names);
 		for (const StringName &E : names) {
 			uint32_t usage = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
 			if (theme_style_override.has(E)) {
@@ -243,9 +243,9 @@ void Window::_validate_property(PropertyInfo &p_property) const {
 			p_property.usage = PROPERTY_USAGE_NONE;
 		}
 	} else if (Engine::get_singleton()->is_editor_hint() && p_property.name == "theme_type_variation") {
-		List<StringName> names;
+		LocalVector<StringName> names;
 
-		ThemeDB::get_singleton()->get_default_theme()->get_type_variation_list(get_class_name(), &names);
+		ThemeDB::get_singleton()->get_default_theme()->get_type_variation_list(get_class_name(), names);
 
 		// Iterate to find all themes.
 		Control *tmp_control = Object::cast_to<Control>(get_parent());
@@ -254,23 +254,23 @@ void Window::_validate_property(PropertyInfo &p_property) const {
 			// We go up and any non Control/Window will break the chain.
 			if (tmp_control) {
 				if (tmp_control->get_theme().is_valid()) {
-					tmp_control->get_theme()->get_type_variation_list(get_class_name(), &names);
+					tmp_control->get_theme()->get_type_variation_list(get_class_name(), names);
 				}
 				tmp_window = Object::cast_to<Window>(tmp_control->get_parent());
 				tmp_control = Object::cast_to<Control>(tmp_control->get_parent());
 			} else { // Window.
 				if (tmp_window->get_theme().is_valid()) {
-					tmp_window->get_theme()->get_type_variation_list(get_class_name(), &names);
+					tmp_window->get_theme()->get_type_variation_list(get_class_name(), names);
 				}
 				tmp_control = Object::cast_to<Control>(tmp_window->get_parent());
 				tmp_window = Object::cast_to<Window>(tmp_window->get_parent());
 			}
 		}
 		if (get_theme().is_valid()) {
-			get_theme()->get_type_variation_list(get_class_name(), &names);
+			get_theme()->get_type_variation_list(get_class_name(), names);
 		}
 		if (ThemeDB::get_singleton()->get_project_theme().is_valid()) {
-			ThemeDB::get_singleton()->get_project_theme()->get_type_variation_list(get_class_name(), &names);
+			ThemeDB::get_singleton()->get_project_theme()->get_type_variation_list(get_class_name(), names);
 		}
 		names.sort_custom<StringName::AlphCompare>();
 
