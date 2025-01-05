@@ -977,8 +977,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 		}
 
 		// Servers/engine singletons.
-		List<Engine::Singleton> singletons;
-		Engine::get_singleton()->get_singletons(&singletons);
+		LocalVector<Engine::Singleton> singletons = Engine::get_singleton()->get_singletons();
 
 		// FIXME: this is kind of hackish...
 		for (const Engine::Singleton &s : singletons) {
