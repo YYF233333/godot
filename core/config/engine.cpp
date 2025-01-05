@@ -360,9 +360,9 @@ bool Engine::is_singleton_editor_only(const StringName &p_name) const {
 void Engine::remove_singleton(const StringName &p_name) {
 	ERR_FAIL_COND(!singleton_ptrs.has(p_name));
 
-	for (List<Singleton>::Element *E = singletons.front(); E; E = E->next()) {
-		if (E->get().name == p_name) {
-			singletons.erase(E);
+	for (uint32_t i = 0; i < singletons.size(); i++) {
+		if (singletons[i].name == p_name) {
+			singletons.remove_at(i);
 			singleton_ptrs.erase(p_name);
 			return;
 		}
