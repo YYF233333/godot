@@ -147,7 +147,7 @@ public:
 	uint32_t get_frame_delay() const;
 
 	void add_singleton(const Singleton &p_singleton);
-	void get_singletons(List<Singleton> *p_singletons);
+	LocalVector<Singleton> get_singletons();
 	bool has_singleton(const StringName &p_name) const;
 	Object *get_singleton_object(const StringName &p_name) const;
 	void remove_singleton(const StringName &p_name);

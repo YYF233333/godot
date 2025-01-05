@@ -1270,10 +1270,8 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 		// singletons
 
 		Array singletons;
-		List<Engine::Singleton> singleton_list;
-		Engine::get_singleton()->get_singletons(&singleton_list);
 
-		for (const Engine::Singleton &s : singleton_list) {
+		for (const Engine::Singleton &s : Engine::get_singleton()->get_singletons()) {
 			Dictionary d;
 			d["name"] = s.name;
 			if (s.class_name != StringName()) {
