@@ -2284,9 +2284,7 @@ void GDScriptLanguage::init() {
 
 	//populate singletons
 
-	List<Engine::Singleton> singletons;
-	Engine::get_singleton()->get_singletons(&singletons);
-	for (const Engine::Singleton &E : singletons) {
+	for (const Engine::Singleton &E : Engine::get_singleton()->get_singletons()) {
 		_add_global(E.name, E.ptr);
 	}
 
@@ -2566,9 +2564,7 @@ void GDScriptLanguage::reload_all_scripts() {
 #ifdef TOOLS_ENABLED
 		if (Engine::get_singleton()->is_editor_hint()) {
 			// Reload all pointers to existing singletons so that tool scripts can work with the reloaded extensions.
-			List<Engine::Singleton> singletons;
-			Engine::get_singleton()->get_singletons(&singletons);
-			for (const Engine::Singleton &E : singletons) {
+			for (const Engine::Singleton &E : Engine::get_singleton()->get_singletons()) {
 				if (globals.has(E.name)) {
 					_add_global(E.name, E.ptr);
 				}

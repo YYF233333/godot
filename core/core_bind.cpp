@@ -2009,11 +2009,9 @@ void Engine::unregister_singleton(const StringName &p_name) {
 }
 
 Vector<String> Engine::get_singleton_list() const {
-	List<::Engine::Singleton> singletons;
-	::Engine::get_singleton()->get_singletons(&singletons);
 	Vector<String> ret;
-	for (const ::Engine::Singleton &E : singletons) {
-		ret.push_back(E.name);
+	for (const ::Engine::Singleton &s : ::Engine::get_singleton()->get_singletons()) {
+		ret.push_back(s.name);
 	}
 	return ret;
 }
