@@ -80,7 +80,7 @@ private:
 	uint64_t _process_frames = 0;
 	bool _in_physics = false;
 
-	List<Singleton> singletons;
+	LocalVector<Singleton> singletons;
 	HashMap<StringName, Object *> singleton_ptrs;
 
 	bool editor_hint = false;
