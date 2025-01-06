@@ -904,7 +904,7 @@ Error ProjectSettings::save() {
 	return error;
 }
 
-Error ProjectSettings::_save_settings_binary(const String &p_file, const RBMap<String, List<String>> &p_props, const CustomMap &p_custom, const String &p_custom_features) {
+Error ProjectSettings::_save_settings_binary(const String &p_file, const RBMap<String, LocalVector<String>> &p_props, const CustomMap &p_custom, const String &p_custom_features) {
 	Error err;
 	Ref<FileAccess> file = FileAccess::open(p_file, FileAccess::WRITE, &err);
 	ERR_FAIL_COND_V_MSG(err != OK, err, vformat("Couldn't save project.binary at '%s'.", p_file));
@@ -914,7 +914,7 @@ Error ProjectSettings::_save_settings_binary(const String &p_file, const RBMap<S
 
 	int count = 0;
 
-	for (const KeyValue<String, List<String>> &E : p_props) {
+	for (const KeyValue<String, LocalVector<String>> &E : p_props) {
 		count += E.value.size();
 	}
 
@@ -941,7 +941,7 @@ Error ProjectSettings::_save_settings_binary(const String &p_file, const RBMap<S
 		file->store_32(uint32_t(count));
 	}
 
-	for (const KeyValue<String, List<String>> &E : p_props) {
+	for (const KeyValue<String, LocalVector<String>> &E : p_props) {
 		for (const String &key : E.value) {
 			String k = key;
 			if (!E.key.is_empty()) {
@@ -973,7 +973,7 @@ Error ProjectSettings::_save_settings_binary(const String &p_file, const RBMap<S
 	return OK;
 }
 
-Error ProjectSettings::_save_settings_text(const String &p_file, const RBMap<String, List<String>> &p_props, const CustomMap &p_custom, const String &p_custom_features) {
+Error ProjectSettings::_save_settings_text(const String &p_file, const RBMap<String, LocalVector<String>> &p_props, const CustomMap &p_custom, const String &p_custom_features) {
 	Error err;
 	Ref<FileAccess> file = FileAccess::open(p_file, FileAccess::WRITE, &err);
 
@@ -994,7 +994,7 @@ Error ProjectSettings::_save_settings_text(const String &p_file, const RBMap<Str
 	}
 	file->store_string("\n");
 
-	for (const KeyValue<String, List<String>> &E : p_props) {
+	for (const KeyValue<String, LocalVector<String>> &E : p_props) {
 		if (E.key != p_props.begin()->key) {
 			file->store_string("\n");
 		}
@@ -1117,7 +1117,7 @@ Error ProjectSettings::save_custom(const String &p_path, const CustomMap &p_cust
 		vclist.insert(vc);
 	}
 
-	RBMap<String, List<String>> save_props;
+	RBMap<String, LocalVector<String>> save_props;
 
 	for (const _VCSort &E : vclist) {
 		String category = E.name;
