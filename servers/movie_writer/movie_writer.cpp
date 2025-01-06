@@ -86,11 +86,11 @@ bool MovieWriter::handles_file(const String &p_path) const {
 	return ret;
 }
 
-void MovieWriter::get_supported_extensions(List<String> *r_extensions) const {
+void MovieWriter::get_supported_extensions(LocalVector<String> &r_extensions) const {
 	Vector<String> exts;
 	GDVIRTUAL_CALL(_get_supported_extensions, exts);
 	for (int i = 0; i < exts.size(); i++) {
-		r_extensions->push_back(exts[i]);
+		r_extensions.push_back(exts[i]);
 	}
 }
 
@@ -152,8 +152,8 @@ void MovieWriter::_bind_methods() {
 void MovieWriter::set_extensions_hint() {
 	RBSet<String> found;
 	for (uint32_t i = 0; i < writer_count; i++) {
-		List<String> extensions;
-		writers[i]->get_supported_extensions(&extensions);
+		LocalVector<String> extensions;
+		writers[i]->get_supported_extensions(extensions);
 		for (const String &ext : extensions) {
 			found.insert(ext);
 		}
