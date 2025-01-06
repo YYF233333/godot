@@ -1067,9 +1067,7 @@ void Object::remove_meta(const StringName &p_name) {
 }
 
 void Object::merge_meta_from(const Object *p_src) {
-	List<StringName> meta_keys;
-	p_src->get_meta_list(&meta_keys);
-	for (const StringName &key : meta_keys) {
+	for (const StringName &key : p_src->get_meta_list()) {
 		set_meta(key, p_src->get_meta(key));
 	}
 }
@@ -1104,10 +1102,12 @@ TypedArray<StringName> Object::_get_meta_list_bind() const {
 	return _metaret;
 }
 
-void Object::get_meta_list(List<StringName> *p_list) const {
+LocalVector<StringName> Object::get_meta_list() const {
+	LocalVector<StringName> ret;
 	for (const KeyValue<StringName, Variant> &K : metadata) {
-		p_list->push_back(K.key);
+		ret.push_back(K.key);
 	}
+	return ret;
 }
 
 void Object::add_user_signal(const MethodInfo &p_signal) {
