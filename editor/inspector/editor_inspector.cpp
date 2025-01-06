@@ -5833,8 +5833,7 @@ void EditorInspector::_show_add_meta_dialog() {
 	// If object is derived from Node use node name, if derived from Resource use classname.
 	dialog_title = node ? node->get_name() : StringName(object->get_class());
 
-	List<StringName> existing_meta_keys;
-	object->get_meta_list(&existing_meta_keys);
+	LocalVector<StringName> existing_meta_keys = object->get_meta_list();
 	add_meta_dialog->open(dialog_title, existing_meta_keys);
 }
 

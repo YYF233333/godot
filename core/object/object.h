@@ -953,7 +953,7 @@ public:
 	DEBUG_VIRTUAL void set_meta(const StringName &p_name, const Variant &p_value);
 	DEBUG_VIRTUAL void remove_meta(const StringName &p_name);
 	DEBUG_VIRTUAL Variant get_meta(const StringName &p_name, const Variant &p_default = Variant()) const;
-	DEBUG_VIRTUAL void get_meta_list(List<StringName> *p_list) const;
+	DEBUG_VIRTUAL LocalVector<StringName> get_meta_list() const;
 	DEBUG_VIRTUAL void merge_meta_from(const Object *p_src);
 
 #ifdef TOOLS_ENABLED

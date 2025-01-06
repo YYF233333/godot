@@ -207,8 +207,7 @@ void BonePropertiesEditor::_show_add_meta_dialog() {
 	int bone = Skeleton3DEditor::get_singleton()->get_selected_bone();
 	StringName dialog_title = skeleton->get_bone_name(bone);
 
-	List<StringName> existing_meta_keys;
-	skeleton->get_bone_meta_list(bone, &existing_meta_keys);
+	LocalVector<StringName> existing_meta_keys = skeleton->get_bone_meta_list(bone);
 	add_meta_dialog->open(dialog_title, existing_meta_keys);
 }
 

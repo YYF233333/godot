@@ -257,7 +257,7 @@ public:
 
 	// bone metadata
 	Variant get_bone_meta(int p_bone, const StringName &p_key) const;
-	void get_bone_meta_list(int p_bone, List<StringName> *p_list) const;
+	LocalVector<StringName> get_bone_meta_list(int p_bone) const;
 	bool has_bone_meta(int p_bone, const StringName &p_key) const;
 	void set_bone_meta(int p_bone, const StringName &p_key, const Variant &p_value);
 

@@ -4179,9 +4179,9 @@ Variant Node::get_meta(const StringName &p_name, const Variant &p_default) const
 	return Object::get_meta(p_name, p_default);
 }
 
-void Node::get_meta_list(List<StringName> *p_list) const {
-	ERR_THREAD_GUARD;
-	Object::get_meta_list(p_list);
+LocalVector<StringName> Node::get_meta_list() const {
+	ERR_THREAD_GUARD_V(LocalVector<StringName>());
+	return Object::get_meta_list();
 }
 
 Error Node::emit_signalp(const StringName &p_name, const Variant **p_args, int p_argcount) {
