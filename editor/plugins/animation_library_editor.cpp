@@ -889,10 +889,8 @@ Vector<uint64_t> AnimationLibraryEditor::_load_mixer_libs_folding() {
 		//The scene/mixer combination is no longer valid and we'll try to recover
 		uint64_t current_mixer_id = uint64_t(mixer->get_instance_id());
 		String current_mixer_signature = _get_mixer_signature();
-		List<String> sections;
-		config->get_sections(&sections);
 
-		for (const String &section : sections) {
+		for (const String &section : config->get_sections()) {
 			Variant mixer_id = config->get_value(section, "mixer");
 			if ((mixer_id.get_type() == Variant::INT && uint64_t(mixer_id) == current_mixer_id) || config->get_value(section, "mixer_signature") == current_mixer_signature) { // Ensure value exists and is correct type
 				// Found the mixer in a different section!
