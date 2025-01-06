@@ -1150,9 +1150,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 		}
 
 		if (p_extra_config->has_section("presets")) {
-			Vector<String> keys = p_extra_config->get_section_keys("presets");
-
-			for (const String &key : keys) {
+			for (const String &key : p_extra_config->get_section_keys("presets")) {
 				Variant val = p_extra_config->get_value("presets", key);
 				set(key, val);
 			}

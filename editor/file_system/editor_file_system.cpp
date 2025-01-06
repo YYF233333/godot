@@ -2622,8 +2622,7 @@ Error EditorFileSystem::_reimport_group(const String &p_group_file, const Vector
 		}
 
 		if (config->has_section("params")) {
-			Vector<String> sk = config->get_section_keys("params");
-			for (const String &param : sk) {
+			for (const String &param : config->get_section_keys("params")) {
 				Variant value = config->get_value("params", param);
 				//override with whatever is in file
 				source_file_options[p_files[i]][param] = value;
@@ -2806,8 +2805,7 @@ Error EditorFileSystem::_reimport_file(const String &p_file, const HashMap<Strin
 		Error err = cf->load(p_file + ".import");
 		if (err == OK) {
 			if (cf->has_section("params")) {
-				Vector<String> sk = cf->get_section_keys("params");
-				for (const String &E : sk) {
+				for (const String &E : cf->get_section_keys("params")) {
 					if (!params.has(E)) {
 						params[E] = cf->get_value("params", E);
 					}
@@ -3485,8 +3483,7 @@ void EditorFileSystem::_move_group_files(EditorFileSystemDirectory *efd, const S
 				config->set_value("remap", "group_file", p_new_location);
 			}
 
-			Vector<String> sk = config->get_section_keys("params");
-			for (const String &param : sk) {
+			for (const String &param : config->get_section_keys("params")) {
 				//not very clean, but should work
 				String value = config->get_value("params", param);
 				if (value == p_group_file) {

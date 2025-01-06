@@ -780,8 +780,7 @@ void SceneImportSettingsDialog::open_settings(const String &p_path, const String
 		config.instantiate();
 		Error err = config->load(p_path + ".import");
 		if (err == OK) {
-			Vector<String> keys = config->get_section_keys("params");
-			for (const String &E : keys) {
+			for (const String &E : config->get_section_keys("params")) {
 				Variant value = config->get_value("params", E);
 				if (E == "_subresources") {
 					base_subresource_settings = value;

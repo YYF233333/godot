@@ -910,9 +910,8 @@ void ProjectList::find_projects_multiple(const PackedStringArray &p_paths) {
 
 void ProjectList::load_project_list() {
 	_config.load(_config_path);
-	Vector<String> sections = _config.get_sections();
 
-	for (const String &path : sections) {
+	for (const String &path : _config.get_sections()) {
 		bool favorite = _config.get_value(path, "favorite", false);
 		_projects.push_back(load_project_data(path, favorite));
 	}
