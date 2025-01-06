@@ -125,10 +125,12 @@ void SpriteFrames::rename_animation(const StringName &p_prev, const StringName &
 	animations[p_next] = anim;
 }
 
-void SpriteFrames::get_animation_list(List<StringName> *r_animations) const {
+LocalVector<StringName> SpriteFrames::get_animation_list() const {
+	LocalVector<StringName> ret;
 	for (const KeyValue<StringName, Anim> &E : animations) {
-		r_animations->push_back(E.key);
+		ret.push_back(E.key);
 	}
+	return ret;
 }
 
 Vector<String> SpriteFrames::get_animation_names() const {
@@ -168,8 +170,7 @@ bool SpriteFrames::get_animation_loop(const StringName &p_anim) const {
 Array SpriteFrames::_get_animations() const {
 	Array anims;
 
-	List<StringName> sorted_names;
-	get_animation_list(&sorted_names);
+	LocalVector<StringName> sorted_names = get_animation_list();
 	sorted_names.sort_custom<StringName::AlphCompare>();
 
 	for (const StringName &anim_name : sorted_names) {
