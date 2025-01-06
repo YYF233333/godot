@@ -153,7 +153,7 @@ PackedStringArray MultiplayerSynchronizer::get_configuration_warnings() const {
 	return warnings;
 }
 
-Error MultiplayerSynchronizer::get_state(const List<NodePath> &p_properties, Object *p_obj, Vector<Variant> &r_variant, Vector<const Variant *> &r_variant_ptrs) {
+Error MultiplayerSynchronizer::get_state(const LocalVector<NodePath> &p_properties, Object *p_obj, Vector<Variant> &r_variant, Vector<const Variant *> &r_variant_ptrs) {
 	ERR_FAIL_NULL_V(p_obj, ERR_INVALID_PARAMETER);
 	r_variant.resize(p_properties.size());
 	r_variant_ptrs.resize(r_variant.size());
@@ -170,7 +170,7 @@ Error MultiplayerSynchronizer::get_state(const List<NodePath> &p_properties, Obj
 	return OK;
 }
 
-Error MultiplayerSynchronizer::set_state(const List<NodePath> &p_properties, Object *p_obj, const Vector<Variant> &p_state) {
+Error MultiplayerSynchronizer::set_state(const LocalVector<NodePath> &p_properties, Object *p_obj, const Vector<Variant> &p_state) {
 	ERR_FAIL_NULL_V(p_obj, ERR_INVALID_PARAMETER);
 	int i = 0;
 	for (const NodePath &prop : p_properties) {
@@ -372,7 +372,7 @@ void MultiplayerSynchronizer::set_multiplayer_authority(int p_peer_id, bool p_re
 
 Error MultiplayerSynchronizer::_watch_changes(uint64_t p_usec) {
 	ERR_FAIL_COND_V(replication_config.is_null(), FAILED);
-	const List<NodePath> props = replication_config->get_watch_properties();
+	const LocalVector<NodePath> props = replication_config->get_watch_properties();
 	if (props.size() != watchers.size()) {
 		watchers.resize(props.size());
 	}
@@ -433,10 +433,10 @@ List<Variant> MultiplayerSynchronizer::get_delta_state(uint64_t p_cur_usec, uint
 	return out;
 }
 
-List<NodePath> MultiplayerSynchronizer::get_delta_properties(uint64_t p_indexes) {
-	List<NodePath> out;
+LocalVector<NodePath> MultiplayerSynchronizer::get_delta_properties(uint64_t p_indexes) {
+	LocalVector<NodePath> out;
 	ERR_FAIL_COND_V(replication_config.is_null(), out);
-	const List<NodePath> watch_props = replication_config->get_watch_properties();
+	const LocalVector<NodePath> watch_props = replication_config->get_watch_properties();
 	int idx = 0;
 	for (const NodePath &prop : watch_props) {
 		if ((p_indexes & (1ULL << idx++)) == 0) {
