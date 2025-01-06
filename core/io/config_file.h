@@ -58,7 +58,7 @@ public:
 	bool has_section(const String &p_section) const;
 	bool has_section_key(const String &p_section, const String &p_key) const;
 
-	void get_sections(List<String> *r_sections) const;
+	LocalVector<String> get_sections() const;
 	void get_section_keys(const String &p_section, List<String> *r_keys) const;
 
 	void erase_section(const String &p_section);

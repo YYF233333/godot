@@ -35,8 +35,7 @@
 #include "core/variant/variant_parser.h"
 
 PackedStringArray ConfigFile::_get_sections() const {
-	List<String> s;
-	get_sections(&s);
+	LocalVector<String> s = get_sections();
 	PackedStringArray arr;
 	arr.resize(s.size());
 	int idx = 0;
@@ -101,10 +100,12 @@ bool ConfigFile::has_section_key(const String &p_section, const String &p_key) c
 	return values[p_section].has(p_key);
 }
 
-void ConfigFile::get_sections(List<String> *r_sections) const {
+LocalVector<String> ConfigFile::get_sections() const {
+	LocalVector<String> sections;
 	for (const KeyValue<String, HashMap<String, Variant>> &E : values) {
-		r_sections->push_back(E.key);
+		sections.push_back(E.key);
 	}
+	return sections;
 }
 
 void ConfigFile::get_section_keys(const String &p_section, List<String> *r_keys) const {
