@@ -1237,14 +1237,13 @@ void SpriteFramesEditor::_animation_remove() {
 
 void SpriteFramesEditor::_animation_remove_confirmed() {
 	StringName new_edited;
-	List<StringName> anim_names;
-	frames->get_animation_list(&anim_names);
+	LocalVector<StringName> anim_names = frames->get_animation_list();
 	anim_names.sort_custom<StringName::AlphCompare>();
 	if (anim_names.size() >= 2) {
-		if (edited_anim == anim_names.get(0)) {
-			new_edited = anim_names.get(1);
+		if (edited_anim == anim_names[0]) {
+			new_edited = anim_names[1];
 		} else {
-			new_edited = anim_names.get(0);
+			new_edited = anim_names[0];
 		}
 	} else {
 		new_edited = StringName();
@@ -1467,8 +1466,7 @@ void SpriteFramesEditor::_update_library_impl() {
 
 		TreeItem *anim_root = animations->create_item();
 
-		List<StringName> anim_names;
-		frames->get_animation_list(&anim_names);
+		LocalVector<StringName> anim_names = frames->get_animation_list();
 		anim_names.sort_custom<StringName::AlphCompare>();
 		if (!anim_names.size()) {
 			missing_anim_label->show();
@@ -1615,11 +1613,10 @@ void SpriteFramesEditor::edit(Ref<SpriteFrames> p_frames) {
 	read_only = EditorNode::get_singleton()->is_resource_read_only(p_frames);
 
 	if (!p_frames->has_animation(edited_anim)) {
-		List<StringName> anim_names;
-		frames->get_animation_list(&anim_names);
+		LocalVector<StringName> anim_names = frames->get_animation_list();
 		anim_names.sort_custom<StringName::AlphCompare>();
 		if (anim_names.size()) {
-			edited_anim = anim_names.front()->get();
+			edited_anim = anim_names[0];
 		} else {
 			edited_anim = StringName();
 		}
