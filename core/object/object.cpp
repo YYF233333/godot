@@ -118,7 +118,12 @@ TypedArray<Dictionary> convert_property_list(const List<PropertyInfo> *p_list) {
 MethodInfo::operator Dictionary() const {
 	Dictionary d;
 	d["name"] = name;
-	d["args"] = convert_property_list(&arguments);
+	// TODO: fix this after change convert_property_list
+	List<PropertyInfo> arguments_list;
+	for (const PropertyInfo &argument : arguments) {
+		arguments_list.push_back(argument);
+	}
+	d["args"] = convert_property_list(&arguments_list);
 	Array da;
 	for (int i = 0; i < default_arguments.size(); i++) {
 		da.push_back(default_arguments[i]);

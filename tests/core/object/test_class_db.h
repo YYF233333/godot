@@ -659,7 +659,7 @@ void add_exposed_classes(Context &r_context) {
 			}
 
 			int i = 0;
-			for (List<PropertyInfo>::ConstIterator itr = method_info.arguments.begin(); itr != method_info.arguments.end(); ++itr, ++i) {
+			for (LocalVector<PropertyInfo>::ConstIterator itr = method_info.arguments.begin(); itr != method_info.arguments.end(); ++itr, ++i) {
 				const PropertyInfo &arg_info = *itr;
 
 				String orig_arg_name = arg_info.name;
@@ -733,7 +733,7 @@ void add_exposed_classes(Context &r_context) {
 					"Signal name is not a valid identifier: '", exposed_class.name, ".", signal.name, "'.");
 
 			int i = 0;
-			for (List<PropertyInfo>::ConstIterator itr = method_info.arguments.begin(); itr != method_info.arguments.end(); ++itr, ++i) {
+			for (LocalVector<PropertyInfo>::ConstIterator itr = method_info.arguments.begin(); itr != method_info.arguments.end(); ++itr, ++i) {
 				const PropertyInfo &arg_info = *itr;
 
 				String orig_arg_name = arg_info.name;
