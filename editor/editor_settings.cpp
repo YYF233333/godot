@@ -1649,10 +1649,7 @@ void EditorSettings::load_favorites_and_recent_dirs() {
 	Ref<ConfigFile> cf;
 	cf.instantiate();
 	if (cf->load(favorite_properties_file) == OK) {
-		List<String> secs;
-		cf->get_sections(&secs);
-
-		for (String &E : secs) {
+		for (String &E : cf->get_sections()) {
 			PackedStringArray properties = PackedStringArray(cf->get_value(E, "properties"));
 			if (EditorNode::get_editor_data().is_type_recognized(E) || ResourceLoader::exists(E, "Script")) {
 				for (const String &property : properties) {
@@ -2139,9 +2136,7 @@ void EditorSettings::get_argument_options(const StringName &p_function, int p_id
 				r_options->push_back(E.key.quote());
 			}
 		} else if (pf == "get_project_metadata" && project_metadata.is_valid()) {
-			List<String> sections;
-			project_metadata->get_sections(&sections);
-			for (const String &section : sections) {
+			for (const String &section : project_metadata->get_sections()) {
 				r_options->push_back(section.quote());
 			}
 		} else if (pf == "set_builtin_action_override") {
