@@ -1443,8 +1443,7 @@ Error EditorExportPlatform::export_project_files(const Ref<EditorExportPreset> &
 				config->set_value("remap", "type", ResourceLoader::get_resource_type(export_path));
 
 				// Erase all Paths.
-				Vector<String> keys = config->get_section_keys("remap");
-				for (const String &K : keys) {
+				for (const String &K : config->get_section_keys("remap")) {
 					if (K.begins_with("path")) {
 						config->erase_section_key("remap", K);
 					}
@@ -1481,8 +1480,7 @@ Error EditorExportPlatform::export_project_files(const Ref<EditorExportPreset> &
 				Vector<String> remaps = config->get_section_keys("remap");
 				HashSet<String> remap_features;
 
-				for (const String &F : remaps) {
-					String remap = F;
+				for (const String &remap : remaps) {
 					String feature = remap.get_slicec('.', 1);
 					if (features.has(feature)) {
 						remap_features.insert(feature);
