@@ -898,7 +898,7 @@ public:
 	MTVIRTUAL void set_meta(const StringName &p_name, const Variant &p_value);
 	MTVIRTUAL void remove_meta(const StringName &p_name);
 	MTVIRTUAL Variant get_meta(const StringName &p_name, const Variant &p_default = Variant()) const;
-	MTVIRTUAL void get_meta_list(List<StringName> *p_list) const;
+	MTVIRTUAL LocalVector<StringName> get_meta_list() const;
 	MTVIRTUAL void merge_meta_from(const Object *p_src);
 
 #ifdef TOOLS_ENABLED
