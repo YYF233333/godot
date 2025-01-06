@@ -95,10 +95,7 @@ void EditorLayoutsDialog::_post_popup() {
 		return;
 	}
 
-	List<String> layouts;
-	config.ptr()->get_sections(&layouts);
-
-	for (const String &E : layouts) {
+	for (const String &E : config.ptr()->get_sections()) {
 		layout_names->add_item(E);
 	}
 	if (name->is_visible()) {

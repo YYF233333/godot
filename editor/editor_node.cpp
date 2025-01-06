@@ -5778,10 +5778,7 @@ void EditorNode::_update_layouts_menu() {
 		return; // No config.
 	}
 
-	List<String> layouts;
-	config.ptr()->get_sections(&layouts);
-
-	for (const String &layout : layouts) {
+	for (const String &layout : config.ptr()->get_sections()) {
 		if (layout == TTR("Default")) {
 			editor_layouts->remove_item(editor_layouts->get_item_index(LAYOUT_DEFAULT));
 			overridden_default_layout = editor_layouts->get_item_count();
