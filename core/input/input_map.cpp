@@ -87,8 +87,9 @@ String InputMap::suggest_actions(const StringName &p_action) const {
 }
 
 #ifdef TOOLS_ENABLED
-void InputMap::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+LocalVector<String> InputMap::get_argument_options(const StringName &p_function, int p_idx) const {
 	const String pf = p_function;
+	LocalVector<String> r_options;
 	bool first_argument_is_action = false;
 	if (p_idx == 0) {
 		first_argument_is_action = (pf == "has_action" || pf == "erase_action" ||
@@ -107,11 +108,12 @@ void InputMap::get_argument_options(const StringName &p_function, int p_idx, Lis
 			}
 
 			String name = pi.name.substr(pi.name.find_char('/') + 1);
-			r_options->push_back(name.quote());
+			r_options.push_back(name.quote());
 		}
 	}
 
-	Object::get_argument_options(p_function, p_idx, r_options);
+	r_options.extend(Object::get_argument_options(p_function, p_idx));
+	return r_options;
 }
 #endif
 

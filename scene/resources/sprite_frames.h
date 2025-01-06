@@ -104,7 +104,7 @@ public:
 	void clear_all();
 
 #ifdef TOOLS_ENABLED
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	virtual LocalVector<String> get_argument_options(const StringName &p_function, int p_idx) const override;
 #endif
 
 	SpriteFrames();

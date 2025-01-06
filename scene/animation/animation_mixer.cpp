@@ -2363,22 +2363,24 @@ void AnimationMixer::_notification(int p_what) {
 }
 
 #ifdef TOOLS_ENABLED
-void AnimationMixer::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+LocalVector<String> AnimationMixer::get_argument_options(const StringName &p_function, int p_idx) const {
 	const String pf = p_function;
+	LocalVector<String> r_options;
 	if (p_idx == 0) {
 		if (pf == "get_animation" || pf == "has_animation") {
 			for (const StringName &name : get_animation_list()) {
-				r_options->push_back(String(name).quote());
+				r_options.push_back(String(name).quote());
 			}
 		} else if (pf == "get_animation_library" || pf == "has_animation_library" || pf == "remove_animation_library" || pf == "rename_animation_library") {
 			List<StringName> al;
 			get_animation_library_list(&al);
 			for (const StringName &name : al) {
-				r_options->push_back(String(name).quote());
+				r_options.push_back(String(name).quote());
 			}
 		}
 	}
-	Node::get_argument_options(p_function, p_idx, r_options);
+	r_options.extend(Node::get_argument_options(p_function, p_idx));
+	return r_options;
 }
 #endif
 

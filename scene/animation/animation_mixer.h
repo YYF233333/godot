@@ -345,7 +345,7 @@ protected:
 	virtual void _validate_property(PropertyInfo &p_property) const;
 
 #ifdef TOOLS_ENABLED
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	virtual LocalVector<String> get_argument_options(const StringName &p_function, int p_idx) const override;
 #endif
 
 	static void _bind_methods();

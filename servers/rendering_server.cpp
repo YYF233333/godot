@@ -2220,21 +2220,23 @@ void RenderingServer::fix_surface_compatibility(SurfaceData &p_surface, const St
 #endif
 
 #ifdef TOOLS_ENABLED
-void RenderingServer::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+LocalVector<String> RenderingServer::get_argument_options(const StringName &p_function, int p_idx) const {
 	const String pf = p_function;
+	LocalVector<String> r_options;
 	if (p_idx == 0) {
 		if (pf == "global_shader_parameter_set" || pf == "global_shader_parameter_set_override" ||
 				pf == "global_shader_parameter_get" || pf == "global_shader_parameter_get_type" || pf == "global_shader_parameter_remove") {
 			for (const StringName &E : global_shader_parameter_get_list()) {
-				r_options->push_back(E.operator String().quote());
+				r_options.push_back(E.operator String().quote());
 			}
 		} else if (pf == "has_os_feature") {
 			for (const String E : { "\"rgtc\"", "\"s3tc\"", "\"bptc\"", "\"etc\"", "\"etc2\"", "\"astc\"" }) {
-				r_options->push_back(E);
+				r_options.push_back(E);
 			}
 		}
 	}
-	Object::get_argument_options(p_function, p_idx, r_options);
+	r_options.extend(Object::get_argument_options(p_function, p_idx));
+	return r_options;
 }
 #endif
 
