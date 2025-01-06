@@ -725,7 +725,7 @@ void AnimationMultiTrackKeyEdit::_key_ofs_changed(const Ref<Animation> &p_anim, 
 		return;
 	}
 
-	for (const KeyValue<int, List<float>> &E : key_ofs_map) {
+	for (const KeyValue<int, LocalVector<float>> &E : key_ofs_map) {
 		int key = 0;
 		for (const float &key_ofs : E.value) {
 			if (from != key_ofs) {
@@ -734,7 +734,7 @@ void AnimationMultiTrackKeyEdit::_key_ofs_changed(const Ref<Animation> &p_anim, 
 			}
 
 			int track = E.key;
-			key_ofs_map[track].get(key) = to;
+			key_ofs_map[track][key] = to;
 
 			if (setting) {
 				return;
@@ -750,7 +750,7 @@ void AnimationMultiTrackKeyEdit::_key_ofs_changed(const Ref<Animation> &p_anim, 
 bool AnimationMultiTrackKeyEdit::_set(const StringName &p_name, const Variant &p_value) {
 	bool update_obj = false;
 	bool change_notify_deserved = false;
-	for (const KeyValue<int, List<float>> &E : key_ofs_map) {
+	for (const KeyValue<int, LocalVector<float>> &E : key_ofs_map) {
 		int track = E.key;
 		for (const float &key_ofs : E.value) {
 			int key = animation->track_find_key(track, key_ofs, Animation::FIND_MODE_APPROX);
@@ -1007,7 +1007,7 @@ bool AnimationMultiTrackKeyEdit::_set(const StringName &p_name, const Variant &p
 }
 
 bool AnimationMultiTrackKeyEdit::_get(const StringName &p_name, Variant &r_ret) const {
-	for (const KeyValue<int, List<float>> &E : key_ofs_map) {
+	for (const KeyValue<int, LocalVector<float>> &E : key_ofs_map) {
 		int track = E.key;
 		for (const float &key_ofs : E.value) {
 			int key = animation->track_find_key(track, key_ofs, Animation::FIND_MODE_APPROX);
@@ -1135,7 +1135,7 @@ void AnimationMultiTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) 
 
 	bool same_track_type = true;
 	bool same_key_type = true;
-	for (const KeyValue<int, List<float>> &E : key_ofs_map) {
+	for (const KeyValue<int, LocalVector<float>> &E : key_ofs_map) {
 		int track = E.key;
 		ERR_FAIL_INDEX(track, animation->get_track_count());
 
@@ -6194,7 +6194,7 @@ void AnimationTrackEditor::_update_key_edit() {
 		multi_key_edit->animation_read_only = read_only;
 		multi_key_edit->editor = this;
 
-		RBMap<int, List<float>> key_ofs_map;
+		RBMap<int, LocalVector<float>> key_ofs_map;
 		RBMap<int, NodePath> base_map;
 		int first_track = -1;
 		for (const KeyValue<SelectedKey, KeyInfo> &E : selection) {
@@ -6204,7 +6204,7 @@ void AnimationTrackEditor::_update_key_edit() {
 			}
 
 			if (!key_ofs_map.has(track)) {
-				key_ofs_map[track] = List<float>();
+				key_ofs_map[track] = LocalVector<float>();
 				base_map[track] = NodePath();
 			}
 
