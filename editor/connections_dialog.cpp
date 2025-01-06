@@ -282,7 +282,7 @@ List<MethodInfo> ConnectDialog::_filter_method_list(const List<MethodInfo> &p_me
 	bool check_signal = compatible_methods_only->is_pressed();
 	List<MethodInfo> ret;
 
-	List<Pair<Variant::Type, StringName>> effective_args;
+	LocalVector<Pair<Variant::Type, StringName>> effective_args;
 	int unbind = get_unbinds();
 	for (int i = 0; i < (int)p_signal.arguments.size() - unbind; i++) {
 		PropertyInfo pi = p_signal.arguments[i];
@@ -307,14 +307,13 @@ List<MethodInfo> ConnectDialog::_filter_method_list(const List<MethodInfo> &p_me
 		}
 
 		if (check_signal) {
-			if ((int)mi.arguments.size() != effective_args.size()) {
+			if (mi.arguments.size() != effective_args.size()) {
 				continue;
 			}
 
 			bool type_mismatch = false;
-			const List<Pair<Variant::Type, StringName>>::Element *E = effective_args.front();
-			for (uint32_t i = 0; i < mi.arguments.size(); i++, E = E->next()) {
-				Variant::Type stype = E->get().first;
+			for (uint32_t i = 0; i < mi.arguments.size(); i++) {
+				Variant::Type stype = effective_args[i].first;
 				Variant::Type mtype = mi.arguments[i].type;
 
 				if (stype != Variant::NIL && mtype != Variant::NIL && stype != mtype) {
@@ -322,7 +321,7 @@ List<MethodInfo> ConnectDialog::_filter_method_list(const List<MethodInfo> &p_me
 					break;
 				}
 
-				if (stype == Variant::OBJECT && mtype == Variant::OBJECT && !ClassDB::is_parent_class(E->get().second, mi.arguments[i].class_name)) {
+				if (stype == Variant::OBJECT && mtype == Variant::OBJECT && !ClassDB::is_parent_class(effective_args[i].second, mi.arguments[i].class_name)) {
 					type_mismatch = true;
 					break;
 				}
