@@ -3150,10 +3150,7 @@ void SceneTreeDock::_replace_node(Node *p_node, Node *p_by_node, bool p_keep_pro
 	_push_item(nullptr);
 
 	//reconnect signals
-	List<MethodInfo> sl;
-
-	oldnode->get_signal_list(&sl);
-	for (const MethodInfo &E : sl) {
+	for (const MethodInfo &E : oldnode->get_signal_list()) {
 		List<Object::Connection> cl;
 		oldnode->get_signal_connection_list(E.name, &cl);
 

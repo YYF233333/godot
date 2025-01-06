@@ -1327,27 +1327,29 @@ bool GDScript::has_script_signal(const StringName &p_signal) const {
 	return false;
 }
 
-void GDScript::_get_script_signal_list(List<MethodInfo> *r_list, bool p_include_base) const {
+LocalVector<MethodInfo> GDScript::_get_script_signal_list(bool p_include_base) const {
+	LocalVector<MethodInfo> ret;
 	for (const KeyValue<StringName, MethodInfo> &E : _signals) {
-		r_list->push_back(E.value);
+		ret.push_back(E.value);
 	}
 
 	if (!p_include_base) {
-		return;
+		return ret;
 	}
 
 	if (base.is_valid()) {
-		base->get_script_signal_list(r_list);
+		ret.extend(base->get_script_signal_list());
 	}
 #ifdef TOOLS_ENABLED
 	else if (base_cache.is_valid()) {
-		base_cache->get_script_signal_list(r_list);
+		ret.extend(base_cache->get_script_signal_list());
 	}
 #endif
+	return ret;
 }
 
-void GDScript::get_script_signal_list(List<MethodInfo> *r_signals) const {
-	_get_script_signal_list(r_signals, true);
+LocalVector<MethodInfo> GDScript::get_script_signal_list() const {
+	return _get_script_signal_list(true);
 }
 
 GDScript *GDScript::_get_gdscript_from_variant(const Variant &p_variant) {

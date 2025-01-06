@@ -179,12 +179,11 @@ PackedStringArray get_code_completion(CompletionKind p_kind, const String &p_scr
 		case CompletionKind::SIGNALS: {
 			Ref<Script> script = ResourceLoader::load(p_script_file.simplify_path());
 
-			List<MethodInfo> signals;
-			script->get_script_signal_list(&signals);
+			LocalVector<MethodInfo> signals = script->get_script_signal_list();
 
 			StringName native = script->get_instance_base_type();
 			if (native != StringName()) {
-				ClassDB::get_signal_list(native, &signals, /* p_no_inheritance: */ false);
+				signals.extend(ClassDB::get_signal_list(native, /* p_no_inheritance: */ false));
 			}
 
 			for (const MethodInfo &E : signals) {

@@ -1500,11 +1500,9 @@ Dictionary ClassDB::class_get_signal(const StringName &p_class, const StringName
 }
 
 TypedArray<Dictionary> ClassDB::class_get_signal_list(const StringName &p_class, bool p_no_inheritance) const {
-	List<MethodInfo> signals;
-	::ClassDB::get_signal_list(p_class, &signals, p_no_inheritance);
 	TypedArray<Dictionary> ret;
 
-	for (const MethodInfo &E : signals) {
+	for (const MethodInfo &E : ::ClassDB::get_signal_list(p_class, p_no_inheritance)) {
 		ret.push_back(E.operator Dictionary());
 	}
 

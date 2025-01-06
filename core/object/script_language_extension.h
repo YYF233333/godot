@@ -142,12 +142,14 @@ public:
 
 	GDVIRTUAL0RC_REQUIRED(TypedArray<Dictionary>, _get_script_signal_list)
 
-	virtual void get_script_signal_list(List<MethodInfo> *r_signals) const override {
+	virtual LocalVector<MethodInfo> get_script_signal_list() const override {
 		TypedArray<Dictionary> sl;
 		GDVIRTUAL_CALL(_get_script_signal_list, sl);
+		LocalVector<MethodInfo> signals;
 		for (int i = 0; i < sl.size(); i++) {
-			r_signals->push_back(MethodInfo::from_dict(sl[i]));
+			signals.push_back(MethodInfo::from_dict(sl[i]));
 		}
+		return signals;
 	}
 
 	GDVIRTUAL1RC_REQUIRED(bool, _has_property_default_value, const StringName &)

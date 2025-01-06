@@ -90,6 +90,16 @@ public:
 		}
 	}
 
+	_FORCE_INLINE_ void extend(const LocalVector<T, U, force_trivial, tight> &p_vector) {
+		if (p_vector.size() == 0) {
+			return;
+		}
+		reserve(count + p_vector.size());
+		for (U i = 0; i < p_vector.size(); i++) {
+			push_back(p_vector[i]);
+		}
+	}
+
 	void remove_at(U p_index) {
 		ERR_FAIL_UNSIGNED_INDEX(p_index, count);
 		count--;

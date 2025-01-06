@@ -350,9 +350,7 @@ void ConnectDialog::_update_method_tree() {
 
 	MethodInfo signal_info;
 	if (compatible_methods_only->is_pressed()) {
-		List<MethodInfo> signals;
-		source->get_signal_list(&signals);
-		for (const MethodInfo &mi : signals) {
+		for (const MethodInfo &mi : source->get_signal_list()) {
 			if (mi.name == signal) {
 				signal_info = mi;
 				break;
@@ -1429,7 +1427,7 @@ void ConnectionsDock::update_tree() {
 		String class_name;
 		String doc_class_name;
 		Ref<Texture2D> class_icon;
-		List<MethodInfo> class_signals;
+		LocalVector<MethodInfo> class_signals;
 
 		if (script_base.is_valid()) {
 			class_name = script_base->get_global_name();
@@ -1450,20 +1448,15 @@ void ConnectionsDock::update_tree() {
 				class_icon = get_editor_theme_icon(native_base);
 			}
 
-			script_base->get_script_signal_list(&class_signals);
+			class_signals.extend(script_base->get_script_signal_list());
 
 			// TODO: Core: Add optional parameter to ignore base classes (no_inheritance like in ClassDB).
 			Ref<Script> base = script_base->get_base_script();
 			if (base.is_valid()) {
-				List<MethodInfo> base_signals;
-				base->get_script_signal_list(&base_signals);
-				HashSet<String> base_signal_names;
-				for (List<MethodInfo>::Element *F = base_signals.front(); F; F = F->next()) {
-					base_signal_names.insert(F->get().name);
-				}
-				for (List<MethodInfo>::Element *F = class_signals.front(); F; F = F->next()) {
-					if (base_signal_names.has(F->get().name)) {
-						class_signals.erase(F);
+				for (const MethodInfo &F : base->get_script_signal_list()) {
+					int64_t idx = class_signals.find(F);
+					if (idx != -1) {
+						class_signals.remove_at(idx);
 					}
 				}
 			}
@@ -1481,7 +1474,7 @@ void ConnectionsDock::update_tree() {
 				class_icon = get_editor_theme_icon(native_base);
 			}
 
-			ClassDB::get_signal_list(native_base, &class_signals, true);
+			class_signals.extend(ClassDB::get_signal_list(native_base, true));
 
 			native_base = ClassDB::get_parent_class(native_base);
 		}

@@ -1037,8 +1037,7 @@ Error SceneState::_parse_connections(Node *p_owner, Node *p_node, HashMap<String
 		return OK;
 	}
 
-	List<MethodInfo> _signals;
-	p_node->get_signal_list(&_signals);
+	LocalVector<MethodInfo> _signals = p_node->get_signal_list();
 	_signals.sort();
 
 	//ERR_FAIL_COND_V( !node_map.has(p_node), ERR_BUG);

@@ -215,7 +215,7 @@ private:
 
 	void _get_script_property_list(List<PropertyInfo> *r_list, bool p_include_base) const;
 	void _get_script_method_list(List<MethodInfo> *r_list, bool p_include_base) const;
-	void _get_script_signal_list(List<MethodInfo> *r_list, bool p_include_base) const;
+	LocalVector<MethodInfo> _get_script_signal_list(bool p_include_base) const;
 
 	GDScript *_get_gdscript_from_variant(const Variant &p_variant);
 	void _collect_function_dependencies(GDScriptFunction *p_func, RBSet<GDScript *> &p_dependencies, const GDScript *p_except);
@@ -275,7 +275,7 @@ public:
 	RBSet<GDScript *> get_must_clear_dependencies();
 
 	virtual bool has_script_signal(const StringName &p_signal) const override;
-	virtual void get_script_signal_list(List<MethodInfo> *r_signals) const override;
+	virtual LocalVector<MethodInfo> get_script_signal_list() const override;
 
 	bool is_tool() const override { return tool; }
 	Ref<GDScript> get_base() const;

@@ -174,7 +174,7 @@ public:
 	virtual ScriptLanguage *get_language() const = 0;
 
 	virtual bool has_script_signal(const StringName &p_signal) const = 0;
-	virtual void get_script_signal_list(List<MethodInfo> *r_signals) const = 0;
+	virtual LocalVector<MethodInfo> get_script_signal_list() const = 0;
 
 	virtual bool get_property_default_value(const StringName &p_property, Variant &r_value) const = 0;
 

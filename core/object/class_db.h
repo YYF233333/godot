@@ -421,7 +421,7 @@ public:
 	static void add_signal(const StringName &p_class, const MethodInfo &p_signal);
 	static bool has_signal(const StringName &p_class, const StringName &p_signal, bool p_no_inheritance = false);
 	static bool get_signal(const StringName &p_class, const StringName &p_signal, MethodInfo *r_signal);
-	static void get_signal_list(const StringName &p_class, List<MethodInfo> *p_signals, bool p_no_inheritance = false);
+	static LocalVector<MethodInfo> get_signal_list(const StringName &p_class, bool p_no_inheritance = false);
 
 	static void add_property_group(const StringName &p_class, const String &p_name, const String &p_prefix = "", int p_indent_depth = 0);
 	static void add_property_subgroup(const StringName &p_class, const String &p_name, const String &p_prefix = "", int p_indent_depth = 0);

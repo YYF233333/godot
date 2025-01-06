@@ -1361,25 +1361,28 @@ void ClassDB::add_signal(const StringName &p_class, const MethodInfo &p_signal) 
 	type->signal_map[sname] = p_signal;
 }
 
-void ClassDB::get_signal_list(const StringName &p_class, List<MethodInfo> *p_signals, bool p_no_inheritance) {
+LocalVector<MethodInfo> ClassDB::get_signal_list(const StringName &p_class, bool p_no_inheritance) {
 	OBJTYPE_RLOCK;
 
 	ClassInfo *type = classes.getptr(p_class);
-	ERR_FAIL_NULL(type);
+	ERR_FAIL_NULL_V(type, LocalVector<MethodInfo>());
+
+	LocalVector<MethodInfo> signals;
 
 	ClassInfo *check = type;
 
 	while (check) {
 		for (KeyValue<StringName, MethodInfo> &E : check->signal_map) {
-			p_signals->push_back(E.value);
+			signals.push_back(E.value);
 		}
 
 		if (p_no_inheritance) {
-			return;
+			return signals;
 		}
 
 		check = check->inherits_ptr;
 	}
+	return signals;
 }
 
 bool ClassDB::has_signal(const StringName &p_class, const StringName &p_signal, bool p_no_inheritance) {
