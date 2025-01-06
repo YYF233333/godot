@@ -32,6 +32,7 @@
 
 #include "core/io/file_access_encrypted.h"
 #include "core/string/string_builder.h"
+#include "core/templates/local_vector.h"
 #include "core/variant/variant_parser.h"
 
 void ConfigFile::set_value(const String &p_section, const String &p_key, const Variant &p_value) {
