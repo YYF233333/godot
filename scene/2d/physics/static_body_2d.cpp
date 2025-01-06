@@ -118,10 +118,7 @@ void StaticBody2D::navmesh_parse_source_geometry(const Ref<NavigationPolygon> &p
 		return;
 	}
 
-	List<uint32_t> shape_owners;
-	static_body->get_shape_owners(&shape_owners);
-
-	for (uint32_t shape_owner : shape_owners) {
+	for (uint32_t shape_owner : static_body->get_shape_owners()) {
 		if (static_body->is_shape_owner_disabled(shape_owner)) {
 			continue;
 		}
