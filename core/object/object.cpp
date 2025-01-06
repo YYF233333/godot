@@ -1299,11 +1299,8 @@ void Object::_add_user_signal(const String &p_name, const Array &p_args) {
 }
 
 TypedArray<Dictionary> Object::_get_signal_list() const {
-	List<MethodInfo> signal_list;
-	get_signal_list(&signal_list);
-
 	TypedArray<Dictionary> ret;
-	for (const MethodInfo &E : signal_list) {
+	for (const MethodInfo &E : get_signal_list()) {
 		ret.push_back(Dictionary(E));
 	}
 
@@ -1353,23 +1350,26 @@ bool Object::has_signal(const StringName &p_name) const {
 	return false;
 }
 
-void Object::get_signal_list(List<MethodInfo> *p_signals) const {
+LocalVector<MethodInfo> Object::get_signal_list() const {
+	LocalVector<MethodInfo> signals;
+
 	if (!script.is_null()) {
 		Ref<Script> scr = script;
 		if (scr.is_valid()) {
-			scr->get_script_signal_list(p_signals);
+			signals.extend(scr->get_script_signal_list());
 		}
 	}
 
-	ClassDB::get_signal_list(get_class_name(), p_signals);
+	signals.extend(ClassDB::get_signal_list(get_class_name()));
 	//find maybe usersignals?
 
 	for (const KeyValue<StringName, SignalData> &E : signal_map) {
 		if (!E.value.user.name.is_empty()) {
 			//user signal
-			p_signals->push_back(E.value.user);
+			signals.push_back(E.value.user);
 		}
 	}
+	return signals;
 }
 
 void Object::get_all_signal_connections(List<Connection> *p_connections) const {
@@ -2249,9 +2249,7 @@ void Object::get_argument_options(const StringName &p_function, int p_idx, List<
 	const String pf = p_function;
 	if (p_idx == 0) {
 		if (pf == "connect" || pf == "is_connected" || pf == "disconnect" || pf == "emit_signal" || pf == "has_signal") {
-			List<MethodInfo> signals;
-			get_signal_list(&signals);
-			for (const MethodInfo &E : signals) {
+			for (const MethodInfo &E : get_signal_list()) {
 				r_options->push_back(E.name.quote());
 			}
 		} else if (pf == "call" || pf == "call_deferred" || pf == "callv" || pf == "has_method") {

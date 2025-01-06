@@ -83,9 +83,7 @@ TypedArray<Dictionary> Script::_get_script_method_list() {
 
 TypedArray<Dictionary> Script::_get_script_signal_list() {
 	TypedArray<Dictionary> ret;
-	List<MethodInfo> list;
-	get_script_signal_list(&list);
-	for (const MethodInfo &E : list) {
+	for (const MethodInfo &E : get_script_signal_list()) {
 		ret.append(E.operator Dictionary());
 	}
 	return ret;

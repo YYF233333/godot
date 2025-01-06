@@ -4021,9 +4021,9 @@ bool Node::has_signal(const StringName &p_name) const {
 	return Object::has_signal(p_name);
 }
 
-void Node::get_signal_list(List<MethodInfo> *p_signals) const {
-	ERR_THREAD_GUARD;
-	Object::get_signal_list(p_signals);
+LocalVector<MethodInfo> Node::get_signal_list() const {
+	ERR_THREAD_GUARD_V(LocalVector<MethodInfo>());
+	return Object::get_signal_list();
 }
 
 void Node::get_signal_connection_list(const StringName &p_signal, List<Connection> *p_connections) const {

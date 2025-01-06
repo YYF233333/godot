@@ -4229,10 +4229,7 @@ void GDScriptAnalyzer::reduce_identifier_from_base(GDScriptParser::IdentifierNod
 			return;
 		}
 
-		List<MethodInfo> signal_list;
-		script_type->get_script_signal_list(&signal_list);
-
-		for (const MethodInfo &signal_info : signal_list) {
+		for (const MethodInfo &signal_info : script_type->get_script_signal_list()) {
 			if (signal_info.name != p_identifier->name) {
 				continue;
 			}
