@@ -870,7 +870,7 @@ public:
 	virtual void set_meta(const StringName &p_name, const Variant &p_value) override;
 	virtual void remove_meta(const StringName &p_name) override;
 	virtual Variant get_meta(const StringName &p_name, const Variant &p_default = Variant()) const override;
-	virtual void get_meta_list(List<StringName> *p_list) const override;
+	virtual LocalVector<StringName> get_meta_list() const override;
 
 	virtual Error emit_signalp(const StringName &p_name, const Variant **p_args, int p_argcount) override;
 	virtual bool has_signal(const StringName &p_name) const override;
