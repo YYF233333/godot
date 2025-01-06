@@ -4472,13 +4472,13 @@ void AnimationTrackEditor::_insert_track(bool p_reset_wanted, bool p_create_bezi
 
 	TrackIndices next_tracks(animation.ptr(), reset_anim.ptr());
 	bool advance = false;
-	while (insert_data.size()) {
-		if (insert_data.front()->get().advance) {
+	for (const InsertData &E : insert_data) {
+		if (E.advance) {
 			advance = true;
 		}
-		next_tracks = _confirm_insert(insert_data.front()->get(), next_tracks, p_reset_wanted, reset_anim, p_create_beziers);
-		insert_data.pop_front();
+		next_tracks = _confirm_insert(E, next_tracks, p_reset_wanted, reset_anim, p_create_beziers);
 	}
+	insert_data.clear();
 
 	undo_redo->commit_action();
 
@@ -4812,13 +4812,13 @@ void AnimationTrackEditor::_confirm_insert_list() {
 
 	TrackIndices next_tracks(animation.ptr(), reset_anim.ptr());
 	bool advance = false;
-	while (insert_data.size()) {
-		if (insert_data.front()->get().advance) {
+	for (const InsertData &E : insert_data) {
+		if (E.advance) {
 			advance = true;
 		}
-		next_tracks = _confirm_insert(insert_data.front()->get(), next_tracks, create_reset, reset_anim, insert_confirm_bezier->is_pressed());
-		insert_data.pop_front();
+		next_tracks = _confirm_insert(E, next_tracks, create_reset, reset_anim, insert_confirm_bezier->is_pressed());
 	}
+	insert_data.clear();
 
 	undo_redo->commit_action();
 
