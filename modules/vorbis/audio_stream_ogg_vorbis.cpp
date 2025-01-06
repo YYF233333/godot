@@ -561,8 +561,8 @@ bool AudioStreamOggVorbis::is_monophonic() const {
 	return false;
 }
 
-void AudioStreamOggVorbis::get_parameter_list(List<Parameter> *r_parameters) {
-	r_parameters->push_back(Parameter(PropertyInfo(Variant::BOOL, "looping", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_CHECKABLE), Variant()));
+void AudioStreamOggVorbis::get_parameter_list(LocalVector<Parameter> &r_parameters) {
+	r_parameters.push_back(Parameter(PropertyInfo(Variant::BOOL, "looping", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_CHECKABLE), Variant()));
 }
 
 Ref<AudioSample> AudioStreamOggVorbis::generate_sample() const {

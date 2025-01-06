@@ -170,7 +170,7 @@ public:
 
 	virtual bool is_monophonic() const override;
 
-	virtual void get_parameter_list(List<Parameter> *r_parameters) override;
+	virtual void get_parameter_list(LocalVector<Parameter> &r_parameters) override;
 
 	virtual bool can_be_sampled() const override {
 		return true;

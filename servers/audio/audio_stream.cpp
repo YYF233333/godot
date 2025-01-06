@@ -312,13 +312,13 @@ float AudioStream::get_tagged_frame_offset(int p_index) const {
 	return tagged_offsets[p_index];
 }
 
-void AudioStream::get_parameter_list(List<Parameter> *r_parameters) {
+void AudioStream::get_parameter_list(LocalVector<Parameter> &r_parameters) {
 	TypedArray<Dictionary> ret;
 	GDVIRTUAL_CALL(_get_parameter_list, ret);
 	for (int i = 0; i < ret.size(); i++) {
 		Dictionary d = ret[i];
 		ERR_CONTINUE(!d.has("default_value"));
-		r_parameters->push_back(Parameter(PropertyInfo::from_dict(d), d["default_value"]));
+		r_parameters.push_back(Parameter(PropertyInfo::from_dict(d), d["default_value"]));
 	}
 }
 

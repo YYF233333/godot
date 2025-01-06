@@ -46,8 +46,8 @@ void AudioStreamPlayerInternal::_update_stream_parameters() {
 		return;
 	}
 
-	List<AudioStream::Parameter> parameters;
-	stream->get_parameter_list(&parameters);
+	LocalVector<AudioStream::Parameter> parameters;
+	stream->get_parameter_list(parameters);
 	for (const AudioStream::Parameter &K : parameters) {
 		const PropertyInfo &pi = K.property;
 		StringName key = PARAM_PREFIX + pi.name;
@@ -235,8 +235,8 @@ void AudioStreamPlayerInternal::get_property_list(List<PropertyInfo> *p_list) co
 	if (stream.is_null()) {
 		return;
 	}
-	List<AudioStream::Parameter> parameters;
-	stream->get_parameter_list(&parameters);
+	LocalVector<AudioStream::Parameter> parameters;
+	stream->get_parameter_list(parameters);
 	for (const AudioStream::Parameter &K : parameters) {
 		PropertyInfo pi = K.property;
 		pi.name = PARAM_PREFIX + pi.name;
