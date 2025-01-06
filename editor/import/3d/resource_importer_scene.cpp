@@ -615,10 +615,7 @@ void _populate_scalable_nodes_collection(Node *p_node, ScalableNodeCollection &p
 	}
 	AnimationPlayer *animation_player = Object::cast_to<AnimationPlayer>(p_node);
 	if (animation_player) {
-		List<StringName> animation_list;
-		animation_player->get_animation_list(&animation_list);
-
-		for (const StringName &E : animation_list) {
+		for (const StringName &E : animation_player->get_animation_list()) {
 			Ref<Animation> animation = animation_player->get_animation(E);
 			p_collection.animations.insert(animation);
 		}
@@ -701,9 +698,7 @@ Node *ResourceImporterScene::_pre_fix_node(Node *p_node, Node *p_root, HashMap<R
 
 		bool nodes_were_renamed = r_node_renames.size() != 0;
 
-		List<StringName> anims;
-		ap->get_animation_list(&anims);
-		for (const StringName &E : anims) {
+		for (const StringName &E : ap->get_animation_list()) {
 			Ref<Animation> anim = ap->get_animation(E);
 			ERR_CONTINUE(anim.is_null());
 
@@ -1078,8 +1073,7 @@ Node *ResourceImporterScene::_pre_fix_animations(Node *p_node, Node *p_root, con
 
 	if (Object::cast_to<AnimationPlayer>(p_node)) {
 		AnimationPlayer *ap = Object::cast_to<AnimationPlayer>(p_node);
-		List<StringName> anims;
-		ap->get_animation_list(&anims);
+		LocalVector<StringName> anims = ap->get_animation_list();
 
 		AnimationImportTracks import_tracks_mode[TRACK_CHANNEL_MAX] = {
 			AnimationImportTracks(int(node_settings["import_tracks/position"])),
@@ -1126,8 +1120,7 @@ Node *ResourceImporterScene::_post_fix_animations(Node *p_node, Node *p_root, co
 
 	if (Object::cast_to<AnimationPlayer>(p_node)) {
 		AnimationPlayer *ap = Object::cast_to<AnimationPlayer>(p_node);
-		List<StringName> anims;
-		ap->get_animation_list(&anims);
+		LocalVector<StringName> anims = ap->get_animation_list();
 
 		if (p_remove_immutable_tracks) {
 			AnimationImportTracks import_tracks_mode[TRACK_CHANNEL_MAX] = {
@@ -1503,10 +1496,9 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 				for (int node_i = 0; node_i < children.size(); node_i++) {
 					AnimationPlayer *anim_player = cast_to<AnimationPlayer>(children[node_i]);
 					ERR_CONTINUE(anim_player == nullptr);
-					List<StringName> anim_list;
-					anim_player->get_animation_list(&anim_list);
+					LocalVector<StringName> anim_list = anim_player->get_animation_list();
 					if (anim_list.size() == 1) {
-						selected_animation_name = anim_list.front()->get();
+						selected_animation_name = anim_list[0];
 					}
 					rest_animation = anim_player->get_animation(selected_animation_name);
 					if (rest_animation.is_valid()) {
@@ -1872,9 +1864,7 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 		}
 
 		if (post_importer_plugins.size()) {
-			List<StringName> anims;
-			ap->get_animation_list(&anims);
-			for (const StringName &name : anims) {
+			for (const StringName &name : ap->get_animation_list()) {
 				if (p_animation_data.has(name)) {
 					Ref<Animation> anim = ap->get_animation(name);
 					Dictionary anim_settings = p_animation_data[name];
@@ -2097,18 +2087,14 @@ void ResourceImporterScene::_create_slices(AnimationPlayer *ap, Ref<Animation> a
 }
 
 void ResourceImporterScene::_optimize_animations(AnimationPlayer *anim, float p_max_vel_error, float p_max_ang_error, int p_prc_error) {
-	List<StringName> anim_names;
-	anim->get_animation_list(&anim_names);
-	for (const StringName &E : anim_names) {
+	for (const StringName &E : anim->get_animation_list()) {
 		Ref<Animation> a = anim->get_animation(E);
 		a->optimize(p_max_vel_error, p_max_ang_error, p_prc_error);
 	}
 }
 
 void ResourceImporterScene::_compress_animations(AnimationPlayer *anim, int p_page_size_kb) {
-	List<StringName> anim_names;
-	anim->get_animation_list(&anim_names);
-	for (const StringName &E : anim_names) {
+	for (const StringName &E : anim->get_animation_list()) {
 		Ref<Animation> a = anim->get_animation(E);
 		a->compress(p_page_size_kb * 1024);
 	}
@@ -2815,8 +2801,7 @@ void ResourceImporterScene::_copy_meta(Object *p_src_object, Object *p_dst_objec
 }
 
 void ResourceImporterScene::_optimize_track_usage(AnimationPlayer *p_player, AnimationImportTracks *p_track_actions) {
-	List<StringName> anims;
-	p_player->get_animation_list(&anims);
+	LocalVector<StringName> anims = p_player->get_animation_list();
 	Node *parent = p_player->get_parent();
 	ERR_FAIL_NULL(parent);
 	HashMap<NodePath, uint32_t> used_tracks[TRACK_CHANNEL_MAX];
