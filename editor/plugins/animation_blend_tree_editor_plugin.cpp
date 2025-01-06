@@ -262,10 +262,7 @@ void AnimationNodeBlendTreeEditor::update_graph() {
 
 			ProgressBar *pb = memnew(ProgressBar);
 
-			List<StringName> anims;
-			tree->get_animation_list(&anims);
-
-			for (const StringName &F : anims) {
+			for (const StringName &F : tree->get_animation_list()) {
 				mb->get_popup()->add_item(F);
 				options.push_back(F);
 			}
@@ -758,10 +755,7 @@ bool AnimationNodeBlendTreeEditor::_update_filters(const Ref<AnimationNode> &ano
 	HashSet<String> paths;
 	HashMap<String, RBSet<String>> types;
 	{
-		List<StringName> animation_list;
-		tree->get_animation_list(&animation_list);
-
-		for (const StringName &E : animation_list) {
+		for (const StringName &E : tree->get_animation_list()) {
 			Ref<Animation> anim = tree->get_animation(E);
 			for (int i = 0; i < anim->get_track_count(); i++) {
 				String track_path = anim->track_get_path(i);
