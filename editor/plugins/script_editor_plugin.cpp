@@ -631,9 +631,7 @@ void ScriptEditor::_clear_breakpoints() {
 	}
 
 	// Clear from closed scripts.
-	List<String> cached_editors;
-	script_editor_cache->get_sections(&cached_editors);
-	for (const String &E : cached_editors) {
+	for (const String &E : script_editor_cache->get_sections()) {
 		Array breakpoints = _get_cached_breakpoints_for_script(E);
 		for (int breakpoint : breakpoints) {
 			EditorDebuggerNode::get_singleton()->set_breakpoint(E, (int)breakpoint + 1, false);
@@ -1915,9 +1913,7 @@ Vector<String> ScriptEditor::_get_breakpoints() {
 	}
 
 	// Load breakpoints that are in closed scripts.
-	List<String> cached_editors;
-	script_editor_cache->get_sections(&cached_editors);
-	for (const String &E : cached_editors) {
+	for (const String &E : script_editor_cache->get_sections()) {
 		if (loaded_scripts.has(E)) {
 			continue;
 		}
@@ -1956,9 +1952,7 @@ void ScriptEditor::get_breakpoints(List<String> *p_breakpoints) {
 	}
 
 	// Load breakpoints that are in closed scripts.
-	List<String> cached_editors;
-	script_editor_cache->get_sections(&cached_editors);
-	for (const String &E : cached_editors) {
+	for (const String &E : script_editor_cache->get_sections()) {
 		if (loaded_scripts.has(E)) {
 			continue;
 		}
@@ -3564,9 +3558,7 @@ void ScriptEditor::set_window_layout(Ref<ConfigFile> p_layout) {
 
 	// Remove any deleted editors that have been removed between launches.
 	// and if a Script, register breakpoints with the debugger.
-	List<String> cached_editors;
-	script_editor_cache->get_sections(&cached_editors);
-	for (const String &E : cached_editors) {
+	for (const String &E : script_editor_cache->get_sections()) {
 		if (loaded_scripts.has(E)) {
 			continue;
 		}
