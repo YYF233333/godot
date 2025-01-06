@@ -187,7 +187,7 @@ public:
 	AudioStreamInteractive();
 
 protected:
-	virtual void get_parameter_list(List<Parameter> *r_parameters) override;
+	virtual void get_parameter_list(LocalVector<Parameter> &r_parameters) override;
 
 	static void _bind_methods();
 	void _validate_property(PropertyInfo &r_property) const;
