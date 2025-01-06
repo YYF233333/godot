@@ -565,8 +565,10 @@ StringName TranslationServer::pseudolocalize(const StringName &p_message) const 
 }
 
 #ifdef TOOLS_ENABLED
-void TranslationServer::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+LocalVector<String> TranslationServer::get_argument_options(const StringName &p_function, int p_idx) const {
 	const String pf = p_function;
+	LocalVector<String> r_options;
+
 	if (p_idx == 0) {
 		HashMap<String, String> *target_hash_map = nullptr;
 		if (pf == "get_language_name") {
@@ -579,11 +581,12 @@ void TranslationServer::get_argument_options(const StringName &p_function, int p
 
 		if (target_hash_map) {
 			for (const KeyValue<String, String> &E : *target_hash_map) {
-				r_options->push_back(E.key.quote());
+				r_options.push_back(E.key.quote());
 			}
 		}
 	}
-	Object::get_argument_options(p_function, p_idx, r_options);
+	r_options.extend(Object::get_argument_options(p_function, p_idx));
+	return r_options;
 }
 #endif // TOOLS_ENABLED
 

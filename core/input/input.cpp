@@ -205,8 +205,9 @@ void Input::_bind_methods() {
 }
 
 #ifdef TOOLS_ENABLED
-void Input::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+LocalVector<String> Input::get_argument_options(const StringName &p_function, int p_idx) const {
 	const String pf = p_function;
+	LocalVector<String> r_options;
 
 	if ((p_idx == 0 && (pf == "is_action_pressed" || pf == "action_press" || pf == "action_release" || pf == "is_action_just_pressed" || pf == "is_action_just_released" || pf == "get_action_strength" || pf == "get_action_raw_strength")) ||
 			(p_idx < 2 && pf == "get_axis") ||
@@ -220,10 +221,11 @@ void Input::get_argument_options(const StringName &p_function, int p_idx, List<S
 			}
 
 			String name = pi.name.substr(pi.name.find_char('/') + 1, pi.name.length());
-			r_options->push_back(name.quote());
+			r_options.push_back(name.quote());
 		}
 	}
-	Object::get_argument_options(p_function, p_idx, r_options);
+	r_options.extend(Object::get_argument_options(p_function, p_idx));
+	return r_options;
 }
 #endif
 

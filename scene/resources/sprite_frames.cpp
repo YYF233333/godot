@@ -232,8 +232,9 @@ void SpriteFrames::_set_animations(const Array &p_animations) {
 }
 
 #ifdef TOOLS_ENABLED
-void SpriteFrames::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+LocalVector<String> SpriteFrames::get_argument_options(const StringName &p_function, int p_idx) const {
 	const String pf = p_function;
+	LocalVector<String> r_options;
 	if (p_idx == 0) {
 		if (pf == "has_animation" || pf == "remove_animation" || pf == "rename_animation" ||
 				pf == "set_animation_speed" || pf == "get_animation_speed" ||
@@ -242,11 +243,12 @@ void SpriteFrames::get_argument_options(const StringName &p_function, int p_idx,
 				pf == "get_frame_count" || pf == "get_frame_texture" || pf == "get_frame_duration" ||
 				pf == "clear") {
 			for (const String &E : get_animation_names()) {
-				r_options->push_back(E.quote());
+				r_options.push_back(E.quote());
 			}
 		}
 	}
-	Resource::get_argument_options(p_function, p_idx, r_options);
+	r_options.extend(Resource::get_argument_options(p_function, p_idx));
+	return r_options;
 }
 #endif
 

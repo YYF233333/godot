@@ -737,20 +737,23 @@ bool EditorInterface::is_movie_maker_enabled() const {
 }
 
 #ifdef TOOLS_ENABLED
-void EditorInterface::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+LocalVector<String> EditorInterface::get_argument_options(const StringName &p_function, int p_idx) const {
 	const String pf = p_function;
+	LocalVector<String> r_options;
+
 	if (p_idx == 0) {
 		if (pf == "set_main_screen_editor") {
 			for (String E : { "\"2D\"", "\"3D\"", "\"Script\"", "\"AssetLib\"" }) {
-				r_options->push_back(E);
+				r_options.push_back(E);
 			}
 		} else if (pf == "get_editor_viewport_3d") {
 			for (uint32_t i = 0; i < Node3DEditor::VIEWPORTS_COUNT; i++) {
-				r_options->push_back(String::num_int64(i));
+				r_options.push_back(String::num_int64(i));
 			}
 		}
 	}
-	Object::get_argument_options(p_function, p_idx, r_options);
+	r_options.extend(Object::get_argument_options(p_function, p_idx));
+	return r_options;
 }
 #endif
 

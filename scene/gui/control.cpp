@@ -202,8 +202,9 @@ void Control::set_root_layout_direction(int p_root_dir) {
 }
 
 #ifdef TOOLS_ENABLED
-void Control::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
-	ERR_READ_THREAD_GUARD;
+LocalVector<String> Control::get_argument_options(const StringName &p_function, int p_idx) const {
+	LocalVector<String> r_options;
+	ERR_READ_THREAD_GUARD_V(r_options);
 	if (p_idx == 0) {
 		const String pf = p_function;
 		Theme::DataType type = Theme::DATA_TYPE_MAX;
@@ -235,11 +236,12 @@ void Control::get_argument_options(const StringName &p_function, int p_idx, List
 
 			sn.sort_custom<StringName::AlphCompare>();
 			for (const StringName &name : sn) {
-				r_options->push_back(String(name).quote());
+				r_options.push_back(String(name).quote());
 			}
 		}
 	}
-	CanvasItem::get_argument_options(p_function, p_idx, r_options);
+	r_options.extend(CanvasItem::get_argument_options(p_function, p_idx));
+	return r_options;
 }
 #endif // TOOLS_ENABLED
 
