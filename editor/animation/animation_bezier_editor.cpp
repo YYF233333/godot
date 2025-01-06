@@ -1852,8 +1852,8 @@ void AnimationBezierTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 				EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 				undo_redo->create_action(TTR("Move Bezier Points"));
 
-				List<AnimMoveRestore> to_restore;
-				List<Animation::HandleMode> to_restore_handle_modes;
+				LocalVector<AnimMoveRestore> to_restore;
+				LocalVector<Animation::HandleMode> to_restore_handle_modes;
 				// 1 - Remove the keys.
 				for (SelectionSet::Element *E = selection.back(); E; E = E->prev()) {
 					undo_redo->add_do_method(animation.ptr(), "track_remove_key", E->get().first, E->get().second);
@@ -1933,10 +1933,8 @@ void AnimationBezierTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 				}
 
 				// 6 - (undo) Reinsert overlapped keys.
-				List<AnimMoveRestore>::ConstIterator restore_itr = to_restore.begin();
-				List<Animation::HandleMode>::ConstIterator handle_itr = to_restore_handle_modes.begin();
-				for (; restore_itr != to_restore.end() && handle_itr != to_restore_handle_modes.end(); ++restore_itr, ++handle_itr) {
-					const AnimMoveRestore &amr = *restore_itr;
+				for (uint32_t i = 0; i < MIN(to_restore.size(), to_restore_handle_modes.size()); i++) {
+					const AnimMoveRestore &amr = to_restore[i];
 					Array key = amr.key;
 					undo_redo->add_undo_method(animation.ptr(), "track_insert_key", amr.track, amr.time, amr.key, 1);
 					undo_redo->add_undo_method(
@@ -1948,7 +1946,7 @@ void AnimationBezierTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 							key[0],
 							Vector2(key[1], key[2]),
 							Vector2(key[3], key[4]),
-							*handle_itr);
+							to_restore_handle_modes[i]);
 				}
 
 				undo_redo->add_do_method(this, "_clear_selection_for_anim", animation);
