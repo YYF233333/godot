@@ -102,7 +102,7 @@ public:
 
 	Ref<Animation> animation;
 
-	RBMap<int, List<float>> key_ofs_map;
+	RBMap<int, LocalVector<float>> key_ofs_map;
 	RBMap<int, NodePath> base_map;
 	PropertyInfo hint;
 
