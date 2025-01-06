@@ -69,9 +69,7 @@ void EditorFileServer::_scan_files_changed(EditorFileSystemDirectory *efd, const
 				continue;
 			}
 
-			Vector<String> remaps = cf->get_section_keys("remap");
-
-			for (const String &remap : remaps) {
+			for (const String &remap : cf->get_section_keys("remap")) {
 				if (remap == "path") {
 					String remapped_path = cf->get_value("remap", remap);
 					uint64_t mt = FileAccess::get_modified_time(remapped_path);
