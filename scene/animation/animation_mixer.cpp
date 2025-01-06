@@ -401,16 +401,14 @@ void AnimationMixer::rename_animation_library(const StringName &p_name, const St
 	notify_property_list_changed();
 }
 
-void AnimationMixer::get_animation_list(List<StringName> *p_animations) const {
-	LocalVector<String> anims;
+LocalVector<StringName> AnimationMixer::get_animation_list() const {
+	LocalVector<StringName> anims;
 	anims.reserve(animation_set.size());
 	for (const KeyValue<StringName, AnimationData> &E : animation_set) {
 		anims.push_back(E.key);
 	}
 	anims.sort();
-	for (const String &E : anims) {
-		p_animations->push_back(E);
-	}
+	return anims;
 }
 
 Ref<Animation> AnimationMixer::get_animation(const StringName &p_name) const {
@@ -653,8 +651,7 @@ bool AnimationMixer::_update_caches() {
 	root_motion_cache.rot = Quaternion(0, 0, 0, 1);
 	root_motion_cache.scale = Vector3(1, 1, 1);
 
-	List<StringName> sname_list;
-	get_animation_list(&sname_list);
+	LocalVector<StringName> sname_list = get_animation_list();
 
 	bool check_path = GLOBAL_GET_CACHED(bool, "animation/warnings/check_invalid_track_paths");
 	bool check_angle_interpolation = GLOBAL_GET_CACHED(bool, "animation/warnings/check_angle_interpolation_type_conflicting");
@@ -2377,9 +2374,7 @@ void AnimationMixer::get_argument_options(const StringName &p_function, int p_id
 	const String pf = p_function;
 	if (p_idx == 0) {
 		if (pf == "get_animation" || pf == "has_animation") {
-			List<StringName> al;
-			get_animation_list(&al);
-			for (const StringName &name : al) {
+			for (const StringName &name : get_animation_list()) {
 				r_options->push_back(String(name).quote());
 			}
 		} else if (pf == "get_animation_library" || pf == "has_animation_library" || pf == "remove_animation_library" || pf == "rename_animation_library") {

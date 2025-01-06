@@ -247,10 +247,8 @@ Vector<String> AnimationTreeEditor::get_animation_list() {
 		return Vector<String>();
 	}
 
-	List<StringName> anims;
-	tree->get_animation_list(&anims);
 	Vector<String> ret;
-	for (const StringName &E : anims) {
+	for (const StringName &E : tree->get_animation_list()) {
 		ret.push_back(E);
 	}
 

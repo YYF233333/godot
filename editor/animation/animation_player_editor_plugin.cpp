@@ -817,8 +817,6 @@ void AnimationPlayerEditor::_update_animation_blend() {
 
 	String current = animation->get_item_text(animation->get_selected());
 
-	List<StringName> anims;
-	player->get_animation_list(&anims);
 	TreeItem *root = blend_editor.tree->create_item();
 	updating_blends = true;
 
@@ -827,7 +825,7 @@ void AnimationPlayerEditor::_update_animation_blend() {
 	blend_editor.next->clear();
 	blend_editor.next->add_item("", i);
 
-	for (const StringName &to : anims) {
+	for (const StringName &to : player->get_animation_list()) {
 		TreeItem *blend = blend_editor.tree->create_item(root);
 		blend->set_editable(0, false);
 		blend->set_editable(1, true);
