@@ -653,14 +653,13 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 
 			c.methods.sort_custom<MethodCompare>();
 
-			List<MethodInfo> signal_list;
-			ClassDB::get_signal_list(name, &signal_list, true);
+			LocalVector<MethodInfo> signal_list = ClassDB::get_signal_list(name, true);
 
 			if (signal_list.size()) {
-				for (List<MethodInfo>::Element *EV = signal_list.front(); EV; EV = EV->next()) {
+				for (const MethodInfo &EV : signal_list) {
 					DocData::MethodDoc signal;
-					signal.name = EV->get().name;
-					for (const PropertyInfo &arginfo : EV->get().arguments) {
+					signal.name = EV.name;
+					for (const PropertyInfo &arginfo : EV.arguments) {
 						DocData::ArgumentDoc argument;
 						DocData::argument_doc_from_arginfo(argument, arginfo);
 

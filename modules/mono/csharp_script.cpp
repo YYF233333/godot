@@ -2662,26 +2662,28 @@ bool CSharpScript::has_script_signal(const StringName &p_signal) const {
 	return false;
 }
 
-void CSharpScript::_get_script_signal_list(List<MethodInfo> *r_signals, bool p_include_base) const {
+LocalVector<MethodInfo> CSharpScript::_get_script_signal_list(bool p_include_base) const {
+	LocalVector<MethodInfo> r_signals;
 	if (!valid) {
-		return;
+		return r_signals;
 	}
 
 	for (const EventSignalInfo &signal : event_signals) {
-		r_signals->push_back(signal.method_info);
+		r_signals.push_back(signal.method_info);
 	}
 
 	if (!p_include_base) {
-		return;
+		return r_signals;
 	}
 
 	if (base_script.is_valid()) {
-		base_script->get_script_signal_list(r_signals);
+		r_signals.extend(base_script->get_script_signal_list());
 	}
+	return r_signals;
 }
 
-void CSharpScript::get_script_signal_list(List<MethodInfo> *r_signals) const {
-	_get_script_signal_list(r_signals, true);
+LocalVector<MethodInfo> CSharpScript::get_script_signal_list() const {
+	return _get_script_signal_list(true);
 }
 
 bool CSharpScript::inherits_script(const Ref<Script> &p_script) const {

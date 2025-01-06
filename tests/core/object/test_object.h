@@ -325,15 +325,13 @@ TEST_CASE("[Object] Signals") {
 
 	CHECK_FALSE(object.has_signal("my_custom_signal"));
 
-	List<MethodInfo> signals_before;
-	object.get_signal_list(&signals_before);
+	LocalVector<MethodInfo> signals_before = object.get_signal_list();
 
 	object.add_user_signal(MethodInfo("my_custom_signal"));
 
 	CHECK(object.has_signal("my_custom_signal"));
 
-	List<MethodInfo> signals_after;
-	object.get_signal_list(&signals_after);
+	LocalVector<MethodInfo> signals_after = object.get_signal_list();
 
 	// Should be one more signal.
 	CHECK_EQ(signals_before.size() + 1, signals_after.size());
@@ -345,8 +343,7 @@ TEST_CASE("[Object] Signals") {
 		ERR_PRINT_ON;
 		CHECK(object.has_signal("my_custom_signal"));
 
-		List<MethodInfo> signals_after_existing_added;
-		object.get_signal_list(&signals_after_existing_added);
+		LocalVector<MethodInfo> signals_after_existing_added = object.get_signal_list();
 
 		CHECK_EQ(signals_after.size(), signals_after_existing_added.size());
 	}
@@ -358,8 +355,7 @@ TEST_CASE("[Object] Signals") {
 		ERR_PRINT_ON;
 		CHECK(object.has_signal("script_changed"));
 
-		List<MethodInfo> signals_after_existing_added;
-		object.get_signal_list(&signals_after_existing_added);
+		LocalVector<MethodInfo> signals_after_existing_added = object.get_signal_list();
 
 		CHECK_EQ(signals_after.size(), signals_after_existing_added.size());
 	}
@@ -371,8 +367,7 @@ TEST_CASE("[Object] Signals") {
 		ERR_PRINT_ON;
 		CHECK_FALSE(object.has_signal(""));
 
-		List<MethodInfo> signals_after_empty_added;
-		object.get_signal_list(&signals_after_empty_added);
+		LocalVector<MethodInfo> signals_after_empty_added = object.get_signal_list();
 
 		CHECK_EQ(signals_after.size(), signals_after_empty_added.size());
 	}
