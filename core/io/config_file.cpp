@@ -32,6 +32,7 @@
 
 #include "core/io/file_access_encrypted.h"
 #include "core/string/string_builder.h"
+#include "core/templates/local_vector.h"
 #include "core/variant/variant_parser.h"
 
 PackedStringArray ConfigFile::_get_sections() const {
@@ -47,8 +48,7 @@ PackedStringArray ConfigFile::_get_sections() const {
 }
 
 PackedStringArray ConfigFile::_get_section_keys(const String &p_section) const {
-	List<String> s;
-	get_section_keys(p_section, &s);
+	LocalVector<String> s = get_section_keys(p_section);
 	PackedStringArray arr;
 	arr.resize(s.size());
 	int idx = 0;
@@ -108,12 +108,16 @@ LocalVector<String> ConfigFile::get_sections() const {
 	return sections;
 }
 
-void ConfigFile::get_section_keys(const String &p_section, List<String> *r_keys) const {
-	ERR_FAIL_COND_MSG(!values.has(p_section), vformat("Cannot get keys from nonexistent section \"%s\".", p_section));
+LocalVector<String> ConfigFile::get_section_keys(const String &p_section) const {
+	LocalVector<String> r_keys;
+	ERR_FAIL_COND_V_MSG(!values.has(p_section), r_keys, vformat("Cannot get keys from nonexistent section \"%s\".", p_section));
+
+	r_keys.reserve(values[p_section].size());
 
 	for (const KeyValue<String, Variant> &E : values[p_section]) {
-		r_keys->push_back(E.key);
+		r_keys.push_back(E.key);
 	}
+	return r_keys;
 }
 
 void ConfigFile::erase_section(const String &p_section) {
