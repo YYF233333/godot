@@ -5068,8 +5068,8 @@ void EditorNode::get_preload_scene_modification_table(
 		HashMap<StringName, Variant> modified_properties = get_modified_properties_for_node(p_node, false);
 
 		// Find all valid connections to other nodes.
-		List<Connection> connections_to;
-		p_node->get_all_signal_connections(&connections_to);
+		LocalVector<Connection> connections_to;
+		p_node->get_all_signal_connections(connections_to);
 
 		List<ConnectionWithNodePath> valid_connections_to;
 		for (const Connection &c : connections_to) {
@@ -5086,8 +5086,8 @@ void EditorNode::get_preload_scene_modification_table(
 		}
 
 		// Find all valid connections from other nodes.
-		List<Connection> connections_from;
-		p_node->get_signals_connected_to_this(&connections_from);
+		LocalVector<Connection> connections_from;
+		p_node->get_signals_connected_to_this(connections_from);
 
 		List<Connection> valid_connections_from;
 		for (const Connection &c : connections_from) {

@@ -107,8 +107,8 @@ bool SceneTreeTimer::is_ignoring_time_scale() {
 }
 
 void SceneTreeTimer::release_connections() {
-	List<Connection> signal_connections;
-	get_all_signal_connections(&signal_connections);
+	LocalVector<Connection> signal_connections;
+	get_all_signal_connections(signal_connections);
 
 	for (const Connection &connection : signal_connections) {
 		disconnect(connection.signal.get_name(), connection.callable);

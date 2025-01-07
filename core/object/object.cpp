@@ -38,6 +38,7 @@
 #include "core/os/os.h"
 #include "core/string/print_string.h"
 #include "core/string/translation_server.h"
+#include "core/templates/local_vector.h"
 #include "core/variant/typed_array.h"
 
 #ifdef DEBUG_ENABLED
@@ -1453,8 +1454,8 @@ TypedArray<Dictionary> Object::_get_signal_list() const {
 }
 
 TypedArray<Dictionary> Object::_get_signal_connection_list(const StringName &p_signal) const {
-	List<Connection> conns;
-	get_all_signal_connections(&conns);
+	LocalVector<Connection> conns;
+	get_all_signal_connections(conns);
 
 	TypedArray<Dictionary> ret;
 
@@ -1510,14 +1511,14 @@ void Object::get_signal_list(List<MethodInfo> *p_signals) const {
 	}
 }
 
-void Object::get_all_signal_connections(List<Connection> *p_connections) const {
+void Object::get_all_signal_connections(LocalVector<Connection> &p_connections) const {
 	OBJ_SIGNAL_LOCK
 
 	for (const KeyValue<StringName, SignalData> &E : signal_map) {
 		const SignalData *s = &E.value;
 
 		for (const KeyValue<Callable, SignalData::Slot> &slot_kv : s->slot_map) {
-			p_connections->push_back(slot_kv.value.conn);
+			p_connections.push_back(slot_kv.value.conn);
 		}
 	}
 }
@@ -1564,11 +1565,11 @@ uint32_t Object::get_signal_connection_flags(const StringName &p_name, const Cal
 	return 0;
 }
 
-void Object::get_signals_connected_to_this(List<Connection> *p_connections) const {
+void Object::get_signals_connected_to_this(LocalVector<Connection> &p_connections) const {
 	OBJ_SIGNAL_LOCK
 
 	for (const Connection &E : connections) {
-		p_connections->push_back(E);
+		p_connections.push_back(E);
 	}
 }
 
