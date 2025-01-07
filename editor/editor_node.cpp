@@ -2266,8 +2266,8 @@ int EditorNode::_save_external_resources(bool p_also_save_external_data) {
 
 	HashSet<String> edited_resources;
 	int saved = 0;
-	List<Ref<Resource>> cached;
-	ResourceCache::get_cached_resources(&cached);
+	LocalVector<Ref<Resource>> cached;
+	ResourceCache::get_cached_resources(cached);
 
 	for (Ref<Resource> res : cached) {
 		if (!res->is_edited()) {
