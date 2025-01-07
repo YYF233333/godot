@@ -1242,8 +1242,8 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 					}
 
 					if (!p_types_only) {
-						List<MethodInfo> methods;
-						scr->get_script_method_list(&methods);
+						LocalVector<MethodInfo> methods;
+						scr->get_script_method_list(methods);
 						for (const MethodInfo &E : methods) {
 							if (E.name.begins_with("@")) {
 								continue;
@@ -1325,8 +1325,8 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 
 				bool only_static = base_type.is_meta_type && !Engine::get_singleton()->has_singleton(type);
 
-				List<MethodInfo> methods;
-				ClassDB::get_method_list(type, &methods, false, true);
+				LocalVector<MethodInfo> methods;
+				ClassDB::get_method_list(type, methods, false, true);
 				for (const MethodInfo &E : methods) {
 					if (only_static && (E.flags & METHOD_FLAG_STATIC) == 0) {
 						continue;
@@ -1401,8 +1401,8 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 					}
 				}
 
-				List<MethodInfo> methods;
-				tmp.get_method_list(&methods);
+				LocalVector<MethodInfo> methods;
+				tmp.get_method_list(methods);
 				for (const MethodInfo &E : methods) {
 					if (base_type.kind == GDScriptParser::DataType::ENUM && base_type.is_meta_type && !(E.flags & METHOD_FLAG_CONST)) {
 						// Enum types are static and cannot change, therefore we skip non-const dictionary methods.
@@ -2663,8 +2663,8 @@ static bool _guess_method_return_type_from_base(GDScriptParser::CompletionContex
 			case GDScriptParser::DataType::SCRIPT: {
 				Ref<Script> scr = base_type.script_type;
 				if (scr.is_valid()) {
-					List<MethodInfo> methods;
-					scr->get_script_method_list(&methods);
+					LocalVector<MethodInfo> methods;
+					scr->get_script_method_list(methods);
 					for (const MethodInfo &mi : methods) {
 						if (mi.name == p_method) {
 							r_type = _type_from_property(mi.return_val);
@@ -2702,8 +2702,8 @@ static bool _guess_method_return_type_from_base(GDScriptParser::CompletionContex
 					return false;
 				}
 
-				List<MethodInfo> methods;
-				tmp.get_method_list(&methods);
+				LocalVector<MethodInfo> methods;
+				tmp.get_method_list(methods);
 
 				for (const MethodInfo &mi : methods) {
 					if (mi.name == p_method) {
@@ -2994,8 +2994,8 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 					}
 				}
 
-				List<MethodInfo> methods;
-				base.get_method_list(&methods);
+				LocalVector<MethodInfo> methods;
+				base.get_method_list(methods);
 				for (const MethodInfo &E : methods) {
 					if (E.name == p_method) {
 						r_arghint = _make_arguments_hint(E, p_argidx);
@@ -3126,8 +3126,8 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 				if (err.error != Callable::CallError::CALL_OK) {
 					return;
 				}
-				List<MethodInfo> methods;
-				v.get_method_list(&methods);
+				LocalVector<MethodInfo> methods;
+				v.get_method_list(methods);
 
 				for (MethodInfo &E : methods) {
 					if (p_argidx >= E.arguments.size()) {
@@ -3166,8 +3166,8 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 		return;
 	} else if (GDScriptParser::get_builtin_type(call->function_name) < Variant::VARIANT_MAX) {
 		// Complete constructor.
-		List<MethodInfo> constructors;
-		Variant::get_constructor_list(GDScriptParser::get_builtin_type(call->function_name), &constructors);
+		LocalVector<MethodInfo> constructors;
+		Variant::get_constructor_list(GDScriptParser::get_builtin_type(call->function_name), constructors);
 
 		int i = 0;
 		for (const MethodInfo &E : constructors) {
@@ -3765,8 +3765,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 						}
 					}
 					if (!found_type) {
-						List<MethodInfo> methods;
-						scr->get_script_method_list(&methods);
+						LocalVector<MethodInfo> methods;
+						scr->get_script_method_list(methods);
 						for (const MethodInfo &method : methods) {
 							if (method.name == name) {
 								found_type = true;
@@ -3778,8 +3778,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 						}
 					}
 					if (!found_type) {
-						List<MethodInfo> signals;
-						scr->get_script_method_list(&signals);
+						LocalVector<MethodInfo> signals;
+						scr->get_script_method_list(signals);
 						for (const MethodInfo &signal : signals) {
 							if (signal.name == name) {
 								found_type = true;
