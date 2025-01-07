@@ -99,7 +99,7 @@ private:
 
 	Ref<Resource> clipboard;
 	mutable HashMap<String, Ref<Shortcut>> shortcuts;
-	HashMap<String, List<Ref<InputEvent>>> builtin_action_overrides;
+	HashMap<String, LocalVector<Ref<InputEvent>>> builtin_action_overrides;
 
 	Vector<String> favorites;
 	HashMap<String, PackedStringArray> favorite_properties;
