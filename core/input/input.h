@@ -294,7 +294,7 @@ public:
 	bool is_mouse_mode_override_enabled();
 
 #ifdef TOOLS_ENABLED
-	LocalVector<String> get_argument_options(const StringName &p_function, int p_idx) const override;
+	void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
 #endif
 
 	static Input *get_singleton();

@@ -1669,9 +1669,8 @@ bool ClassDB::is_class_enabled(const StringName &p_class) const {
 }
 
 #ifdef TOOLS_ENABLED
-LocalVector<String> ClassDB::get_argument_options(const StringName &p_function, int p_idx) const {
+void ClassDB::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
 	const String pf = p_function;
-	LocalVector<String> r_options;
 	bool first_argument_is_class = false;
 	if (p_idx == 0) {
 		first_argument_is_class = (pf == "get_inheriters_from_class" || pf == "get_parent_class" ||
@@ -1685,12 +1684,11 @@ LocalVector<String> ClassDB::get_argument_options(const StringName &p_function, 
 	}
 	if (first_argument_is_class || pf == "is_parent_class") {
 		for (const String &E : get_class_list()) {
-			r_options.push_back(E.quote());
+			r_options->push_back(E.quote());
 		}
 	}
 
-	r_options.extend(Object::get_argument_options(p_function, p_idx));
-	return r_options;
+	Object::get_argument_options(p_function, p_idx, r_options);
 }
 #endif
 
@@ -1929,16 +1927,14 @@ bool Engine::is_printing_error_messages() const {
 }
 
 #ifdef TOOLS_ENABLED
-LocalVector<String> Engine::get_argument_options(const StringName &p_function, int p_idx) const {
+void Engine::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
 	const String pf = p_function;
-	LocalVector<String> r_options;
 	if (p_idx == 0 && (pf == "has_singleton" || pf == "get_singleton" || pf == "unregister_singleton")) {
 		for (const String &E : get_singleton_list()) {
-			r_options.push_back(E.quote());
+			r_options->push_back(E.quote());
 		}
 	}
-	r_options.extend(Object::get_argument_options(p_function, p_idx));
-	return r_options;
+	Object::get_argument_options(p_function, p_idx, r_options);
 }
 #endif
 

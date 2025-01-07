@@ -580,18 +580,16 @@ PackedStringArray AnimatedSprite2D::get_configuration_warnings() const {
 }
 
 #ifdef TOOLS_ENABLED
-LocalVector<String> AnimatedSprite2D::get_argument_options(const StringName &p_function, int p_idx) const {
+void AnimatedSprite2D::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
 	const String pf = p_function;
-	LocalVector<String> r_options;
 	if (p_idx == 0 && frames.is_valid()) {
 		if (pf == "play" || pf == "play_backwards" || pf == "set_animation" || pf == "set_autoplay") {
 			for (const StringName &name : frames->get_animation_list()) {
-				r_options.push_back(String(name).quote());
+				r_options->push_back(String(name).quote());
 			}
 		}
 	}
-	r_options.extend(Node2D::get_argument_options(p_function, p_idx));
-	return r_options;
+	Node2D::get_argument_options(p_function, p_idx, r_options);
 }
 #endif // TOOLS_ENABLED
 

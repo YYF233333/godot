@@ -973,7 +973,7 @@ public:
 	virtual void set_translation_domain(const StringName &p_domain);
 
 #ifdef TOOLS_ENABLED
-	virtual LocalVector<String> get_argument_options(const StringName &p_function, int p_idx) const;
+	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const;
 	void editor_set_section_unfold(const String &p_section, bool p_unfolded);
 	bool editor_is_section_unfolded(const String &p_section);
 	const HashSet<String> &editor_get_section_folding() const { return editor_section_folding; }

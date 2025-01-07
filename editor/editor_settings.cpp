@@ -2063,10 +2063,8 @@ void EditorSettings::notify_changes() {
 }
 
 #ifdef TOOLS_ENABLED
-LocalVector<String> EditorSettings::get_argument_options(const StringName &p_function, int p_idx) const {
+void EditorSettings::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
 	const String pf = p_function;
-	LocalVector<String> r_options;
-
 	if (p_idx == 0) {
 		if (pf == "has_setting" || pf == "set_setting" || pf == "get_setting" || pf == "erase" ||
 				pf == "set_initial_value" || pf == "set_as_basic" || pf == "mark_setting_changed") {
@@ -2075,20 +2073,19 @@ LocalVector<String> EditorSettings::get_argument_options(const StringName &p_fun
 					continue;
 				}
 
-				r_options.push_back(E.key.quote());
+				r_options->push_back(E.key.quote());
 			}
 		} else if (pf == "get_project_metadata" && project_metadata.is_valid()) {
 			for (const String &section : project_metadata->get_sections()) {
-				r_options.push_back(section.quote());
+				r_options->push_back(section.quote());
 			}
 		} else if (pf == "set_builtin_action_override") {
 			for (const StringName &action : InputMap::get_singleton()->get_actions()) {
-				r_options.push_back(String(action).quote());
+				r_options->push_back(String(action).quote());
 			}
 		}
 	}
-	r_options.extend(Object::get_argument_options(p_function, p_idx));
-	return r_options;
+	Object::get_argument_options(p_function, p_idx, r_options);
 }
 #endif
 

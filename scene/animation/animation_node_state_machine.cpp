@@ -1773,9 +1773,8 @@ void AnimationNodeStateMachine::_animation_node_removed(const ObjectID &p_oid, c
 }
 
 #ifdef TOOLS_ENABLED
-LocalVector<String> AnimationNodeStateMachine::get_argument_options(const StringName &p_function, int p_idx) const {
+void AnimationNodeStateMachine::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
 	const String pf = p_function;
-	LocalVector<String> r_options;
 	bool add_state_options = false;
 	if (p_idx == 0) {
 		add_state_options = (pf == "get_node" || pf == "has_node" || pf == "rename_node" || pf == "remove_node" || pf == "replace_node" || pf == "set_node_position" || pf == "get_node_position");
@@ -1784,11 +1783,10 @@ LocalVector<String> AnimationNodeStateMachine::get_argument_options(const String
 	}
 	if (add_state_options) {
 		for (const KeyValue<StringName, State> &E : states) {
-			r_options.push_back(String(E.key).quote());
+			r_options->push_back(String(E.key).quote());
 		}
 	}
-	r_options.extend(AnimationRootNode::get_argument_options(p_function, p_idx));
-	return r_options;
+	AnimationRootNode::get_argument_options(p_function, p_idx, r_options);
 }
 #endif
 

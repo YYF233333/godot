@@ -1852,7 +1852,7 @@ public:
 	String get_current_rendering_method() const;
 
 #ifdef TOOLS_ENABLED
-	virtual LocalVector<String> get_argument_options(const StringName &p_function, int p_idx) const override;
+	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
 #endif
 
 	RenderingServer();
