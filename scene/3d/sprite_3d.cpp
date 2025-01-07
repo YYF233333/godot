@@ -1469,12 +1469,12 @@ PackedStringArray AnimatedSprite3D::get_configuration_warnings() const {
 }
 
 #ifdef TOOLS_ENABLED
-void AnimatedSprite3D::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void AnimatedSprite3D::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0 && frames.is_valid()) {
 		if (pf == "play" || pf == "play_backwards" || pf == "set_animation" || pf == "set_autoplay") {
 			for (const StringName &name : frames->get_animation_list()) {
-				r_options->push_back(String(name).quote());
+				r_options.push_back(String(name).quote());
 			}
 		}
 	}
