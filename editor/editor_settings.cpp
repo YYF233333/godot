@@ -1067,10 +1067,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 		}
 
 		if (p_extra_config->has_section("presets")) {
-			List<String> keys;
-			p_extra_config->get_section_keys("presets", &keys);
-
-			for (const String &key : keys) {
+			for (const String &key : p_extra_config->get_section_keys("presets")) {
 				Variant val = p_extra_config->get_value("presets", key);
 				set(key, val);
 			}
@@ -1722,10 +1719,7 @@ void EditorSettings::load_text_editor_theme() {
 		return;
 	}
 
-	List<String> keys;
-	cf->get_section_keys("color_theme", &keys);
-
-	for (const String &key : keys) {
+	for (const String &key : cf->get_section_keys("color_theme")) {
 		String val = cf->get_value("color_theme", key);
 
 		// don't load if it's not already there!
