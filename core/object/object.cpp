@@ -1388,14 +1388,14 @@ void Object::get_all_signal_connections(List<Connection> *p_connections) const {
 	}
 }
 
-void Object::get_signal_connection_list(const StringName &p_signal, List<Connection> *p_connections) const {
+void Object::get_signal_connection_list(const StringName &p_signal, LocalVector<Connection> &p_connections) const {
 	const SignalData *s = signal_map.getptr(p_signal);
 	if (!s) {
 		return; //nothing
 	}
 
 	for (const KeyValue<Callable, SignalData::Slot> &slot_kv : s->slot_map) {
-		p_connections->push_back(slot_kv.value.conn);
+		p_connections.push_back(slot_kv.value.conn);
 	}
 }
 
