@@ -800,7 +800,7 @@ public:
 	virtual Error emit_signalp(const StringName &p_name, const Variant **p_args, int p_argcount) override;
 	virtual bool has_signal(const StringName &p_name) const override;
 	virtual LocalVector<MethodInfo> get_signal_list() const override;
-	virtual void get_signal_connection_list(const StringName &p_signal, List<Connection> *p_connections) const override;
+	virtual void get_signal_connection_list(const StringName &p_signal, LocalVector<Connection> &p_connections) const override;
 	virtual void get_all_signal_connections(List<Connection> *p_connections) const override;
 	virtual int get_persistent_signal_connection_count() const override;
 	virtual void get_signals_connected_to_this(List<Connection> *p_connections) const override;
