@@ -3358,8 +3358,8 @@ void GDScriptAnalyzer::reduce_call(GDScriptParser::CallNode *p_call, bool p_is_a
 					}
 				}
 
-				List<MethodInfo> constructors;
-				Variant::get_constructor_list(builtin_type, &constructors);
+				LocalVector<MethodInfo> constructors;
+				Variant::get_constructor_list(builtin_type, constructors);
 				bool match = false;
 
 				for (const MethodInfo &info : constructors) {
@@ -5790,8 +5790,8 @@ bool GDScriptAnalyzer::get_function_signature(GDScriptParser::Node *p_source, bo
 		if (err.error != Callable::CallError::CALL_OK) {
 			ERR_FAIL_V_MSG(false, "Could not construct base Variant type.");
 		}
-		List<MethodInfo> methods;
-		dummy.get_method_list(&methods);
+		LocalVector<MethodInfo> methods;
+		dummy.get_method_list(methods);
 
 		for (const MethodInfo &E : methods) {
 			if (E.name == p_function) {

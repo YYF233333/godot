@@ -1020,8 +1020,8 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 			{
 				//methods
 				Array methods;
-				List<MethodInfo> method_list;
-				ClassDB::get_method_list(class_name, &method_list, true);
+				LocalVector<MethodInfo> method_list;
+				ClassDB::get_method_list(class_name, method_list, true);
 				for (const MethodInfo &F : method_list) {
 					StringName method_name = F.name;
 					if ((F.flags & METHOD_FLAG_VIRTUAL) && !(F.flags & METHOD_FLAG_OBJECT_CORE)) {

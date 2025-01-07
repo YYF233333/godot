@@ -323,7 +323,7 @@ String Variant::get_constructor_argument_name(Variant::Type p_type, int p_constr
 	return construct_data[p_type][p_constructor].arg_names[p_argument];
 }
 
-void Variant::get_constructor_list(Type p_type, List<MethodInfo> *r_list) {
+void Variant::get_constructor_list(Type p_type, LocalVector<MethodInfo> &r_list) {
 	ERR_FAIL_INDEX(p_type, Variant::VARIANT_MAX);
 
 	MethodInfo mi;
@@ -339,6 +339,6 @@ void Variant::get_constructor_list(Type p_type, List<MethodInfo> *r_list) {
 			arg.type = get_constructor_argument_type(p_type, i, j);
 			mi.arguments.push_back(arg);
 		}
-		r_list->push_back(mi);
+		r_list.push_back(mi);
 	}
 }

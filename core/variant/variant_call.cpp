@@ -1662,7 +1662,7 @@ Vector<uint32_t> Variant::get_builtin_method_compatibility_hashes(Variant::Type 
 	return method_hashes;
 }
 
-void Variant::get_method_list(List<MethodInfo> *p_list) const {
+void Variant::get_method_list(LocalVector<MethodInfo> &p_list) const {
 	if (type == OBJECT) {
 		Object *obj = get_validated_object();
 		if (obj) {
@@ -1672,7 +1672,7 @@ void Variant::get_method_list(List<MethodInfo> *p_list) const {
 		for (const StringName &E : builtin_method_names[type]) {
 			const VariantBuiltInMethodInfo *method = builtin_method_info[type].getptr(E);
 			ERR_CONTINUE(!method);
-			p_list->push_back(method->get_method_info(E));
+			p_list.push_back(method->get_method_info(E));
 		}
 	}
 }

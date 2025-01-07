@@ -933,7 +933,7 @@ static MethodInfo info_from_bind(MethodBind *p_method) {
 	return minfo;
 }
 
-void ClassDB::get_method_list(const StringName &p_class, List<MethodInfo> *p_methods, bool p_no_inheritance, bool p_exclude_from_properties) {
+void ClassDB::get_method_list(const StringName &p_class, LocalVector<MethodInfo> &p_methods, bool p_no_inheritance, bool p_exclude_from_properties) {
 	Locker::Lock lock(Locker::STATE_READ);
 
 	ClassInfo *type = classes.getptr(p_class);
@@ -950,7 +950,7 @@ void ClassDB::get_method_list(const StringName &p_class, List<MethodInfo> *p_met
 
 #ifdef DEBUG_ENABLED
 		for (const MethodInfo &E : type->virtual_methods) {
-			p_methods->push_back(E);
+			p_methods.push_back(E);
 		}
 
 		for (const StringName &E : type->method_order) {
@@ -961,13 +961,13 @@ void ClassDB::get_method_list(const StringName &p_class, List<MethodInfo> *p_met
 			MethodBind *method = type->method_map.get(E);
 			MethodInfo minfo = info_from_bind(method);
 
-			p_methods->push_back(minfo);
+			p_methods.push_back(minfo);
 		}
 #else
 		for (KeyValue<StringName, MethodBind *> &E : type->method_map) {
 			MethodBind *m = E.value;
 			MethodInfo minfo = info_from_bind(m);
-			p_methods->push_back(minfo);
+			p_methods.push_back(minfo);
 		}
 #endif // DEBUG_ENABLED
 

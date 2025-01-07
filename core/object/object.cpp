@@ -707,7 +707,7 @@ Variant Object::property_get_revert(const StringName &p_name) const {
 	return Variant();
 }
 
-void Object::get_method_list(List<MethodInfo> *p_list) const {
+void Object::get_method_list(LocalVector<MethodInfo> &p_list) const {
 	ClassDB::get_method_list(get_class_name(), p_list);
 	if (script_instance) {
 		script_instance->get_method_list(p_list);
@@ -1176,8 +1176,8 @@ TypedArray<Dictionary> Object::_get_property_list_bind() const {
 }
 
 TypedArray<Dictionary> Object::_get_method_list_bind() const {
-	List<MethodInfo> ml;
-	get_method_list(&ml);
+	LocalVector<MethodInfo> ml;
+	get_method_list(ml);
 	TypedArray<Dictionary> ret;
 
 	for (const MethodInfo &mi : ml) {
@@ -2475,8 +2475,8 @@ void Object::get_argument_options(const StringName &p_function, int p_idx, Local
 				r_options.push_back(E.name.quote());
 			}
 		} else if (pf == "call" || pf == "call_deferred" || pf == "callv" || pf == "has_method") {
-			List<MethodInfo> methods;
-			get_method_list(&methods);
+			LocalVector<MethodInfo> methods;
+			get_method_list(methods);
 			for (const MethodInfo &E : methods) {
 				if (E.name.begins_with("_") && !(E.flags & METHOD_FLAG_VIRTUAL)) {
 					continue;

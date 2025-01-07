@@ -897,8 +897,8 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 			}
 
 			// For callables.
-			List<MethodInfo> method_list;
-			ClassDB::get_method_list(instance_base, &method_list);
+			LocalVector<MethodInfo> method_list;
+			ClassDB::get_method_list(instance_base, method_list);
 			for (const MethodInfo &E : method_list) {
 				member_keywords[E.name] = member_variable_color;
 			}
@@ -936,8 +936,8 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 		}
 
 		// For callables.
-		List<MethodInfo> scr_method_list;
-		scr->get_script_method_list(&scr_method_list);
+		LocalVector<MethodInfo> scr_method_list;
+		scr->get_script_method_list(scr_method_list);
 		for (const MethodInfo &E : scr_method_list) {
 			member_keywords[E.name] = member_variable_color;
 		}

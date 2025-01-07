@@ -6037,8 +6037,8 @@ void AnimationTrackEditor::_add_method_key(const String &p_method) {
 	Node *base = root->get_node_or_null(animation->track_get_path(insert_key_from_track_call_track));
 	ERR_FAIL_NULL(base);
 
-	List<MethodInfo> minfo;
-	base->get_method_list(&minfo);
+	LocalVector<MethodInfo> minfo;
+	base->get_method_list(minfo);
 
 	for (const MethodInfo &E : minfo) {
 		if (E.name == p_method) {

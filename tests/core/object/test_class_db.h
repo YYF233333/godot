@@ -584,8 +584,8 @@ void add_exposed_classes(Context &r_context) {
 		List<MethodInfo> virtual_method_list;
 		ClassDB::get_virtual_methods(class_name, &virtual_method_list, true);
 
-		List<MethodInfo> method_list;
-		ClassDB::get_method_list(class_name, &method_list, true);
+		LocalVector<MethodInfo> method_list;
+		ClassDB::get_method_list(class_name, method_list, true);
 		method_list.sort();
 
 		for (const MethodInfo &E : method_list) {

@@ -187,7 +187,7 @@ public:
 	virtual bool get_property_default_value(const StringName &p_property, Variant &r_value) const = 0;
 
 	virtual void update_exports() {} //editor tool
-	virtual void get_script_method_list(List<MethodInfo> *p_list) const = 0;
+	virtual void get_script_method_list(LocalVector<MethodInfo> &p_list) const = 0;
 	virtual void get_script_property_list(List<PropertyInfo> *p_list) const = 0;
 
 	virtual int get_member_line(const StringName &p_member) const { return -1; }
@@ -470,7 +470,7 @@ public:
 	virtual bool property_can_revert(const StringName &p_name) const override { return false; }
 	virtual bool property_get_revert(const StringName &p_name, Variant &r_ret) const override { return false; }
 
-	virtual void get_method_list(List<MethodInfo> *p_list) const override;
+	virtual void get_method_list(LocalVector<MethodInfo> &p_list) const override;
 	virtual bool has_method(const StringName &p_method) const override;
 
 	virtual int get_method_argument_count(const StringName &p_method, bool *r_is_valid = nullptr) const override {

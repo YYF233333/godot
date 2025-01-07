@@ -1201,8 +1201,8 @@ bool ProjectConverter3To4::test_array_names() {
 		LocalVector<StringName> classes_list;
 		ClassDB::get_class_list(classes_list);
 		for (StringName &name_of_class : classes_list) {
-			List<MethodInfo> method_list;
-			ClassDB::get_method_list(name_of_class, &method_list, true);
+			LocalVector<MethodInfo> method_list;
+			ClassDB::get_method_list(name_of_class, method_list, true);
 			for (MethodInfo &function_data : method_list) {
 				if (!all_functions.has(function_data.name)) {
 					all_functions.insert(function_data.name);

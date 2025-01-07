@@ -167,11 +167,11 @@ public:
 
 	GDVIRTUAL0RC_REQUIRED(TypedArray<Dictionary>, _get_script_method_list)
 
-	virtual void get_script_method_list(List<MethodInfo> *r_methods) const override {
+	virtual void get_script_method_list(LocalVector<MethodInfo> &r_methods) const override {
 		TypedArray<Dictionary> sl;
 		GDVIRTUAL_CALL(_get_script_method_list, sl);
 		for (int i = 0; i < sl.size(); i++) {
-			r_methods->push_back(MethodInfo::from_dict(sl[i]));
+			r_methods.push_back(MethodInfo::from_dict(sl[i]));
 		}
 	}
 
@@ -810,12 +810,12 @@ public:
 		ScriptInstance::get_property_state(state);
 	}
 
-	virtual void get_method_list(List<MethodInfo> *p_list) const override {
+	virtual void get_method_list(LocalVector<MethodInfo> &p_list) const override {
 		if (native_info->get_method_list_func) {
 			uint32_t mcount;
 			const GDExtensionMethodInfo *minfo = native_info->get_method_list_func(instance, &mcount);
 			for (uint32_t i = 0; i < mcount; i++) {
-				p_list->push_back(MethodInfo(minfo[i]));
+				p_list.push_back(MethodInfo(minfo[i]));
 			}
 			if (native_info->free_method_list_func) {
 				native_info->free_method_list_func(instance, minfo, mcount);

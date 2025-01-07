@@ -1662,8 +1662,8 @@ void ScriptTextEditor::_update_connected_methods() {
 
 		if (found_base_class.is_empty()) {
 			while (base_class) {
-				List<MethodInfo> methods;
-				ClassDB::get_method_list(base_class, &methods, true);
+				LocalVector<MethodInfo> methods;
+				ClassDB::get_method_list(base_class, methods, true);
 				for (const MethodInfo &mi : methods) {
 					if (mi.name == name) {
 						found_base_class = "builtin:" + base_class;

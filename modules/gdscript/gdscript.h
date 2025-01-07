@@ -212,7 +212,7 @@ private:
 	void _save_orphaned_subclasses(GDScript::ClearData *p_clear_data);
 
 	void _get_script_property_list(List<PropertyInfo> *r_list, bool p_include_base) const;
-	void _get_script_method_list(List<MethodInfo> *r_list, bool p_include_base) const;
+	void _get_script_method_list(LocalVector<MethodInfo> &r_list, bool p_include_base) const;
 	void _get_script_signal_list(List<MethodInfo> *r_list, bool p_include_base) const;
 
 	GDScript *_get_gdscript_from_variant(const Variant &p_variant);
@@ -321,7 +321,7 @@ public:
 
 	bool get_property_default_value(const StringName &p_property, Variant &r_value) const override;
 
-	virtual void get_script_method_list(List<MethodInfo> *p_list) const override;
+	virtual void get_script_method_list(LocalVector<MethodInfo> &p_list) const override;
 	virtual bool has_method(const StringName &p_method) const override;
 	virtual bool has_static_method(const StringName &p_method) const override;
 
@@ -390,7 +390,7 @@ public:
 	virtual bool property_can_revert(const StringName &p_name) const;
 	virtual bool property_get_revert(const StringName &p_name, Variant &r_ret) const;
 
-	virtual void get_method_list(List<MethodInfo> *p_list) const;
+	virtual void get_method_list(LocalVector<MethodInfo> &p_list) const;
 	virtual bool has_method(const StringName &p_method) const;
 
 	virtual int get_method_argument_count(const StringName &p_method, bool *r_is_valid = nullptr) const;

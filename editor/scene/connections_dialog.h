@@ -158,8 +158,8 @@ private:
 	void _focus_currently_connected();
 
 	void _method_selected();
-	void _create_method_tree_items(const List<MethodInfo> &p_methods, TreeItem *p_parent_item);
-	List<MethodInfo> _filter_method_list(const List<MethodInfo> &p_methods, const MethodInfo &p_signal, const String &p_search_string) const;
+	void _create_method_tree_items(const LocalVector<MethodInfo> &p_methods, TreeItem *p_parent_item);
+	LocalVector<MethodInfo> _filter_method_list(const LocalVector<MethodInfo> &p_methods, const MethodInfo &p_signal, const String &p_search_string) const;
 	void _update_method_tree();
 	void _method_check_button_pressed(const CheckButton *p_button);
 	void _open_method_popup();

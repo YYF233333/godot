@@ -289,11 +289,11 @@ void GDScript::_placeholder_erased(PlaceHolderScriptInstance *p_placeholder) {
 
 #endif
 
-void GDScript::_get_script_method_list(List<MethodInfo> *r_list, bool p_include_base) const {
+void GDScript::_get_script_method_list(LocalVector<MethodInfo> &r_list, bool p_include_base) const {
 	const GDScript *current = this;
 	while (current) {
 		for (const KeyValue<StringName, GDScriptFunction *> &E : current->member_functions) {
-			r_list->push_back(E.value->get_method_info());
+			r_list.push_back(E.value->get_method_info());
 		}
 
 		if (!p_include_base) {
@@ -304,7 +304,7 @@ void GDScript::_get_script_method_list(List<MethodInfo> *r_list, bool p_include_
 	}
 }
 
-void GDScript::get_script_method_list(List<MethodInfo> *r_list) const {
+void GDScript::get_script_method_list(LocalVector<MethodInfo> &r_list) const {
 	_get_script_method_list(r_list, true);
 }
 
@@ -2006,11 +2006,11 @@ bool GDScriptInstance::property_get_revert(const StringName &p_name, Variant &r_
 	return false;
 }
 
-void GDScriptInstance::get_method_list(List<MethodInfo> *p_list) const {
+void GDScriptInstance::get_method_list(LocalVector<MethodInfo> &p_list) const {
 	const GDScript *sptr = script.ptr();
 	while (sptr) {
 		for (const KeyValue<StringName, GDScriptFunction *> &E : sptr->member_functions) {
-			p_list->push_back(E.value->get_method_info());
+			p_list.push_back(E.value->get_method_info());
 		}
 		sptr = sptr->base.ptr();
 	}
