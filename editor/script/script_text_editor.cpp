@@ -64,8 +64,8 @@ void ConnectionInfoDialog::popup_connections(const String &p_method, const Vecto
 	TreeItem *root = tree->create_item();
 
 	for (int i = 0; i < p_nodes.size(); i++) {
-		List<Connection> all_connections;
-		p_nodes[i]->get_signals_connected_to_this(&all_connections);
+		LocalVector<Connection> all_connections;
+		p_nodes[i]->get_signals_connected_to_this(all_connections);
 
 		for (const Connection &connection : all_connections) {
 			if (connection.callable.get_method() != p_method) {
@@ -1571,8 +1571,8 @@ void ScriptTextEditor::_update_connected_methods() {
 	Vector<Node *> nodes = _find_all_node_for_script(base, base, script);
 	HashSet<StringName> methods_found;
 	for (int i = 0; i < nodes.size(); i++) {
-		List<Connection> signal_connections;
-		nodes[i]->get_signals_connected_to_this(&signal_connections);
+		LocalVector<Connection> signal_connections;
+		nodes[i]->get_signals_connected_to_this(signal_connections);
 
 		for (const Connection &connection : signal_connections) {
 			if (!(connection.flags & CONNECT_PERSIST)) {

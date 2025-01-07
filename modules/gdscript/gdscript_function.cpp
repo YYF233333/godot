@@ -252,8 +252,8 @@ void GDScriptFunctionState::_clear_stack() {
 }
 
 void GDScriptFunctionState::_clear_connections() {
-	List<Object::Connection> conns;
-	get_signals_connected_to_this(&conns);
+	LocalVector<Object::Connection> conns;
+	get_signals_connected_to_this(conns);
 
 	for (Object::Connection &c : conns) {
 		c.signal.disconnect(c.callable);
