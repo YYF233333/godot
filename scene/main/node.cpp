@@ -4031,7 +4031,7 @@ LocalVector<MethodInfo> Node::get_signal_list() const {
 	return Object::get_signal_list();
 }
 
-void Node::get_signal_connection_list(const StringName &p_signal, List<Connection> *p_connections) const {
+void Node::get_signal_connection_list(const StringName &p_signal, LocalVector<Connection> &p_connections) const {
 	ERR_THREAD_GUARD;
 	Object::get_signal_connection_list(p_signal, p_connections);
 }
