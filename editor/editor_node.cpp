@@ -1565,11 +1565,8 @@ void EditorNode::_load_editor_plugin_states_from_config(const Ref<ConfigFile> &p
 		return;
 	}
 
-	List<String> esl;
-	p_config_file->get_section_keys("editor_states", &esl);
-
 	Dictionary md;
-	for (const String &E : esl) {
+	for (const String &E : p_config_file->get_section_keys("editor_states")) {
 		Variant st = p_config_file->get_value("editor_states", E);
 		if (st.get_type() != Variant::NIL) {
 			md[E] = st;
@@ -2292,9 +2289,7 @@ void EditorNode::_dialog_action(String p_file) {
 			}
 
 			// Erase key values.
-			List<String> keys;
-			config->get_section_keys(p_file, &keys);
-			for (const String &key : keys) {
+			for (const String &key : config->get_section_keys(p_file)) {
 				config->set_value(p_file, key, Variant());
 			}
 

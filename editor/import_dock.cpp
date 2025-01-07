@@ -190,9 +190,7 @@ void ImportDock::_update_options(const String &p_path, const Ref<ConfigFile> &p_
 
 	HashMap<StringName, Variant> import_options;
 	if (p_config.is_valid() && p_config->has_section("params")) {
-		List<String> section_keys;
-		p_config->get_section_keys("params", &section_keys);
-		for (const String &section_key : section_keys) {
+		for (const String &section_key : p_config->get_section_keys("params")) {
 			import_options[section_key] = p_config->get_value("params", section_key);
 		}
 		if (params->importer.is_valid()) {
@@ -258,10 +256,7 @@ void ImportDock::set_edit_multiple_paths(const Vector<String> &p_paths) {
 			continue;
 		}
 
-		List<String> keys;
-		config->get_section_keys("params", &keys);
-
-		for (const String &E : keys) {
+		for (const String &E : config->get_section_keys("params")) {
 			if (!value_frequency.has(E)) {
 				value_frequency[E] = Dictionary();
 			}
