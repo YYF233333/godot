@@ -172,13 +172,13 @@ void PropertySelector::_update_search() {
 		}
 
 	} else {
-		List<MethodInfo> methods;
+		LocalVector<MethodInfo> methods;
 
 		if (type != Variant::NIL) {
 			Variant v;
 			Callable::CallError ce;
 			Variant::construct(type, v, nullptr, 0, ce);
-			v.get_method_list(&methods);
+			v.get_method_list(methods);
 		} else {
 			Ref<Script> script_ref = ObjectDB::get_ref<Script>(script);
 			if (script_ref.is_valid()) {
@@ -186,8 +186,8 @@ void PropertySelector::_update_search() {
 					script_ref->reload(true);
 				}
 
-				List<MethodInfo> script_methods;
-				script_ref->get_script_method_list(&script_methods);
+				LocalVector<MethodInfo> script_methods;
+				script_ref->get_script_method_list(script_methods);
 
 				methods.push_back(MethodInfo("*Script Methods")); // TODO: Split by inheritance.
 
@@ -205,7 +205,7 @@ void PropertySelector::_update_search() {
 			StringName base = base_type;
 			while (base) {
 				methods.push_back(MethodInfo("*" + String(base)));
-				ClassDB::get_method_list(base, &methods, true, true);
+				ClassDB::get_method_list(base, methods, true, true);
 				base = ClassDB::get_parent_class(base);
 			}
 		}
