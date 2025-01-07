@@ -852,9 +852,9 @@ public:
 	virtual bool has_signal(const StringName &p_name) const override;
 	virtual void get_signal_list(List<MethodInfo> *p_signals) const override;
 	virtual void get_signal_connection_list(const StringName &p_signal, LocalVector<Connection> &p_connections) const override;
-	virtual void get_all_signal_connections(List<Connection> *p_connections) const override;
+	virtual void get_all_signal_connections(LocalVector<Connection> &p_connections) const override;
 	virtual int get_persistent_signal_connection_count() const override;
-	virtual void get_signals_connected_to_this(List<Connection> *p_connections) const override;
+	virtual void get_signals_connected_to_this(LocalVector<Connection> &p_connections) const override;
 
 	virtual Error connect(const StringName &p_signal, const Callable &p_callable, uint32_t p_flags = 0) override;
 	virtual void disconnect(const StringName &p_signal, const Callable &p_callable) override;
