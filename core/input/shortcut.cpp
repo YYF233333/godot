@@ -40,10 +40,10 @@ void Shortcut::set_events(const Array &p_events) {
 	emit_changed();
 }
 
-void Shortcut::set_events_list(const List<Ref<InputEvent>> *p_events) {
+void Shortcut::set_events_list(const LocalVector<Ref<InputEvent>> &p_events) {
 	events.clear();
 
-	for (const Ref<InputEvent> &ie : *p_events) {
+	for (const Ref<InputEvent> &ie : p_events) {
 		events.push_back(ie);
 	}
 }

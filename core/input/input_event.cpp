@@ -1645,7 +1645,7 @@ bool InputEventAction::action_match(const Ref<InputEvent> &p_event, bool p_exact
 }
 
 String InputEventAction::as_text() const {
-	const List<Ref<InputEvent>> *events = InputMap::get_singleton()->action_get_events(action);
+	const LocalVector<Ref<InputEvent>> *events = InputMap::get_singleton()->action_get_events(action);
 	if (!events) {
 		return String();
 	}

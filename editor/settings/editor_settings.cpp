@@ -160,7 +160,7 @@ bool EditorSettings::_get(const StringName &p_name, Variant &r_ret) const {
 
 	if (p_name == "shortcuts") {
 		Array save_array;
-		const HashMap<String, List<Ref<InputEvent>>> &builtin_list = InputMap::get_singleton()->get_builtins();
+		const HashMap<String, LocalVector<Ref<InputEvent>>> &builtin_list = InputMap::get_singleton()->get_builtins();
 		for (const KeyValue<String, Ref<Shortcut>> &shortcut_definition : shortcuts) {
 			Ref<Shortcut> sc = shortcut_definition.value;
 
@@ -197,13 +197,13 @@ bool EditorSettings::_get(const StringName &p_name, Variant &r_ret) const {
 		return true;
 	} else if (p_name == "builtin_action_overrides") {
 		Array actions_arr;
-		for (const KeyValue<String, List<Ref<InputEvent>>> &action_override : builtin_action_overrides) {
-			const List<Ref<InputEvent>> *defaults = InputMap::get_singleton()->get_builtins().getptr(action_override.key);
+		for (const KeyValue<String, LocalVector<Ref<InputEvent>>> &action_override : builtin_action_overrides) {
+			const LocalVector<Ref<InputEvent>> *defaults = InputMap::get_singleton()->get_builtins().getptr(action_override.key);
 			if (!defaults) {
 				continue;
 			}
 
-			List<Ref<InputEvent>> events = action_override.value;
+			const LocalVector<Ref<InputEvent>> &events = action_override.value;
 
 			Dictionary action_dict;
 			action_dict["name"] = action_override.key;
@@ -1979,19 +1979,19 @@ Ref<Shortcut> EditorSettings::get_shortcut(const String &p_path) const {
 	// Use the first item in the action list for the shortcut event, since a shortcut can only have 1 linked event.
 
 	Ref<Shortcut> sc;
-	HashMap<String, List<Ref<InputEvent>>>::ConstIterator builtin_override = builtin_action_overrides.find(p_path);
+	HashMap<String, LocalVector<Ref<InputEvent>>>::ConstIterator builtin_override = builtin_action_overrides.find(p_path);
 	if (builtin_override) {
 		sc.instantiate();
-		sc->set_events_list(&builtin_override->value);
+		sc->set_events_list(builtin_override->value);
 		sc->set_name(InputMap::get_singleton()->get_builtin_display_name(p_path));
 	}
 
 	// If there was no override, check the default builtins to see if it has an InputEvent for the provided name.
 	if (sc.is_null()) {
-		HashMap<String, List<Ref<InputEvent>>>::ConstIterator builtin_default = InputMap::get_singleton()->get_builtins_with_feature_overrides_applied().find(p_path);
+		HashMap<String, LocalVector<Ref<InputEvent>>>::ConstIterator builtin_default = InputMap::get_singleton()->get_builtins_with_feature_overrides_applied().find(p_path);
 		if (builtin_default) {
 			sc.instantiate();
-			sc->set_events_list(&builtin_default->value);
+			sc->set_events_list(builtin_default->value);
 			sc->set_name(InputMap::get_singleton()->get_builtin_display_name(p_path));
 		}
 	}
@@ -2139,7 +2139,7 @@ Ref<Shortcut> ED_SHORTCUT_ARRAY(const String &p_path, const String &p_name, cons
 }
 
 void EditorSettings::set_builtin_action_override(const String &p_name, const TypedArray<InputEvent> &p_events) {
-	List<Ref<InputEvent>> event_list;
+	LocalVector<Ref<InputEvent>> event_list;
 
 	// Override the whole list, since events may have their order changed or be added, removed or edited.
 	InputMap::get_singleton()->action_erase_events(p_name);
@@ -2151,9 +2151,9 @@ void EditorSettings::set_builtin_action_override(const String &p_name, const Typ
 	// Check if the provided event array is same as built-in. If it is, it does not need to be added to the overrides.
 	// Note that event order must also be the same.
 	bool same_as_builtin = true;
-	HashMap<String, List<Ref<InputEvent>>>::ConstIterator builtin_default = InputMap::get_singleton()->get_builtins_with_feature_overrides_applied().find(p_name);
+	HashMap<String, LocalVector<Ref<InputEvent>>>::ConstIterator builtin_default = InputMap::get_singleton()->get_builtins_with_feature_overrides_applied().find(p_name);
 	if (builtin_default) {
-		const List<Ref<InputEvent>> &builtin_events = builtin_default->value;
+		const LocalVector<Ref<InputEvent>> &builtin_events = builtin_default->value;
 
 		// In the editor we only care about key events.
 		List<Ref<InputEventKey>> builtin_key_events;
@@ -2187,17 +2187,16 @@ void EditorSettings::set_builtin_action_override(const String &p_name, const Typ
 
 	// Update the shortcut (if it is used somewhere in the editor) to be the first event of the new list.
 	if (shortcuts.has(p_name)) {
-		shortcuts[p_name]->set_events_list(&event_list);
+		shortcuts[p_name]->set_events_list(event_list);
 	}
 }
 
 const Array EditorSettings::get_builtin_action_overrides(const String &p_name) const {
-	HashMap<String, List<Ref<InputEvent>>>::ConstIterator AO = builtin_action_overrides.find(p_name);
+	HashMap<String, LocalVector<Ref<InputEvent>>>::ConstIterator AO = builtin_action_overrides.find(p_name);
 	if (AO) {
 		Array event_array;
 
-		List<Ref<InputEvent>> events_list = AO->value;
-		for (const Ref<InputEvent> &E : events_list) {
+		for (const Ref<InputEvent> &E : AO->value) {
 			event_array.push_back(E);
 		}
 		return event_array;

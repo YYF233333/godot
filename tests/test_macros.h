@@ -147,14 +147,14 @@ int register_test_command(String p_command, TestFunc p_function);
 
 #define _SEND_DISPLAYSERVER_EVENT(m_event) ((DisplayServerMock *)(DisplayServer::get_singleton()))->simulate_event(m_event);
 
-#define SEND_GUI_ACTION(m_action)                                                                     \
-	{                                                                                                 \
-		const List<Ref<InputEvent>> *events = InputMap::get_singleton()->action_get_events(m_action); \
-		const List<Ref<InputEvent>>::Element *first_event = events->front();                          \
-		Ref<InputEventKey> event = first_event->get()->duplicate();                                   \
-		event->set_pressed(true);                                                                     \
-		_SEND_DISPLAYSERVER_EVENT(event);                                                             \
-		MessageQueue::get_singleton()->flush();                                                       \
+#define SEND_GUI_ACTION(m_action)                                                                            \
+	{                                                                                                        \
+		const LocalVector<Ref<InputEvent>> *events = InputMap::get_singleton()->action_get_events(m_action); \
+		const Ref<InputEvent> &first_event = (*events)[0];                                                   \
+		Ref<InputEventKey> event = first_event->duplicate();                                                 \
+		event->set_pressed(true);                                                                            \
+		_SEND_DISPLAYSERVER_EVENT(event);                                                                    \
+		MessageQueue::get_singleton()->flush();                                                              \
 	}
 
 #define SEND_GUI_KEY_EVENT(m_input)                                          \
