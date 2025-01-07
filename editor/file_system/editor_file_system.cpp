@@ -3126,8 +3126,8 @@ Error EditorFileSystem::_copy_file(const String &p_from, const String &p_to) {
 			res = ResourceLoader::load(p_from, "", ResourceFormatLoader::CACHE_MODE_REUSE, &err);
 		} else {
 			bool edited = false;
-			List<Ref<Resource>> cached;
-			ResourceCache::get_cached_resources(&cached);
+			LocalVector<Ref<Resource>> cached;
+			ResourceCache::get_cached_resources(cached);
 			for (Ref<Resource> &resource : cached) {
 				if (!resource->is_edited()) {
 					continue;
