@@ -837,7 +837,7 @@ Ref<Resource> ResourceCache::get_ref(const String &p_path) {
 	return ref;
 }
 
-void ResourceCache::get_cached_resources(List<Ref<Resource>> *p_resources) {
+void ResourceCache::get_cached_resources(LocalVector<Ref<Resource>> &p_resources) {
 	MutexLock mutex_lock(lock);
 
 	LocalVector<String> to_remove;
@@ -852,7 +852,7 @@ void ResourceCache::get_cached_resources(List<Ref<Resource>> *p_resources) {
 			continue;
 		}
 
-		p_resources->push_back(ref);
+		p_resources.push_back(ref);
 	}
 
 	for (const String &E : to_remove) {
