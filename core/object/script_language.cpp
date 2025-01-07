@@ -84,8 +84,8 @@ TypedArray<Dictionary> Script::_get_script_property_list() {
 
 TypedArray<Dictionary> Script::_get_script_method_list() {
 	TypedArray<Dictionary> ret;
-	List<MethodInfo> list;
-	get_script_method_list(&list);
+	LocalVector<MethodInfo> list;
+	get_script_method_list(list);
 	for (const MethodInfo &E : list) {
 		ret.append(E.operator Dictionary());
 	}
@@ -753,7 +753,7 @@ Variant::Type PlaceHolderScriptInstance::get_property_type(const StringName &p_n
 	return Variant::NIL;
 }
 
-void PlaceHolderScriptInstance::get_method_list(List<MethodInfo> *p_list) const {
+void PlaceHolderScriptInstance::get_method_list(LocalVector<MethodInfo> &p_list) const {
 	if (script->is_placeholder_fallback_enabled()) {
 		return;
 	}
