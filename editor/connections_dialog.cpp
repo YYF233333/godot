@@ -272,7 +272,7 @@ StringName ConnectDialog::generate_method_callback_name(Node *p_source, const St
 	return dst_method;
 }
 
-void ConnectDialog::_create_method_tree_items(const List<MethodInfo> &p_methods, TreeItem *p_parent_item) {
+void ConnectDialog::_create_method_tree_items(const LocalVector<MethodInfo> &p_methods, TreeItem *p_parent_item) {
 	for (const MethodInfo &mi : p_methods) {
 		TreeItem *method_item = method_tree->create_item(p_parent_item);
 		method_item->set_text(0, get_signature(mi));
@@ -280,9 +280,9 @@ void ConnectDialog::_create_method_tree_items(const List<MethodInfo> &p_methods,
 	}
 }
 
-List<MethodInfo> ConnectDialog::_filter_method_list(const List<MethodInfo> &p_methods, const MethodInfo &p_signal, const String &p_search_string) const {
+LocalVector<MethodInfo> ConnectDialog::_filter_method_list(const LocalVector<MethodInfo> &p_methods, const MethodInfo &p_signal, const String &p_search_string) const {
 	bool check_signal = compatible_methods_only->is_pressed();
-	List<MethodInfo> ret;
+	LocalVector<MethodInfo> ret;
 
 	LocalVector<Pair<Variant::Type, StringName>> effective_args;
 	int unbind = get_unbinds();
@@ -373,8 +373,8 @@ void ConnectDialog::_update_method_tree() {
 		if (si->get_script()->is_built_in()) {
 			si->get_script()->reload();
 		}
-		List<MethodInfo> methods;
-		si->get_method_list(&methods);
+		LocalVector<MethodInfo> methods;
+		si->get_method_list(methods);
 		methods = _filter_method_list(methods, signal_info, search_string);
 
 		if (!methods.is_empty()) {
@@ -404,8 +404,8 @@ void ConnectDialog::_update_method_tree() {
 		class_item->set_icon(0, icon);
 		class_item->set_selectable(0, false);
 
-		List<MethodInfo> methods;
-		ClassDB::get_method_list(current_class, &methods, true);
+		LocalVector<MethodInfo> methods;
+		ClassDB::get_method_list(current_class, methods, true);
 		methods = _filter_method_list(methods, signal_info, search_string);
 
 		if (methods.is_empty()) {
