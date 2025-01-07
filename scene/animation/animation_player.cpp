@@ -879,11 +879,11 @@ Tween::EaseType AnimationPlayer::get_auto_capture_ease_type() const {
 }
 
 #ifdef TOOLS_ENABLED
-void AnimationPlayer::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void AnimationPlayer::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0 && (pf == "play" || pf == "play_backwards" || pf == "has_animation" || pf == "queue")) {
 		for (const StringName &name : get_animation_list()) {
-			r_options->push_back(String(name).quote());
+			r_options.push_back(String(name).quote());
 		}
 	}
 	AnimationMixer::get_argument_options(p_function, p_idx, r_options);

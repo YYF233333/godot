@@ -1985,7 +1985,7 @@ void SceneTree::add_idle_callback(IdleCallback p_callback) {
 }
 
 #ifdef TOOLS_ENABLED
-void SceneTree::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void SceneTree::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	bool add_options = false;
 	if (p_idx == 0) {
 		static const Vector<StringName> names = {
@@ -2010,7 +2010,7 @@ void SceneTree::get_argument_options(const StringName &p_function, int p_idx, Li
 	if (add_options) {
 		HashMap<StringName, String> global_groups = ProjectSettings::get_singleton()->get_global_groups_list();
 		for (const KeyValue<StringName, String> &E : global_groups) {
-			r_options->push_back(E.key.operator String().quote());
+			r_options.push_back(E.key.operator String().quote());
 		}
 	}
 	MainLoop::get_argument_options(p_function, p_idx, r_options);
