@@ -98,7 +98,7 @@ public:
 	bool property_get_revert(const StringName &p_name, Variant &r_ret) const override {
 		return false;
 	}
-	void get_method_list(List<MethodInfo> *p_list) const override {
+	void get_method_list(LocalVector<MethodInfo> &p_list) const override {
 	}
 	bool has_method(const StringName &p_method) const override {
 		return false;
