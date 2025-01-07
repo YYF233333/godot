@@ -1822,9 +1822,8 @@ void SceneTree::add_idle_callback(IdleCallback p_callback) {
 }
 
 #ifdef TOOLS_ENABLED
-LocalVector<String> SceneTree::get_argument_options(const StringName &p_function, int p_idx) const {
+void SceneTree::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
 	const String pf = p_function;
-	LocalVector<String> r_options;
 	bool add_options = false;
 	if (p_idx == 0) {
 		add_options = pf == "get_nodes_in_group" || pf == "has_group" || pf == "get_first_node_in_group" || pf == "set_group" || pf == "notify_group" || pf == "call_group" || pf == "add_to_group";
@@ -1834,11 +1833,10 @@ LocalVector<String> SceneTree::get_argument_options(const StringName &p_function
 	if (add_options) {
 		HashMap<StringName, String> global_groups = ProjectSettings::get_singleton()->get_global_groups_list();
 		for (const KeyValue<StringName, String> &E : global_groups) {
-			r_options.push_back(E.key.operator String().quote());
+			r_options->push_back(E.key.operator String().quote());
 		}
 	}
-	r_options.extend(MainLoop::get_argument_options(p_function, p_idx));
-	return r_options;
+	MainLoop::get_argument_options(p_function, p_idx, r_options);
 }
 #endif
 

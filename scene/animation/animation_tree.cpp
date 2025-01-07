@@ -510,13 +510,12 @@ double AnimationNode::blend_input_ex(int p_input, double p_time, bool p_seek, bo
 }
 
 #ifdef TOOLS_ENABLED
-LocalVector<String> AnimationNode::get_argument_options(const StringName &p_function, int p_idx) const {
+void AnimationNode::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
 	const String pf = p_function;
-	LocalVector<String> r_options;
 	if (p_idx == 0) {
 		if (pf == "find_input") {
 			for (const AnimationNode::Input &E : inputs) {
-				r_options.push_back(E.name.quote());
+				r_options->push_back(E.name.quote());
 			}
 		} else if (pf == "get_parameter" || pf == "set_parameter") {
 			bool is_setter = pf == "set_parameter";
@@ -526,16 +525,15 @@ LocalVector<String> AnimationNode::get_argument_options(const StringName &p_func
 				if (is_setter && is_parameter_read_only(E.name)) {
 					continue;
 				}
-				r_options.push_back(E.name.quote());
+				r_options->push_back(E.name.quote());
 			}
 		} else if (pf == "set_filter_path" || pf == "is_path_filtered") {
 			for (const KeyValue<NodePath, bool> &E : filter) {
-				r_options.push_back(String(E.key).quote());
+				r_options->push_back(String(E.key).quote());
 			}
 		}
 	}
-	r_options.extend(Resource::get_argument_options(p_function, p_idx));
-	return r_options;
+	Resource::get_argument_options(p_function, p_idx, r_options);
 }
 #endif
 

@@ -1803,9 +1803,8 @@ void AnimationNodeBlendTree::_node_changed(const StringName &p_node) {
 }
 
 #ifdef TOOLS_ENABLED
-LocalVector<String> AnimationNodeBlendTree::get_argument_options(const StringName &p_function, int p_idx) const {
+void AnimationNodeBlendTree::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
 	const String pf = p_function;
-	LocalVector<String> r_options;
 	bool add_node_options = false;
 	if (p_idx == 0) {
 		add_node_options = (pf == "get_node" || pf == "has_node" || pf == "rename_node" || pf == "remove_node" || pf == "set_node_position" || pf == "get_node_position" || pf == "connect_node" || pf == "disconnect_node");
@@ -1814,11 +1813,10 @@ LocalVector<String> AnimationNodeBlendTree::get_argument_options(const StringNam
 	}
 	if (add_node_options) {
 		for (const KeyValue<StringName, Node> &E : nodes) {
-			r_options.push_back(String(E.key).quote());
+			r_options->push_back(String(E.key).quote());
 		}
 	}
-	r_options.extend(AnimationRootNode::get_argument_options(p_function, p_idx));
-	return r_options;
+	AnimationRootNode::get_argument_options(p_function, p_idx, r_options);
 }
 #endif
 

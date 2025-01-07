@@ -526,20 +526,18 @@ void ShaderMaterial::_bind_methods() {
 }
 
 #ifdef TOOLS_ENABLED
-LocalVector<String> ShaderMaterial::get_argument_options(const StringName &p_function, int p_idx) const {
+void ShaderMaterial::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
 	const String pf = p_function;
-	LocalVector<String> r_options;
 	if (p_idx == 0 && (pf == "get_shader_parameter" || pf == "set_shader_parameter")) {
 		if (shader.is_valid()) {
 			List<PropertyInfo> pl;
 			shader->get_shader_uniform_list(&pl);
 			for (const PropertyInfo &E : pl) {
-				r_options.push_back(E.name.replace_first("shader_parameter/", "").quote());
+				r_options->push_back(E.name.replace_first("shader_parameter/", "").quote());
 			}
 		}
 	}
-	r_options.extend(Material::get_argument_options(p_function, p_idx));
-	return r_options;
+	Material::get_argument_options(p_function, p_idx, r_options);
 }
 #endif
 
