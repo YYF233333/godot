@@ -3221,8 +3221,8 @@ void SceneTreeDock::_replace_node(Node *p_node, Node *p_by_node, bool p_keep_pro
 
 	oldnode->get_signal_list(&sl);
 	for (const MethodInfo &E : sl) {
-		List<Object::Connection> cl;
-		oldnode->get_signal_connection_list(E.name, &cl);
+		LocalVector<Object::Connection> cl;
+		oldnode->get_signal_connection_list(E.name, cl);
 
 		for (const Object::Connection &c : cl) {
 			if (!(c.flags & Object::CONNECT_PERSIST)) {

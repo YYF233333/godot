@@ -1151,8 +1151,8 @@ Error SceneState::_parse_connections(Node *p_owner, Node *p_node, HashMap<String
 	//NodeData &nd = nodes[node_map[p_node]];
 
 	for (const MethodInfo &E : _signals) {
-		List<Node::Connection> conns;
-		p_node->get_signal_connection_list(E.name, &conns);
+		LocalVector<Node::Connection> conns;
+		p_node->get_signal_connection_list(E.name, conns);
 
 		conns.sort();
 
