@@ -982,7 +982,7 @@ void OrphanResourcesDialog::show() {
 	popup_centered_ratio(0.4);
 }
 
-void OrphanResourcesDialog::_find_to_delete(TreeItem *p_item, List<String> &r_paths) {
+void OrphanResourcesDialog::_find_to_delete(TreeItem *p_item, LocalVector<String> &r_paths) {
 	while (p_item) {
 		if (p_item->get_cell_mode(0) == TreeItem::CELL_MODE_CHECK && p_item->is_checked(0)) {
 			r_paths.push_back(p_item->get_metadata(0));
