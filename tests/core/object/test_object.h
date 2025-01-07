@@ -373,7 +373,7 @@ TEST_CASE("[Object] Signals") {
 	}
 
 	SUBCASE("Deleting an object with connected signals should disconnect them") {
-		List<Object::Connection> signal_connections;
+		LocalVector<Object::Connection> signal_connections;
 
 		{
 			Object target;
@@ -386,10 +386,10 @@ TEST_CASE("[Object] Signals") {
 			ERR_PRINT_ON;
 
 			signal_connections.clear();
-			object.get_all_signal_connections(&signal_connections);
+			object.get_all_signal_connections(signal_connections);
 			CHECK(signal_connections.size() == 0);
 			signal_connections.clear();
-			object.get_signals_connected_to_this(&signal_connections);
+			object.get_signals_connected_to_this(signal_connections);
 			CHECK(signal_connections.size() == 1);
 
 			ERR_PRINT_OFF;
@@ -399,18 +399,18 @@ TEST_CASE("[Object] Signals") {
 			ERR_PRINT_ON;
 
 			signal_connections.clear();
-			object.get_all_signal_connections(&signal_connections);
+			object.get_all_signal_connections(signal_connections);
 			CHECK(signal_connections.size() == 1);
 			signal_connections.clear();
-			object.get_signals_connected_to_this(&signal_connections);
+			object.get_signals_connected_to_this(signal_connections);
 			CHECK(signal_connections.size() == 1);
 		}
 
 		signal_connections.clear();
-		object.get_all_signal_connections(&signal_connections);
+		object.get_all_signal_connections(signal_connections);
 		CHECK(signal_connections.size() == 0);
 		signal_connections.clear();
-		object.get_signals_connected_to_this(&signal_connections);
+		object.get_signals_connected_to_this(signal_connections);
 		CHECK(signal_connections.size() == 0);
 	}
 
@@ -434,7 +434,7 @@ TEST_CASE("[Object] Signals") {
 	}
 
 	SUBCASE("Connecting and then disconnecting many signals should not leave anything behind") {
-		List<Object::Connection> signal_connections;
+		LocalVector<Object::Connection> signal_connections;
 		Object targets[100];
 
 		for (int i = 0; i < 10; i++) {
@@ -444,7 +444,7 @@ TEST_CASE("[Object] Signals") {
 			}
 			ERR_PRINT_ON;
 			signal_connections.clear();
-			object.get_all_signal_connections(&signal_connections);
+			object.get_all_signal_connections(signal_connections);
 			CHECK(signal_connections.size() == 100);
 		}
 
@@ -452,7 +452,7 @@ TEST_CASE("[Object] Signals") {
 			object.disconnect("my_custom_signal", callable_mp(&target, &Object::notify_property_list_changed));
 		}
 		signal_connections.clear();
-		object.get_all_signal_connections(&signal_connections);
+		object.get_all_signal_connections(signal_connections);
 		CHECK(signal_connections.size() == 0);
 	}
 }
