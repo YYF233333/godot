@@ -1693,7 +1693,7 @@ bool CSharpInstance::property_get_revert(const StringName &p_name, Variant &r_re
 	return true;
 }
 
-void CSharpInstance::get_method_list(List<MethodInfo> *p_list) const {
+void CSharpInstance::get_method_list(LocalVector<MethodInfo> &p_list) const {
 	if (!script->is_valid() || !script->valid) {
 		return;
 	}
@@ -2553,7 +2553,7 @@ void CSharpScript::set_source_code(const String &p_code) {
 #endif
 }
 
-void CSharpScript::get_script_method_list(List<MethodInfo> *p_list) const {
+void CSharpScript::get_script_method_list(LocalVector<MethodInfo> &p_list) const {
 	if (!valid) {
 		return;
 	}
@@ -2561,7 +2561,7 @@ void CSharpScript::get_script_method_list(List<MethodInfo> *p_list) const {
 	const CSharpScript *top = this;
 	while (top != nullptr) {
 		for (const CSharpMethodInfo &E : top->methods) {
-			p_list->push_back(E.method_info);
+			p_list.push_back(E.method_info);
 		}
 
 		top = top->base_script.ptr();

@@ -618,8 +618,8 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 
 			c.properties.sort();
 
-			List<MethodInfo> method_list;
-			ClassDB::get_method_list(name, &method_list, true);
+			LocalVector<MethodInfo> method_list;
+			ClassDB::get_method_list(name, method_list, true);
 
 			for (const MethodInfo &E : method_list) {
 				if (E.name.is_empty() || (E.name[0] == '_' && !(E.flags & METHOD_FLAG_VIRTUAL))) {
@@ -778,9 +778,9 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 		Variant v;
 		Variant::construct(Variant::Type(i), v, nullptr, 0, cerror);
 
-		List<MethodInfo> method_list;
-		v.get_method_list(&method_list);
-		Variant::get_constructor_list(Variant::Type(i), &method_list);
+		LocalVector<MethodInfo> method_list;
+		v.get_method_list(method_list);
+		Variant::get_constructor_list(Variant::Type(i), method_list);
 
 		for (int j = 0; j < Variant::OP_AND; j++) { // Showing above 'and' is pretty confusing and there are a lot of variations.
 			for (int k = 0; k < Variant::VARIANT_MAX; k++) {

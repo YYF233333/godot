@@ -1697,8 +1697,8 @@ int ClassDB::class_get_method_argument_count(const StringName &p_class, const St
 }
 
 TypedArray<Dictionary> ClassDB::class_get_method_list(const StringName &p_class, bool p_no_inheritance) const {
-	List<MethodInfo> methods;
-	::ClassDB::get_method_list(p_class, &methods, p_no_inheritance);
+	LocalVector<MethodInfo> methods;
+	::ClassDB::get_method_list(p_class, methods, p_no_inheritance);
 	TypedArray<Dictionary> ret;
 
 	for (const MethodInfo &E : methods) {

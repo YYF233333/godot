@@ -688,7 +688,7 @@ public:
 	static String get_callable_error_text(const Callable &p_callable, const Variant **p_argptrs, int p_argcount, const Callable::CallError &ce);
 
 	//dynamic (includes Object)
-	void get_method_list(List<MethodInfo> *p_list) const;
+	void get_method_list(LocalVector<MethodInfo> &p_list) const;
 	bool has_method(const StringName &p_method) const;
 
 	/* Constructors */
@@ -704,7 +704,7 @@ public:
 	static String get_constructor_argument_name(Variant::Type p_type, int p_constructor, int p_argument);
 	static void construct(Variant::Type, Variant &base, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 
-	static void get_constructor_list(Type p_type, List<MethodInfo> *r_list); //convenience
+	static void get_constructor_list(Type p_type, LocalVector<MethodInfo> &r_list); //convenience
 
 	/* Destructors */
 
