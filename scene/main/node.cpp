@@ -3232,8 +3232,8 @@ void Node::_duplicate_signals(const Node *p_original, Node *p_copy) const {
 		const Node *n = process_list.front()->get();
 		process_list.pop_front();
 
-		List<Connection> conns;
-		n->get_all_signal_connections(&conns);
+		LocalVector<Connection> conns;
+		n->get_all_signal_connections(conns);
 
 		for (const Connection &E : conns) {
 			if (E.flags & CONNECT_PERSIST) {
@@ -3361,8 +3361,8 @@ void Node::replace_by(Node *p_node, bool p_keep_groups) {
 }
 
 void Node::_replace_connections_target(Node *p_new_target) {
-	List<Connection> cl;
-	get_signals_connected_to_this(&cl);
+	LocalVector<Connection> cl;
+	get_signals_connected_to_this(cl);
 
 	for (const Connection &c : cl) {
 		if (c.flags & CONNECT_PERSIST) {
@@ -4298,7 +4298,7 @@ void Node::get_signal_connection_list(const StringName &p_signal, LocalVector<Co
 	Object::get_signal_connection_list(p_signal, p_connections);
 }
 
-void Node::get_all_signal_connections(List<Connection> *p_connections) const {
+void Node::get_all_signal_connections(LocalVector<Connection> &p_connections) const {
 	ERR_THREAD_GUARD;
 	Object::get_all_signal_connections(p_connections);
 }
@@ -4308,7 +4308,7 @@ int Node::get_persistent_signal_connection_count() const {
 	return Object::get_persistent_signal_connection_count();
 }
 
-void Node::get_signals_connected_to_this(List<Connection> *p_connections) const {
+void Node::get_signals_connected_to_this(LocalVector<Connection> &p_connections) const {
 	ERR_THREAD_GUARD;
 	Object::get_signals_connected_to_this(p_connections);
 }
