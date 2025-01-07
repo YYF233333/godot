@@ -1579,7 +1579,7 @@ const HashMap<StringName, HashSet<StringName>> &ProjectSettings::get_scene_group
 }
 
 #ifdef TOOLS_ENABLED
-void ProjectSettings::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void ProjectSettings::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0) {
 		if (pf == "has_setting" || pf == "set_setting" || pf == "get_setting" || pf == "get_setting_with_override" ||
@@ -1590,7 +1590,7 @@ void ProjectSettings::get_argument_options(const StringName &p_function, int p_i
 					continue;
 				}
 
-				r_options->push_back(String(E.key).quote());
+				r_options.push_back(String(E.key).quote());
 			}
 		}
 	}

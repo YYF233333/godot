@@ -1803,7 +1803,7 @@ bool ClassDB::is_class_enabled(const StringName &p_class) const {
 }
 
 #ifdef TOOLS_ENABLED
-void ClassDB::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void ClassDB::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	bool first_argument_is_class = false;
 	if (p_idx == 0) {
@@ -1821,7 +1821,7 @@ void ClassDB::get_argument_options(const StringName &p_function, int p_idx, List
 		::ClassDB::get_class_list(classes);
 		for (const StringName &E : classes) {
 			if (::ClassDB::is_class_exposed(E)) {
-				r_options->push_back(E.operator String().quote());
+				r_options.push_back(E.operator String().quote());
 			}
 		}
 	}
@@ -2075,11 +2075,11 @@ bool Engine::is_printing_error_messages() const {
 }
 
 #ifdef TOOLS_ENABLED
-void Engine::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void Engine::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0 && (pf == "has_singleton" || pf == "get_singleton" || pf == "unregister_singleton")) {
 		for (const String &E : get_singleton_list()) {
-			r_options->push_back(E.quote());
+			r_options.push_back(E.quote());
 		}
 	}
 	Object::get_argument_options(p_function, p_idx, r_options);

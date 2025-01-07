@@ -2223,7 +2223,7 @@ void EditorSettings::notify_changes() {
 	root->propagate_notification(NOTIFICATION_EDITOR_SETTINGS_CHANGED);
 }
 
-void EditorSettings::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void EditorSettings::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0) {
 		if (pf == "has_setting" || pf == "set_setting" || pf == "get_setting" || pf == "erase" ||
@@ -2233,16 +2233,15 @@ void EditorSettings::get_argument_options(const StringName &p_function, int p_id
 					continue;
 				}
 
-				r_options->push_back(E.key.quote());
+				r_options.push_back(E.key.quote());
 			}
 		} else if (pf == "get_project_metadata" && project_metadata.is_valid()) {
-			Vector<String> sections = project_metadata->get_sections();
-			for (const String &section : sections) {
-				r_options->push_back(section.quote());
+			for (const String &section : project_metadata->get_sections()) {
+				r_options.push_back(section.quote());
 			}
 		} else if (pf == "set_builtin_action_override") {
 			for (const Variant &action : InputMap::get_singleton()->get_actions()) {
-				r_options->push_back(String(action).quote());
+				r_options.push_back(String(action).quote());
 			}
 		}
 	}

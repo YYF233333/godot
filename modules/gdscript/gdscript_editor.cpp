@@ -3011,8 +3011,8 @@ static void _list_call_arguments(GDScriptParser::CompletionContext &p_context, c
 					if (base.get_type() == Variant::OBJECT) {
 						Object *obj = base.operator Object *();
 						if (obj) {
-							List<String> options;
-							obj->get_argument_options(method, p_argidx, &options);
+							LocalVector<String> options;
+							obj->get_argument_options(method, p_argidx, options);
 							for (String &opt : options) {
 								// Handle user preference.
 								if (opt.is_quoted()) {
@@ -3785,8 +3785,8 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 		case GDScriptParser::COMPLETION_GET_NODE: {
 			// Handles the `$Node/Path` or `$"Some NodePath"` syntax specifically.
 			if (p_owner) {
-				List<String> opts;
-				p_owner->get_argument_options("get_node", 0, &opts);
+				LocalVector<String> opts;
+				p_owner->get_argument_options("get_node", 0, opts);
 
 				bool for_unique_name = false;
 				if (completion_context.node != nullptr && completion_context.node->type == GDScriptParser::Node::GET_NODE && !static_cast<GDScriptParser::GetNodeNode *>(completion_context.node)->use_dollar) {
