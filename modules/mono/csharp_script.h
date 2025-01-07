@@ -282,7 +282,7 @@ public:
 
 	ScriptLanguage *get_language() const override;
 
-	void get_script_method_list(List<MethodInfo> *p_list) const override;
+	void get_script_method_list(LocalVector<MethodInfo> &p_list) const override;
 	bool has_method(const StringName &p_method) const override;
 	virtual int get_script_method_argument_count(const StringName &p_method, bool *r_is_valid = nullptr) const override;
 	MethodInfo get_method_info(const StringName &p_method) const override;
@@ -351,7 +351,7 @@ public:
 	bool property_can_revert(const StringName &p_name) const override;
 	bool property_get_revert(const StringName &p_name, Variant &r_ret) const override;
 
-	void get_method_list(List<MethodInfo> *p_list) const override;
+	void get_method_list(LocalVector<MethodInfo> &p_list) const override;
 	bool has_method(const StringName &p_method) const override;
 	virtual int get_method_argument_count(const StringName &p_method, bool *r_is_valid = nullptr) const override;
 	Variant callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;

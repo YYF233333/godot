@@ -1458,7 +1458,7 @@ uint32_t Variant::get_builtin_method_hash(Variant::Type p_type, const StringName
 	return hash_fmix32(hash);
 }
 
-void Variant::get_method_list(List<MethodInfo> *p_list) const {
+void Variant::get_method_list(LocalVector<MethodInfo> &p_list) const {
 	if (type == OBJECT) {
 		Object *obj = get_validated_object();
 		if (obj) {
@@ -1468,7 +1468,7 @@ void Variant::get_method_list(List<MethodInfo> *p_list) const {
 		for (const StringName &E : builtin_method_names[type]) {
 			const VariantBuiltInMethodInfo *method = builtin_method_info[type].lookup_ptr(E);
 			ERR_CONTINUE(!method);
-			p_list->push_back(method->get_method_info(E));
+			p_list.push_back(method->get_method_info(E));
 		}
 	}
 }
