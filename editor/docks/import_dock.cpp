@@ -596,8 +596,8 @@ void ImportDock::_reimport_and_cleanup() {
 	EditorNode::get_singleton()->push_item(nullptr);
 	EditorUndoRedoManager::get_singleton()->clear_history();
 
-	List<Ref<Resource>> external_resources;
-	ResourceCache::get_cached_resources(&external_resources);
+	LocalVector<Ref<Resource>> external_resources;
+	ResourceCache::get_cached_resources(external_resources);
 
 	Vector<Ref<Resource>> old_resources_to_replace;
 	Vector<Ref<Resource>> new_resources_to_replace;
