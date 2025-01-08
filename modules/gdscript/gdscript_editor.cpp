@@ -3247,9 +3247,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 			}
 			// Methods.
 			{
-				List<StringName> methods;
-				Variant::get_builtin_method_list(completion_context.builtin_type, &methods);
-				for (const StringName &E : methods) {
+				for (const StringName &E : Variant::get_builtin_method_list(completion_context.builtin_type)) {
 					if (Variant::is_builtin_method_static(completion_context.builtin_type, E)) {
 						ScriptLanguage::CodeCompletionOption option(E, ScriptLanguage::CODE_COMPLETION_KIND_FUNCTION);
 						if (Variant::get_builtin_method_argument_count(completion_context.builtin_type, E) > 0 || Variant::is_builtin_method_vararg(completion_context.builtin_type, E)) {
