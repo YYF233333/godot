@@ -558,16 +558,13 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 	{
 		Array utility_funcs;
 
-		List<StringName> utility_func_names;
-		Variant::get_utility_function_list(&utility_func_names);
-
 		const DocData::ClassDoc *global_scope_doc = nullptr;
 		if (p_include_docs) {
 			global_scope_doc = EditorHelp::get_doc_data()->class_list.getptr("@GlobalScope");
 			CRASH_COND_MSG(!global_scope_doc, "Could not find '@GlobalScope' in DocData.");
 		}
 
-		for (const StringName &name : utility_func_names) {
+		for (const StringName &name : Variant::get_utility_function_list()) {
 			Dictionary func;
 			func["name"] = String(name);
 			if (Variant::has_utility_function_return_value(name)) {

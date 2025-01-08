@@ -50,7 +50,7 @@ public:
 	static bool is_function_constant(const StringName &p_function);
 
 	static bool function_exists(const StringName &p_function);
-	static void get_function_list(List<StringName> *r_functions);
+	static Vector<StringName> get_function_list();
 	static MethodInfo get_function_info(const StringName &p_function);
 
 	static void register_functions();
