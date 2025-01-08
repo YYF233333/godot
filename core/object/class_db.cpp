@@ -2399,10 +2399,13 @@ void ClassDB::register_native_struct(const StringName &p_name, const String &p_c
 	native_structs[p_name] = ns;
 }
 
-void ClassDB::get_native_struct_list(List<StringName> *r_names) {
+LocalVector<StringName> ClassDB::get_native_struct_list() {
+	LocalVector<StringName> r_names;
+	r_names.reserve(native_structs.size());
 	for (const KeyValue<StringName, NativeStruct> &E : native_structs) {
-		r_names->push_back(E.key);
+		r_names.push_back(E.key);
 	}
+	return r_names;
 }
 
 String ClassDB::get_native_struct_code(const StringName &p_name) {
