@@ -856,7 +856,7 @@ public:
 	static Variant get_constant_value(Variant::Type p_type, const StringName &p_value, bool *r_valid = nullptr);
 
 	static LocalVector<StringName> get_enums_for_type(Variant::Type p_type);
-	static void get_enumerations_for_enum(Variant::Type p_type, const StringName &p_enum_name, List<StringName> *p_enumerations);
+	static LocalVector<StringName> get_enumerations_for_enum(Variant::Type p_type, const StringName &p_enum_name);
 	static int get_enum_value(Variant::Type p_type, const StringName &p_enum_name, const StringName &p_enumeration, bool *r_valid = nullptr);
 	static bool has_enum(Variant::Type p_type, const StringName &p_enum_name);
 	static StringName get_enum_for_enumeration(Variant::Type p_type, const StringName &p_enumeration);
