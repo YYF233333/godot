@@ -5201,10 +5201,7 @@ void EditorInspector::_edit_set(const String &p_name, const Variant &p_value, bo
 			}
 		}
 
-		List<StringName> linked_properties;
-		ClassDB::get_linked_properties_info(object->get_class_name(), p_name, &linked_properties);
-
-		for (const StringName &linked_prop : linked_properties) {
+		for (const StringName &linked_prop : ClassDB::get_linked_properties_info(object->get_class_name(), p_name)) {
 			valid = false;
 			Variant undo_value = object->get(linked_prop, &valid);
 			if (valid) {

@@ -1608,15 +1608,16 @@ void ClassDB::get_property_list(const StringName &p_class, List<PropertyInfo> *p
 	}
 }
 
-void ClassDB::get_linked_properties_info(const StringName &p_class, const StringName &p_property, List<StringName> *r_properties, bool p_no_inheritance) {
+LocalVector<StringName> ClassDB::get_linked_properties_info(const StringName &p_class, const StringName &p_property, bool p_no_inheritance) {
+	LocalVector<StringName> r_properties;
 #ifdef TOOLS_ENABLED
 	ClassInfo *check = classes.getptr(p_class);
 	while (check) {
 		if (!check->linked_properties.has(p_property)) {
-			return;
+			return r_properties;
 		}
 		for (const StringName &E : check->linked_properties[p_property]) {
-			r_properties->push_back(E);
+			r_properties.push_back(E);
 		}
 
 		if (p_no_inheritance) {
@@ -1625,6 +1626,7 @@ void ClassDB::get_linked_properties_info(const StringName &p_class, const String
 		check = check->inherits_ptr;
 	}
 #endif
+	return r_properties;
 }
 
 bool ClassDB::get_property_info(const StringName &p_class, const StringName &p_property, PropertyInfo *r_info, bool p_no_inheritance, const Object *p_validator) {
