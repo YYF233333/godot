@@ -1763,8 +1763,8 @@ bool ClassDB::class_has_enum(const StringName &p_class, const StringName &p_name
 }
 
 PackedStringArray ClassDB::class_get_enum_list(const StringName &p_class, bool p_no_inheritance) const {
-	List<StringName> enums;
-	::ClassDB::get_enum_list(p_class, &enums, p_no_inheritance);
+	LocalVector<StringName> enums;
+	::ClassDB::get_enum_list(p_class, enums, p_no_inheritance);
 
 	PackedStringArray ret;
 	ret.resize(enums.size());

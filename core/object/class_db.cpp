@@ -1287,14 +1287,14 @@ StringName ClassDB::get_integer_constant_enum(const StringName &p_class, const S
 	return StringName();
 }
 
-void ClassDB::get_enum_list(const StringName &p_class, List<StringName> *p_enums, bool p_no_inheritance) {
+void ClassDB::get_enum_list(const StringName &p_class, LocalVector<StringName> &p_enums, bool p_no_inheritance) {
 	Locker::Lock lock(Locker::STATE_READ);
 
 	ClassInfo *type = classes.getptr(p_class);
 
 	while (type) {
 		for (KeyValue<StringName, ClassInfo::EnumInfo> &E : type->enum_map) {
-			p_enums->push_back(E.key);
+			p_enums.push_back(E.key);
 		}
 
 		if (p_no_inheritance) {

@@ -909,8 +909,8 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 				member_keywords[E] = member_variable_color;
 			}
 
-			List<StringName> builtin_enums;
-			ClassDB::get_enum_list(instance_base, &builtin_enums);
+			LocalVector<StringName> builtin_enums;
+			ClassDB::get_enum_list(instance_base, builtin_enums);
 			for (const StringName &E : builtin_enums) {
 				member_keywords[E] = types_color;
 			}
