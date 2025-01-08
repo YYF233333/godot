@@ -181,7 +181,7 @@ public:
 		RemoteNode() {}
 	};
 
-	List<RemoteNode> nodes;
+	LocalVector<RemoteNode> nodes;
 
 	void serialize(Array &r_arr);
 	void deserialize(const Array &p_arr);
