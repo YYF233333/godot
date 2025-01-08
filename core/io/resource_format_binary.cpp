@@ -1278,8 +1278,8 @@ void ResourceFormatLoaderBinary::get_recognized_extensions_for_type(const String
 }
 
 void ResourceFormatLoaderBinary::get_recognized_extensions(LocalVector<String> &p_extensions) const {
-	List<String> extensions;
-	ClassDB::get_resource_base_extensions(&extensions);
+	LocalVector<String> extensions;
+	ClassDB::get_resource_base_extensions(extensions);
 	extensions.sort();
 
 	for (const String &E : extensions) {
