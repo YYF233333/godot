@@ -502,7 +502,7 @@ public:
 	static Vector<uint32_t> get_virtual_method_compatibility_hashes(const StringName &p_class, const StringName &p_name);
 
 	static void bind_integer_constant(const StringName &p_class, const StringName &p_enum, const StringName &p_name, int64_t p_constant, bool p_is_bitfield = false);
-	static void get_integer_constant_list(const StringName &p_class, List<String> *p_constants, bool p_no_inheritance = false);
+	static void get_integer_constant_list(const StringName &p_class, LocalVector<String> &p_constants, bool p_no_inheritance = false);
 	static int64_t get_integer_constant(const StringName &p_class, const StringName &p_name, bool *p_success = nullptr);
 	static bool has_integer_constant(const StringName &p_class, const StringName &p_name, bool p_no_inheritance = false);
 
