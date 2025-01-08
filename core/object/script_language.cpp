@@ -494,15 +494,15 @@ bool ScriptServer::is_global_class_tool(const String &p_class) {
 	return global_classes[p_class].is_tool;
 }
 
-void ScriptServer::get_global_class_list(List<StringName> *r_global_classes) {
+void ScriptServer::get_global_class_list(LocalVector<StringName> &r_global_classes) {
 	LocalVector<StringName> classes;
-	classes.reserve(r_global_classes->size());
+	classes.reserve(r_global_classes.size());
 	for (const KeyValue<StringName, GlobalScriptClass> &E : global_classes) {
 		classes.push_back(E.key);
 	}
 	classes.sort_custom<StringName::AlphCompare>();
 	for (const StringName &E : classes) {
-		r_global_classes->push_back(E);
+		r_global_classes.push_back(E);
 	}
 }
 
@@ -518,8 +518,8 @@ void ScriptServer::save_global_classes() {
 		class_icons[d["name"]] = d["icon"];
 	}
 
-	List<StringName> gc;
-	get_global_class_list(&gc);
+	LocalVector<StringName> gc;
+	get_global_class_list(gc);
 	Array gcarr;
 	for (const StringName &E : gc) {
 		const GlobalScriptClass &global_class = global_classes[E];

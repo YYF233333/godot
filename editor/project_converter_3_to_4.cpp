@@ -1191,8 +1191,8 @@ bool ProjectConverter3To4::test_array_names() {
 		//	}
 		//}
 
-		List<StringName> classes_list;
-		ClassDB::get_class_list(&classes_list);
+		LocalVector<StringName> classes_list;
+		ClassDB::get_class_list(classes_list);
 		for (StringName &name_of_class : classes_list) {
 			LocalVector<MethodInfo> method_list;
 			ClassDB::get_method_list(name_of_class, method_list, true);
