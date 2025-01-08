@@ -140,10 +140,10 @@ void ProjectManager::_build_icon_type_cache(Ref<Theme> p_theme) {
 	if (p_theme.is_null()) {
 		return;
 	}
-	List<StringName> tl;
-	p_theme->get_icon_list(EditorStringName(EditorIcons), &tl);
-	for (List<StringName>::Element *E = tl.front(); E; E = E->next()) {
-		icon_type_cache[E->get()] = p_theme->get_icon(E->get(), EditorStringName(EditorIcons));
+	LocalVector<StringName> tl;
+	p_theme->get_icon_list(EditorStringName(EditorIcons), tl);
+	for (const StringName &E : tl) {
+		icon_type_cache[E] = p_theme->get_icon(E, EditorStringName(EditorIcons));
 	}
 }
 
