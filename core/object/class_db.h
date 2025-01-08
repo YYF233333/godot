@@ -141,13 +141,13 @@ public:
 		HashMap<StringName, PropertyInfo> property_map;
 
 #ifdef DEBUG_ENABLED
-		List<StringName> constant_order;
-		List<StringName> method_order;
+		LocalVector<StringName> constant_order;
+		LocalVector<StringName> method_order;
 		HashSet<StringName> methods_in_properties;
-		List<MethodInfo> virtual_methods;
+		LocalVector<MethodInfo> virtual_methods;
 		HashMap<StringName, MethodInfo> virtual_methods_map;
 		HashMap<StringName, Vector<Error>> method_error_values;
-		HashMap<StringName, List<StringName>> linked_properties;
+		HashMap<StringName, LocalVector<StringName>> linked_properties;
 #endif // DEBUG_ENABLED
 
 #ifdef TOOLS_ENABLED

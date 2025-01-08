@@ -1579,7 +1579,7 @@ void ClassDB::add_linked_property(const StringName &p_class, const String &p_pro
 	ERR_FAIL_COND(!type->property_map.has(p_linked_property));
 
 	if (!type->linked_properties.has(p_property)) {
-		type->linked_properties.insert(p_property, List<StringName>());
+		type->linked_properties.insert(p_property, LocalVector<StringName>());
 	}
 	type->linked_properties[p_property].push_back(p_linked_property);
 
