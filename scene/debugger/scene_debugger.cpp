@@ -2306,9 +2306,7 @@ void RuntimeNodeSelect::_find_3d_items_at_pos(const Point2 &p_pos, Vector<Select
 			// Fetch collision shapes.
 			CollisionObject3D *collision = Object::cast_to<CollisionObject3D>(result.collider);
 			if (collision) {
-				List<uint32_t> owners;
-				collision->get_shape_owners(&owners);
-				for (uint32_t &I : owners) {
+				for (const uint32_t &I : collision->get_shape_owners()) {
 					SelectResult res_shape;
 					res_shape.item = Object::cast_to<Node>(collision->shape_owner_get_owner(I));
 					res_shape.order = res.order;
@@ -2445,9 +2443,7 @@ void RuntimeNodeSelect::_find_3d_items_at_rect(const Rect2 &p_rect, Vector<Selec
 		// Fetch collision shapes.
 		CollisionObject3D *collision = Object::cast_to<CollisionObject3D>(result.collider);
 		if (collision) {
-			List<uint32_t> owners;
-			collision->get_shape_owners(&owners);
-			for (uint32_t &I : owners) {
+			for (uint32_t &I : collision->get_shape_owners()) {
 				SelectResult res_shape;
 				res_shape.item = Object::cast_to<Node>(collision->shape_owner_get_owner(I));
 				res_shape.order = res.order;
