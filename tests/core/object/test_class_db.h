@@ -581,8 +581,8 @@ void add_exposed_classes(Context &r_context) {
 
 		// Add methods
 
-		List<MethodInfo> virtual_method_list;
-		ClassDB::get_virtual_methods(class_name, &virtual_method_list, true);
+		LocalVector<MethodInfo> virtual_method_list;
+		ClassDB::get_virtual_methods(class_name, virtual_method_list, true);
 
 		LocalVector<MethodInfo> method_list;
 		ClassDB::get_method_list(class_name, method_list, true);
@@ -611,7 +611,7 @@ void add_exposed_classes(Context &r_context) {
 			method.is_vararg = m && m->is_vararg();
 
 			if (!m && !method.is_virtual) {
-				TEST_FAIL_COND(!virtual_method_list.find(method_info),
+				TEST_FAIL_COND(!virtual_method_list.has(method_info),
 						"Missing MethodBind for non-virtual method: '", exposed_class.name, ".", method.name, "'.");
 
 				// A virtual method without the virtual flag. This is a special case.
