@@ -297,12 +297,12 @@ void ClassDB::get_inheriters_from_class(const StringName &p_class, LocalVector<S
 	}
 }
 
-void ClassDB::get_direct_inheriters_from_class(const StringName &p_class, List<StringName> *p_classes) {
+void ClassDB::get_direct_inheriters_from_class(const StringName &p_class, LocalVector<StringName> &p_classes) {
 	OBJTYPE_RLOCK;
 
 	for (const KeyValue<StringName, ClassInfo> &E : classes) {
 		if (E.key != p_class && _get_parent_class(E.key) == p_class) {
-			p_classes->push_back(E.key);
+			p_classes.push_back(E.key);
 		}
 	}
 }
