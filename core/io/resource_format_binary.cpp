@@ -948,7 +948,7 @@ void ResourceLoaderBinary::get_classes_used(Ref<FileAccess> p_f, HashSet<StringN
 	}
 }
 
-void ResourceLoaderBinary::get_dependencies(Ref<FileAccess> p_f, List<String> *p_dependencies, bool p_add_types) {
+void ResourceLoaderBinary::get_dependencies(Ref<FileAccess> p_f, LocalVector<String> &p_dependencies, bool p_add_types) {
 	open(p_f, false, true);
 	if (error) {
 		return;
@@ -975,7 +975,7 @@ void ResourceLoaderBinary::get_dependencies(Ref<FileAccess> p_f, List<String> *p
 			dep += "::" + fallback_path;
 		}
 
-		p_dependencies->push_back(dep);
+		p_dependencies.push_back(dep);
 	}
 }
 
@@ -1292,7 +1292,7 @@ bool ResourceFormatLoaderBinary::handles_type(const String &p_type) const {
 	return true; //handles all
 }
 
-void ResourceFormatLoaderBinary::get_dependencies(const String &p_path, List<String> *p_dependencies, bool p_add_types) {
+void ResourceFormatLoaderBinary::get_dependencies(const String &p_path, LocalVector<String> &p_dependencies, bool p_add_types) {
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ);
 	ERR_FAIL_COND_MSG(f.is_null(), vformat("Cannot open file '%s'.", p_path));
 
