@@ -1274,8 +1274,7 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 	{
 		Array native_structures;
 
-		List<StringName> native_structs;
-		ClassDB::get_native_struct_list(&native_structs);
+		LocalVector<StringName> native_structs = ClassDB::get_native_struct_list();
 		native_structs.sort_custom<StringName::AlphCompare>();
 
 		for (const StringName &E : native_structs) {
