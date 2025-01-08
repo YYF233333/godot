@@ -64,7 +64,7 @@ public:
 private:
 	static VersionControlEditorPlugin *singleton;
 
-	List<StringName> available_plugins;
+	LocalVector<StringName> available_plugins;
 
 	PopupMenu *version_control_actions = nullptr;
 	ConfirmationDialog *metadata_dialog = nullptr;
