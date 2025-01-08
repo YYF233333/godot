@@ -4018,8 +4018,8 @@ bool BindingsGenerator::_populate_object_type_interfaces() {
 		List<MethodInfo> virtual_method_list;
 		ClassDB::get_virtual_methods(type_cname, &virtual_method_list, true);
 
-		List<Pair<MethodInfo, uint32_t>> method_list_with_hashes;
-		ClassDB::get_method_list_with_compatibility(type_cname, &method_list_with_hashes, true);
+		LocalVector<Pair<MethodInfo, uint32_t>> method_list_with_hashes;
+		ClassDB::get_method_list_with_compatibility(type_cname, method_list_with_hashes, true);
 		method_list_with_hashes.sort_custom<SortMethodWithHashes>();
 
 		List<MethodInterface> compat_methods;
