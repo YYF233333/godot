@@ -220,7 +220,7 @@ public:
 
 	Vector2i quadrant_coords;
 	SelfList<CellData>::List cells;
-	List<RID> canvas_items;
+	LocalVector<RID> canvas_items;
 	Vector2 canvas_items_position;
 
 	SelfList<RenderingQuadrant> dirty_quadrant_list_element;
