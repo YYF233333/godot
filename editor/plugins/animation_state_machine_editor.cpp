@@ -638,18 +638,18 @@ void AnimationNodeStateMachineEditor::_open_menu(const Vector2 &p_position) {
 		}
 	}
 
-	List<StringName> classes;
-	ClassDB::get_inheriters_from_class("AnimationRootNode", &classes);
+	LocalVector<StringName> classes;
+	ClassDB::get_inheriters_from_class("AnimationRootNode", classes);
 	classes.sort_custom<StringName::AlphCompare>();
 
-	for (List<StringName>::Element *E = classes.front(); E; E = E->next()) {
-		String name = String(E->get()).replace_first("AnimationNode", "");
+	for (const StringName &E : classes) {
+		String name = String(E).replace_first("AnimationNode", "");
 		if (name == "Animation" || name == "StartState" || name == "EndState") {
 			continue; // nope
 		}
 		int idx = menu->get_item_count();
 		menu->add_item(vformat(TTR("Add %s"), name), idx);
-		menu->set_item_metadata(idx, E->get());
+		menu->set_item_metadata(idx, E);
 	}
 	Ref<AnimationNode> clipb = EditorSettings::get_singleton()->get_resource_clipboard();
 
