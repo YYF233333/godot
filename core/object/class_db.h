@@ -481,7 +481,7 @@ public:
 	static bool is_class_runtime(const StringName &p_class);
 
 	static void add_resource_base_extension(const StringName &p_extension, const StringName &p_class);
-	static void get_resource_base_extensions(List<String> *p_extensions);
+	static void get_resource_base_extensions(LocalVector<String> &p_extensions);
 	static void get_extensions_for_type(const StringName &p_class, List<String> *p_extensions);
 	static bool is_resource_extension(const StringName &p_extension);
 
