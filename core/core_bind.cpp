@@ -103,8 +103,8 @@ void ResourceLoader::set_abort_on_missing_resources(bool p_abort) {
 }
 
 PackedStringArray ResourceLoader::get_dependencies(const String &p_path) {
-	List<String> deps;
-	::ResourceLoader::get_dependencies(p_path, &deps);
+	LocalVector<String> deps;
+	::ResourceLoader::get_dependencies(p_path, deps);
 
 	PackedStringArray ret;
 	for (const String &E : deps) {

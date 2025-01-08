@@ -2062,8 +2062,8 @@ Vector<String> EditorFileSystem::_get_dependencies(const String &p_path) {
 		}
 	}
 
-	List<String> deps;
-	ResourceLoader::get_dependencies(p_path, &deps);
+	LocalVector<String> deps;
+	ResourceLoader::get_dependencies(p_path, deps);
 
 	Vector<String> ret;
 	for (const String &E : deps) {
