@@ -40,8 +40,8 @@
 void class_db_api_to_json(const String &p_output_file, ClassDB::APIType p_api) {
 	Dictionary classes_dict;
 
-	List<StringName> class_list;
-	ClassDB::get_class_list(&class_list);
+	LocalVector<StringName> class_list;
+	ClassDB::get_class_list(class_list);
 	// Must be alphabetically sorted for hash to compute.
 	class_list.sort_custom<StringName::AlphCompare>();
 
