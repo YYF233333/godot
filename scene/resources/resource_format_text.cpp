@@ -925,7 +925,7 @@ void ResourceLoaderText::set_translation_remapped(bool p_remapped) {
 ResourceLoaderText::ResourceLoaderText() :
 		stream(false), format_version(FORMAT_VERSION) {}
 
-void ResourceLoaderText::get_dependencies(Ref<FileAccess> p_f, List<String> *p_dependencies, bool p_add_types) {
+void ResourceLoaderText::get_dependencies(Ref<FileAccess> p_f, LocalVector<String> &p_dependencies, bool p_add_types) {
 	open(p_f);
 	ignore_resource_parsing = true;
 	ERR_FAIL_COND(error != OK);
@@ -976,7 +976,7 @@ void ResourceLoaderText::get_dependencies(Ref<FileAccess> p_f, List<String> *p_d
 			path += "::" + fallback_path;
 		}
 
-		p_dependencies->push_back(path);
+		p_dependencies.push_back(path);
 
 		Error err = VariantParser::parse_tag(&stream, lines, error_text, next_tag, &rp);
 
@@ -1572,7 +1572,7 @@ bool ResourceFormatLoaderText::has_custom_uid_support() const {
 	return true;
 }
 
-void ResourceFormatLoaderText::get_dependencies(const String &p_path, List<String> *p_dependencies, bool p_add_types) {
+void ResourceFormatLoaderText::get_dependencies(const String &p_path, LocalVector<String> &p_dependencies, bool p_add_types) {
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ);
 	if (f.is_null()) {
 		ERR_FAIL();

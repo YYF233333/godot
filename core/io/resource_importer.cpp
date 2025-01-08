@@ -447,7 +447,7 @@ void ResourceFormatImporter::get_classes_used(const String &p_path, HashSet<Stri
 	ResourceLoader::get_classes_used(pat.path, r_classes);
 }
 
-void ResourceFormatImporter::get_dependencies(const String &p_path, List<String> *p_dependencies, bool p_add_types) {
+void ResourceFormatImporter::get_dependencies(const String &p_path, LocalVector<String> &p_dependencies, bool p_add_types) {
 	PathAndType pat;
 	Error err = _get_path_and_type(p_path, pat, false);
 

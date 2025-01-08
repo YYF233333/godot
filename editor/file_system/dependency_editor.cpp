@@ -53,8 +53,8 @@ static void _setup_search_file_dialog(EditorFileDialog *p_dialog, const String &
 	p_dialog->set_current_dir(p_file.get_base_dir());
 
 	p_dialog->clear_filters();
-	List<String> ext;
-	ResourceLoader::get_recognized_extensions_for_type(p_type, &ext);
+	LocalVector<String> ext;
+	ResourceLoader::get_recognized_extensions_for_type(p_type, ext);
 	for (const String &E : ext) {
 		p_dialog->add_filter("*." + E);
 	}
@@ -204,8 +204,8 @@ static String _get_stored_dep_path(const String &p_dep) {
 }
 
 void DependencyEditor::_update_list() {
-	List<String> deps;
-	ResourceLoader::get_dependencies(editing, &deps, true);
+	LocalVector<String> deps;
+	ResourceLoader::get_dependencies(editing, deps, true);
 
 	tree->clear();
 	missing.clear();
@@ -846,8 +846,8 @@ void DependencyErrorDialog::_check_for_resolved() {
 			const String &owner_path = owner_ti->get_metadata(0);
 
 			if (!owner_deps.has(owner_path)) {
-				List<String> deps;
-				ResourceLoader::get_dependencies(owner_path, &deps);
+				LocalVector<String> deps;
+				ResourceLoader::get_dependencies(owner_path, deps);
 
 				LocalVector<String> &stored_paths = owner_deps[owner_path];
 				for (const String &dep : deps) {
