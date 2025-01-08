@@ -1677,28 +1677,30 @@ void Variant::get_method_list(LocalVector<MethodInfo> &p_list) const {
 	}
 }
 
-void Variant::get_constants_for_type(Variant::Type p_type, List<StringName> *p_constants) {
-	ERR_FAIL_INDEX(p_type, Variant::VARIANT_MAX);
+LocalVector<StringName> Variant::get_constants_for_type(Variant::Type p_type) {
+	LocalVector<StringName> p_constants;
+	ERR_FAIL_INDEX_V(p_type, Variant::VARIANT_MAX, p_constants);
 
 	const _VariantCall::ConstantData &cd = _VariantCall::constant_data[p_type];
 
 #ifdef DEBUG_ENABLED
 	for (const List<StringName>::Element *E = cd.value_ordered.front(); E; E = E->next()) {
-		p_constants->push_back(E->get());
+		p_constants.push_back(E->get());
 #else
 	for (const KeyValue<StringName, int64_t> &E : cd.value) {
-		p_constants->push_back(E.key);
+		p_constants.push_back(E.key);
 #endif // DEBUG_ENABLED
 	}
 
 #ifdef DEBUG_ENABLED
 	for (const List<StringName>::Element *E = cd.variant_value_ordered.front(); E; E = E->next()) {
-		p_constants->push_back(E->get());
+		p_constants.push_back(E->get());
 #else
 	for (const KeyValue<StringName, Variant> &E : cd.variant_value) {
-		p_constants->push_back(E.key);
+		p_constants.push_back(E.key);
 #endif // DEBUG_ENABLED
 	}
+	return p_constants;
 }
 
 int Variant::get_constants_count_for_type(Variant::Type p_type) {
