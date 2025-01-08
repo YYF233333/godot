@@ -3479,9 +3479,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 		case GDScriptParser::COMPLETION_BUILT_IN_TYPE_CONSTANT_OR_STATIC_METHOD: {
 			// Constants.
 			{
-				List<StringName> constants;
-				Variant::get_constants_for_type(completion_context.builtin_type, &constants);
-				for (const StringName &E : constants) {
+				for (const StringName &E : Variant::get_constants_for_type(completion_context.builtin_type)) {
 					ScriptLanguage::CodeCompletionOption option(E, ScriptLanguage::CODE_COMPLETION_KIND_CONSTANT);
 					bool valid = false;
 					Variant default_value = Variant::get_constant_value(completion_context.builtin_type, E, &valid);

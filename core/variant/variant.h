@@ -850,7 +850,7 @@ public:
 	String stringify(int recursion_count = 0) const;
 	String to_json_string() const;
 
-	static void get_constants_for_type(Variant::Type p_type, List<StringName> *p_constants);
+	static LocalVector<StringName> get_constants_for_type(Variant::Type p_type);
 	static int get_constants_count_for_type(Variant::Type p_type);
 	static bool has_constant(Variant::Type p_type, const StringName &p_value);
 	static Variant get_constant_value(Variant::Type p_type, const StringName &p_value, bool *r_valid = nullptr);

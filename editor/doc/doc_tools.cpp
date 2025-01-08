@@ -937,10 +937,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 			}
 		}
 
-		List<StringName> constants;
-		Variant::get_constants_for_type(Variant::Type(i), &constants);
-
-		for (const StringName &E : constants) {
+		for (const StringName &E : Variant::get_constants_for_type(Variant::Type(i))) {
 			DocData::ConstantDoc constant;
 			constant.name = E;
 			Variant value = Variant::get_constant_value(Variant::Type(i), E);
