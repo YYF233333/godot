@@ -6544,10 +6544,8 @@ bool CanvasItemEditorViewport::can_drop_data(const Point2 &p_point, const Varian
 
 void CanvasItemEditorViewport::_show_texture_node_type_selector() {
 	_remove_preview();
-	List<BaseButton *> btn_list;
-	button_group->get_buttons(&btn_list);
 
-	for (BaseButton *btn : btn_list) {
+	for (BaseButton *btn : button_group->get_buttons()) {
 		CheckBox *check = Object::cast_to<CheckBox>(btn);
 		check->set_pressed(check->get_text() == default_texture_node_type);
 	}
@@ -6609,10 +6607,7 @@ void CanvasItemEditorViewport::drop_data(const Point2 &p_point, const Variant &p
 }
 
 void CanvasItemEditorViewport::_update_theme() {
-	List<BaseButton *> btn_list;
-	button_group->get_buttons(&btn_list);
-
-	for (BaseButton *btn : btn_list) {
+	for (BaseButton *btn : button_group->get_buttons()) {
 		CheckBox *check = Object::cast_to<CheckBox>(btn);
 		check->set_button_icon(get_editor_theme_icon(check->get_text()));
 	}
