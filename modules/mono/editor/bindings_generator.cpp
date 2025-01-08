@@ -4015,8 +4015,8 @@ bool BindingsGenerator::_populate_object_type_interfaces() {
 
 		// Populate methods
 
-		List<MethodInfo> virtual_method_list;
-		ClassDB::get_virtual_methods(type_cname, &virtual_method_list, true);
+		LocalVector<MethodInfo> virtual_method_list;
+		ClassDB::get_virtual_methods(type_cname, virtual_method_list, true);
 
 		LocalVector<Pair<MethodInfo, uint32_t>> method_list_with_hashes;
 		ClassDB::get_method_list_with_compatibility(type_cname, method_list_with_hashes, true);
@@ -4066,7 +4066,7 @@ bool BindingsGenerator::_populate_object_type_interfaces() {
 				m = ClassDB::get_method_with_compatibility(type_cname, method_info.name, hash, &method_exists, &imethod.is_compat);
 
 				if (unlikely(!method_exists)) {
-					ERR_FAIL_COND_V_MSG(!virtual_method_list.find(method_info), false,
+					ERR_FAIL_COND_V_MSG(!virtual_method_list.has(method_info), false,
 							"Missing MethodBind for non-virtual method: '" + itype.name + "." + imethod.name + "'.");
 				}
 			}
@@ -4074,7 +4074,7 @@ bool BindingsGenerator::_populate_object_type_interfaces() {
 			imethod.is_vararg = m && m->is_vararg();
 
 			if (!m && !imethod.is_virtual) {
-				ERR_FAIL_COND_V_MSG(!virtual_method_list.find(method_info), false,
+				ERR_FAIL_COND_V_MSG(!virtual_method_list.has(method_info), false,
 						"Missing MethodBind for non-virtual method: '" + itype.name + "." + imethod.name + "'.");
 
 				// A virtual method without the virtual flag. This is a special case.

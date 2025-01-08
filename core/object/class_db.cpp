@@ -2096,7 +2096,7 @@ void ClassDB::add_virtual_compatibility_method(const StringName &p_class, const 
 	compat_hashes->push_back(p_method.get_compatibility_hash());
 }
 
-void ClassDB::get_virtual_methods(const StringName &p_class, List<MethodInfo> *p_methods, bool p_no_inheritance) {
+void ClassDB::get_virtual_methods(const StringName &p_class, LocalVector<MethodInfo> &p_methods, bool p_no_inheritance) {
 	ERR_FAIL_COND_MSG(!classes.has(p_class), vformat("Request for nonexistent class '%s'.", p_class));
 
 #ifdef DEBUG_ENABLED
@@ -2105,7 +2105,7 @@ void ClassDB::get_virtual_methods(const StringName &p_class, List<MethodInfo> *p
 	ClassInfo *check = type;
 	while (check) {
 		for (const MethodInfo &E : check->virtual_methods) {
-			p_methods->push_back(E);
+			p_methods.push_back(E);
 		}
 
 		if (p_no_inheritance) {
