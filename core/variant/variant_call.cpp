@@ -1601,11 +1601,13 @@ bool Variant::has_builtin_method_return_value(Variant::Type p_type, const String
 	return method->has_return_type;
 }
 
-void Variant::get_builtin_method_list(Variant::Type p_type, List<StringName> *p_list) {
-	ERR_FAIL_INDEX(p_type, Variant::VARIANT_MAX);
+LocalVector<StringName> Variant::get_builtin_method_list(Variant::Type p_type) {
+	LocalVector<StringName> p_list;
+	ERR_FAIL_INDEX_V(p_type, Variant::VARIANT_MAX, p_list);
 	for (const StringName &E : builtin_method_names[p_type]) {
-		p_list->push_back(E);
+		p_list.push_back(E);
 	}
+	return p_list;
 }
 
 int Variant::get_builtin_method_count(Variant::Type p_type) {
