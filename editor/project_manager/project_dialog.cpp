@@ -899,9 +899,7 @@ void ProjectDialog::show_dialog(bool p_reset_name) {
 				rendering_device_supported = DisplayServer::is_rendering_device_supported();
 
 				if (!rendering_device_supported) {
-					List<BaseButton *> buttons;
-					renderer_button_group->get_buttons(&buttons);
-					for (BaseButton *button : buttons) {
+					for (BaseButton *button : renderer_button_group->get_buttons()) {
 						if (button->get_meta(SNAME("rendering_method")) == "gl_compatibility") {
 							button->set_pressed(true);
 							break;
