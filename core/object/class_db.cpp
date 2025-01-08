@@ -1195,7 +1195,7 @@ void ClassDB::bind_integer_constant(const StringName &p_class, const StringName 
 #endif // DEBUG_ENABLED
 }
 
-void ClassDB::get_integer_constant_list(const StringName &p_class, List<String> *p_constants, bool p_no_inheritance) {
+void ClassDB::get_integer_constant_list(const StringName &p_class, LocalVector<String> &p_constants, bool p_no_inheritance) {
 	Locker::Lock lock(Locker::STATE_READ);
 
 	ClassInfo *type = classes.getptr(p_class);
@@ -1203,12 +1203,12 @@ void ClassDB::get_integer_constant_list(const StringName &p_class, List<String> 
 	while (type) {
 #ifdef DEBUG_ENABLED
 		for (const StringName &E : type->constant_order) {
-			p_constants->push_back(E);
+			p_constants.push_back(E);
 		}
 #else
 
 		for (const KeyValue<StringName, int64_t> &E : type->constant_map) {
-			p_constants->push_back(E.key);
+			p_constants.push_back(E.key);
 		}
 
 #endif // DEBUG_ENABLED

@@ -1364,8 +1364,8 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 				}
 
 				if (!p_only_functions) {
-					List<String> constants;
-					ClassDB::get_integer_constant_list(type, &constants);
+					LocalVector<String> constants;
+					ClassDB::get_integer_constant_list(type, constants);
 					for (const String &E : constants) {
 						int location = p_recursion_depth + _get_constant_location(type, StringName(E));
 						ScriptLanguage::CodeCompletionOption option(E, ScriptLanguage::CODE_COMPLETION_KIND_CONSTANT, location);
@@ -4146,8 +4146,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 					return OK;
 				}
 
-				List<String> constants;
-				ClassDB::get_integer_constant_list(class_name, &constants, true);
+				LocalVector<String> constants;
+				ClassDB::get_integer_constant_list(class_name, constants, true);
 				for (const String &E : constants) {
 					if (E == p_symbol) {
 						r_result.type = ScriptLanguage::LOOKUP_RESULT_CLASS_CONSTANT;
