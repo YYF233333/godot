@@ -996,9 +996,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 		c.properties.sort();
 
 		// Variant utility functions.
-		List<StringName> utility_functions;
-		Variant::get_utility_function_list(&utility_functions);
-		for (const StringName &E : utility_functions) {
+		for (const StringName &E : Variant::get_utility_function_list()) {
 			DocData::MethodDoc md;
 			md.name = E;
 			// Utility function's return type.

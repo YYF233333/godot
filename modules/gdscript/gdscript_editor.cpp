@@ -464,10 +464,7 @@ void GDScriptLanguage::get_recognized_extensions(LocalVector<String> &p_extensio
 }
 
 void GDScriptLanguage::get_public_functions(List<MethodInfo> *p_functions) const {
-	List<StringName> functions;
-	GDScriptUtilityFunctions::get_function_list(&functions);
-
-	for (const StringName &E : functions) {
+	for (const StringName &E : GDScriptUtilityFunctions::get_function_list()) {
 		p_functions->push_back(GDScriptUtilityFunctions::get_function_info(E));
 	}
 
@@ -1537,10 +1534,7 @@ static void _find_identifiers(const GDScriptParser::CompletionContext &p_context
 		_find_identifiers_in_class(p_context.current_class, p_only_functions, false, (!p_context.current_function || p_context.current_function->is_static), false, p_add_braces, r_result, p_recursion_depth);
 	}
 
-	List<StringName> functions;
-	GDScriptUtilityFunctions::get_function_list(&functions);
-
-	for (const StringName &E : functions) {
+	for (const StringName &E : GDScriptUtilityFunctions::get_function_list()) {
 		MethodInfo function = GDScriptUtilityFunctions::get_function_info(E);
 		ScriptLanguage::CodeCompletionOption option(String(E), ScriptLanguage::CODE_COMPLETION_KIND_FUNCTION);
 		if (p_add_braces) {
@@ -1604,10 +1598,7 @@ static void _find_identifiers(const GDScriptParser::CompletionContext &p_context
 		kwa++;
 	}
 
-	List<StringName> utility_func_names;
-	Variant::get_utility_function_list(&utility_func_names);
-
-	for (const StringName &util_func_name : utility_func_names) {
+	for (const StringName &util_func_name : Variant::get_utility_function_list()) {
 		ScriptLanguage::CodeCompletionOption option(util_func_name, ScriptLanguage::CODE_COMPLETION_KIND_FUNCTION);
 		if (p_add_braces) {
 			option.insert_text += "(";
