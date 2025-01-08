@@ -547,8 +547,8 @@ void EditorBuildProfileManager::_detect_classes() {
 
 	edited->clear_disabled_classes();
 
-	List<StringName> all_classes;
-	ClassDB::get_class_list(&all_classes);
+	LocalVector<StringName> all_classes;
+	ClassDB::get_class_list(all_classes);
 
 	for (const StringName &E : all_classes) {
 		if (all_used_classes.has(E)) {
