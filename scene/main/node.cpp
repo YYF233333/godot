@@ -3196,9 +3196,9 @@ void Node::_duplicate_signals(const Node *p_original, Node *p_copy) const {
 	}
 }
 
-static void find_owned_by(Node *p_by, Node *p_node, List<Node *> *p_owned) {
+static void find_owned_by(Node *p_by, Node *p_node, LocalVector<Node *> &p_owned) {
 	if (p_node->get_owner() == p_by) {
-		p_owned->push_back(p_node);
+		p_owned.push_back(p_node);
 	}
 
 	for (int i = 0; i < p_node->get_child_count(); i++) {
@@ -3212,7 +3212,7 @@ void Node::replace_by(RequiredParam<Node> rp_node, bool p_keep_groups) {
 	ERR_FAIL_COND(p_node->data.parent);
 
 	List<Node *> owned = data.owned;
-	List<Node *> owned_by_owner;
+	LocalVector<Node *> owned_by_owner;
 	Node *owner = (data.owner == this) ? p_node : data.owner;
 
 	if (p_keep_groups) {
@@ -3228,7 +3228,7 @@ void Node::replace_by(RequiredParam<Node> rp_node, bool p_keep_groups) {
 
 	if (data.owner) {
 		for (int i = 0; i < get_child_count(); i++) {
-			find_owned_by(data.owner, get_child(i), &owned_by_owner);
+			find_owned_by(data.owner, get_child(i), owned_by_owner);
 		}
 
 		_clean_up_owner();
