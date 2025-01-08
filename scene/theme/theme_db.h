@@ -119,7 +119,7 @@ public:
 
 private:
 	HashMap<StringName, HashMap<StringName, ThemeItemBind>> theme_item_binds;
-	HashMap<StringName, LocalVector<ThemeItemBind>> theme_item_binds_list; // Used for listing purposes.
+	HashMap<StringName, List<ThemeItemBind>> theme_item_binds_list; // Used for listing purposes.
 
 	void _sort_theme_items();
 
