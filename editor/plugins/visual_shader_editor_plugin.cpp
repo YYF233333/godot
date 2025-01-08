@@ -2126,8 +2126,8 @@ void VisualShaderEditor::_update_nodes() {
 
 	// Add GDScript classes.
 	{
-		List<StringName> class_list;
-		ScriptServer::get_global_class_list(&class_list);
+		LocalVector<StringName> class_list;
+		ScriptServer::get_global_class_list(class_list);
 
 		for (const StringName &E : class_list) {
 			if (ScriptServer::get_global_class_native_base(E) == "VisualShaderNodeCustom") {
@@ -2156,8 +2156,8 @@ void VisualShaderEditor::_update_nodes() {
 
 	// Add GDExtension classes.
 	{
-		List<StringName> class_list;
-		ClassDB::get_class_list(&class_list);
+		LocalVector<StringName> class_list;
+		ClassDB::get_class_list(class_list);
 
 		for (const StringName &E : class_list) {
 			if (ClassDB::get_parent_class(E) == "VisualShaderNodeCustom") {
