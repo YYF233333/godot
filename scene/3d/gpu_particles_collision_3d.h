@@ -122,7 +122,7 @@ private:
 		Transform3D local_xform;
 	};
 
-	void _find_meshes(const AABB &p_aabb, Node *p_at_node, List<PlotMesh> &plot_meshes);
+	void _find_meshes(const AABB &p_aabb, Node *p_at_node, LocalVector<PlotMesh> &plot_meshes);
 
 	struct BVH {
 		enum {
