@@ -60,9 +60,7 @@ void CollisionObject3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 
 	p_gizmo->clear();
 
-	List<uint32_t> owner_ids;
-	co->get_shape_owners(&owner_ids);
-	for (uint32_t &owner_id : owner_ids) {
+	for (uint32_t &owner_id : co->get_shape_owners()) {
 		Transform3D xform = co->shape_owner_get_transform(owner_id);
 		Object *owner = co->shape_owner_get_owner(owner_id);
 		// Exclude CollisionShape3D and CollisionPolygon3D as they have their gizmo.
