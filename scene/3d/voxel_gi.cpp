@@ -326,7 +326,7 @@ static bool is_node_voxel_bakeable(Node3D *p_node) {
 	return true;
 }
 
-void VoxelGI::_find_meshes(Node *p_at_node, List<PlotMesh> &plot_meshes) {
+void VoxelGI::_find_meshes(Node *p_at_node, LocalVector<PlotMesh> &plot_meshes) {
 	MeshInstance3D *mi = Object::cast_to<MeshInstance3D>(p_at_node);
 	if (mi && is_node_voxel_bakeable(mi)) {
 		Ref<Mesh> mesh = mi->get_mesh();
@@ -439,7 +439,7 @@ void VoxelGI::bake(Node *p_from_node, bool p_create_visual_debug) {
 
 	baker.begin_bake(subdiv_value[subdiv], AABB(-size / 2, size), exposure_normalization);
 
-	List<PlotMesh> mesh_list;
+	LocalVector<PlotMesh> mesh_list;
 
 	_find_meshes(p_from_node, mesh_list);
 
