@@ -657,7 +657,7 @@ public:
 	static bool is_builtin_method_const(Variant::Type p_type, const StringName &p_method);
 	static bool is_builtin_method_static(Variant::Type p_type, const StringName &p_method);
 	static bool is_builtin_method_vararg(Variant::Type p_type, const StringName &p_method);
-	static void get_builtin_method_list(Variant::Type p_type, List<StringName> *p_list);
+	static LocalVector<StringName> get_builtin_method_list(Variant::Type p_type);
 	static int get_builtin_method_count(Variant::Type p_type);
 	static uint32_t get_builtin_method_hash(Variant::Type p_type, const StringName &p_method);
 	static Vector<uint32_t> get_builtin_method_compatibility_hashes(Variant::Type p_type, const StringName &p_method);
