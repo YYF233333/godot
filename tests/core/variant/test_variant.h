@@ -2187,8 +2187,7 @@ struct MethodData {
 TEST_CASE("[Variant] Utility functions") {
 	List<MethodData> functions;
 
-	List<StringName> function_names;
-	Variant::get_utility_function_list(&function_names);
+	Vector<StringName> function_names = Variant::get_utility_function_list();
 	function_names.sort_custom<StringName::AlphCompare>();
 
 	for (const StringName &E : function_names) {
