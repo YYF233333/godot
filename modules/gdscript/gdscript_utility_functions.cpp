@@ -513,7 +513,7 @@ struct GDScriptUtilityFunctionInfo {
 };
 
 static AHashMap<StringName, GDScriptUtilityFunctionInfo> utility_function_table;
-static List<StringName> utility_function_name_table;
+static Vector<StringName> utility_function_name_table;
 
 static void _register_function(const StringName &p_name, const MethodInfo &p_method_info, GDScriptUtilityFunctions::FunctionPtr p_function, bool p_is_const) {
 	ERR_FAIL_COND(utility_function_table.has(p_name));
@@ -649,10 +649,8 @@ bool GDScriptUtilityFunctions::function_exists(const StringName &p_function) {
 	return utility_function_table.has(p_function);
 }
 
-void GDScriptUtilityFunctions::get_function_list(List<StringName> *r_functions) {
-	for (const StringName &E : utility_function_name_table) {
-		r_functions->push_back(E);
-	}
+Vector<StringName> GDScriptUtilityFunctions::get_function_list() {
+	return utility_function_name_table;
 }
 
 MethodInfo GDScriptUtilityFunctions::get_function_info(const StringName &p_function) {
