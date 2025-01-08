@@ -196,8 +196,8 @@ PackedStringArray get_code_completion(CompletionKind p_kind, const String &p_scr
 			Ref<Script> script = ResourceLoader::load(p_script_file.simplify_path());
 			Node *base = _try_find_owner_node_in_tree(script);
 			if (base && Object::cast_to<Control>(base)) {
-				List<StringName> sn;
-				ThemeDB::get_singleton()->get_default_theme()->get_color_list(base->get_class(), &sn);
+				LocalVector<StringName> sn;
+				ThemeDB::get_singleton()->get_default_theme()->get_color_list(base->get_class(), sn);
 
 				for (const StringName &E : sn) {
 					suggestions.push_back(quoted(E));
@@ -208,8 +208,8 @@ PackedStringArray get_code_completion(CompletionKind p_kind, const String &p_scr
 			Ref<Script> script = ResourceLoader::load(p_script_file.simplify_path());
 			Node *base = _try_find_owner_node_in_tree(script);
 			if (base && Object::cast_to<Control>(base)) {
-				List<StringName> sn;
-				ThemeDB::get_singleton()->get_default_theme()->get_constant_list(base->get_class(), &sn);
+				LocalVector<StringName> sn;
+				ThemeDB::get_singleton()->get_default_theme()->get_constant_list(base->get_class(), sn);
 
 				for (const StringName &E : sn) {
 					suggestions.push_back(quoted(E));
@@ -220,8 +220,8 @@ PackedStringArray get_code_completion(CompletionKind p_kind, const String &p_scr
 			Ref<Script> script = ResourceLoader::load(p_script_file.simplify_path());
 			Node *base = _try_find_owner_node_in_tree(script);
 			if (base && Object::cast_to<Control>(base)) {
-				List<StringName> sn;
-				ThemeDB::get_singleton()->get_default_theme()->get_font_list(base->get_class(), &sn);
+				LocalVector<StringName> sn;
+				ThemeDB::get_singleton()->get_default_theme()->get_font_list(base->get_class(), sn);
 
 				for (const StringName &E : sn) {
 					suggestions.push_back(quoted(E));
@@ -232,8 +232,8 @@ PackedStringArray get_code_completion(CompletionKind p_kind, const String &p_scr
 			Ref<Script> script = ResourceLoader::load(p_script_file.simplify_path());
 			Node *base = _try_find_owner_node_in_tree(script);
 			if (base && Object::cast_to<Control>(base)) {
-				List<StringName> sn;
-				ThemeDB::get_singleton()->get_default_theme()->get_font_size_list(base->get_class(), &sn);
+				LocalVector<StringName> sn;
+				ThemeDB::get_singleton()->get_default_theme()->get_font_size_list(base->get_class(), sn);
 
 				for (const StringName &E : sn) {
 					suggestions.push_back(quoted(E));
@@ -244,8 +244,8 @@ PackedStringArray get_code_completion(CompletionKind p_kind, const String &p_scr
 			Ref<Script> script = ResourceLoader::load(p_script_file.simplify_path());
 			Node *base = _try_find_owner_node_in_tree(script);
 			if (base && Object::cast_to<Control>(base)) {
-				List<StringName> sn;
-				ThemeDB::get_singleton()->get_default_theme()->get_stylebox_list(base->get_class(), &sn);
+				LocalVector<StringName> sn;
+				ThemeDB::get_singleton()->get_default_theme()->get_stylebox_list(base->get_class(), sn);
 
 				for (const StringName &E : sn) {
 					suggestions.push_back(quoted(E));
