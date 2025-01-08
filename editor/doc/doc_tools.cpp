@@ -919,10 +919,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 
 		c.properties.sort();
 
-		List<StringName> enums;
-		Variant::get_enums_for_type(Variant::Type(i), &enums);
-
-		for (const StringName &E : enums) {
+		for (const StringName &E : Variant::get_enums_for_type(Variant::Type(i))) {
 			List<StringName> enumerations;
 			Variant::get_enumerations_for_enum(Variant::Type(i), E, &enumerations);
 

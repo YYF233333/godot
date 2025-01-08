@@ -5138,10 +5138,7 @@ void BindingsGenerator::_populate_global_constants() {
 
 		const Variant::Type type = Variant::Type(i);
 
-		List<StringName> enum_names;
-		Variant::get_enums_for_type(type, &enum_names);
-
-		for (const StringName &enum_name : enum_names) {
+		for (const StringName &enum_name : Variant::get_enums_for_type(type)) {
 			TypeInterface enum_itype;
 			enum_itype.is_enum = true;
 			enum_itype.name = Variant::get_type_name(type) + "." + enum_name;

@@ -1743,14 +1743,18 @@ Variant Variant::get_constant_value(Variant::Type p_type, const StringName &p_va
 	return E->value;
 }
 
-void Variant::get_enums_for_type(Variant::Type p_type, List<StringName> *p_enums) {
-	ERR_FAIL_INDEX(p_type, Variant::VARIANT_MAX);
+LocalVector<StringName> Variant::get_enums_for_type(Variant::Type p_type) {
+	LocalVector<StringName> p_enums;
+	ERR_FAIL_INDEX_V(p_type, Variant::VARIANT_MAX, p_enums);
 
 	_VariantCall::EnumData &enum_data = _VariantCall::enum_data[p_type];
 
+	p_enums.reserve(enum_data.value.size());
+
 	for (const KeyValue<StringName, HashMap<StringName, int>> &E : enum_data.value) {
-		p_enums->push_back(E.key);
+		p_enums.push_back(E.key);
 	}
+	return p_enums;
 }
 
 void Variant::get_enumerations_for_enum(Variant::Type p_type, const StringName &p_enum_name, List<StringName> *p_enumerations) {

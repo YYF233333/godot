@@ -861,10 +861,7 @@ void add_global_enums(Context &r_context) {
 
 		const Variant::Type type = Variant::Type(i);
 
-		List<StringName> enum_names;
-		Variant::get_enums_for_type(type, &enum_names);
-
-		for (const StringName &enum_name : enum_names) {
+		for (const StringName &enum_name : Variant::get_enums_for_type(type)) {
 			r_context.enum_types.push_back(Variant::get_type_name(type) + "." + enum_name);
 		}
 	}
