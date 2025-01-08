@@ -51,7 +51,7 @@ public:
 	bool has_resource(const StringName &p_name) const;
 	Ref<Resource> get_resource(const StringName &p_name) const;
 
-	void get_resource_list(List<StringName> *p_list);
+	LocalVector<StringName> get_resource_list();
 
 	ResourcePreloader();
 };

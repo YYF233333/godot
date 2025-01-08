@@ -185,18 +185,11 @@ void ResourcePreloaderEditor::_update_library() {
 
 	TreeItem *root = tree->create_item(nullptr);
 
-	List<StringName> rnames;
-	preloader->get_resource_list(&rnames);
+	LocalVector<StringName> rnames = preloader->get_resource_list();
 
-	LocalVector<String> names;
-	names.reserve(rnames.size());
+	rnames.sort();
+
 	for (const StringName &E : rnames) {
-		names.push_back(E);
-	}
-
-	names.sort();
-
-	for (const String &E : names) {
 		TreeItem *ti = tree->create_item(root);
 		ti->set_cell_mode(0, TreeItem::CELL_MODE_STRING);
 		ti->set_editable(0, true);
