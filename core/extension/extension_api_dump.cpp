@@ -669,9 +669,7 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 				//constants
 				Array constants;
 
-				List<StringName> constant_names;
-				Variant::get_constants_for_type(type, &constant_names);
-				for (const StringName &constant_name : constant_names) {
+				for (const StringName &constant_name : Variant::get_constants_for_type(type)) {
 					Dictionary d2;
 					d2["name"] = String(constant_name);
 					Variant constant = Variant::get_constant_value(type, constant_name);
