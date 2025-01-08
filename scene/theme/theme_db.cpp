@@ -383,7 +383,7 @@ void ThemeDB::get_class_items(const StringName &p_class_name, List<ThemeItemBind
 
 	HashSet<StringName> inherited_props;
 	for (const StringName &theme_type : class_hierarchy) {
-		HashMap<StringName, List<ThemeItemBind>>::Iterator E = theme_item_binds_list.find(theme_type);
+		HashMap<StringName, LocalVector<ThemeItemBind>>::Iterator E = theme_item_binds_list.find(theme_type);
 		if (E) {
 			for (const ThemeItemBind &F : E->value) {
 				if (p_filter_type != Theme::DATA_TYPE_MAX && F.data_type != p_filter_type) {
@@ -407,7 +407,7 @@ void ThemeDB::get_class_items(const StringName &p_class_name, List<ThemeItemBind
 }
 
 void ThemeDB::_sort_theme_items() {
-	for (KeyValue<StringName, List<ThemeDB::ThemeItemBind>> &E : theme_item_binds_list) {
+	for (KeyValue<StringName, LocalVector<ThemeDB::ThemeItemBind>> &E : theme_item_binds_list) {
 		E.value.sort_custom<ThemeItemBind::SortByType>();
 	}
 }
