@@ -1732,8 +1732,8 @@ Variant ClassDB::class_call_static(const Variant **p_arguments, int p_argcount, 
 }
 
 PackedStringArray ClassDB::class_get_integer_constant_list(const StringName &p_class, bool p_no_inheritance) const {
-	List<String> constants;
-	::ClassDB::get_integer_constant_list(p_class, &constants, p_no_inheritance);
+	LocalVector<String> constants;
+	::ClassDB::get_integer_constant_list(p_class, constants, p_no_inheritance);
 
 	PackedStringArray ret;
 	ret.resize(constants.size());

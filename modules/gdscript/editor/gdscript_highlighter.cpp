@@ -903,8 +903,8 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 				member_keywords[E.name] = member_variable_color;
 			}
 
-			List<String> constant_list;
-			ClassDB::get_integer_constant_list(instance_base, &constant_list);
+			LocalVector<String> constant_list;
+			ClassDB::get_integer_constant_list(instance_base, constant_list);
 			for (const String &E : constant_list) {
 				member_keywords[E] = member_variable_color;
 			}

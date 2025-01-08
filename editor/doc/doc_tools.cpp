@@ -679,8 +679,8 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 				c.signals.sort_custom<MethodCompare>();
 			}
 
-			List<String> constant_list;
-			ClassDB::get_integer_constant_list(name, &constant_list, true);
+			LocalVector<String> constant_list;
+			ClassDB::get_integer_constant_list(name, constant_list, true);
 
 			for (const String &E : constant_list) {
 				DocData::ConstantDoc constant;
