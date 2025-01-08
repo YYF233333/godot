@@ -185,9 +185,7 @@ void MeshLibraryEditor::_import_scene_parse_node(Ref<MeshLibrary> p_library, Has
 		if (!static_body_node) {
 			continue;
 		}
-		List<uint32_t> shapes;
-		static_body_node->get_shape_owners(&shapes);
-		for (uint32_t &E : shapes) {
+		for (uint32_t &E : static_body_node->get_shape_owners()) {
 			if (static_body_node->is_shape_owner_disabled(E)) {
 				continue;
 			}
