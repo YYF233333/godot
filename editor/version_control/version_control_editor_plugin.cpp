@@ -904,7 +904,7 @@ void VersionControlEditorPlugin::_toggle_vcs_integration(bool p_toggled) {
 
 void VersionControlEditorPlugin::fetch_available_vcs_plugin_names() {
 	available_plugins.clear();
-	ClassDB::get_direct_inheriters_from_class(EditorVCSInterface::get_class_static(), &available_plugins);
+	ClassDB::get_direct_inheriters_from_class(EditorVCSInterface::get_class_static(), available_plugins);
 }
 
 void VersionControlEditorPlugin::register_editor() {

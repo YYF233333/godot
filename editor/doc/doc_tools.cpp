@@ -394,8 +394,8 @@ static Variant get_documentation_default_value(const StringName &p_class_name, c
 			}
 		}
 
-		List<StringName> inheriting_classes;
-		ClassDB::get_direct_inheriters_from_class(p_class_name, &inheriting_classes);
+		LocalVector<StringName> inheriting_classes;
+		ClassDB::get_direct_inheriters_from_class(p_class_name, inheriting_classes);
 		for (const StringName &class_name : inheriting_classes) {
 			if (ClassDB::can_instantiate(class_name)) {
 				default_value = ClassDB::class_get_default_property_value(class_name, p_property_name, &r_default_value_valid);
