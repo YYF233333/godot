@@ -969,8 +969,8 @@ static void _find_annotation_arguments(const GDScriptParser::AnnotationNode *p_a
 		if (p_argument == 1) {
 			const Ref<Theme> theme = EditorNode::get_singleton()->get_editor_theme();
 			if (theme.is_valid()) {
-				List<StringName> icon_list;
-				theme->get_icon_list(EditorStringName(EditorIcons), &icon_list);
+				LocalVector<StringName> icon_list;
+				theme->get_icon_list(EditorStringName(EditorIcons), icon_list);
 				for (const StringName &E : icon_list) {
 					ScriptLanguage::CodeCompletionOption option(E, ScriptLanguage::CODE_COMPLETION_KIND_CLASS);
 					option.insert_text = option.display.quote(p_quote_style);
