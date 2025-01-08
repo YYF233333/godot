@@ -118,9 +118,7 @@ void StaticBody3D::navmesh_parse_source_geometry(const Ref<NavigationMesh> &p_na
 	uint32_t parsed_collision_mask = p_navigation_mesh->get_collision_mask();
 
 	if ((parsed_geometry_type == NavigationMesh::PARSED_GEOMETRY_STATIC_COLLIDERS || parsed_geometry_type == NavigationMesh::PARSED_GEOMETRY_BOTH) && (static_body->get_collision_layer() & parsed_collision_mask)) {
-		List<uint32_t> shape_owners;
-		static_body->get_shape_owners(&shape_owners);
-		for (uint32_t shape_owner : shape_owners) {
+		for (uint32_t shape_owner : static_body->get_shape_owners()) {
 			if (static_body->is_shape_owner_disabled(shape_owner)) {
 				continue;
 			}

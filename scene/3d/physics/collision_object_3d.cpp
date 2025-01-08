@@ -566,10 +566,13 @@ bool CollisionObject3D::is_shape_owner_disabled(uint32_t p_owner) const {
 	return shapes[p_owner].disabled;
 }
 
-void CollisionObject3D::get_shape_owners(List<uint32_t> *r_owners) {
+LocalVector<uint32_t> CollisionObject3D::get_shape_owners() {
+	LocalVector<uint32_t> r_owners;
+	r_owners.reserve(shapes.size());
 	for (const KeyValue<uint32_t, ShapeData> &E : shapes) {
-		r_owners->push_back(E.key);
+		r_owners.push_back(E.key);
 	}
+	return r_owners;
 }
 
 PackedInt32Array CollisionObject3D::_get_shape_owners() {
