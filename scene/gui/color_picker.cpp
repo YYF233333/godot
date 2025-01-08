@@ -78,18 +78,14 @@ void ColorPicker::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_TRANSLATION_CHANGED: {
-			List<BaseButton *> buttons;
-			preset_group->get_buttons(&buttons);
-			for (List<BaseButton *>::Element *E = buttons.front(); E; E = E->next()) {
-				Color preset_color = ((ColorPresetButton *)E->get())->get_preset_color();
-				E->get()->set_tooltip_text(vformat(atr(ETR("Color: #%s\nLMB: Apply color\nRMB: Remove preset")), preset_color.to_html(preset_color.a < 1)));
+			for (BaseButton *&E : preset_group->get_buttons()) {
+				Color preset_color = ((ColorPresetButton *)E)->get_preset_color();
+				E->set_tooltip_text(vformat(atr(ETR("Color: #%s\nLMB: Apply color\nRMB: Remove preset")), preset_color.to_html(preset_color.a < 1)));
 			}
 
-			buttons.clear();
-			recent_preset_group->get_buttons(&buttons);
-			for (List<BaseButton *>::Element *E = buttons.front(); E; E = E->next()) {
-				Color preset_color = ((ColorPresetButton *)E->get())->get_preset_color();
-				E->get()->set_tooltip_text(vformat(atr(ETR("Color: #%s\nLMB: Apply color")), preset_color.to_html(preset_color.a < 1)));
+			for (BaseButton *&E : recent_preset_group->get_buttons()) {
+				Color preset_color = ((ColorPresetButton *)E)->get_preset_color();
+				E->set_tooltip_text(vformat(atr(ETR("Color: #%s\nLMB: Apply color")), preset_color.to_html(preset_color.a < 1)));
 			}
 		} break;
 
