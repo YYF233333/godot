@@ -4360,8 +4360,7 @@ bool BindingsGenerator::_populate_object_type_interfaces() {
 				enum_proxy_cname = StringName(enum_proxy_name);
 			}
 			EnumInterface ienum(enum_proxy_cname, enum_proxy_name, E.value.is_bitfield);
-			const List<StringName> &enum_constants = E.value.constants;
-			for (const StringName &constant_cname : enum_constants) {
+			for (const StringName &constant_cname : E.value.constants) {
 				String constant_name = constant_cname.operator String();
 				int64_t *value = class_info->constant_map.getptr(constant_cname);
 				ERR_FAIL_NULL_V(value, false);

@@ -1273,9 +1273,7 @@ StringName ClassDB::get_integer_constant_enum(const StringName &p_class, const S
 
 	while (type) {
 		for (KeyValue<StringName, ClassInfo::EnumInfo> &E : type->enum_map) {
-			List<StringName> &constants_list = E.value.constants;
-			const List<StringName>::Element *found = constants_list.find(p_name);
-			if (found) {
+			if (E.value.constants.has(p_name)) {
 				return E.key;
 			}
 		}
@@ -1317,8 +1315,8 @@ void ClassDB::get_enum_constants(const StringName &p_class, const StringName &p_
 		const ClassInfo::EnumInfo *constants = type->enum_map.getptr(p_enum);
 
 		if (constants) {
-			for (const List<StringName>::Element *E = constants->constants.front(); E; E = E->next()) {
-				p_constants.push_back(E->get());
+			for (const StringName &E : constants->constants) {
+				p_constants.push_back(E);
 			}
 		}
 

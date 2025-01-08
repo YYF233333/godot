@@ -131,7 +131,7 @@ public:
 		HashMap<StringName, LocalVector<MethodBind *>> method_map_compatibility;
 		AHashMap<StringName, int64_t> constant_map;
 		struct EnumInfo {
-			List<StringName> constants;
+			LocalVector<StringName> constants;
 			bool is_bitfield = false;
 		};
 
