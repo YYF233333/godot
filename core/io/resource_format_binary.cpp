@@ -1266,8 +1266,8 @@ void ResourceFormatLoaderBinary::get_recognized_extensions_for_type(const String
 		return;
 	}
 
-	List<String> extensions;
-	ClassDB::get_extensions_for_type(p_type, &extensions);
+	LocalVector<String> extensions;
+	ClassDB::get_extensions_for_type(p_type, extensions);
 
 	extensions.sort();
 
