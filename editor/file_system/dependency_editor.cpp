@@ -165,8 +165,8 @@ void DependencyEditor::_update_file() {
 }
 
 void DependencyEditor::_update_list() {
-	List<String> deps;
-	ResourceLoader::get_dependencies(editing, &deps, true);
+	LocalVector<String> deps;
+	ResourceLoader::get_dependencies(editing, deps, true);
 
 	tree->clear();
 	missing.clear();
