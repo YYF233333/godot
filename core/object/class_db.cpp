@@ -243,28 +243,28 @@ bool ClassDB::is_parent_class(const StringName &p_class, const StringName &p_inh
 	return _is_parent_class(p_class, p_inherits);
 }
 
-void ClassDB::get_class_list(List<StringName> *p_classes) {
+void ClassDB::get_class_list(LocalVector<StringName> &p_classes) {
 	OBJTYPE_RLOCK;
 
 	for (const KeyValue<StringName, ClassInfo> &E : classes) {
-		p_classes->push_back(E.key);
+		p_classes.push_back(E.key);
 	}
 
-	p_classes->sort_custom<StringName::AlphCompare>();
+	p_classes.sort_custom<StringName::AlphCompare>();
 }
 
 #ifdef TOOLS_ENABLED
-void ClassDB::get_extensions_class_list(List<StringName> *p_classes) {
+void ClassDB::get_extensions_class_list(LocalVector<StringName> &p_classes) {
 	OBJTYPE_RLOCK;
 
 	for (const KeyValue<StringName, ClassInfo> &E : classes) {
 		if (E.value.api != API_EXTENSION && E.value.api != API_EDITOR_EXTENSION) {
 			continue;
 		}
-		p_classes->push_back(E.key);
+		p_classes.push_back(E.key);
 	}
 
-	p_classes->sort_custom<StringName::AlphCompare>();
+	p_classes.sort_custom<StringName::AlphCompare>();
 }
 
 void ClassDB::get_extension_class_list(const Ref<GDExtension> &p_extension, List<StringName> *p_classes) {

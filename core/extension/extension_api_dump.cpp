@@ -895,9 +895,9 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 		// classes
 		Array classes;
 
-		List<StringName> class_list;
+		LocalVector<StringName> class_list;
 
-		ClassDB::get_class_list(&class_list);
+		ClassDB::get_class_list(class_list);
 
 		class_list.sort_custom<StringName::AlphCompare>();
 
