@@ -2309,9 +2309,7 @@ void GDScriptLanguage::init() {
 
 #ifdef TOOLS_ENABLED
 void GDScriptLanguage::_extension_loaded(const Ref<GDExtension> &p_extension) {
-	List<StringName> class_list;
-	ClassDB::get_extension_class_list(p_extension, &class_list);
-	for (const StringName &n : class_list) {
+	for (const StringName &n : ClassDB::get_extension_class_list(p_extension)) {
 		if (globals.has(n)) {
 			continue;
 		}
@@ -2321,9 +2319,7 @@ void GDScriptLanguage::_extension_loaded(const Ref<GDExtension> &p_extension) {
 }
 
 void GDScriptLanguage::_extension_unloading(const Ref<GDExtension> &p_extension) {
-	List<StringName> class_list;
-	ClassDB::get_extension_class_list(p_extension, &class_list);
-	for (const StringName &n : class_list) {
+	for (const StringName &n : ClassDB::get_extension_class_list(p_extension)) {
 		_remove_global(n);
 	}
 }
