@@ -2258,8 +2258,8 @@ void GDScriptLanguage::init() {
 
 	//populate native classes
 
-	List<StringName> class_list;
-	ClassDB::get_class_list(&class_list);
+	LocalVector<StringName> class_list;
+	ClassDB::get_class_list(class_list);
 	for (const StringName &n : class_list) {
 		if (globals.has(n)) {
 			continue;

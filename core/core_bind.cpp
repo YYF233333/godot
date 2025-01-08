@@ -1424,8 +1424,8 @@ namespace special {
 ////// ClassDB //////
 
 PackedStringArray ClassDB::get_class_list() const {
-	List<StringName> classes;
-	::ClassDB::get_class_list(&classes);
+	LocalVector<StringName> classes;
+	::ClassDB::get_class_list(classes);
 
 	PackedStringArray ret;
 	ret.resize(classes.size());

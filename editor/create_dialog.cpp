@@ -77,14 +77,13 @@ void CreateDialog::popup_create(bool p_dont_clear, bool p_replace_mode, const St
 }
 
 void CreateDialog::_fill_type_list() {
-	List<StringName> complete_type_list;
-	ClassDB::get_class_list(&complete_type_list);
-	ScriptServer::get_global_class_list(&complete_type_list);
+	LocalVector<StringName> complete_type_list;
+	ClassDB::get_class_list(complete_type_list);
+	ScriptServer::get_global_class_list(complete_type_list);
 
 	EditorData &ed = EditorNode::get_editor_data();
 
-	for (List<StringName>::Element *I = complete_type_list.front(); I; I = I->next()) {
-		StringName type = I->get();
+	for (const StringName &type : complete_type_list) {
 		if (!_should_hide_type(type)) {
 			type_list.push_back(type);
 
