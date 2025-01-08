@@ -487,7 +487,7 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 	{
 		// Global enums and constants.
 		Array constants;
-		HashMap<String, List<Pair<String, int64_t>>> enum_list;
+		HashMap<String, LocalVector<Pair<String, int64_t>>> enum_list;
 		HashMap<String, bool> enum_is_bitfield;
 
 		const DocData::ClassDoc *global_scope_doc = nullptr;
@@ -524,7 +524,7 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 		api_dump["global_constants"] = constants;
 
 		Array enums;
-		for (const KeyValue<String, List<Pair<String, int64_t>>> &E : enum_list) {
+		for (const KeyValue<String, LocalVector<Pair<String, int64_t>>> &E : enum_list) {
 			Dictionary d1;
 			d1["name"] = E.key;
 			d1["is_bitfield"] = enum_is_bitfield[E.key];
