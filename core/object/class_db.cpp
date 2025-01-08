@@ -2235,9 +2235,9 @@ void ClassDB::add_resource_base_extension(const StringName &p_extension, const S
 	resource_base_extensions[p_extension] = p_class;
 }
 
-void ClassDB::get_resource_base_extensions(List<String> *p_extensions) {
+void ClassDB::get_resource_base_extensions(LocalVector<String> &p_extensions) {
 	for (const KeyValue<StringName, StringName> &E : resource_base_extensions) {
-		p_extensions->push_back(E.key);
+		p_extensions.push_back(E.key);
 	}
 }
 
