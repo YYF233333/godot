@@ -773,9 +773,7 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 				//methods
 				Array methods;
 
-				List<StringName> method_names;
-				Variant::get_builtin_method_list(type, &method_names);
-				for (const StringName &method_name : method_names) {
+				for (const StringName &method_name : Variant::get_builtin_method_list(type)) {
 					Dictionary d2;
 					d2["name"] = String(method_name);
 					if (Variant::has_builtin_method_return_value(type, method_name)) {
