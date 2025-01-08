@@ -764,8 +764,8 @@ void add_exposed_classes(Context &r_context) {
 
 		// Add enums and constants
 
-		List<String> constants;
-		ClassDB::get_integer_constant_list(class_name, &constants, true);
+		LocalVector<String> constants;
+		ClassDB::get_integer_constant_list(class_name, constants, true);
 
 		const HashMap<StringName, ClassDB::ClassInfo::EnumInfo> &enum_map = class_info->enum_map;
 
