@@ -1437,9 +1437,9 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 					StringName type = type_str.get_slicec('.', 0);
 					StringName type_enum = base_type.enum_type;
 
-					List<StringName> enum_values;
+					LocalVector<StringName> enum_values;
 
-					ClassDB::get_enum_constants(type, type_enum, &enum_values);
+					ClassDB::get_enum_constants(type, type_enum, enum_values);
 
 					for (const StringName &E : enum_values) {
 						int location = p_recursion_depth + _get_enum_constant_location(type, E);
@@ -2929,8 +2929,8 @@ static void _find_enumeration_candidates(GDScriptParser::CompletionContext &p_co
 			return;
 		}
 
-		List<StringName> enum_constants;
-		ClassDB::get_enum_constants(class_name, enum_name, &enum_constants);
+		LocalVector<StringName> enum_constants;
+		ClassDB::get_enum_constants(class_name, enum_name, enum_constants);
 		for (const StringName &E : enum_constants) {
 			String candidate = class_name + "." + E;
 			int location = _get_enum_constant_location(class_name, E);
