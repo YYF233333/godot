@@ -1757,16 +1757,18 @@ LocalVector<StringName> Variant::get_enums_for_type(Variant::Type p_type) {
 	return p_enums;
 }
 
-void Variant::get_enumerations_for_enum(Variant::Type p_type, const StringName &p_enum_name, List<StringName> *p_enumerations) {
-	ERR_FAIL_INDEX(p_type, Variant::VARIANT_MAX);
+LocalVector<StringName> Variant::get_enumerations_for_enum(Variant::Type p_type, const StringName &p_enum_name) {
+	LocalVector<StringName> p_enumerations;
+	ERR_FAIL_INDEX_V(p_type, Variant::VARIANT_MAX, p_enumerations);
 
 	_VariantCall::EnumData &enum_data = _VariantCall::enum_data[p_type];
 
 	for (const KeyValue<StringName, HashMap<StringName, int>> &E : enum_data.value) {
 		for (const KeyValue<StringName, int> &V : E.value) {
-			p_enumerations->push_back(V.key);
+			p_enumerations.push_back(V.key);
 		}
 	}
+	return p_enumerations;
 }
 
 int Variant::get_enum_value(Variant::Type p_type, const StringName &p_enum_name, const StringName &p_enumeration, bool *r_valid) {
