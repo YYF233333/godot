@@ -5181,8 +5181,8 @@ Ref<Texture2D> EditorNode::_file_dialog_get_icon(const String &p_path) {
 }
 
 void EditorNode::_build_icon_type_cache() {
-	List<StringName> tl;
-	theme->get_icon_list(EditorStringName(EditorIcons), &tl);
+	LocalVector<StringName> tl;
+	theme->get_icon_list(EditorStringName(EditorIcons), tl);
 	for (const StringName &E : tl) {
 		if (!ClassDB::class_exists(E)) {
 			continue;
