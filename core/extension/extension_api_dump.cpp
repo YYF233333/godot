@@ -645,9 +645,7 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 				//members
 				Array members;
 
-				List<StringName> member_names;
-				Variant::get_member_list(type, &member_names);
-				for (const StringName &member_name : member_names) {
+				for (const StringName &member_name : Variant::get_member_list(type)) {
 					Dictionary d2;
 					d2["name"] = String(member_name);
 					d2["type"] = get_builtin_or_variant_type_name(Variant::get_member_type(type, member_name));

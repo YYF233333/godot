@@ -724,7 +724,7 @@ public:
 
 	static bool has_member(Variant::Type p_type, const StringName &p_member);
 	static Variant::Type get_member_type(Variant::Type p_type, const StringName &p_member);
-	static void get_member_list(Type p_type, List<StringName> *r_members);
+	static LocalVector<StringName> get_member_list(Type p_type);
 	static int get_member_count(Type p_type);
 
 	static ValidatedSetter get_member_validated_setter(Variant::Type p_type, const StringName &p_member);

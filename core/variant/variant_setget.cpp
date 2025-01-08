@@ -178,10 +178,12 @@ Variant::Type Variant::get_member_type(Variant::Type p_type, const StringName &p
 	return Variant::NIL;
 }
 
-void Variant::get_member_list(Variant::Type p_type, List<StringName> *r_members) {
+LocalVector<StringName> Variant::get_member_list(Variant::Type p_type) {
+	LocalVector<StringName> r_members;
 	for (const StringName &member : variant_setters_getters_names[p_type]) {
-		r_members->push_back(member);
+		r_members.push_back(member);
 	}
+	return r_members;
 }
 
 int Variant::get_member_count(Type p_type) {
@@ -1298,9 +1300,7 @@ void Variant::get_property_list(List<PropertyInfo> *p_list) const {
 		obj->get_property_list(p_list);
 
 	} else {
-		List<StringName> members;
-		get_member_list(type, &members);
-		for (const StringName &E : members) {
+		for (const StringName &E : get_member_list(type)) {
 			PropertyInfo pi;
 			pi.name = E;
 			pi.type = get_member_type(type, E);
