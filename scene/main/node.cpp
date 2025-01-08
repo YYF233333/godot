@@ -2186,9 +2186,9 @@ bool Node::is_greater_than(RequiredParam<const Node> rp_node) const {
 	return (deep->get_index() > shallow->get_index()) == this_is_deeper;
 }
 
-void Node::get_owned_by(Node *p_by, List<Node *> *p_owned) {
+void Node::get_owned_by(Node *p_by, LocalVector<Node *> &p_owned) {
 	if (data.owner == p_by) {
-		p_owned->push_back(this);
+		p_owned.push_back(this);
 	}
 
 	for (KeyValue<StringName, Node *> &K : data.children) {

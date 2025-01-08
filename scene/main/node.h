@@ -577,7 +577,7 @@ public:
 
 	void set_owner(Node *p_owner);
 	Node *get_owner() const;
-	void get_owned_by(Node *p_by, List<Node *> *p_owned);
+	void get_owned_by(Node *p_by, LocalVector<Node *> &p_owned);
 
 	void set_unique_name_in_owner(bool p_enabled);
 	bool is_unique_name_in_owner() const;

@@ -7173,8 +7173,8 @@ void EditorNode::reload_instances_with_path_in_edited_scenes() {
 
 			// Clear ownership of the nodes (kind of hack to workaround an issue with
 			// replace_by when called on nodes in other tabs).
-			List<Node *> nodes_owned_by_original_node;
-			original_node->get_owned_by(original_node, &nodes_owned_by_original_node);
+			LocalVector<Node *> nodes_owned_by_original_node;
+			original_node->get_owned_by(original_node, nodes_owned_by_original_node);
 			for (Node *owned_node : nodes_owned_by_original_node) {
 				owned_node->set_owner(nullptr);
 			}

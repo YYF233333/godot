@@ -487,8 +487,8 @@ void SceneTreeDock::_replace_with_branch_scene(const String &p_file, Node *base)
 	undo_redo->add_do_method(parent, "move_child", instantiated_scene, pos);
 	undo_redo->add_undo_method(parent, "move_child", base, pos);
 
-	List<Node *> owned;
-	base->get_owned_by(base->get_owner(), &owned);
+	LocalVector<Node *> owned;
+	base->get_owned_by(base->get_owner(), owned);
 	Array owners;
 	for (Node *F : owned) {
 		owners.push_back(F);
@@ -689,8 +689,8 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 				LocalVector<Node *> owned;
 				Node *owner = node;
 				while (owner) {
-					List<Node *> cur_owned;
-					node->get_owned_by(owner, &cur_owned);
+					LocalVector<Node *> cur_owned;
+					node->get_owned_by(owner, cur_owned);
 					owner = owner->get_owner();
 					for (Node *F : cur_owned) {
 						owned.push_back(F);
@@ -915,8 +915,8 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 				LocalVector<Node *> owned;
 				Node *owner = node;
 				while (owner) {
-					List<Node *> cur_owned;
-					node->get_owned_by(owner, &cur_owned);
+					LocalVector<Node *> cur_owned;
+					node->get_owned_by(owner, cur_owned);
 					owner = owner->get_owner();
 					for (Node *F : cur_owned) {
 						owned.push_back(F);
@@ -2420,8 +2420,8 @@ void SceneTreeDock::_do_reparent(Node *p_new_parent, int p_position_in_parent, V
 		fill_path_renames(node, p_new_parent, &path_renames);
 		former_names.push_back(node->get_name());
 
-		List<Node *> owned;
-		node->get_owned_by(node->get_owner(), &owned);
+		LocalVector<Node *> owned;
+		node->get_owned_by(node->get_owner(), owned);
 		Array owners;
 		for (Node *E : owned) {
 			owners.push_back(E);
@@ -2508,8 +2508,8 @@ void SceneTreeDock::_do_reparent(Node *p_new_parent, int p_position_in_parent, V
 	for (int ni = 0; ni < p_nodes.size(); ni++) {
 		Node *node = p_nodes[ni];
 
-		List<Node *> owned;
-		node->get_owned_by(node->get_owner(), &owned);
+		LocalVector<Node *> owned;
+		node->get_owned_by(node->get_owner(), owned);
 		Array owners;
 		for (Node *E : owned) {
 			owners.push_back(E);
@@ -2659,8 +2659,8 @@ void SceneTreeDock::_reparent_nodes_to_root(Node *p_root, const Array &p_nodes, 
 
 	for (Node *node : nodes) {
 		node->set_owner(p_owner);
-		List<Node *> owned;
-		node->get_owned_by(p_owner, &owned);
+		LocalVector<Node *> owned;
+		node->get_owned_by(p_owner, owned);
 		String original_name = node->get_name();
 		node->reparent(p_root);
 		node->set_name(original_name);
@@ -2683,8 +2683,8 @@ void SceneTreeDock::_reparent_nodes_to_paths_with_transform_and_name(Node *p_roo
 		Node *parent_node = p_root->get_node_or_null(np);
 		ERR_FAIL_NULL(parent_node);
 
-		List<Node *> owned;
-		node->get_owned_by(p_owner, &owned);
+		LocalVector<Node *> owned;
+		node->get_owned_by(p_owner, owned);
 		node->reparent(parent_node);
 		node->set_name(p_names[i]);
 		Node3D *node_3d = Object::cast_to<Node3D>(node);
@@ -2723,8 +2723,8 @@ void SceneTreeDock::_toggle_editable_children(Node *p_node) {
 		undo_redo->add_undo_method(p_node, "set_scene_instance_load_placeholder", original_scene_instance_load_placeholder);
 		undo_redo->add_do_method(p_node, "set_scene_instance_load_placeholder", false);
 	} else {
-		List<Node *> owned;
-		p_node->get_owned_by(edited_scene, &owned);
+		LocalVector<Node *> owned;
+		p_node->get_owned_by(edited_scene, owned);
 
 		// Get the original paths, transforms, and names for undo.
 		Array owned_nodes_array;
@@ -2823,8 +2823,8 @@ void SceneTreeDock::_delete_confirm(bool p_cut) {
 				continue;
 			}
 
-			List<Node *> owned;
-			n->get_owned_by(n->get_owner(), &owned);
+			LocalVector<Node *> owned;
+			n->get_owned_by(n->get_owner(), owned);
 			Array owners;
 			for (Node *F : owned) {
 				owners.push_back(F);
