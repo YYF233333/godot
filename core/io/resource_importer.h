@@ -74,7 +74,7 @@ public:
 	virtual bool has_custom_uid_support() const override;
 	virtual Variant get_resource_metadata(const String &p_path) const;
 	virtual bool is_import_valid(const String &p_path) const override;
-	virtual void get_dependencies(const String &p_path, List<String> *p_dependencies, bool p_add_types = false) override;
+	virtual void get_dependencies(const String &p_path, LocalVector<String> &p_dependencies, bool p_add_types = false) override;
 	virtual bool is_imported(const String &p_path) const override { return recognize_path(p_path); }
 	virtual String get_import_group_file(const String &p_path) const override;
 	virtual void get_classes_used(const String &p_path, HashSet<StringName> *r_classes) override;
