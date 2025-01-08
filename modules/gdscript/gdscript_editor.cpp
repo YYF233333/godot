@@ -3526,8 +3526,8 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 
 			bool use_type_hint = EditorSettings::get_singleton()->get_setting("text_editor/completion/add_type_hints").operator bool();
 
-			List<MethodInfo> virtual_methods;
-			ClassDB::get_virtual_methods(class_name, &virtual_methods);
+			LocalVector<MethodInfo> virtual_methods;
+			ClassDB::get_virtual_methods(class_name, virtual_methods);
 
 			{
 				// Not truly a virtual method, but can also be "overridden".
@@ -3893,8 +3893,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 					return OK;
 				}
 
-				List<MethodInfo> virtual_methods;
-				ClassDB::get_virtual_methods(class_name, &virtual_methods, true);
+				LocalVector<MethodInfo> virtual_methods;
+				ClassDB::get_virtual_methods(class_name, virtual_methods, true);
 				for (const MethodInfo &E : virtual_methods) {
 					if (E.name == p_symbol) {
 						r_result.type = ScriptLanguage::LOOKUP_RESULT_CLASS_METHOD;
