@@ -832,7 +832,7 @@ public:
 	static bool is_utility_function_vararg(const StringName &p_name);
 	static uint32_t get_utility_function_hash(const StringName &p_name);
 
-	static void get_utility_function_list(List<StringName> *r_functions);
+	static Vector<StringName> get_utility_function_list();
 	static int get_utility_function_count();
 
 	//argsVariant call()

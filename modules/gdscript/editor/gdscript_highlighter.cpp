@@ -829,13 +829,13 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 	reserved_keywords[SNAME("get")] = function_color;
 
 	/* Global functions. */
-	List<StringName> global_function_list;
-	GDScriptUtilityFunctions::get_function_list(&global_function_list);
-	Variant::get_utility_function_list(&global_function_list);
 	// "assert" and "preload" are not utility functions, but are global nonetheless, so insert them.
 	global_functions.insert(SNAME("assert"));
 	global_functions.insert(SNAME("preload"));
-	for (const StringName &E : global_function_list) {
+	for (const StringName &E : GDScriptUtilityFunctions::get_function_list()) {
+		global_functions.insert(E);
+	}
+	for (const StringName &E : Variant::get_utility_function_list()) {
 		global_functions.insert(E);
 	}
 
