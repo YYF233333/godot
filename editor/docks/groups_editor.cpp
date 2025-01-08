@@ -152,8 +152,8 @@ void GroupsEditor::_modify_group(Object *p_item, int p_column, int p_id, MouseBu
 }
 
 void GroupsEditor::_load_scene_groups(Node *p_node) {
-	List<Node::GroupInfo> groups;
-	p_node->get_groups(&groups);
+	LocalVector<Node::GroupInfo> groups;
+	p_node->get_groups(groups);
 
 	for (const GroupInfo &gi : groups) {
 		if (!gi.persistent) {
@@ -224,13 +224,13 @@ void GroupsEditor::_update_tree() {
 
 	tree->clear();
 
-	List<Node::GroupInfo> groups;
+	LocalVector<Node::GroupInfo> groups;
 	for (Node *p_node : selection) {
-		p_node->get_groups(&groups);
+		p_node->get_groups(groups);
 	}
 	groups.sort_custom<_GroupInfoComparator>();
 
-	List<StringName> current_groups;
+	LocalVector<StringName> current_groups;
 	for (const Node::GroupInfo &gi : groups) {
 		current_groups.push_back(gi.name);
 	}
@@ -258,7 +258,7 @@ void GroupsEditor::_update_tree() {
 		TreeItem *item = tree->create_item(local_root);
 		item->set_cell_mode(0, TreeItem::CELL_MODE_CHECK);
 		item->set_editable(0, _can_edit(E));
-		item->set_checked(0, current_groups.find(E) != nullptr);
+		item->set_checked(0, current_groups.has(E));
 		item->set_text(0, E);
 		item->set_meta("__local", true);
 		item->set_meta("__name", E);
@@ -290,7 +290,7 @@ void GroupsEditor::_update_tree() {
 		TreeItem *item = tree->create_item(global_root);
 		item->set_cell_mode(0, TreeItem::CELL_MODE_CHECK);
 		item->set_editable(0, _can_edit(E));
-		item->set_checked(0, current_groups.find(E) != nullptr);
+		item->set_checked(0, current_groups.has(E));
 		item->set_text(0, E);
 		item->set_meta("__local", false);
 		item->set_meta("__name", E);
