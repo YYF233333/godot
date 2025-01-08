@@ -1069,8 +1069,8 @@ static void _list_available_types(bool p_inherit_only, GDScriptParser::Completio
 	if (p_context.current_class) {
 		if (!p_inherit_only && p_context.current_class->base_type.is_set()) {
 			// Native enums from base class
-			List<StringName> enums;
-			ClassDB::get_enum_list(p_context.current_class->base_type.native_type, &enums);
+			LocalVector<StringName> enums;
+			ClassDB::get_enum_list(p_context.current_class->base_type.native_type, enums);
 			for (const StringName &E : enums) {
 				ScriptLanguage::CodeCompletionOption option(E, ScriptLanguage::CODE_COMPLETION_KIND_ENUM);
 				r_result.insert(option.display, option);
@@ -1351,8 +1351,8 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 					return;
 				}
 
-				List<StringName> enums;
-				ClassDB::get_enum_list(type, &enums);
+				LocalVector<StringName> enums;
+				ClassDB::get_enum_list(type, enums);
 				for (const StringName &E : enums) {
 					int location = p_recursion_depth + _get_enum_location(type, E);
 					ScriptLanguage::CodeCompletionOption option(E, ScriptLanguage::CODE_COMPLETION_KIND_ENUM, location);
@@ -4128,8 +4128,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 					return OK;
 				}
 
-				List<StringName> enums;
-				ClassDB::get_enum_list(class_name, &enums);
+				LocalVector<StringName> enums;
+				ClassDB::get_enum_list(class_name, enums);
 				for (const StringName &E : enums) {
 					if (E == p_symbol) {
 						r_result.type = ScriptLanguage::LOOKUP_RESULT_CLASS_ENUM;
@@ -4353,8 +4353,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 			return OK;
 		}
 		do {
-			List<StringName> enums;
-			ClassDB::get_enum_list(class_name, &enums, true);
+			LocalVector<StringName> enums;
+			ClassDB::get_enum_list(class_name, enums, true);
 			for (const StringName &enum_name : enums) {
 				if (enum_name == p_symbol) {
 					r_result.type = ScriptLanguage::LOOKUP_RESULT_CLASS_ENUM;
@@ -4374,8 +4374,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 			class_name = ScriptServer::get_global_class_native_base(class_name);
 		}
 		do {
-			List<StringName> enums;
-			ClassDB::get_enum_list(class_name, &enums, true);
+			LocalVector<StringName> enums;
+			ClassDB::get_enum_list(class_name, enums, true);
 			for (const StringName &enum_name : enums) {
 				if (enum_name == p_symbol) {
 					r_result.type = ScriptLanguage::LOOKUP_RESULT_CLASS_ENUM;

@@ -974,8 +974,8 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 			{
 				//enum
 				Array enums;
-				List<StringName> enum_list;
-				ClassDB::get_enum_list(class_name, &enum_list, true);
+				LocalVector<StringName> enum_list;
+				ClassDB::get_enum_list(class_name, enum_list, true);
 				for (const StringName &F : enum_list) {
 					Dictionary d2;
 					d2["name"] = String(F);
