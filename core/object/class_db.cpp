@@ -283,8 +283,10 @@ void ClassDB::get_extensions_class_list(LocalVector<StringName> &p_classes) {
 	sorter.sort(&p_classes[original_size], p_classes.size() - original_size);
 }
 
-void ClassDB::get_extension_class_list(const Ref<GDExtension> &p_extension, List<StringName> *p_classes) {
+LocalVector<StringName> ClassDB::get_extension_class_list(const Ref<GDExtension> &p_extension) {
 	Locker::Lock lock(Locker::STATE_READ);
+
+	LocalVector<StringName> p_classes;
 
 	for (const KeyValue<StringName, ClassInfo> &E : classes) {
 		if (E.value.api != API_EXTENSION && E.value.api != API_EDITOR_EXTENSION) {
@@ -293,10 +295,11 @@ void ClassDB::get_extension_class_list(const Ref<GDExtension> &p_extension, List
 		if (!E.value.gdextension || E.value.gdextension->library != p_extension.ptr()) {
 			continue;
 		}
-		p_classes->push_back(E.key);
+		p_classes.push_back(E.key);
 	}
 
-	p_classes->sort_custom<StringName::AlphCompare>();
+	p_classes.sort_custom<StringName::AlphCompare>();
+	return p_classes;
 }
 #endif
 
