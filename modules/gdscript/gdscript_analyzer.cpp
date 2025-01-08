@@ -174,8 +174,8 @@ static GDScriptParser::DataType make_native_enum_type(const StringName &p_enum_n
 		type.is_pseudo_type = true;
 	}
 
-	List<StringName> enum_values;
-	ClassDB::get_enum_constants(native_base, p_enum_name, &enum_values, true);
+	LocalVector<StringName> enum_values;
+	ClassDB::get_enum_constants(native_base, p_enum_name, enum_values, true);
 
 	for (const StringName &E : enum_values) {
 		type.enum_values[E] = ClassDB::get_integer_constant(native_base, E);
