@@ -192,10 +192,7 @@ static GDScriptParser::DataType make_builtin_enum_type(const StringName &p_enum_
 		type.is_pseudo_type = true;
 	}
 
-	List<StringName> enum_values;
-	Variant::get_enumerations_for_enum(p_type, p_enum_name, &enum_values);
-
-	for (const StringName &E : enum_values) {
+	for (const StringName &E : Variant::get_enumerations_for_enum(p_type, p_enum_name)) {
 		type.enum_values[E] = Variant::get_enum_value(p_type, p_enum_name, E);
 	}
 
