@@ -3391,7 +3391,7 @@ void Node::_set_tree(SceneTree *p_tree) {
 }
 
 #ifdef DEBUG_ENABLED
-static HashMap<ObjectID, List<String>> _print_orphan_nodes_map;
+static HashMap<ObjectID, LocalVector<String>> _print_orphan_nodes_map;
 
 static void _print_orphan_nodes_routine(Object *p_obj, void *p_user_data) {
 	Node *n = Object::cast_to<Node>(p_obj);
@@ -3422,7 +3422,7 @@ static void _print_orphan_nodes_routine(Object *p_obj, void *p_user_data) {
 		source = obj->get_path();
 	}
 
-	List<String> info_strings;
+	LocalVector<String> info_strings;
 	info_strings.push_back(path);
 	info_strings.push_back(n->get_class());
 	info_strings.push_back(source);
@@ -3439,8 +3439,8 @@ void Node::print_orphan_nodes() {
 	// Collect and print information about orphan nodes.
 	ObjectDB::debug_objects(_print_orphan_nodes_routine, nullptr);
 
-	for (const KeyValue<ObjectID, List<String>> &E : _print_orphan_nodes_map) {
-		print_line(itos(E.key) + " - Stray Node: " + E.value.get(0) + " (Type: " + E.value.get(1) + ") (Source:" + E.value.get(2) + ")");
+	for (const KeyValue<ObjectID, LocalVector<String>> &E : _print_orphan_nodes_map) {
+		print_line(itos(E.key) + " - Stray Node: " + E.value[0] + " (Type: " + E.value[1] + ") (Source:" + E.value[2] + ")");
 	}
 
 	// Flush it after use.
@@ -3456,7 +3456,7 @@ TypedArray<int> Node::get_orphan_node_ids() {
 	// Collect and return information about orphan nodes.
 	ObjectDB::debug_objects(_print_orphan_nodes_routine, nullptr);
 
-	for (const KeyValue<ObjectID, List<String>> &E : _print_orphan_nodes_map) {
+	for (const KeyValue<ObjectID, LocalVector<String>> &E : _print_orphan_nodes_map) {
 		ret.push_back(E.key);
 	}
 
