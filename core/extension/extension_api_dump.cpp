@@ -697,12 +697,9 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 					Dictionary enum_dict;
 					enum_dict["name"] = String(enum_name);
 
-					List<StringName> enumeration_names;
-					Variant::get_enumerations_for_enum(type, enum_name, &enumeration_names);
-
 					Array values;
 
-					for (const StringName &enumeration : enumeration_names) {
+					for (const StringName &enumeration : Variant::get_enumerations_for_enum(type, enum_name)) {
 						Dictionary values_dict;
 						values_dict["name"] = String(enumeration);
 						values_dict["value"] = Variant::get_enum_value(type, enum_name, enumeration);
