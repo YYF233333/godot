@@ -1777,8 +1777,8 @@ PackedStringArray ClassDB::class_get_enum_list(const StringName &p_class, bool p
 }
 
 PackedStringArray ClassDB::class_get_enum_constants(const StringName &p_class, const StringName &p_enum, bool p_no_inheritance) const {
-	List<StringName> constants;
-	::ClassDB::get_enum_constants(p_class, p_enum, &constants, p_no_inheritance);
+	LocalVector<StringName> constants;
+	::ClassDB::get_enum_constants(p_class, p_enum, constants, p_no_inheritance);
 
 	PackedStringArray ret;
 	ret.resize(constants.size());

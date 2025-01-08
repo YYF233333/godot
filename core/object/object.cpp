@@ -2500,8 +2500,8 @@ void Object::get_argument_options(const StringName &p_function, int p_idx, Local
 		if (pf == "connect") {
 			// Ideally, the constants should be inferred by the parameter.
 			// But a parameter's PropertyInfo does not store the enum they come from, so this will do for now.
-			List<StringName> constants;
-			ClassDB::get_enum_constants("Object", "ConnectFlags", &constants);
+			LocalVector<StringName> constants;
+			ClassDB::get_enum_constants("Object", "ConnectFlags", constants);
 			for (const StringName &E : constants) {
 				r_options.push_back(String(E));
 			}

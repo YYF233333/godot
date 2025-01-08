@@ -1305,7 +1305,7 @@ void ClassDB::get_enum_list(const StringName &p_class, LocalVector<StringName> &
 	}
 }
 
-void ClassDB::get_enum_constants(const StringName &p_class, const StringName &p_enum, List<StringName> *p_constants, bool p_no_inheritance) {
+void ClassDB::get_enum_constants(const StringName &p_class, const StringName &p_enum, LocalVector<StringName> &p_constants, bool p_no_inheritance) {
 	Locker::Lock lock(Locker::STATE_READ);
 
 	ClassInfo *type = classes.getptr(p_class);
@@ -1315,7 +1315,7 @@ void ClassDB::get_enum_constants(const StringName &p_class, const StringName &p_
 
 		if (constants) {
 			for (const List<StringName>::Element *E = constants->constants.front(); E; E = E->next()) {
-				p_constants->push_back(E->get());
+				p_constants.push_back(E->get());
 			}
 		}
 

@@ -982,8 +982,8 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 					d2["is_bitfield"] = ClassDB::is_enum_bitfield(class_name, F);
 
 					Array values;
-					List<StringName> enum_constant_list;
-					ClassDB::get_enum_constants(class_name, F, &enum_constant_list, true);
+					LocalVector<StringName> enum_constant_list;
+					ClassDB::get_enum_constants(class_name, F, enum_constant_list, true);
 					for (const StringName &enum_constant : enum_constant_list) {
 						Dictionary d3;
 						d3["name"] = String(enum_constant);
