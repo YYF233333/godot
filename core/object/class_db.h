@@ -543,7 +543,7 @@ public:
 	static void cleanup();
 
 	static void register_native_struct(const StringName &p_name, const String &p_code, uint64_t p_current_size);
-	static void get_native_struct_list(List<StringName> *r_names);
+	static LocalVector<StringName> get_native_struct_list();
 	static String get_native_struct_code(const StringName &p_name);
 	static uint64_t get_native_struct_size(const StringName &p_name); // Used for asserting
 
