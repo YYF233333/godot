@@ -936,7 +936,7 @@ void ClassDB::get_method_list(const StringName &p_class, LocalVector<MethodInfo>
 	}
 }
 
-void ClassDB::get_method_list_with_compatibility(const StringName &p_class, List<Pair<MethodInfo, uint32_t>> *p_methods, bool p_no_inheritance, bool p_exclude_from_properties) {
+void ClassDB::get_method_list_with_compatibility(const StringName &p_class, LocalVector<Pair<MethodInfo, uint32_t>> &p_methods, bool p_no_inheritance, bool p_exclude_from_properties) {
 	Locker::Lock lock(Locker::STATE_READ);
 
 	ClassInfo *type = classes.getptr(p_class);
@@ -954,7 +954,7 @@ void ClassDB::get_method_list_with_compatibility(const StringName &p_class, List
 #ifdef DEBUG_ENABLED
 		for (const MethodInfo &E : type->virtual_methods) {
 			Pair<MethodInfo, uint32_t> pair(E, E.get_compatibility_hash());
-			p_methods->push_back(pair);
+			p_methods.push_back(pair);
 		}
 
 		for (const StringName &E : type->method_order) {
@@ -966,7 +966,7 @@ void ClassDB::get_method_list_with_compatibility(const StringName &p_class, List
 			MethodInfo minfo = info_from_bind(method);
 
 			Pair<MethodInfo, uint32_t> pair(minfo, method->get_hash());
-			p_methods->push_back(pair);
+			p_methods.push_back(pair);
 		}
 #else
 		for (KeyValue<StringName, MethodBind *> &E : type->method_map) {
@@ -974,7 +974,7 @@ void ClassDB::get_method_list_with_compatibility(const StringName &p_class, List
 			MethodInfo minfo = info_from_bind(method);
 
 			Pair<MethodInfo, uint32_t> pair(minfo, method->get_hash());
-			p_methods->push_back(pair);
+			p_methods.push_back(pair);
 		}
 #endif // DEBUG_ENABLED
 
@@ -984,7 +984,7 @@ void ClassDB::get_method_list_with_compatibility(const StringName &p_class, List
 				MethodInfo minfo = info_from_bind(method);
 
 				Pair<MethodInfo, uint32_t> pair(minfo, method->get_hash());
-				p_methods->push_back(pair);
+				p_methods.push_back(pair);
 			}
 		}
 
