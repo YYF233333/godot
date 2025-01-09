@@ -42,9 +42,9 @@ StringName AnimationNodeAnimation::get_animation() const {
 
 Vector<String> (*AnimationNodeAnimation::get_editable_animation_list)() = nullptr;
 
-void AnimationNodeAnimation::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNodeAnimation::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	AnimationNode::get_parameter_list(r_list);
-	r_list->push_back(PropertyInfo(Variant::BOOL, backward, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
+	r_list.push_back(PropertyInfo(Variant::BOOL, backward, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
 }
 
 Variant AnimationNodeAnimation::get_parameter_default_value(const StringName &p_parameter) const {
@@ -417,14 +417,14 @@ AnimationNodeSync::AnimationNodeSync() {
 }
 
 ////////////////////////////////////////////////////////
-void AnimationNodeOneShot::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNodeOneShot::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	AnimationNode::get_parameter_list(r_list);
-	r_list->push_back(PropertyInfo(Variant::BOOL, active, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_READ_ONLY));
-	r_list->push_back(PropertyInfo(Variant::BOOL, internal_active, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_READ_ONLY));
-	r_list->push_back(PropertyInfo(Variant::INT, request, PROPERTY_HINT_ENUM, ",Fire,Abort,Fade Out"));
-	r_list->push_back(PropertyInfo(Variant::FLOAT, fade_in_remaining, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
-	r_list->push_back(PropertyInfo(Variant::FLOAT, fade_out_remaining, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
-	r_list->push_back(PropertyInfo(Variant::FLOAT, time_to_restart, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
+	r_list.push_back(PropertyInfo(Variant::BOOL, active, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_READ_ONLY));
+	r_list.push_back(PropertyInfo(Variant::BOOL, internal_active, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_READ_ONLY));
+	r_list.push_back(PropertyInfo(Variant::INT, request, PROPERTY_HINT_ENUM, ",Fire,Abort,Fade Out"));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, fade_in_remaining, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, fade_out_remaining, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, time_to_restart, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
 }
 
 Variant AnimationNodeOneShot::get_parameter_default_value(const StringName &p_parameter) const {
@@ -757,9 +757,9 @@ AnimationNodeOneShot::AnimationNodeOneShot() {
 
 ////////////////////////////////////////////////
 
-void AnimationNodeAdd2::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNodeAdd2::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	AnimationNode::get_parameter_list(r_list);
-	r_list->push_back(PropertyInfo(Variant::FLOAT, add_amount, PROPERTY_HINT_RANGE, "0,1,0.01,or_less,or_greater"));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, add_amount, PROPERTY_HINT_RANGE, "0,1,0.01,or_less,or_greater"));
 }
 
 Variant AnimationNodeAdd2::get_parameter_default_value(const StringName &p_parameter) const {
@@ -798,9 +798,9 @@ AnimationNodeAdd2::AnimationNodeAdd2() {
 
 ////////////////////////////////////////////////
 
-void AnimationNodeAdd3::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNodeAdd3::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	AnimationNode::get_parameter_list(r_list);
-	r_list->push_back(PropertyInfo(Variant::FLOAT, add_amount, PROPERTY_HINT_RANGE, "-1,1,0.01,or_less,or_greater"));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, add_amount, PROPERTY_HINT_RANGE, "-1,1,0.01,or_less,or_greater"));
 }
 
 Variant AnimationNodeAdd3::get_parameter_default_value(const StringName &p_parameter) const {
@@ -842,9 +842,9 @@ AnimationNodeAdd3::AnimationNodeAdd3() {
 
 /////////////////////////////////////////////
 
-void AnimationNodeBlend2::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNodeBlend2::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	AnimationNode::get_parameter_list(r_list);
-	r_list->push_back(PropertyInfo(Variant::FLOAT, blend_amount, PROPERTY_HINT_RANGE, "0,1,0.01,or_less,or_greater"));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, blend_amount, PROPERTY_HINT_RANGE, "0,1,0.01,or_less,or_greater"));
 }
 
 Variant AnimationNodeBlend2::get_parameter_default_value(const StringName &p_parameter) const {
@@ -883,9 +883,9 @@ AnimationNodeBlend2::AnimationNodeBlend2() {
 
 //////////////////////////////////////
 
-void AnimationNodeBlend3::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNodeBlend3::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	AnimationNode::get_parameter_list(r_list);
-	r_list->push_back(PropertyInfo(Variant::FLOAT, blend_amount, PROPERTY_HINT_RANGE, "-1,1,0.01,or_less,or_greater"));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, blend_amount, PROPERTY_HINT_RANGE, "-1,1,0.01,or_less,or_greater"));
 }
 
 Variant AnimationNodeBlend3::get_parameter_default_value(const StringName &p_parameter) const {
@@ -923,9 +923,9 @@ AnimationNodeBlend3::AnimationNodeBlend3() {
 
 ////////////////////////////////////////////////
 
-void AnimationNodeSub2::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNodeSub2::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	AnimationNode::get_parameter_list(r_list);
-	r_list->push_back(PropertyInfo(Variant::FLOAT, sub_amount, PROPERTY_HINT_RANGE, "0,1,0.01,or_less,or_greater"));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, sub_amount, PROPERTY_HINT_RANGE, "0,1,0.01,or_less,or_greater"));
 }
 
 Variant AnimationNodeSub2::get_parameter_default_value(const StringName &p_parameter) const {
@@ -964,9 +964,9 @@ AnimationNodeSub2::AnimationNodeSub2() {
 
 /////////////////////////////////
 
-void AnimationNodeTimeScale::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNodeTimeScale::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	AnimationNode::get_parameter_list(r_list);
-	r_list->push_back(PropertyInfo(Variant::FLOAT, scale, PROPERTY_HINT_RANGE, "-32,32,0.01,or_less,or_greater"));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, scale, PROPERTY_HINT_RANGE, "-32,32,0.01,or_less,or_greater"));
 }
 
 Variant AnimationNodeTimeScale::get_parameter_default_value(const StringName &p_parameter) const {
@@ -1000,9 +1000,9 @@ AnimationNodeTimeScale::AnimationNodeTimeScale() {
 
 ////////////////////////////////////
 
-void AnimationNodeTimeSeek::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNodeTimeSeek::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	AnimationNode::get_parameter_list(r_list);
-	r_list->push_back(PropertyInfo(Variant::FLOAT, seek_pos_request, PROPERTY_HINT_RANGE, "-1,3600,0.01,or_greater")); // It will be reset to -1 after seeking the position immediately.
+	r_list.push_back(PropertyInfo(Variant::FLOAT, seek_pos_request, PROPERTY_HINT_RANGE, "-1,3600,0.01,or_greater")); // It will be reset to -1 after seeking the position immediately.
 }
 
 Variant AnimationNodeTimeSeek::get_parameter_default_value(const StringName &p_parameter) const {
@@ -1114,7 +1114,7 @@ bool AnimationNodeTransition::_get(const StringName &p_path, Variant &r_ret) con
 	return true;
 }
 
-void AnimationNodeTransition::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNodeTransition::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	AnimationNode::get_parameter_list(r_list);
 	String anims;
 	for (int i = 0; i < get_input_count(); i++) {
@@ -1124,11 +1124,11 @@ void AnimationNodeTransition::get_parameter_list(List<PropertyInfo> *r_list) con
 		anims += inputs[i].name;
 	}
 
-	r_list->push_back(PropertyInfo(Variant::STRING, current_state, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_READ_ONLY)); // For interface.
-	r_list->push_back(PropertyInfo(Variant::STRING, transition_request, PROPERTY_HINT_ENUM, anims)); // For transition request. It will be cleared after setting the value immediately.
-	r_list->push_back(PropertyInfo(Variant::INT, current_index, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_READ_ONLY)); // To avoid finding the index every frame, use this internally.
-	r_list->push_back(PropertyInfo(Variant::INT, prev_index, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
-	r_list->push_back(PropertyInfo(Variant::FLOAT, prev_xfading, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
+	r_list.push_back(PropertyInfo(Variant::STRING, current_state, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_READ_ONLY)); // For interface.
+	r_list.push_back(PropertyInfo(Variant::STRING, transition_request, PROPERTY_HINT_ENUM, anims)); // For transition request. It will be cleared after setting the value immediately.
+	r_list.push_back(PropertyInfo(Variant::INT, current_index, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_READ_ONLY)); // To avoid finding the index every frame, use this internally.
+	r_list.push_back(PropertyInfo(Variant::INT, prev_index, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, prev_xfading, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
 }
 
 Variant AnimationNodeTransition::get_parameter_default_value(const StringName &p_parameter) const {
