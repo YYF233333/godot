@@ -1350,7 +1350,7 @@ struct VariantBuiltInMethodInfo {
 
 typedef AHashMap<StringName, VariantBuiltInMethodInfo> BuiltinMethodMap;
 static BuiltinMethodMap *builtin_method_info;
-static List<StringName> *builtin_method_names;
+static LocalVector<StringName> *builtin_method_names;
 
 #ifndef DISABLE_DEPRECATED
 typedef AHashMap<StringName, LocalVector<VariantBuiltInMethodInfo>> BuiltinCompatMethodMap;
@@ -2012,7 +2012,7 @@ static void _register_variant_builtin_methods_string() {
 	_VariantCall::constant_data = memnew_arr(_VariantCall::ConstantData, Variant::VARIANT_MAX);
 	_VariantCall::enum_data = memnew_arr(_VariantCall::EnumData, Variant::VARIANT_MAX);
 	builtin_method_info = memnew_arr(BuiltinMethodMap, Variant::VARIANT_MAX);
-	builtin_method_names = memnew_arr(List<StringName>, Variant::VARIANT_MAX);
+	builtin_method_names = memnew_arr(LocalVector<StringName>, Variant::VARIANT_MAX);
 #ifndef DISABLE_DEPRECATED
 	builtin_compat_method_info = memnew_arr(BuiltinCompatMethodMap, Variant::VARIANT_MAX);
 #endif
