@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/math/expression.h"
+#include "core/templates/local_vector.h"
 #include "scene/animation/animation_tree.h"
 #include "scene/resources/curve.h"
 
@@ -181,7 +182,7 @@ public:
 	void set_node_position(const StringName &p_name, const Vector2 &p_position);
 	Vector2 get_node_position(const StringName &p_name) const;
 
-	virtual void get_child_nodes(List<ChildNode> *r_child_nodes) override;
+	virtual LocalVector<ChildNode> get_child_nodes() override;
 
 	bool has_transition(const StringName &p_from, const StringName &p_to) const;
 	bool has_transition_from(const StringName &p_from) const;

@@ -123,13 +123,16 @@ void AnimationNodeBlendSpace1D::_bind_methods() {
 	BIND_ENUM_CONSTANT(BLEND_MODE_DISCRETE_CARRY);
 }
 
-void AnimationNodeBlendSpace1D::get_child_nodes(List<ChildNode> *r_child_nodes) {
+LocalVector<AnimationNode::ChildNode> AnimationNodeBlendSpace1D::get_child_nodes() {
+	LocalVector<ChildNode> r_child_nodes;
+	r_child_nodes.reserve(blend_points_used);
 	for (int i = 0; i < blend_points_used; i++) {
 		ChildNode cn;
 		cn.name = itos(i);
 		cn.node = blend_points[i].node;
-		r_child_nodes->push_back(cn);
+		r_child_nodes.push_back(cn);
 	}
+	return r_child_nodes;
 }
 
 void AnimationNodeBlendSpace1D::add_blend_point(const Ref<AnimationRootNode> &p_node, float p_position, int p_at_index) {
