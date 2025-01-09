@@ -205,7 +205,7 @@ public:
 		Ref<AnimationNode> node;
 	};
 
-	virtual void get_child_nodes(List<ChildNode> *r_child_nodes);
+	virtual LocalVector<ChildNode> get_child_nodes();
 
 	virtual String get_caption() const;
 
