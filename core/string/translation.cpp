@@ -111,8 +111,8 @@ void Translation::_set_messages(const Dictionary &p_messages) {
 }
 
 Vector<String> Translation::_get_message_list() const {
-	List<StringName> msgstrs;
-	get_message_list(&msgstrs);
+	LocalVector<StringName> msgstrs;
+	get_message_list(msgstrs);
 
 	Vector<String> keys;
 	keys.resize(msgstrs.size());
@@ -197,13 +197,13 @@ void Translation::erase_message(const StringName &p_src_text, const StringName &
 	translation_map.erase({ p_context, p_src_text });
 }
 
-void Translation::get_message_list(List<StringName> *r_messages) const {
+void Translation::get_message_list(LocalVector<StringName> &r_messages) const {
 	for (const KeyValue<MessageKey, Vector<StringName>> &E : translation_map) {
 		if (E.key.msgctxt.is_empty()) {
-			r_messages->push_back(E.key.msgid);
+			r_messages.push_back(E.key.msgid);
 		} else {
 			// Separated by the EOT character. Compatible with the MO file format.
-			r_messages->push_back(vformat("%s\x04%s", E.key.msgctxt, E.key.msgid));
+			r_messages.push_back(vformat("%s\x04%s", E.key.msgctxt, E.key.msgid));
 		}
 	}
 }
