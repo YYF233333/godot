@@ -57,7 +57,7 @@ public:
 		PLAY_MODE_BACKWARD
 	};
 
-	void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual NodeTimeInfo get_node_time_info() const override; // Wrapper of get_parameter().
@@ -161,7 +161,7 @@ protected:
 	static void _bind_methods();
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 	virtual bool is_parameter_read_only(const StringName &p_parameter) const override;
 
@@ -208,7 +208,7 @@ class AnimationNodeAdd2 : public AnimationNodeSync {
 	StringName add_amount = PNAME("add_amount");
 
 public:
-	void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual String get_caption() const override;
@@ -225,7 +225,7 @@ class AnimationNodeAdd3 : public AnimationNodeSync {
 	StringName add_amount = PNAME("add_amount");
 
 public:
-	void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual String get_caption() const override;
@@ -242,7 +242,7 @@ class AnimationNodeBlend2 : public AnimationNodeSync {
 	StringName blend_amount = PNAME("blend_amount");
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual String get_caption() const override;
@@ -258,7 +258,7 @@ class AnimationNodeBlend3 : public AnimationNodeSync {
 	StringName blend_amount = PNAME("blend_amount");
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual String get_caption() const override;
@@ -273,7 +273,7 @@ class AnimationNodeSub2 : public AnimationNodeSync {
 	StringName sub_amount = PNAME("sub_amount");
 
 public:
-	void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual String get_caption() const override;
@@ -290,7 +290,7 @@ class AnimationNodeTimeScale : public AnimationNode {
 	StringName scale = PNAME("scale");
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual String get_caption() const override;
@@ -310,7 +310,7 @@ protected:
 	static void _bind_methods();
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 
 	virtual String get_caption() const override;
@@ -355,7 +355,7 @@ protected:
 	void _get_property_list(List<PropertyInfo> *p_list) const;
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const override;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const override;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const override;
 	virtual bool is_parameter_read_only(const StringName &p_parameter) const override;
 
