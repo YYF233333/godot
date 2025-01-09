@@ -887,9 +887,7 @@ void AnimationTree::_setup_animation_player() {
 		while (animation_libraries.size()) {
 			remove_animation_library(animation_libraries[0].name);
 		}
-		List<StringName> list;
-		player->get_animation_library_list(&list);
-		for (const StringName &E : list) {
+		for (const StringName &E : player->get_animation_library_list()) {
 			Ref<AnimationLibrary> lib = player->get_animation_library(E);
 			if (lib.is_valid()) {
 				add_animation_library(E, lib);
