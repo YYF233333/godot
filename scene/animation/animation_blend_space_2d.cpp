@@ -34,10 +34,10 @@
 #include "core/math/geometry_2d.h"
 #include "scene/resources/material.h"
 
-void AnimationNodeBlendSpace2D::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNodeBlendSpace2D::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	AnimationNode::get_parameter_list(r_list);
-	r_list->push_back(PropertyInfo(Variant::VECTOR2, blend_position));
-	r_list->push_back(PropertyInfo(Variant::INT, closest, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
+	r_list.push_back(PropertyInfo(Variant::VECTOR2, blend_position));
+	r_list.push_back(PropertyInfo(Variant::INT, closest, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
 }
 
 Variant AnimationNodeBlendSpace2D::get_parameter_default_value(const StringName &p_parameter) const {

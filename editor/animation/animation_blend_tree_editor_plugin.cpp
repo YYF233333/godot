@@ -198,8 +198,8 @@ void AnimationNodeBlendTreeEditor::update_graph() {
 			node->set_slot(base + i, true, read_only ? -1 : 0, get_theme_color(SceneStringName(font_color), SNAME("Label")), false, 0, Color());
 		}
 
-		List<PropertyInfo> pinfo;
-		agnode->get_parameter_list(&pinfo);
+		LocalVector<PropertyInfo> pinfo;
+		agnode->get_parameter_list(pinfo);
 		for (const PropertyInfo &F : pinfo) {
 			if (!(F.usage & PROPERTY_USAGE_EDITOR)) {
 				continue;
