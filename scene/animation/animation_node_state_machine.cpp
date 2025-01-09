@@ -1236,9 +1236,9 @@ AnimationNodeStateMachinePlayback::AnimationNodeStateMachinePlayback() {
 
 ///////////////////////////////////////////////////////
 
-void AnimationNodeStateMachine::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNodeStateMachine::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	AnimationNode::get_parameter_list(r_list);
-	r_list->push_back(PropertyInfo(Variant::OBJECT, playback, PROPERTY_HINT_RESOURCE_TYPE, "AnimationNodeStateMachinePlayback", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_ALWAYS_DUPLICATE)); // Don't store this object in .tres, it always needs to be made as unique object.
+	r_list.push_back(PropertyInfo(Variant::OBJECT, playback, PROPERTY_HINT_RESOURCE_TYPE, "AnimationNodeStateMachinePlayback", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_ALWAYS_DUPLICATE)); // Don't store this object in .tres, it always needs to be made as unique object.
 	LocalVector<StringName> advance_conditions;
 	for (int i = 0; i < transitions.size(); i++) {
 		StringName ac = transitions[i].transition->get_advance_condition_name();
@@ -1249,7 +1249,7 @@ void AnimationNodeStateMachine::get_parameter_list(List<PropertyInfo> *r_list) c
 
 	advance_conditions.sort_custom<StringName::AlphCompare>();
 	for (const StringName &E : advance_conditions) {
-		r_list->push_back(PropertyInfo(Variant::BOOL, E));
+		r_list.push_back(PropertyInfo(Variant::BOOL, E));
 	}
 }
 

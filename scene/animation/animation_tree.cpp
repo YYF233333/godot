@@ -34,20 +34,20 @@
 #include "animation_blend_tree.h"
 #include "scene/animation/animation_player.h"
 
-void AnimationNode::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNode::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	Array parameters;
 
 	if (GDVIRTUAL_CALL(_get_parameter_list, parameters)) {
 		for (int i = 0; i < parameters.size(); i++) {
 			Dictionary d = parameters[i];
 			ERR_CONTINUE(d.is_empty());
-			r_list->push_back(PropertyInfo::from_dict(d));
+			r_list.push_back(PropertyInfo::from_dict(d));
 		}
 	}
 
-	r_list->push_back(PropertyInfo(Variant::FLOAT, current_length, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY));
-	r_list->push_back(PropertyInfo(Variant::FLOAT, current_position, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY));
-	r_list->push_back(PropertyInfo(Variant::FLOAT, current_delta, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, current_length, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, current_position, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, current_delta, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY));
 }
 
 Variant AnimationNode::get_parameter_default_value(const StringName &p_parameter) const {
@@ -526,8 +526,8 @@ void AnimationNode::get_argument_options(const StringName &p_function, int p_idx
 			}
 		} else if (pf == "get_parameter" || pf == "set_parameter") {
 			bool is_setter = pf == "set_parameter";
-			List<PropertyInfo> parameters;
-			get_parameter_list(&parameters);
+			LocalVector<PropertyInfo> parameters;
+			get_parameter_list(parameters);
 			for (const PropertyInfo &E : parameters) {
 				if (is_setter && is_parameter_read_only(E.name)) {
 					continue;
@@ -784,8 +784,8 @@ void AnimationTree::_update_properties_for_node(const String &p_base_path, Ref<A
 		input_activity_map_get[String(p_base_path).substr(0, String(p_base_path).length() - 1)] = input_activity_map.get_index(p_base_path);
 	}
 
-	List<PropertyInfo> plist;
-	p_node->get_parameter_list(&plist);
+	LocalVector<PropertyInfo> plist;
+	p_node->get_parameter_list(plist);
 	for (PropertyInfo &pinfo : plist) {
 		StringName key = pinfo.name;
 

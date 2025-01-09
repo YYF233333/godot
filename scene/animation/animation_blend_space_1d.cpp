@@ -32,10 +32,10 @@
 
 #include "animation_blend_tree.h"
 
-void AnimationNodeBlendSpace1D::get_parameter_list(List<PropertyInfo> *r_list) const {
+void AnimationNodeBlendSpace1D::get_parameter_list(LocalVector<PropertyInfo> &r_list) const {
 	AnimationNode::get_parameter_list(r_list);
-	r_list->push_back(PropertyInfo(Variant::FLOAT, blend_position));
-	r_list->push_back(PropertyInfo(Variant::INT, closest, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
+	r_list.push_back(PropertyInfo(Variant::FLOAT, blend_position));
+	r_list.push_back(PropertyInfo(Variant::INT, closest, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
 }
 
 Variant AnimationNodeBlendSpace1D::get_parameter_default_value(const StringName &p_parameter) const {
