@@ -168,7 +168,7 @@ void AnimationMixer::_animation_set_cache_update() {
 	}
 
 	// Check removed.
-	List<StringName> to_erase;
+	LocalVector<StringName> to_erase;
 	for (const KeyValue<StringName, AnimationData> &E : animation_set) {
 		if (E.value.last_update != animation_set_update_pass) {
 			// Was not updated, must be erased.
@@ -177,9 +177,8 @@ void AnimationMixer::_animation_set_cache_update() {
 		}
 	}
 
-	while (to_erase.size()) {
-		animation_set.erase(to_erase.front()->get());
-		to_erase.pop_front();
+	for (const StringName &name : to_erase) {
+		animation_set.erase(name);
 	}
 
 	if (clear_cache_needed) {
@@ -940,7 +939,7 @@ bool AnimationMixer::_update_caches() {
 		}
 	}
 
-	List<Animation::TypeHash> to_delete;
+	LocalVector<Animation::TypeHash> to_delete;
 
 	for (const KeyValue<Animation::TypeHash, TrackCache *> &K : track_cache) {
 		if (K.value->setup_pass != setup_pass) {
@@ -948,11 +947,9 @@ bool AnimationMixer::_update_caches() {
 		}
 	}
 
-	while (to_delete.front()) {
-		Animation::TypeHash thash = to_delete.front()->get();
+	for (const Animation::TypeHash &thash : to_delete) {
 		memdelete(track_cache[thash]);
 		track_cache.erase(thash);
-		to_delete.pop_front();
 	}
 
 	track_map.clear();
