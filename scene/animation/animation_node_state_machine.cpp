@@ -29,6 +29,9 @@
 /**************************************************************************/
 
 #include "animation_node_state_machine.h"
+#include "core/string/string_name.h"
+#include "core/templates/local_vector.h"
+#include "scene/animation/animation_tree.h"
 
 /////////////////////////////////////////////////
 
@@ -347,9 +350,7 @@ float AnimationNodeStateMachinePlayback::get_fading_pos() const {
 }
 
 void AnimationNodeStateMachinePlayback::_clear_path_children(AnimationTree *p_tree, AnimationNodeStateMachine *p_state_machine, bool p_test_only) {
-	List<AnimationNode::ChildNode> child_nodes;
-	p_state_machine->get_child_nodes(&child_nodes);
-	for (const AnimationNode::ChildNode &child_node : child_nodes) {
+	for (const AnimationNode::ChildNode &child_node : p_state_machine->get_child_nodes()) {
 		Ref<AnimationNodeStateMachine> anodesm = child_node.node;
 		if (anodesm.is_valid() && anodesm->get_state_machine_type() == AnimationNodeStateMachine::STATE_MACHINE_TYPE_GROUPED) {
 			Ref<AnimationNodeStateMachinePlayback> playback = p_tree->get(base_path + child_node.name + "/playback");
@@ -1345,8 +1346,11 @@ StringName AnimationNodeStateMachine::get_node_name(const Ref<AnimationNode> &p_
 	ERR_FAIL_V(StringName());
 }
 
-void AnimationNodeStateMachine::get_child_nodes(List<ChildNode> *r_child_nodes) {
-	Vector<StringName> nodes;
+LocalVector<AnimationNode::ChildNode> AnimationNodeStateMachine::get_child_nodes() {
+	LocalVector<ChildNode> r_child_nodes;
+	LocalVector<StringName> nodes;
+	r_child_nodes.reserve(states.size());
+	nodes.reserve(states.size());
 
 	for (const KeyValue<StringName, State> &E : states) {
 		nodes.push_back(E.key);
@@ -1354,12 +1358,13 @@ void AnimationNodeStateMachine::get_child_nodes(List<ChildNode> *r_child_nodes) 
 
 	nodes.sort_custom<StringName::AlphCompare>();
 
-	for (int i = 0; i < nodes.size(); i++) {
+	for (const StringName &E : nodes) {
 		ChildNode cn;
-		cn.name = nodes[i];
+		cn.name = E;
 		cn.node = states[cn.name].node;
-		r_child_nodes->push_back(cn);
+		r_child_nodes.push_back(cn);
 	}
+	return r_child_nodes;
 }
 
 bool AnimationNodeStateMachine::has_node(const StringName &p_name) const {
