@@ -1215,7 +1215,7 @@ struct VariantBuiltInMethodInfo {
 
 typedef OAHashMap<StringName, VariantBuiltInMethodInfo> BuiltinMethodMap;
 static BuiltinMethodMap *builtin_method_info;
-static List<StringName> *builtin_method_names;
+static LocalVector<StringName> *builtin_method_names;
 
 template <typename T>
 static void register_builtin_method(const Vector<String> &p_argnames, const Vector<Variant> &p_def_args) {
@@ -1716,7 +1716,7 @@ static void _register_variant_builtin_methods_string() {
 	_VariantCall::constant_data = memnew_arr(_VariantCall::ConstantData, Variant::VARIANT_MAX);
 	_VariantCall::enum_data = memnew_arr(_VariantCall::EnumData, Variant::VARIANT_MAX);
 	builtin_method_info = memnew_arr(BuiltinMethodMap, Variant::VARIANT_MAX);
-	builtin_method_names = memnew_arr(List<StringName>, Variant::VARIANT_MAX);
+	builtin_method_names = memnew_arr(LocalVector<StringName>, Variant::VARIANT_MAX);
 
 	/* String */
 
