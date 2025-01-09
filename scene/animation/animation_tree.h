@@ -190,7 +190,7 @@ protected:
 	GDVIRTUAL0RC(bool, _has_filter)
 
 public:
-	virtual void get_parameter_list(List<PropertyInfo> *r_list) const;
+	virtual void get_parameter_list(LocalVector<PropertyInfo> &r_list) const;
 	virtual Variant get_parameter_default_value(const StringName &p_parameter) const;
 	virtual bool is_parameter_read_only(const StringName &p_parameter) const;
 
