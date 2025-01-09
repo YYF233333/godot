@@ -1213,11 +1213,11 @@ struct _VariantCall {
 	struct ConstantData {
 		HashMap<StringName, int64_t> value;
 #ifdef DEBUG_ENABLED
-		List<StringName> value_ordered;
+		LocalVector<StringName> value_ordered;
 #endif // DEBUG_ENABLED
 		HashMap<StringName, Variant> variant_value;
 #ifdef DEBUG_ENABLED
-		List<StringName> variant_value_ordered;
+		LocalVector<StringName> variant_value_ordered;
 #endif // DEBUG_ENABLED
 	};
 
@@ -1686,8 +1686,8 @@ LocalVector<StringName> Variant::get_constants_for_type(Variant::Type p_type) {
 	const _VariantCall::ConstantData &cd = _VariantCall::constant_data[p_type];
 
 #ifdef DEBUG_ENABLED
-	for (const List<StringName>::Element *E = cd.value_ordered.front(); E; E = E->next()) {
-		p_constants.push_back(E->get());
+	for (const StringName &E : cd.value_ordered) {
+		p_constants.push_back(E);
 #else
 	for (const KeyValue<StringName, int64_t> &E : cd.value) {
 		p_constants.push_back(E.key);
@@ -1695,8 +1695,8 @@ LocalVector<StringName> Variant::get_constants_for_type(Variant::Type p_type) {
 	}
 
 #ifdef DEBUG_ENABLED
-	for (const List<StringName>::Element *E = cd.variant_value_ordered.front(); E; E = E->next()) {
-		p_constants.push_back(E->get());
+	for (const StringName &E : cd.variant_value_ordered) {
+		p_constants.push_back(E);
 #else
 	for (const KeyValue<StringName, Variant> &E : cd.variant_value) {
 		p_constants.push_back(E.key);
