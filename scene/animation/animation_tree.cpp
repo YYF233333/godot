@@ -125,16 +125,19 @@ AnimationNode::NodeTimeInfo AnimationNode::get_node_time_info() const {
 	return nti;
 }
 
-void AnimationNode::get_child_nodes(List<ChildNode> *r_child_nodes) {
+LocalVector<AnimationNode::ChildNode> AnimationNode::get_child_nodes() {
+	LocalVector<ChildNode> r_child_nodes;
 	Dictionary cn;
 	if (GDVIRTUAL_CALL(_get_child_nodes, cn)) {
+		r_child_nodes.reserve(cn.size());
 		for (const KeyValue<Variant, Variant> &kv : cn) {
 			ChildNode child;
 			child.name = kv.key;
 			child.node = kv.value;
-			r_child_nodes->push_back(child);
+			r_child_nodes.push_back(child);
 		}
 	}
+	return r_child_nodes;
 }
 
 void AnimationNode::blend_animation(const StringName &p_animation, AnimationMixer::PlaybackInfo p_playback_info) {
@@ -802,10 +805,8 @@ void AnimationTree::_update_properties_for_node(const String &p_base_path, Ref<A
 		properties.push_back(pinfo);
 	}
 	p_node->make_cache_dirty();
-	List<AnimationNode::ChildNode> children;
-	p_node->get_child_nodes(&children);
 
-	for (const AnimationNode::ChildNode &E : children) {
+	for (const AnimationNode::ChildNode &E : p_node->get_child_nodes()) {
 		_update_properties_for_node(p_base_path + E.name + "/", E.node);
 	}
 }
