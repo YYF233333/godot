@@ -47,8 +47,8 @@ void OptimizedTranslation::generate(const Ref<Translation> &p_from) {
 	// Right now, it doesn't handle context or plurals, so Translation subclasses using plurals or context (i.e TranslationPO) shouldn't be compressed.
 #ifdef TOOLS_ENABLED
 	ERR_FAIL_COND(p_from.is_null());
-	List<StringName> keys;
-	p_from->get_message_list(&keys);
+	LocalVector<StringName> keys;
+	p_from->get_message_list(keys);
 
 	int size = Math::larger_prime(keys.size());
 
