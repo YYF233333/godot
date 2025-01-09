@@ -3315,10 +3315,9 @@ Error ResourceImporterScene::import(ResourceUID::ID p_source_id, const String &p
 		for (int i = 0; i < scene->get_child_count(); i++) {
 			AnimationPlayer *ap = Object::cast_to<AnimationPlayer>(scene->get_child(i));
 			if (ap) {
-				List<StringName> libs;
-				ap->get_animation_library_list(&libs);
+				LocalVector<StringName> libs = ap->get_animation_library_list();
 				if (libs.size()) {
-					library = ap->get_animation_library(libs.front()->get());
+					library = ap->get_animation_library(libs[0]);
 					break;
 				}
 			}
