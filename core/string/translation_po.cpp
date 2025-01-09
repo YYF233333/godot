@@ -119,8 +119,8 @@ Vector<String> TranslationPO::get_translated_message_list() const {
 Vector<String> TranslationPO::_get_message_list() const {
 	// Return all keys in translation_map.
 
-	List<StringName> msgs;
-	get_message_list(&msgs);
+	LocalVector<StringName> msgs;
+	get_message_list(msgs);
 
 	Vector<String> v;
 	for (const StringName &E : msgs) {
@@ -315,7 +315,7 @@ void TranslationPO::erase_message(const StringName &p_src_text, const StringName
 	translation_map[p_context].erase(p_src_text);
 }
 
-void TranslationPO::get_message_list(List<StringName> *r_messages) const {
+void TranslationPO::get_message_list(LocalVector<StringName> &r_messages) const {
 	// OptimizedTranslation uses this function to get the list of msgid.
 	// Return all the keys of translation_map under "" context.
 
@@ -325,7 +325,7 @@ void TranslationPO::get_message_list(List<StringName> *r_messages) const {
 		}
 
 		for (const KeyValue<StringName, Vector<StringName>> &E2 : E.value) {
-			r_messages->push_back(E2.key);
+			r_messages.push_back(E2.key);
 		}
 	}
 }
