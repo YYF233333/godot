@@ -30,6 +30,7 @@
 
 #include "animation_blend_tree.h"
 
+#include "core/templates/local_vector.h"
 #include "scene/resources/animation.h"
 
 void AnimationNodeAnimation::set_animation(const StringName &p_name) {
@@ -1514,19 +1515,19 @@ Vector2 AnimationNodeBlendTree::get_node_position(const StringName &p_node) cons
 	return nodes[p_node].position;
 }
 
-void AnimationNodeBlendTree::get_child_nodes(List<ChildNode> *r_child_nodes) {
+LocalVector<AnimationNode::ChildNode> AnimationNodeBlendTree::get_child_nodes() {
+	LocalVector<ChildNode> r_child_nodes;
+	r_child_nodes.reserve(nodes.size());
 	Vector<StringName> ns;
 
 	for (const KeyValue<StringName, Node> &E : nodes) {
-		ns.push_back(E.key);
+		ChildNode cn;
+		cn.name = E.key;
+		cn.node = E.value.node;
+		r_child_nodes.push_back(cn);
 	}
 
-	for (int i = 0; i < ns.size(); i++) {
-		ChildNode cn;
-		cn.name = ns[i];
-		cn.node = nodes[cn.name].node;
-		r_child_nodes->push_back(cn);
-	}
+	return r_child_nodes;
 }
 
 bool AnimationNodeBlendTree::has_node(const StringName &p_name) const {
