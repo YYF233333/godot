@@ -1638,7 +1638,8 @@ AnimationNodeBlendTree::ConnectionError AnimationNodeBlendTree::can_connect_node
 	return CONNECTION_OK;
 }
 
-void AnimationNodeBlendTree::get_node_connections(List<NodeConnection> *r_connections) const {
+LocalVector<AnimationNodeBlendTree::NodeConnection> AnimationNodeBlendTree::get_node_connections() const {
+	LocalVector<NodeConnection> r_connections;
 	for (const KeyValue<StringName, Node> &E : nodes) {
 		for (int i = 0; i < E.value.connections.size(); i++) {
 			const StringName output = E.value.connections[i];
@@ -1647,10 +1648,11 @@ void AnimationNodeBlendTree::get_node_connections(List<NodeConnection> *r_connec
 				nc.input_node = E.key;
 				nc.input_index = i;
 				nc.output_node = output;
-				r_connections->push_back(nc);
+				r_connections.push_back(nc);
 			}
 		}
 	}
+	return r_connections;
 }
 
 String AnimationNodeBlendTree::get_caption() const {
@@ -1668,10 +1670,13 @@ AnimationNode::NodeTimeInfo AnimationNodeBlendTree::_process(const AnimationMixe
 	return _blend_node(output, "output", this, pi, FILTER_IGNORE, true, p_test_only, nullptr);
 }
 
-void AnimationNodeBlendTree::get_node_list(List<StringName> *r_list) {
+LocalVector<StringName> AnimationNodeBlendTree::get_node_list() {
+	LocalVector<StringName> r_list;
+	r_list.reserve(nodes.size());
 	for (const KeyValue<StringName, Node> &E : nodes) {
-		r_list->push_back(E.key);
+		r_list.push_back(E.key);
 	}
+	return r_list;
 }
 
 void AnimationNodeBlendTree::set_graph_offset(const Vector2 &p_graph_offset) {
@@ -1739,8 +1744,7 @@ bool AnimationNodeBlendTree::_get(const StringName &p_name, Variant &r_ret) cons
 			}
 		}
 	} else if (prop_name == "node_connections") {
-		List<NodeConnection> nc;
-		get_node_connections(&nc);
+		LocalVector<NodeConnection> nc = get_node_connections();
 		Array conns;
 		conns.resize(nc.size() * 3);
 

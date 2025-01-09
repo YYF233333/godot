@@ -465,12 +465,12 @@ public:
 	};
 
 	ConnectionError can_connect_node(const StringName &p_input_node, int p_input_index, const StringName &p_output_node) const;
-	void get_node_connections(List<NodeConnection> *r_connections) const;
+	LocalVector<NodeConnection> get_node_connections() const;
 
 	virtual String get_caption() const override;
 	virtual NodeTimeInfo _process(const AnimationMixer::PlaybackInfo p_playback_info, bool p_test_only = false) override;
 
-	void get_node_list(List<StringName> *r_list);
+	LocalVector<StringName> get_node_list();
 
 	void set_graph_offset(const Vector2 &p_graph_offset);
 	Vector2 get_graph_offset() const;
