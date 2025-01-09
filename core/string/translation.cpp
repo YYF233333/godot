@@ -137,9 +137,9 @@ void Translation::erase_message(const StringName &p_src_text, const StringName &
 	translation_map.erase(p_src_text);
 }
 
-void Translation::get_message_list(List<StringName> *r_messages) const {
+void Translation::get_message_list(LocalVector<StringName> &r_messages) const {
 	for (const KeyValue<StringName, StringName> &E : translation_map) {
-		r_messages->push_back(E.key);
+		r_messages.push_back(E.key);
 	}
 }
 
