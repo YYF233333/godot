@@ -257,10 +257,13 @@ TypedArray<StringName> AnimationMixer::_get_animation_library_list() const {
 	return ret;
 }
 
-void AnimationMixer::get_animation_library_list(List<StringName> *p_libraries) const {
+LocalVector<StringName> AnimationMixer::get_animation_library_list() const {
+	LocalVector<StringName> p_libraries;
+	p_libraries.reserve(animation_libraries.size());
 	for (const AnimationLibraryData &lib : animation_libraries) {
-		p_libraries->push_back(lib.name);
+		p_libraries.push_back(lib.name);
 	}
+	return p_libraries;
 }
 
 Ref<AnimationLibrary> AnimationMixer::get_animation_library(const StringName &p_name) const {
@@ -2378,9 +2381,7 @@ void AnimationMixer::get_argument_options(const StringName &p_function, int p_id
 				r_options.push_back(String(name).quote());
 			}
 		} else if (pf == "get_animation_library" || pf == "has_animation_library" || pf == "remove_animation_library" || pf == "rename_animation_library") {
-			List<StringName> al;
-			get_animation_library_list(&al);
-			for (const StringName &name : al) {
+			for (const StringName &name : get_animation_library_list()) {
 				r_options.push_back(String(name).quote());
 			}
 		}

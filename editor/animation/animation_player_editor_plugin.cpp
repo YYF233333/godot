@@ -1022,8 +1022,7 @@ void AnimationPlayerEditor::_update_player() {
 		return;
 	}
 
-	List<StringName> libraries;
-	player->get_animation_library_list(&libraries);
+	LocalVector<StringName> libraries = player->get_animation_library_list();
 
 	int active_idx = -1;
 	bool no_anims_found = true;
@@ -1146,8 +1145,7 @@ void AnimationPlayerEditor::_update_name_dialog_library_dropdown() {
 		}
 	}
 
-	List<StringName> libraries;
-	player->get_animation_library_list(&libraries);
+	LocalVector<StringName> libraries = player->get_animation_library_list();
 	library->clear();
 
 	int valid_library_count = 0;
@@ -1488,12 +1486,9 @@ void AnimationPlayerEditor::_current_animation_changed(const StringName &p_name)
 		}
 
 		// Determine the read-only status of the animation's library and the libraries as a whole.
-		List<StringName> libraries;
-		player->get_animation_library_list(&libraries);
-
 		bool current_animation_library_is_readonly = false;
 		bool all_animation_libraries_are_readonly = true;
-		for (const StringName &K : libraries) {
+		for (const StringName &K : player->get_animation_library_list()) {
 			Ref<AnimationLibrary> anim_library = player->get_animation_library(K);
 			bool animation_library_is_readonly = EditorNode::get_singleton()->is_resource_read_only(anim_library);
 			if (!animation_library_is_readonly) {
