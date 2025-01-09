@@ -139,10 +139,7 @@ void AnimationNodeBlendTreeEditor::update_graph() {
 
 	animations.clear();
 
-	List<StringName> nodes;
-	blend_tree->get_node_list(&nodes);
-
-	for (const StringName &E : nodes) {
+	for (const StringName &E : blend_tree->get_node_list()) {
 		GraphNode *node = memnew(GraphNode);
 		graph->add_child(node);
 
@@ -279,10 +276,7 @@ void AnimationNodeBlendTreeEditor::update_graph() {
 		node->add_theme_constant_override("separation", 4 * EDSCALE);
 	}
 
-	List<AnimationNodeBlendTree::NodeConnection> node_connections;
-	blend_tree->get_node_connections(&node_connections);
-
-	for (const AnimationNodeBlendTree::NodeConnection &E : node_connections) {
+	for (const AnimationNodeBlendTree::NodeConnection &E : blend_tree->get_node_connections()) {
 		StringName from = E.output_node;
 		StringName to = E.input_node;
 		int to_idx = E.input_index;
@@ -517,10 +511,7 @@ void AnimationNodeBlendTreeEditor::_delete_node_request(const String &p_which) {
 	undo_redo->add_do_method(blend_tree.ptr(), "remove_node", p_which);
 	undo_redo->add_undo_method(blend_tree.ptr(), "add_node", p_which, blend_tree->get_node(p_which), blend_tree.ptr()->get_node_position(p_which));
 
-	List<AnimationNodeBlendTree::NodeConnection> conns;
-	blend_tree->get_node_connections(&conns);
-
-	for (const AnimationNodeBlendTree::NodeConnection &E : conns) {
+	for (const AnimationNodeBlendTree::NodeConnection &E : blend_tree->get_node_connections()) {
 		if (E.output_node == p_which || E.input_node == p_which) {
 			undo_redo->add_undo_method(blend_tree.ptr(), "connect_node", E.input_node, E.input_index, E.output_node);
 		}
@@ -972,9 +963,7 @@ void AnimationNodeBlendTreeEditor::_notification(int p_what) {
 				}
 			}
 
-			List<AnimationNodeBlendTree::NodeConnection> conns;
-			blend_tree->get_node_connections(&conns);
-			for (const AnimationNodeBlendTree::NodeConnection &E : conns) {
+			for (const AnimationNodeBlendTree::NodeConnection &E : blend_tree->get_node_connections()) {
 				float activity = 0;
 				StringName path = AnimationTreeEditor::get_singleton()->get_base_path() + E.input_node;
 				if (!tree->is_state_invalid()) {
@@ -1098,10 +1087,7 @@ void AnimationNodeBlendTreeEditor::_node_renamed(const String &p_text, Ref<Anima
 	//recreate connections
 	graph->clear_connections();
 
-	List<AnimationNodeBlendTree::NodeConnection> node_connections;
-	blend_tree->get_node_connections(&node_connections);
-
-	for (const AnimationNodeBlendTree::NodeConnection &E : node_connections) {
+	for (const AnimationNodeBlendTree::NodeConnection &E : blend_tree->get_node_connections()) {
 		StringName from = E.output_node;
 		StringName to = E.input_node;
 		int to_idx = E.input_index;
