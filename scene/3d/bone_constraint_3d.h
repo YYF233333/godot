@@ -63,7 +63,7 @@ protected:
 
 	// Define get_property_list() instead of _get_property_list()
 	// to merge child class properties into parent class array inspector.
-	void get_property_list(List<PropertyInfo> *p_list) const; // Will be called by child classes.
+	void get_property_list(LocalVector<PropertyInfo> &p_list) const; // Will be called by child classes.
 	void _validate_dynamic_prop(PropertyInfo &p_property) const;
 
 	virtual void _validate_bone_names() override;

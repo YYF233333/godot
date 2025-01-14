@@ -75,7 +75,7 @@ public:
 
 		return false;
 	}
-	void _get_property_list(List<PropertyInfo> *p_list) const {
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const {
 		for (const PropertyInfo &E : properties) {
 			if (!importer->get_option_visibility(base_options_path, E.name, values)) {
 				continue;
@@ -87,7 +87,7 @@ public:
 					pi.usage |= PROPERTY_USAGE_CHECKED;
 				}
 			}
-			p_list->push_back(pi);
+			p_list.push_back(pi);
 		}
 	}
 

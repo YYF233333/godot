@@ -156,7 +156,7 @@ class SceneImportSettingsData : public Object {
 		}
 	}
 
-	void _get_property_list(List<PropertyInfo> *r_list) const {
+	void _get_property_list(LocalVector<PropertyInfo> &r_list) const {
 		if (hide_options) {
 			return;
 		}
@@ -166,12 +166,12 @@ class SceneImportSettingsData : public Object {
 			if (category == ResourceImporterScene::INTERNAL_IMPORT_CATEGORY_MAX) {
 				if (resource_importer_scene->get_option_visibility(path, E.option.name, current)) {
 					handle_special_properties(option);
-					r_list->push_back(option);
+					r_list.push_back(option);
 				}
 			} else {
 				if (resource_importer_scene->get_internal_option_visibility(category, E.option.name, current)) {
 					handle_special_properties(option);
-					r_list->push_back(option);
+					r_list.push_back(option);
 				}
 			}
 		}

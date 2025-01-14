@@ -538,8 +538,8 @@ void TileSetEditor::_move_tile_set_array_element(Object *p_undo_redo, Object *p_
 	}
 
 	// Save layers' properties.
-	List<PropertyInfo> properties;
-	ed_tile_set->get_property_list(&properties);
+	LocalVector<PropertyInfo> properties;
+	ed_tile_set->get_property_list(properties);
 	for (PropertyInfo pi : properties) {
 		if (pi.name.begins_with(p_array_prefix)) {
 			String str = pi.name.trim_prefix(p_array_prefix);

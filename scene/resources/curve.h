@@ -142,7 +142,7 @@ public:
 
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 
 protected:
 	static void _bind_methods();
@@ -213,7 +213,7 @@ class Curve2D : public Resource {
 
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 
 	void _add_point(const Vector2 &p_position, const Vector2 &p_in = Vector2(), const Vector2 &p_out = Vector2(), int p_atpos = -1);
 	void _remove_point(int p_index);
@@ -305,7 +305,7 @@ class Curve3D : public Resource {
 
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 
 	void _add_point(const Vector3 &p_position, const Vector3 &p_in = Vector3(), const Vector3 &p_out = Vector3(), int p_atpos = -1);
 	void _remove_point(int p_index);

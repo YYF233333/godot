@@ -1516,7 +1516,7 @@ public:
 	virtual void instance_geometry_set_shader_parameter(RID p_instance, const StringName &, const Variant &p_value) = 0;
 	virtual Variant instance_geometry_get_shader_parameter(RID p_instance, const StringName &) const = 0;
 	virtual Variant instance_geometry_get_shader_parameter_default_value(RID p_instance, const StringName &) const = 0;
-	virtual void instance_geometry_get_shader_parameter_list(RID p_instance, List<PropertyInfo> *p_parameters) const = 0;
+	virtual void instance_geometry_get_shader_parameter_list(RID p_instance, LocalVector<PropertyInfo> *p_parameters) const = 0;
 
 	/* Bake 3D objects */
 
@@ -1622,7 +1622,7 @@ public:
 	virtual void canvas_item_set_instance_shader_parameter(RID p_item, const StringName &, const Variant &p_value) = 0;
 	virtual Variant canvas_item_get_instance_shader_parameter(RID p_item, const StringName &) const = 0;
 	virtual Variant canvas_item_get_instance_shader_parameter_default_value(RID p_item, const StringName &) const = 0;
-	virtual void canvas_item_get_instance_shader_parameter_list(RID p_item, List<PropertyInfo> *p_parameters) const = 0;
+	virtual void canvas_item_get_instance_shader_parameter_list(RID p_item, LocalVector<PropertyInfo> *p_parameters) const = 0;
 
 	virtual void canvas_item_set_visibility_notifier(RID p_item, bool p_enable, const Rect2 &p_area, const Callable &p_enter_callbable, const Callable &p_exit_callable) = 0;
 

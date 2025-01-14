@@ -52,9 +52,9 @@ bool MissingResource::_get(const StringName &p_name, Variant &r_ret) const {
 	return true;
 }
 
-void MissingResource::_get_property_list(List<PropertyInfo> *p_list) const {
+void MissingResource::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	for (const KeyValue<StringName, Variant> &E : properties) {
-		p_list->push_back(PropertyInfo(E.value.get_type(), E.key));
+		p_list.push_back(PropertyInfo(E.value.get_type(), E.key));
 	}
 }
 

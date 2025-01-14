@@ -134,7 +134,7 @@ bool BoneTwistDisperser3D::_get(const StringName &p_path, Variant &r_ret) const 
 	return true;
 }
 
-void BoneTwistDisperser3D::_get_property_list(List<PropertyInfo> *p_list) const {
+void BoneTwistDisperser3D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	String enum_hint;
 	Skeleton3D *skeleton = get_skeleton();
 	if (skeleton) {
@@ -170,7 +170,7 @@ void BoneTwistDisperser3D::_get_property_list(List<PropertyInfo> *p_list) const 
 
 	for (PropertyInfo &p : props) {
 		_validate_dynamic_prop(p);
-		p_list->push_back(p);
+		p_list.push_back(p);
 	}
 }
 

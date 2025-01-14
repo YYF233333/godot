@@ -632,7 +632,7 @@ class EditorInspectorArray : public EditorInspectorSection {
 	void _move_element(int p_element_index, int p_to_pos);
 	void _clear_array();
 	void _resize_array(int p_size);
-	Array _extract_properties_as_array(const List<PropertyInfo> &p_list);
+	Array _extract_properties_as_array(const LocalVector<PropertyInfo> &p_list);
 	int _drop_position() const;
 
 	void _new_size_spin_box_value_changed(float p_value);

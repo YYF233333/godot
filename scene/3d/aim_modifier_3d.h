@@ -48,7 +48,7 @@ protected:
 	bool _get(const StringName &p_path, Variant &r_ret) const;
 	bool _set(const StringName &p_path, const Variant &p_value);
 	virtual PackedStringArray get_configuration_warnings() const override;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 
 	static void _bind_methods();
 

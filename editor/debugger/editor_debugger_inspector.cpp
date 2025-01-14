@@ -88,10 +88,10 @@ bool EditorDebuggerRemoteObjects::_get(const StringName &p_name, Variant &r_ret)
 	return true;
 }
 
-void EditorDebuggerRemoteObjects::_get_property_list(List<PropertyInfo> *p_list) const {
-	p_list->clear(); // Sorry, don't want any categories.
+void EditorDebuggerRemoteObjects::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
+	p_list.clear(); // Sorry, don't want any categories.
 	for (const PropertyInfo &prop : prop_list) {
-		p_list->push_back(prop);
+		p_list.push_back(prop);
 	}
 }
 

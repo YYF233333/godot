@@ -109,7 +109,7 @@ bool Theme::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void Theme::_get_property_list(List<PropertyInfo> *p_list) const {
+void Theme::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	LocalVector<PropertyInfo> list;
 
 	// Type variations.
@@ -166,11 +166,11 @@ void Theme::_get_property_list(List<PropertyInfo> *p_list) const {
 		// Add groups for types so that their names are left unchanged in the inspector.
 		String current_type = E.name.get_slicec('/', 0);
 		if (prev_type != current_type) {
-			p_list->push_back(PropertyInfo(Variant::NIL, current_type, PROPERTY_HINT_NONE, current_type + "/", PROPERTY_USAGE_GROUP));
+			p_list.push_back(PropertyInfo(Variant::NIL, current_type, PROPERTY_HINT_NONE, current_type + "/", PROPERTY_USAGE_GROUP));
 			prev_type = current_type;
 		}
 
-		p_list->push_back(E);
+		p_list.push_back(E);
 	}
 }
 

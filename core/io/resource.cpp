@@ -232,8 +232,8 @@ Error Resource::copy_from(const Ref<Resource> &p_resource) {
 
 	reset_state(); // May want to reset state.
 
-	List<PropertyInfo> pi;
-	p_resource->get_property_list(&pi);
+	LocalVector<PropertyInfo> pi;
+	p_resource->get_property_list(pi);
 
 	for (const PropertyInfo &E : pi) {
 		if (!(E.usage & PROPERTY_USAGE_STORAGE)) {
@@ -377,8 +377,8 @@ Ref<Resource> Resource::_duplicate(const DuplicateParams &p_params) const {
 	thread_duplicate_remap_cache = remap_cache_backup; \
 	thread_duplicate_remap_cache_needs_deallocation = remap_cache_needs_deallocation_backup;
 
-	List<PropertyInfo> plist;
-	get_property_list(&plist);
+	LocalVector<PropertyInfo> plist;
+	get_property_list(plist);
 
 	BEFORE_USER_CODE
 	Ref<Resource> r = Object::cast_to<Resource>(ClassDB::instantiate(get_class()));
@@ -479,8 +479,8 @@ void Resource::_find_sub_resources(const Variant &p_variant, HashSet<Ref<Resourc
 }
 
 void Resource::configure_for_local_scene(Node *p_for_scene, DuplicateRemapCacheT &p_remap_cache) {
-	List<PropertyInfo> plist;
-	get_property_list(&plist);
+	LocalVector<PropertyInfo> plist;
+	get_property_list(plist);
 
 	reset_local_to_scene();
 	local_scene = p_for_scene;
@@ -623,8 +623,8 @@ RID Resource::get_rid() const {
 uint32_t Resource::hash_edited_version_for_preview() const {
 	uint32_t hash = hash_murmur3_one_32(get_edited_version());
 
-	List<PropertyInfo> plist;
-	get_property_list(&plist);
+	LocalVector<PropertyInfo> plist;
+	get_property_list(plist);
 
 	for (const PropertyInfo &E : plist) {
 		if (E.usage & PROPERTY_USAGE_STORAGE && E.type == Variant::OBJECT && E.hint == PROPERTY_HINT_RESOURCE_TYPE) {

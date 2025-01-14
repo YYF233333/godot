@@ -82,15 +82,15 @@ bool Bone2D::_get(const StringName &p_path, Variant &r_ret) const {
 	return true;
 }
 
-void Bone2D::_get_property_list(List<PropertyInfo> *p_list) const {
-	p_list->push_back(PropertyInfo(Variant::BOOL, PNAME("auto_calculate_length_and_angle"), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT));
+void Bone2D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
+	p_list.push_back(PropertyInfo(Variant::BOOL, PNAME("auto_calculate_length_and_angle"), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT));
 	if (!autocalculate_length_and_angle) {
-		p_list->push_back(PropertyInfo(Variant::FLOAT, PNAME("length"), PROPERTY_HINT_RANGE, "1, 1024, 1", PROPERTY_USAGE_DEFAULT));
-		p_list->push_back(PropertyInfo(Variant::FLOAT, PNAME("bone_angle"), PROPERTY_HINT_RANGE, "-360, 360, 0.01", PROPERTY_USAGE_DEFAULT));
+		p_list.push_back(PropertyInfo(Variant::FLOAT, PNAME("length"), PROPERTY_HINT_RANGE, "1, 1024, 1", PROPERTY_USAGE_DEFAULT));
+		p_list.push_back(PropertyInfo(Variant::FLOAT, PNAME("bone_angle"), PROPERTY_HINT_RANGE, "-360, 360, 0.01", PROPERTY_USAGE_DEFAULT));
 	}
 
 #ifdef TOOLS_ENABLED
-	p_list->push_back(PropertyInfo(Variant::BOOL, PNAME("editor_settings/show_bone_gizmo"), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT));
+	p_list.push_back(PropertyInfo(Variant::BOOL, PNAME("editor_settings/show_bone_gizmo"), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT));
 #endif // TOOLS_ENABLED
 }
 
@@ -527,8 +527,8 @@ bool Skeleton2D::_get(const StringName &p_path, Variant &r_ret) const {
 	return false;
 }
 
-void Skeleton2D::_get_property_list(List<PropertyInfo> *p_list) const {
-	p_list->push_back(
+void Skeleton2D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
+	p_list.push_back(
 			PropertyInfo(Variant::OBJECT, PNAME("modification_stack"),
 					PROPERTY_HINT_RESOURCE_TYPE,
 					"SkeletonModificationStack2D",

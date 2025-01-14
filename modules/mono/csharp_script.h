@@ -227,7 +227,7 @@ protected:
 
 	bool _get(const StringName &p_name, Variant &r_ret) const;
 	bool _set(const StringName &p_name, const Variant &p_value);
-	void _get_property_list(List<PropertyInfo> *p_properties) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_properties) const;
 
 public:
 	static void reload_registered_script(Ref<CSharpScript> p_script);
@@ -260,7 +260,7 @@ public:
 	void get_script_signal_list(List<MethodInfo> *r_signals) const override;
 
 	bool get_property_default_value(const StringName &p_property, Variant &r_value) const override;
-	void get_script_property_list(List<PropertyInfo> *r_list) const override;
+	void get_script_property_list(LocalVector<PropertyInfo> &r_list) const override;
 	void update_exports() override;
 
 	void get_members(HashSet<StringName> *p_members) override;
@@ -344,7 +344,7 @@ public:
 
 	bool set(const StringName &p_name, const Variant &p_value) override;
 	bool get(const StringName &p_name, Variant &r_ret) const override;
-	void get_property_list(List<PropertyInfo> *p_properties) const override;
+	void get_property_list(LocalVector<PropertyInfo> &p_properties) const override;
 	Variant::Type get_property_type(const StringName &p_name, bool *r_is_valid) const override;
 	virtual void validate_property(PropertyInfo &p_property) const override;
 

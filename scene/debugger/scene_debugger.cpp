@@ -780,8 +780,8 @@ SceneDebuggerObject::SceneDebuggerObject(Object *p_obj) {
 	}
 
 	// Add base object properties.
-	List<PropertyInfo> pinfo;
-	p_obj->get_property_list(&pinfo, true);
+	LocalVector<PropertyInfo> pinfo;
+	p_obj->get_property_list(pinfo, true);
 	for (const PropertyInfo &E : pinfo) {
 		if (E.usage & (PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CATEGORY)) {
 			properties.push_back(SceneDebuggerProperty(E, p_obj->get(E.name)));
@@ -819,8 +819,8 @@ void SceneDebuggerObject::_parse_script_properties(Script *p_script, ScriptInsta
 	HashSet<String> exported_members;
 
 	if (p_instance) {
-		List<PropertyInfo> pinfo;
-		p_instance->get_property_list(&pinfo);
+		LocalVector<PropertyInfo> pinfo;
+		p_instance->get_property_list(pinfo);
 		for (const PropertyInfo &E : pinfo) {
 			if (E.usage & (PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CATEGORY)) {
 				exported_members.insert(E.name);

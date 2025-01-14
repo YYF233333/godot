@@ -76,7 +76,7 @@ bool SplineIK3D::_get(const StringName &p_path, Variant &r_ret) const {
 	return true;
 }
 
-void SplineIK3D::_get_property_list(List<PropertyInfo> *p_list) const {
+void SplineIK3D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	LocalVector<PropertyInfo> props;
 	for (uint32_t i = 0; i < settings.size(); i++) {
 		String path = "settings/" + itos(i) + "/";
@@ -88,7 +88,7 @@ void SplineIK3D::_get_property_list(List<PropertyInfo> *p_list) const {
 
 	for (PropertyInfo &p : props) {
 		_validate_dynamic_prop(p);
-		p_list->push_back(p);
+		p_list.push_back(p);
 	}
 
 	ChainIK3D::get_property_list(p_list);

@@ -929,8 +929,8 @@ void GDExtension::prepare_reload() {
 
 			// Store instance state so it can be restored after reload.
 			List<Pair<String, Variant>> state;
-			List<PropertyInfo> prop_list;
-			obj->get_property_list(&prop_list);
+			LocalVector<PropertyInfo> prop_list;
+			obj->get_property_list(prop_list);
 			for (const PropertyInfo &P : prop_list) {
 				if (!(P.usage & PROPERTY_USAGE_STORAGE)) {
 					continue;

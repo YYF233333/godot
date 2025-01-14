@@ -68,8 +68,8 @@ bool MultiplayerSpawner::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void MultiplayerSpawner::_get_property_list(List<PropertyInfo> *p_list) const {
-	p_list->push_back(PropertyInfo(Variant::INT, "_spawnable_scene_count", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_ARRAY, "Auto Spawn List,scenes/"));
+void MultiplayerSpawner::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
+	p_list.push_back(PropertyInfo(Variant::INT, "_spawnable_scene_count", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_ARRAY, "Auto Spawn List,scenes/"));
 	LocalVector<String> exts;
 	ResourceLoader::get_recognized_extensions_for_type("PackedScene", exts);
 	String ext_hint;
@@ -80,7 +80,7 @@ void MultiplayerSpawner::_get_property_list(List<PropertyInfo> *p_list) const {
 		ext_hint += "*." + E;
 	}
 	for (uint32_t i = 0; i < spawnable_scenes.size(); i++) {
-		p_list->push_back(PropertyInfo(Variant::STRING, "scenes/" + itos(i), PROPERTY_HINT_FILE, ext_hint, PROPERTY_USAGE_EDITOR));
+		p_list.push_back(PropertyInfo(Variant::STRING, "scenes/" + itos(i), PROPERTY_HINT_FILE, ext_hint, PROPERTY_USAGE_EDITOR));
 	}
 }
 #endif

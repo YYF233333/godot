@@ -1560,7 +1560,7 @@ bool CSharpInstance::get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void CSharpInstance::get_property_list(List<PropertyInfo> *p_properties) const {
+void CSharpInstance::get_property_list(LocalVector<PropertyInfo> &p_properties) const {
 	List<PropertyInfo> props;
 	ERR_FAIL_COND(script.is_null());
 #ifdef TOOLS_ENABLED
@@ -1575,7 +1575,7 @@ void CSharpInstance::get_property_list(List<PropertyInfo> *p_properties) const {
 
 	for (PropertyInfo &prop : props) {
 		validate_property(prop);
-		p_properties->push_back(prop);
+		p_properties.push_back(prop);
 	}
 
 	// Call _get_property_list
@@ -1596,7 +1596,7 @@ void CSharpInstance::get_property_list(List<PropertyInfo> *p_properties) const {
 		} else {
 			Array array = ret;
 			for (int i = 0, size = array.size(); i < size; i++) {
-				p_properties->push_back(PropertyInfo::from_dict(array.get(i)));
+				p_properties.push_back(PropertyInfo::from_dict(array.get(i)));
 			}
 		}
 	}
@@ -1616,7 +1616,7 @@ void CSharpInstance::get_property_list(List<PropertyInfo> *p_properties) const {
 
 		for (PropertyInfo &prop : props) {
 			validate_property(prop);
-			p_properties->push_back(prop);
+			p_properties.push_back(prop);
 		}
 
 		top = top->base_script.ptr();
@@ -2260,8 +2260,8 @@ bool CSharpScript::_set(const StringName &p_name, const Variant &p_value) {
 	return false;
 }
 
-void CSharpScript::_get_property_list(List<PropertyInfo> *p_properties) const {
-	p_properties->push_back(PropertyInfo(Variant::STRING, SNAME("script/source"), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL));
+void CSharpScript::_get_property_list(LocalVector<PropertyInfo> &p_properties) const {
+	p_properties.push_back(PropertyInfo(Variant::STRING, SNAME("script/source"), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL));
 }
 
 void CSharpScript::_bind_methods() {
@@ -2764,12 +2764,12 @@ StringName CSharpScript::get_global_name() const {
 	return type_info.is_global_class ? StringName(type_info.class_name) : StringName();
 }
 
-void CSharpScript::get_script_property_list(List<PropertyInfo> *r_list) const {
+void CSharpScript::get_script_property_list(LocalVector<PropertyInfo> &r_list) const {
 #ifdef TOOLS_ENABLED
 	const CSharpScript *top = this;
 	while (top != nullptr) {
 		for (const PropertyInfo &E : top->exported_members_cache) {
-			r_list->push_back(E);
+			r_list.push_back(E);
 		}
 
 		top = top->base_script.ptr();
@@ -2784,7 +2784,7 @@ void CSharpScript::get_script_property_list(List<PropertyInfo> *r_list) const {
 		}
 
 		for (const PropertyInfo &prop : props) {
-			r_list->push_back(prop);
+			r_list.push_back(prop);
 		}
 
 		top = top->base_script.ptr();

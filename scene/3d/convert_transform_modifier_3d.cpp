@@ -122,7 +122,7 @@ bool ConvertTransformModifier3D::_get(const StringName &p_path, Variant &r_ret) 
 	return true;
 }
 
-void ConvertTransformModifier3D::_get_property_list(List<PropertyInfo> *p_list) const {
+void ConvertTransformModifier3D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	BoneConstraint3D::get_property_list(p_list);
 
 	LocalVector<PropertyInfo> props;
@@ -162,7 +162,7 @@ void ConvertTransformModifier3D::_get_property_list(List<PropertyInfo> *p_list) 
 
 	for (PropertyInfo &p : props) {
 		_validate_dynamic_prop(p);
-		p_list->push_back(p);
+		p_list.push_back(p);
 	}
 }
 

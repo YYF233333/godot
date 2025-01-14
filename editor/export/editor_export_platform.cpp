@@ -785,8 +785,8 @@ bool EditorExportPlatform::_export_customize_array(Array &arr, LocalVector<Ref<E
 bool EditorExportPlatform::_export_customize_object(Object *p_object, LocalVector<Ref<EditorExportPlugin>> &customize_resources_plugins) {
 	bool changed = false;
 
-	List<PropertyInfo> props;
-	p_object->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	p_object->get_property_list(props);
 	for (const PropertyInfo &E : props) {
 		switch (E.type) {
 			case Variant::OBJECT: {
@@ -1156,8 +1156,8 @@ Error EditorExportPlatform::export_project_files(const Ref<EditorExportPreset> &
 		}
 
 		// Add autoload resources and their dependencies
-		List<PropertyInfo> props;
-		ProjectSettings::get_singleton()->get_property_list(&props);
+		LocalVector<PropertyInfo> props;
+		ProjectSettings::get_singleton()->get_property_list(props);
 
 		for (const PropertyInfo &pi : props) {
 			if (!pi.name.begins_with("autoload/")) {

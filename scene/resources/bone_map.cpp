@@ -52,10 +52,10 @@ bool BoneMap::_get(const StringName &p_path, Variant &r_ret) const {
 	return false;
 }
 
-void BoneMap::_get_property_list(List<PropertyInfo> *p_list) const {
+void BoneMap::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	HashMap<StringName, StringName>::ConstIterator E = bone_map.begin();
 	while (E) {
-		p_list->push_back(PropertyInfo(Variant::STRING_NAME, "bone_map/" + E->key, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+		p_list.push_back(PropertyInfo(Variant::STRING_NAME, "bone_map/" + E->key, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 		++E;
 	}
 }

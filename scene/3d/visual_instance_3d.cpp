@@ -343,8 +343,8 @@ bool GeometryInstance3D::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void GeometryInstance3D::_get_property_list(List<PropertyInfo> *p_list) const {
-	List<PropertyInfo> pinfo;
+void GeometryInstance3D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
+	LocalVector<PropertyInfo> pinfo;
 	RS::get_singleton()->instance_geometry_get_shader_parameter_list(get_instance(), &pinfo);
 	for (PropertyInfo &pi : pinfo) {
 		bool has_def_value = false;
@@ -359,7 +359,7 @@ void GeometryInstance3D::_get_property_list(List<PropertyInfo> *p_list) const {
 		}
 
 		pi.name = "instance_shader_parameters/" + pi.name;
-		p_list->push_back(pi);
+		p_list.push_back(pi);
 	}
 }
 

@@ -550,8 +550,8 @@ void add_exposed_classes(Context &r_context) {
 
 		// Add properties
 
-		List<PropertyInfo> property_list;
-		ClassDB::get_property_list(class_name, &property_list, true);
+		LocalVector<PropertyInfo> property_list;
+		ClassDB::get_property_list(class_name, property_list, true);
 
 		HashMap<StringName, StringName> accessor_methods;
 

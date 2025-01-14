@@ -66,13 +66,13 @@ protected:
 			return false;
 		}
 	}
-	void _get_property_list(List<PropertyInfo> *p_list) const {
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const {
 		if (importer.is_null()) {
 			return;
 		}
 		for (const PropertyInfo &E : properties) {
 			if (importer->get_option_visibility("", E.name, values)) {
-				p_list->push_back(E);
+				p_list.push_back(E);
 			}
 		}
 	}
