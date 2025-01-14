@@ -66,7 +66,7 @@ bool DynamicFontImportSettingsData::_get(const StringName &p_name, Variant &r_re
 	return false;
 }
 
-void DynamicFontImportSettingsData::_get_property_list(List<PropertyInfo> *p_list) const {
+void DynamicFontImportSettingsData::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	for (const List<ResourceImporter::ImportOption>::Element *E = options.front(); E; E = E->next()) {
 		if (owner && owner->import_settings_data.is_valid()) {
 			if (owner->import_settings_data->get("multichannel_signed_distance_field") && (E->get().option.name == "size" || E->get().option.name == "outline_size")) {
@@ -76,7 +76,7 @@ void DynamicFontImportSettingsData::_get_property_list(List<PropertyInfo> *p_lis
 				continue;
 			}
 		}
-		p_list->push_back(E->get().option);
+		p_list.push_back(E->get().option);
 	}
 }
 

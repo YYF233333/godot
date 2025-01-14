@@ -418,7 +418,7 @@ struct _VCSort {
 	bool operator<(const _VCSort &p_vcs) const { return order == p_vcs.order ? name < p_vcs.name : order < p_vcs.order; }
 };
 
-void ProjectSettings::_get_property_list(List<PropertyInfo> *p_list) const {
+void ProjectSettings::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	_THREAD_SAFE_METHOD_
 
 	RBSet<_VCSort> vclist;
@@ -476,9 +476,9 @@ void ProjectSettings::_get_property_list(List<PropertyInfo> *p_list) const {
 			PropertyInfo pi = custom_prop_info[prop_info_name];
 			pi.name = E.name;
 			pi.usage = E.flags;
-			p_list->push_back(pi);
+			p_list.push_back(pi);
 		} else {
-			p_list->push_back(PropertyInfo(E.type, E.name, PROPERTY_HINT_NONE, "", E.flags));
+			p_list.push_back(PropertyInfo(E.type, E.name, PROPERTY_HINT_NONE, "", E.flags));
 		}
 	}
 }

@@ -31,9 +31,9 @@
 #include "skeleton_modification_stack_2d.h"
 #include "scene/2d/skeleton_2d.h"
 
-void SkeletonModificationStack2D::_get_property_list(List<PropertyInfo> *p_list) const {
+void SkeletonModificationStack2D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	for (int i = 0; i < modifications.size(); i++) {
-		p_list->push_back(
+		p_list.push_back(
 				PropertyInfo(Variant::OBJECT, "modifications/" + itos(i),
 						PROPERTY_HINT_RESOURCE_TYPE,
 						"SkeletonModification2D",
