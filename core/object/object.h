@@ -441,7 +441,7 @@ public:                                                                         
 		return (p_ptr == get_class_ptr_static()) ? true : m_inherits::is_class_ptr(p_ptr);                                                 \
 	}                                                                                                                                      \
                                                                                                                                            \
-	static void get_valid_parents_static(List<String> *p_parents) {                                                                        \
+	static void get_valid_parents_static(LocalVector<String> &p_parents) {                                                                 \
 		if (m_class::_get_valid_parents_static != m_inherits::_get_valid_parents_static) {                                                 \
 			m_class::_get_valid_parents_static(p_parents);                                                                                 \
 		}                                                                                                                                  \
@@ -743,8 +743,8 @@ protected:
 	_FORCE_INLINE_ void (Object::*_get_notification() const)(int) {
 		return &Object::_notification;
 	}
-	static void get_valid_parents_static(List<String> *p_parents);
-	static void _get_valid_parents_static(List<String> *p_parents);
+	static void get_valid_parents_static(LocalVector<String> &p_parents);
+	static void _get_valid_parents_static(LocalVector<String> &p_parents);
 
 	Variant _call_bind(const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 	Variant _call_deferred_bind(const Variant **p_args, int p_argcount, Callable::CallError &r_error);
