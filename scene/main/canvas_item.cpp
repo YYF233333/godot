@@ -605,8 +605,8 @@ bool CanvasItem::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void CanvasItem::_get_property_list(List<PropertyInfo> *p_list) const {
-	List<PropertyInfo> pinfo;
+void CanvasItem::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
+	LocalVector<PropertyInfo> pinfo;
 	RS::get_singleton()->canvas_item_get_instance_shader_parameter_list(get_canvas_item(), &pinfo);
 
 	for (PropertyInfo &pi : pinfo) {
@@ -622,7 +622,7 @@ void CanvasItem::_get_property_list(List<PropertyInfo> *p_list) const {
 		}
 
 		pi.name = "instance_shader_parameters/" + pi.name;
-		p_list->push_back(pi);
+		p_list.push_back(pi);
 	}
 }
 

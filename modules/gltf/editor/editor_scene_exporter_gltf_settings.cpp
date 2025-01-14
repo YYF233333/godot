@@ -73,14 +73,14 @@ bool EditorSceneExporterGLTFSettings::_get(const StringName &p_name, Variant &r_
 	return false;
 }
 
-void EditorSceneExporterGLTFSettings::_get_property_list(List<PropertyInfo> *p_list) const {
+void EditorSceneExporterGLTFSettings::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	for (PropertyInfo prop : _property_list) {
 		if (prop.name == "lossy_quality") {
 			String image_format = get("image_format");
 			bool is_image_format_lossy = image_format == "JPEG" || image_format.containsn("Lossy");
 			prop.usage = is_image_format_lossy ? PROPERTY_USAGE_DEFAULT : PROPERTY_USAGE_STORAGE;
 		}
-		p_list->push_back(prop);
+		p_list.push_back(prop);
 	}
 }
 
@@ -147,8 +147,8 @@ void EditorSceneExporterGLTFSettings::generate_property_list(Ref<GLTFDocument> p
 			image_format_hint_string += "," + saveable_image_formats[i];
 		}
 		// Look through the extension's properties and find the relevant ones.
-		List<PropertyInfo> ext_prop_list;
-		extension->get_property_list(&ext_prop_list);
+		LocalVector<PropertyInfo> ext_prop_list;
+		extension->get_property_list(ext_prop_list);
 		for (const PropertyInfo &prop : ext_prop_list) {
 			// We only want properties that will show up in the exporter
 			// settings list. Exclude Resource's properties, as they are
