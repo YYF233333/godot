@@ -114,7 +114,7 @@ public:
 
 		HashMap<StringName, EnumInfo> enum_map;
 		HashMap<StringName, MethodInfo> signal_map;
-		List<PropertyInfo> property_list;
+		LocalVector<PropertyInfo> property_list;
 		HashMap<StringName, PropertyInfo> property_map;
 #ifdef DEBUG_METHODS_ENABLED
 		LocalVector<StringName> constant_order;
