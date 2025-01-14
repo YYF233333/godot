@@ -2008,29 +2008,29 @@ bool EditorAnimationMultiTransitionEdit::_get(const StringName &p_name, Variant 
 	return false;
 }
 
-void EditorAnimationMultiTransitionEdit::_get_property_list(List<PropertyInfo> *p_list) const {
+void EditorAnimationMultiTransitionEdit::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	for (int i = 0; i < transitions.size(); i++) {
-		List<PropertyInfo> plist;
-		transitions[i].transition->get_property_list(&plist, true);
+		LocalVector<PropertyInfo> plist;
+		transitions[i].transition->get_property_list(plist, true);
 
 		PropertyInfo prop_transition_path;
 		prop_transition_path.type = Variant::STRING;
 		prop_transition_path.name = itos(i) + "/" + "transition_path";
-		p_list->push_back(prop_transition_path);
+		p_list.push_back(prop_transition_path);
 
-		for (List<PropertyInfo>::Element *F = plist.front(); F; F = F->next()) {
-			if (F->get().name == "script" || F->get().name == "resource_name" || F->get().name == "resource_path" || F->get().name == "resource_local_to_scene") {
+		for (const PropertyInfo &F : plist) {
+			if (F.name == "script" || F.name == "resource_name" || F.name == "resource_path" || F.name == "resource_local_to_scene") {
 				continue;
 			}
 
-			if (F->get().usage != PROPERTY_USAGE_DEFAULT) {
+			if (F.usage != PROPERTY_USAGE_DEFAULT) {
 				continue;
 			}
 
-			PropertyInfo prop = F->get();
+			PropertyInfo prop = F;
 			prop.name = itos(i) + "/" + prop.name;
 
-			p_list->push_back(prop);
+			p_list.push_back(prop);
 		}
 	}
 }

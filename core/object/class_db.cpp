@@ -1541,7 +1541,7 @@ void ClassDB::add_linked_property(const StringName &p_class, const String &p_pro
 #endif
 }
 
-void ClassDB::get_property_list(const StringName &p_class, List<PropertyInfo> *p_list, bool p_no_inheritance, const Object *p_validator) {
+void ClassDB::get_property_list(const StringName &p_class, LocalVector<PropertyInfo> &p_list, bool p_no_inheritance, const Object *p_validator) {
 	OBJTYPE_RLOCK;
 
 	ClassInfo *type = classes.getptr(p_class);
@@ -1552,9 +1552,9 @@ void ClassDB::get_property_list(const StringName &p_class, List<PropertyInfo> *p
 				// Making a copy as we may modify it.
 				PropertyInfo pi_mut = pi;
 				p_validator->validate_property(pi_mut);
-				p_list->push_back(pi_mut);
+				p_list.push_back(pi_mut);
 			} else {
-				p_list->push_back(pi);
+				p_list.push_back(pi);
 			}
 		}
 
@@ -2207,8 +2207,8 @@ Variant ClassDB::class_get_default_property_value(const StringName &p_class, con
 		}
 
 		if (c) {
-			List<PropertyInfo> plist;
-			c->get_property_list(&plist);
+			LocalVector<PropertyInfo> plist;
+			c->get_property_list(plist);
 			for (const PropertyInfo &E : plist) {
 				if (E.usage & (PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR)) {
 					if (!default_values[p_class].has(E.name)) {

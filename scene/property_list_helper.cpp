@@ -135,7 +135,7 @@ bool PropertyListHelper::is_property_valid(const String &p_property, int *r_inde
 	return property_list.has(components[1]);
 }
 
-void PropertyListHelper::get_property_list(List<PropertyInfo> *p_list) const {
+void PropertyListHelper::get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	const int property_count = _call_array_length_getter();
 	for (int i = 0; i < property_count; i++) {
 		for (const KeyValue<String, Property> &E : property_list) {
@@ -147,7 +147,7 @@ void PropertyListHelper::get_property_list(List<PropertyInfo> *p_list) const {
 			}
 
 			info.name = vformat("%s%d/%s", prefix, i, info.name);
-			p_list->push_back(info);
+			p_list.push_back(info);
 		}
 	}
 }
