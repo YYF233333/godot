@@ -82,7 +82,7 @@ private:
 protected:
 	bool _set(const StringName &p_name, const Variant &p_value) override;
 	bool _get(const StringName &p_name, Variant &r_ret) const override;
-	void _get_property_list(List<PropertyInfo> *p_list) const override;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const override;
 
 public:
 	Variant getvar(const Variant &p_key, bool *r_valid = nullptr) const override;
@@ -164,7 +164,7 @@ void JavaScriptObjectImpl::setvar(const Variant &p_key, const Variant &p_value, 
 	}
 }
 
-void JavaScriptObjectImpl::_get_property_list(List<PropertyInfo> *p_list) const {
+void JavaScriptObjectImpl::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 }
 
 void JavaScriptObjectImpl::_free_lock(void **p_lock, int p_type) {

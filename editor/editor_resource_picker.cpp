@@ -236,8 +236,8 @@ void EditorResourcePicker::_update_menu_items() {
 			edit_menu->add_icon_item(get_editor_theme_icon(SNAME("Duplicate")), TTR("Make Unique"), OBJ_MENU_MAKE_UNIQUE);
 
 			// Check whether the resource has subresources.
-			List<PropertyInfo> property_list;
-			edited_resource->get_property_list(&property_list);
+			LocalVector<PropertyInfo> property_list;
+			edited_resource->get_property_list(property_list);
 			bool has_subresources = false;
 			for (PropertyInfo &p : property_list) {
 				if ((p.type == Variant::OBJECT) && (p.hint == PROPERTY_HINT_RESOURCE_TYPE) && (p.name != "script") && ((Object *)edited_resource->get(p.name) != nullptr)) {
@@ -1048,8 +1048,8 @@ void EditorResourcePicker::_gather_resources_to_duplicate(const Ref<Resource> p_
 		p_item->set_checked(0, true);
 	}
 
-	List<PropertyInfo> plist;
-	p_resource->get_property_list(&plist);
+	LocalVector<PropertyInfo> plist;
+	p_resource->get_property_list(plist);
 
 	for (const PropertyInfo &E : plist) {
 		if (!(E.usage & PROPERTY_USAGE_STORAGE) || E.type != Variant::OBJECT || E.hint != PROPERTY_HINT_RESOURCE_TYPE) {

@@ -134,7 +134,7 @@ String EditorExportPreset::_get_property_warning(const StringName &p_name) const
 	return warning;
 }
 
-void EditorExportPreset::_get_property_list(List<PropertyInfo> *p_list) const {
+void EditorExportPreset::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	for (const KeyValue<StringName, PropertyInfo> &E : properties) {
 		if (!value_overrides.has(E.key)) {
 			bool property_visible = platform->get_export_option_visibility(this, E.key);
@@ -157,7 +157,7 @@ void EditorExportPreset::_get_property_list(List<PropertyInfo> *p_list) const {
 			}
 
 			if (property_visible) {
-				p_list->push_back(E.value);
+				p_list.push_back(E.value);
 			}
 		}
 	}
