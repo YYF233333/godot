@@ -122,7 +122,7 @@ bool ConvertTransformModifier3D::_get(const StringName &p_path, Variant &r_ret) 
 	return true;
 }
 
-void ConvertTransformModifier3D::_get_property_list(List<PropertyInfo> *p_list) const {
+void ConvertTransformModifier3D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	BoneConstraint3D::get_property_list(p_list);
 
 	for (int i = 0; i < settings.size(); i++) {
@@ -136,10 +136,10 @@ void ConvertTransformModifier3D::_get_property_list(List<PropertyInfo> *p_list) 
 		} else {
 			hint_apply_range = HINT_SCALE;
 		}
-		p_list->push_back(PropertyInfo(Variant::INT, path + "apply/transform_mode", PROPERTY_HINT_ENUM, "Position,Rotation,Scale"));
-		p_list->push_back(PropertyInfo(Variant::INT, path + "apply/axis", PROPERTY_HINT_ENUM, "X,Y,Z"));
-		p_list->push_back(PropertyInfo(Variant::FLOAT, path + "apply/range_min", PROPERTY_HINT_RANGE, hint_apply_range));
-		p_list->push_back(PropertyInfo(Variant::FLOAT, path + "apply/range_max", PROPERTY_HINT_RANGE, hint_apply_range));
+		p_list.push_back(PropertyInfo(Variant::INT, path + "apply/transform_mode", PROPERTY_HINT_ENUM, "Position,Rotation,Scale"));
+		p_list.push_back(PropertyInfo(Variant::INT, path + "apply/axis", PROPERTY_HINT_ENUM, "X,Y,Z"));
+		p_list.push_back(PropertyInfo(Variant::FLOAT, path + "apply/range_min", PROPERTY_HINT_RANGE, hint_apply_range));
+		p_list.push_back(PropertyInfo(Variant::FLOAT, path + "apply/range_max", PROPERTY_HINT_RANGE, hint_apply_range));
 
 		String hint_reference_range;
 		if (get_reference_transform_mode(i) == TRANSFORM_MODE_POSITION) {
@@ -149,13 +149,13 @@ void ConvertTransformModifier3D::_get_property_list(List<PropertyInfo> *p_list) 
 		} else {
 			hint_reference_range = HINT_SCALE;
 		}
-		p_list->push_back(PropertyInfo(Variant::INT, path + "reference/transform_mode", PROPERTY_HINT_ENUM, "Position,Rotation,Scale"));
-		p_list->push_back(PropertyInfo(Variant::INT, path + "reference/axis", PROPERTY_HINT_ENUM, "X,Y,Z"));
-		p_list->push_back(PropertyInfo(Variant::FLOAT, path + "reference/range_min", PROPERTY_HINT_RANGE, hint_reference_range));
-		p_list->push_back(PropertyInfo(Variant::FLOAT, path + "reference/range_max", PROPERTY_HINT_RANGE, hint_reference_range));
+		p_list.push_back(PropertyInfo(Variant::INT, path + "reference/transform_mode", PROPERTY_HINT_ENUM, "Position,Rotation,Scale"));
+		p_list.push_back(PropertyInfo(Variant::INT, path + "reference/axis", PROPERTY_HINT_ENUM, "X,Y,Z"));
+		p_list.push_back(PropertyInfo(Variant::FLOAT, path + "reference/range_min", PROPERTY_HINT_RANGE, hint_reference_range));
+		p_list.push_back(PropertyInfo(Variant::FLOAT, path + "reference/range_max", PROPERTY_HINT_RANGE, hint_reference_range));
 
-		p_list->push_back(PropertyInfo(Variant::BOOL, path + "relative"));
-		p_list->push_back(PropertyInfo(Variant::BOOL, path + "additive"));
+		p_list.push_back(PropertyInfo(Variant::BOOL, path + "relative"));
+		p_list.push_back(PropertyInfo(Variant::BOOL, path + "additive"));
 	}
 }
 

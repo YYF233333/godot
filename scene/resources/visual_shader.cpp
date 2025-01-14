@@ -1921,9 +1921,9 @@ void VisualShader::reset_state() {
 	emit_changed();
 }
 
-void VisualShader::_get_property_list(List<PropertyInfo> *p_list) const {
+void VisualShader::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	//mode
-	p_list->push_back(PropertyInfo(Variant::INT, PNAME("mode"), PROPERTY_HINT_ENUM, "Spatial,CanvasItem,Particles,Sky,Fog"));
+	p_list.push_back(PropertyInfo(Variant::INT, PNAME("mode"), PROPERTY_HINT_ENUM, "Spatial,CanvasItem,Particles,Sky,Fog"));
 	//render modes
 
 	HashMap<String, String> blend_mode_enums;
@@ -1975,21 +1975,21 @@ void VisualShader::_get_property_list(List<PropertyInfo> *p_list) const {
 	}
 
 	for (const KeyValue<String, String> &E : blend_mode_enums) {
-		p_list->push_back(PropertyInfo(Variant::INT, vformat("%s/%s", PNAME("modes"), E.key), PROPERTY_HINT_ENUM, E.value));
+		p_list.push_back(PropertyInfo(Variant::INT, vformat("%s/%s", PNAME("modes"), E.key), PROPERTY_HINT_ENUM, E.value));
 	}
 
 	for (const String &E : toggles) {
-		p_list->push_back(PropertyInfo(Variant::BOOL, vformat("%s/%s", PNAME("flags"), E)));
+		p_list.push_back(PropertyInfo(Variant::BOOL, vformat("%s/%s", PNAME("flags"), E)));
 	}
 
 	const Vector<ShaderLanguage::ModeInfo> &smodes = ShaderTypes::get_singleton()->get_stencil_modes(RenderingServer::ShaderMode(shader_mode));
 
 	if (smodes.size() > 0) {
-		p_list->push_back(PropertyInfo(Variant::BOOL, vformat("%s/%s", PNAME("stencil"), PNAME("enabled"))));
+		p_list.push_back(PropertyInfo(Variant::BOOL, vformat("%s/%s", PNAME("stencil"), PNAME("enabled"))));
 
 		uint32_t stencil_prop_usage = stencil_enabled ? PROPERTY_USAGE_DEFAULT : PROPERTY_USAGE_STORAGE;
 
-		p_list->push_back(PropertyInfo(Variant::INT, vformat("%s/%s", PNAME("stencil"), PNAME("reference")), PROPERTY_HINT_RANGE, "0,255,1", stencil_prop_usage));
+		p_list.push_back(PropertyInfo(Variant::INT, vformat("%s/%s", PNAME("stencil"), PNAME("reference")), PROPERTY_HINT_RANGE, "0,255,1", stencil_prop_usage));
 
 		HashMap<String, String> stencil_enums;
 		HashSet<String> stencil_toggles;
@@ -2013,22 +2013,22 @@ void VisualShader::_get_property_list(List<PropertyInfo> *p_list) const {
 		}
 
 		for (const KeyValue<String, String> &E : stencil_enums) {
-			p_list->push_back(PropertyInfo(Variant::INT, vformat("%s/%s", PNAME("stencil_modes"), E.key), PROPERTY_HINT_ENUM, E.value, stencil_prop_usage));
+			p_list.push_back(PropertyInfo(Variant::INT, vformat("%s/%s", PNAME("stencil_modes"), E.key), PROPERTY_HINT_ENUM, E.value, stencil_prop_usage));
 		}
 
 		for (const String &E : stencil_toggles) {
-			p_list->push_back(PropertyInfo(Variant::BOOL, vformat("%s/%s", PNAME("stencil_flags"), E), PROPERTY_HINT_NONE, "", stencil_prop_usage));
+			p_list.push_back(PropertyInfo(Variant::BOOL, vformat("%s/%s", PNAME("stencil_flags"), E), PROPERTY_HINT_NONE, "", stencil_prop_usage));
 		}
 	}
 
 	for (const KeyValue<String, Varying> &E : varyings) {
-		p_list->push_back(PropertyInfo(Variant::STRING, vformat("%s/%s", "varyings", E.key), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+		p_list.push_back(PropertyInfo(Variant::STRING, vformat("%s/%s", "varyings", E.key), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 	}
 
 #ifdef TOOLS_ENABLED
 	if (Engine::get_singleton()->is_editor_hint()) {
 		for (const KeyValue<String, Variant> &E : preview_params) {
-			p_list->push_back(PropertyInfo(Variant::STRING, vformat("%s/%s", "preview_params", E.key), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+			p_list.push_back(PropertyInfo(Variant::STRING, vformat("%s/%s", "preview_params", E.key), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 		}
 	}
 #endif // TOOLS_ENABLED
@@ -2040,20 +2040,20 @@ void VisualShader::_get_property_list(List<PropertyInfo> *p_list) const {
 			prop_name += "/" + itos(E.key);
 
 			if (E.key != NODE_ID_OUTPUT) {
-				p_list->push_back(PropertyInfo(Variant::OBJECT, prop_name + "/node", PROPERTY_HINT_RESOURCE_TYPE, "VisualShaderNode", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_ALWAYS_DUPLICATE));
+				p_list.push_back(PropertyInfo(Variant::OBJECT, prop_name + "/node", PROPERTY_HINT_RESOURCE_TYPE, "VisualShaderNode", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_ALWAYS_DUPLICATE));
 			}
-			p_list->push_back(PropertyInfo(Variant::VECTOR2, prop_name + "/position", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+			p_list.push_back(PropertyInfo(Variant::VECTOR2, prop_name + "/position", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 
 			if (Object::cast_to<VisualShaderNodeGroupBase>(E.value.node.ptr()) != nullptr) {
-				p_list->push_back(PropertyInfo(Variant::VECTOR2, prop_name + "/size", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
-				p_list->push_back(PropertyInfo(Variant::STRING, prop_name + "/input_ports", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
-				p_list->push_back(PropertyInfo(Variant::STRING, prop_name + "/output_ports", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+				p_list.push_back(PropertyInfo(Variant::VECTOR2, prop_name + "/size", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+				p_list.push_back(PropertyInfo(Variant::STRING, prop_name + "/input_ports", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+				p_list.push_back(PropertyInfo(Variant::STRING, prop_name + "/output_ports", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 			}
 			if (Object::cast_to<VisualShaderNodeExpression>(E.value.node.ptr()) != nullptr) {
-				p_list->push_back(PropertyInfo(Variant::STRING, prop_name + "/expression", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+				p_list.push_back(PropertyInfo(Variant::STRING, prop_name + "/expression", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 			}
 		}
-		p_list->push_back(PropertyInfo(Variant::PACKED_INT32_ARRAY, "nodes/" + String(type_string[i]) + "/connections", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+		p_list.push_back(PropertyInfo(Variant::PACKED_INT32_ARRAY, "nodes/" + String(type_string[i]) + "/connections", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 	}
 }
 

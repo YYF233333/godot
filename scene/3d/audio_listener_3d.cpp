@@ -67,8 +67,8 @@ bool AudioListener3D::_get(const StringName &p_name, Variant &r_ret) const {
 	return true;
 }
 
-void AudioListener3D::_get_property_list(List<PropertyInfo> *p_list) const {
-	p_list->push_back(PropertyInfo(Variant::BOOL, PNAME("current")));
+void AudioListener3D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
+	p_list.push_back(PropertyInfo(Variant::BOOL, PNAME("current")));
 }
 
 void AudioListener3D::_update_listener() {
