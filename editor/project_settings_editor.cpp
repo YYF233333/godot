@@ -504,9 +504,9 @@ void ProjectSettingsEditor::_action_reordered(const String &p_action_name, const
 	Variant action_value = ps->get(action_name);
 	Variant target_value = ps->get(target_name);
 
-	List<PropertyInfo> props;
+	LocalVector<PropertyInfo> props;
 	HashMap<String, Variant> action_values;
-	ProjectSettings::get_singleton()->get_property_list(&props);
+	ProjectSettings::get_singleton()->get_property_list(props);
 
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 	undo_redo->create_action(TTR("Update Input Action Order"));
@@ -561,8 +561,8 @@ void ProjectSettingsEditor::_action_reordered(const String &p_action_name, const
 void ProjectSettingsEditor::_update_action_map_editor() {
 	Vector<ActionMapEditor::ActionInfo> actions;
 
-	List<PropertyInfo> props;
-	ProjectSettings::get_singleton()->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	ProjectSettings::get_singleton()->get_property_list(props);
 
 	const Ref<Texture2D> builtin_icon = get_editor_theme_icon(SNAME("PinPressed"));
 	for (const PropertyInfo &E : props) {

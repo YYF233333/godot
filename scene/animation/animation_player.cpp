@@ -129,7 +129,7 @@ void AnimationPlayer::_validate_property(PropertyInfo &p_property) const {
 	}
 }
 
-void AnimationPlayer::_get_property_list(List<PropertyInfo> *p_list) const {
+void AnimationPlayer::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	LocalVector<PropertyInfo> anim_names;
 
 	for (const KeyValue<StringName, AnimationData> &E : animation_set) {
@@ -140,10 +140,10 @@ void AnimationPlayer::_get_property_list(List<PropertyInfo> *p_list) const {
 	}
 
 	for (const PropertyInfo &E : anim_names) {
-		p_list->push_back(E);
+		p_list.push_back(E);
 	}
 
-	p_list->push_back(PropertyInfo(Variant::ARRAY, "blend_times", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL));
+	p_list.push_back(PropertyInfo(Variant::ARRAY, "blend_times", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL));
 }
 
 void AnimationPlayer::_notification(int p_what) {
