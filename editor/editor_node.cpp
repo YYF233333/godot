@@ -1729,8 +1729,8 @@ bool EditorNode::_find_and_save_resource(Ref<Resource> p_res, HashMap<Ref<Resour
 
 bool EditorNode::_find_and_save_edited_subresources(Object *obj, HashMap<Ref<Resource>, bool> &processed, int32_t flags) {
 	bool ret_changed = false;
-	List<PropertyInfo> pi;
-	obj->get_property_list(&pi);
+	LocalVector<PropertyInfo> pi;
+	obj->get_property_list(pi);
 	for (const PropertyInfo &E : pi) {
 		if (!(E.usage & PROPERTY_USAGE_STORAGE)) {
 			continue;
@@ -3665,8 +3665,8 @@ void EditorNode::_palette_quick_open_dialog() {
 }
 
 void EditorNode::replace_resources_in_object(Object *p_object, const Vector<Ref<Resource>> &p_source_resources, const Vector<Ref<Resource>> &p_target_resource) {
-	List<PropertyInfo> pi;
-	p_object->get_property_list(&pi);
+	LocalVector<PropertyInfo> pi;
+	p_object->get_property_list(pi);
 
 	for (const PropertyInfo &E : pi) {
 		if (!(E.usage & PROPERTY_USAGE_STORAGE)) {
@@ -4345,8 +4345,8 @@ Error EditorNode::load_scene(const String &p_scene, bool p_ignore_broken_deps, b
 HashMap<StringName, Variant> EditorNode::get_modified_properties_for_node(Node *p_node, bool p_node_references_only) {
 	HashMap<StringName, Variant> modified_property_map;
 
-	List<PropertyInfo> pinfo;
-	p_node->get_property_list(&pinfo);
+	LocalVector<PropertyInfo> pinfo;
+	p_node->get_property_list(pinfo);
 	for (const PropertyInfo &E : pinfo) {
 		if (E.usage & PROPERTY_USAGE_STORAGE) {
 			bool node_reference = (E.type == Variant::OBJECT && E.hint == PROPERTY_HINT_NODE_TYPE);
@@ -4378,8 +4378,8 @@ HashMap<StringName, Variant> EditorNode::get_modified_properties_for_node(Node *
 HashMap<StringName, Variant> EditorNode::get_modified_properties_reference_to_nodes(Node *p_node, List<Node *> &p_nodes_referenced_by) {
 	HashMap<StringName, Variant> modified_property_map;
 
-	List<PropertyInfo> pinfo;
-	p_node->get_property_list(&pinfo);
+	LocalVector<PropertyInfo> pinfo;
+	p_node->get_property_list(pinfo);
 	for (const PropertyInfo &E : pinfo) {
 		if (E.usage & PROPERTY_USAGE_STORAGE) {
 			if (E.type != Variant::OBJECT || E.hint != PROPERTY_HINT_NODE_TYPE) {
@@ -4405,8 +4405,8 @@ void EditorNode::update_node_from_node_modification_entry(Node *p_node, Modifica
 		}
 
 		// Get properties for this node.
-		List<PropertyInfo> pinfo;
-		p_node->get_property_list(&pinfo);
+		LocalVector<PropertyInfo> pinfo;
+		p_node->get_property_list(pinfo);
 
 		// Get names of all valid property names.
 		HashMap<StringName, bool> property_node_reference_table;

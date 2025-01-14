@@ -417,7 +417,7 @@ struct _VCSort {
 	bool operator<(const _VCSort &p_vcs) const { return order == p_vcs.order ? name < p_vcs.name : order < p_vcs.order; }
 };
 
-void ProjectSettings::_get_property_list(List<PropertyInfo> *p_list) const {
+void ProjectSettings::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	_THREAD_SAFE_METHOD_
 
 	RBSet<_VCSort> vclist;
@@ -481,9 +481,9 @@ void ProjectSettings::_get_property_list(List<PropertyInfo> *p_list) const {
 			PropertyInfo pi = custom_prop_info[base.name];
 			pi.name = base.name;
 			pi.usage = base.flags;
-			p_list->push_back(pi);
+			p_list.push_back(pi);
 		} else {
-			p_list->push_back(PropertyInfo(base.type, base.name, PROPERTY_HINT_NONE, "", base.flags));
+			p_list.push_back(PropertyInfo(base.type, base.name, PROPERTY_HINT_NONE, "", base.flags));
 		}
 
 		if (setting_overrides.has(base.name)) {
@@ -492,9 +492,9 @@ void ProjectSettings::_get_property_list(List<PropertyInfo> *p_list) const {
 					PropertyInfo pi = custom_prop_info[over.name];
 					pi.name = over.name;
 					pi.usage = over.flags;
-					p_list->push_back(pi);
+					p_list.push_back(pi);
 				} else {
-					p_list->push_back(PropertyInfo(over.type, over.name, PROPERTY_HINT_NONE, "", over.flags));
+					p_list.push_back(PropertyInfo(over.type, over.name, PROPERTY_HINT_NONE, "", over.flags));
 				}
 			}
 		}

@@ -47,7 +47,7 @@ public:
 	void set(RID p_self, const StringName &p_name, const Variant &p_value);
 
 	Variant get_default(const StringName &p_name) const;
-	void get_property_list(List<PropertyInfo> &r_parameters) const;
+	void get_property_list(LocalVector<PropertyInfo> &r_parameters) const;
 
 	inline int32_t location() const { return _location; }
 	inline bool is_allocated() const { return _location != -1; }
