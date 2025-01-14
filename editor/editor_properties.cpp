@@ -3086,8 +3086,8 @@ static bool _find_recursive_resources(const Variant &v, HashSet<Resource *> &res
 
 			resources_found.insert(r.ptr());
 
-			List<PropertyInfo> plist;
-			r->get_property_list(&plist);
+			LocalVector<PropertyInfo> plist;
+			r->get_property_list(plist);
 			for (const PropertyInfo &pinfo : plist) {
 				if (!(pinfo.usage & PROPERTY_USAGE_STORAGE)) {
 					continue;
