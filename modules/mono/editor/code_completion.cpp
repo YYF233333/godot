@@ -108,8 +108,8 @@ PackedStringArray get_code_completion(CompletionKind p_kind, const String &p_scr
 
 	switch (p_kind) {
 		case CompletionKind::INPUT_ACTIONS: {
-			List<PropertyInfo> project_props;
-			ProjectSettings::get_singleton()->get_property_list(&project_props);
+			LocalVector<PropertyInfo> project_props;
+			ProjectSettings::get_singleton()->get_property_list(project_props);
 
 			for (const PropertyInfo &prop : project_props) {
 				if (!prop.name.begins_with("input/")) {

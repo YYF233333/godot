@@ -51,14 +51,14 @@ bool InstancePlaceholder::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void InstancePlaceholder::_get_property_list(List<PropertyInfo> *p_list) const {
+void InstancePlaceholder::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	for (const PropSet &E : stored_values) {
 		PropertyInfo pi;
 		pi.name = E.name;
 		pi.type = E.value.get_type();
 		pi.usage = PROPERTY_USAGE_STORAGE;
 
-		p_list->push_back(pi);
+		p_list.push_back(pi);
 	}
 }
 

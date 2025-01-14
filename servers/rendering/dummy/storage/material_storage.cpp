@@ -80,8 +80,8 @@ RS::GlobalShaderParameterType MaterialStorage::global_shader_parameter_get_type(
 }
 
 void MaterialStorage::global_shader_parameters_load_settings(bool p_load_textures) {
-	List<PropertyInfo> settings;
-	ProjectSettings::get_singleton()->get_property_list(&settings);
+	LocalVector<PropertyInfo> settings;
+	ProjectSettings::get_singleton()->get_property_list(settings);
 
 	for (const PropertyInfo &E : settings) {
 		if (E.name.begins_with("shader_globals/")) {
