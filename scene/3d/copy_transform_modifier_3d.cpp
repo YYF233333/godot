@@ -80,16 +80,16 @@ bool CopyTransformModifier3D::_get(const StringName &p_path, Variant &r_ret) con
 	return true;
 }
 
-void CopyTransformModifier3D::_get_property_list(List<PropertyInfo> *p_list) const {
+void CopyTransformModifier3D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	BoneConstraint3D::get_property_list(p_list);
 
 	for (int i = 0; i < settings.size(); i++) {
 		String path = "settings/" + itos(i) + "/";
-		p_list->push_back(PropertyInfo(Variant::INT, path + "copy", PROPERTY_HINT_FLAGS, "Position,Rotation,Scale"));
-		p_list->push_back(PropertyInfo(Variant::INT, path + "axes", PROPERTY_HINT_FLAGS, "X,Y,Z"));
-		p_list->push_back(PropertyInfo(Variant::INT, path + "invert", PROPERTY_HINT_FLAGS, "X,Y,Z"));
-		p_list->push_back(PropertyInfo(Variant::BOOL, path + "relative"));
-		p_list->push_back(PropertyInfo(Variant::BOOL, path + "additive"));
+		p_list.push_back(PropertyInfo(Variant::INT, path + "copy", PROPERTY_HINT_FLAGS, "Position,Rotation,Scale"));
+		p_list.push_back(PropertyInfo(Variant::INT, path + "axes", PROPERTY_HINT_FLAGS, "X,Y,Z"));
+		p_list.push_back(PropertyInfo(Variant::INT, path + "invert", PROPERTY_HINT_FLAGS, "X,Y,Z"));
+		p_list.push_back(PropertyInfo(Variant::BOOL, path + "relative"));
+		p_list.push_back(PropertyInfo(Variant::BOOL, path + "additive"));
 	}
 }
 

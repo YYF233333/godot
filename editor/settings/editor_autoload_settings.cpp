@@ -475,8 +475,8 @@ void EditorAutoloadSettings::update_autoload() {
 	tree->clear();
 	TreeItem *root = tree->create_item();
 
-	List<PropertyInfo> props;
-	ProjectSettings::get_singleton()->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	ProjectSettings::get_singleton()->get_property_list(props);
 
 	for (const PropertyInfo &pi : props) {
 		if (!pi.name.begins_with("autoload/")) {
@@ -854,8 +854,8 @@ EditorAutoloadSettings::EditorAutoloadSettings() {
 	ProjectSettings::get_singleton()->add_hidden_prefix("autoload/");
 
 	// Make first cache
-	List<PropertyInfo> props;
-	ProjectSettings::get_singleton()->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	ProjectSettings::get_singleton()->get_property_list(props);
 	for (const PropertyInfo &pi : props) {
 		if (!pi.name.begins_with("autoload/")) {
 			continue;

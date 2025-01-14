@@ -2063,9 +2063,9 @@ void ResourceFormatSaverBinaryInstance::_find_resources(const Variant &p_variant
 
 			resource_set.insert(res);
 
-			List<PropertyInfo> property_list;
+			LocalVector<PropertyInfo> property_list;
 
-			res->get_property_list(&property_list);
+			res->get_property_list(property_list);
 
 			for (const PropertyInfo &E : property_list) {
 				if (E.usage & PROPERTY_USAGE_STORAGE) {
@@ -2251,8 +2251,8 @@ Error ResourceFormatSaverBinaryInstance::save(const String &p_path, const Ref<Re
 			ResourceData &rd = resources.push_back(ResourceData())->get();
 			rd.type = _resource_get_class(E);
 
-			List<PropertyInfo> property_list;
-			E->get_property_list(&property_list);
+			LocalVector<PropertyInfo> property_list;
+			E->get_property_list(property_list);
 
 			for (const PropertyInfo &F : property_list) {
 				if (skip_editor && F.name.begins_with("__editor")) {
