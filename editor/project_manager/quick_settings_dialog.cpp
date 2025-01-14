@@ -54,8 +54,8 @@ void QuickSettingsDialog::_fetch_setting_values() {
 	editor_directory_naming_conventions.clear();
 
 	{
-		List<PropertyInfo> editor_settings_properties;
-		EditorSettings::get_singleton()->get_property_list(&editor_settings_properties);
+		LocalVector<PropertyInfo> editor_settings_properties;
+		EditorSettings::get_singleton()->get_property_list(editor_settings_properties);
 
 		for (const PropertyInfo &pi : editor_settings_properties) {
 			if (pi.name == "interface/editor/editor_language") {

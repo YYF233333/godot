@@ -810,8 +810,8 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 					undo_redo->add_do_method(n, "set_script", empty);
 					undo_redo->add_undo_method(n, "set_script", existing);
 
-					List<PropertyInfo> properties;
-					n->get_property_list(&properties);
+					LocalVector<PropertyInfo> properties;
+					n->get_property_list(properties);
 					for (const PropertyInfo &property : properties) {
 						if (property.usage & (PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR)) {
 							undo_redo->add_undo_property(n, property.name, n->get(property.name));
@@ -2074,8 +2074,8 @@ _ALWAYS_INLINE_ static bool _recurse_into_property(const PropertyInfo &p_propert
 void SceneTreeDock::_check_object_properties_recursive(Node *p_root_node, Object *p_obj, HashMap<Node *, NodePath> *p_renames, bool p_inside_resource) const {
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 
-	List<PropertyInfo> properties;
-	p_obj->get_property_list(&properties);
+	LocalVector<PropertyInfo> properties;
+	p_obj->get_property_list(properties);
 
 	for (const PropertyInfo &E : properties) {
 		if (!_recurse_into_property(E)) {
@@ -3234,8 +3234,8 @@ void SceneTreeDock::_replace_node(Node *p_node, Node *p_by_node, bool p_keep_pro
 			default_oldnode = Object::cast_to<Node>(ClassDB::instantiate(oldnode->get_class()));
 		}
 
-		List<PropertyInfo> pinfo;
-		oldnode->get_property_list(&pinfo);
+		LocalVector<PropertyInfo> pinfo;
+		oldnode->get_property_list(pinfo);
 
 		for (const PropertyInfo &E : pinfo) {
 			if (!(E.usage & PROPERTY_USAGE_STORAGE)) {
@@ -3329,8 +3329,8 @@ void SceneTreeDock::perform_node_replace(Node *p_base, Node *p_node, Node *p_by_
 	}
 
 	// Renaming node used in node properties.
-	List<PropertyInfo> properties;
-	p_base->get_property_list(&properties);
+	LocalVector<PropertyInfo> properties;
+	p_base->get_property_list(properties);
 
 	for (const PropertyInfo &E : properties) {
 		if (!(E.usage & (PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR))) {
@@ -3640,8 +3640,8 @@ void SceneTreeDock::_files_dropped(const Vector<String> &p_files, NodePath p_to,
 	if (p_type == 0 && p_files.size() == 1 && !is_dropping_scene) {
 		LocalVector<String> valid_properties;
 
-		List<PropertyInfo> pinfo;
-		node->get_property_list(&pinfo);
+		LocalVector<PropertyInfo> pinfo;
+		node->get_property_list(pinfo);
 
 		for (const PropertyInfo &p : pinfo) {
 			if (!(p.usage & PROPERTY_USAGE_EDITOR) || !(p.usage & PROPERTY_USAGE_STORAGE) || p.hint != PROPERTY_HINT_RESOURCE_TYPE) {
@@ -3792,8 +3792,8 @@ void SceneTreeDock::_add_children_to_popup(Object *p_obj, int p_depth) {
 		return;
 	}
 
-	List<PropertyInfo> pinfo;
-	p_obj->get_property_list(&pinfo);
+	LocalVector<PropertyInfo> pinfo;
+	p_obj->get_property_list(pinfo);
 	for (const PropertyInfo &E : pinfo) {
 		if (!(E.usage & PROPERTY_USAGE_EDITOR)) {
 			continue;
@@ -4587,8 +4587,8 @@ void SceneTreeDock::_clear_clipboard() {
 }
 
 void SceneTreeDock::_create_remap_for_node(Node *p_node, HashMap<Ref<Resource>, Ref<Resource>> &r_remap) {
-	List<PropertyInfo> props;
-	p_node->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	p_node->get_property_list(props);
 
 	Vector<SceneState::PackState> states_stack;
 	bool states_stack_ready = false;
@@ -4628,8 +4628,8 @@ void SceneTreeDock::_create_remap_for_node(Node *p_node, HashMap<Ref<Resource>, 
 void SceneTreeDock::_create_remap_for_resource(Ref<Resource> p_resource, HashMap<Ref<Resource>, Ref<Resource>> &r_remap) {
 	r_remap[p_resource] = p_resource->duplicate();
 
-	List<PropertyInfo> props;
-	p_resource->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	p_resource->get_property_list(props);
 
 	for (const PropertyInfo &E : props) {
 		if (!(E.usage & PROPERTY_USAGE_STORAGE)) {
@@ -4701,8 +4701,8 @@ void SceneTreeDock::_gather_resources(Node *p_node, LocalVector<Pair<Ref<Resourc
 		return;
 	}
 
-	List<PropertyInfo> pinfo;
-	p_node->get_property_list(&pinfo);
+	LocalVector<PropertyInfo> pinfo;
+	p_node->get_property_list(pinfo);
 	for (const PropertyInfo &E : pinfo) {
 		if (!(E.usage & PROPERTY_USAGE_EDITOR)) {
 			continue;

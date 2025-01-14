@@ -972,17 +972,17 @@ int VisualShader::has_node_embeds() const {
 	bool external_embeds = false;
 	for (int i = 0; i < TYPE_MAX; i++) {
 		for (const KeyValue<int, Node> &E : graph[i].nodes) {
-			List<PropertyInfo> props;
-			E.value.node->get_property_list(&props);
+			LocalVector<PropertyInfo> props;
+			E.value.node->get_property_list(props);
 			// For classes that inherit from VisualShaderNode, the class properties start at the 12th, and the last value is always 'script'
-			for (int j = 12; j < props.size() - 1; j++) {
+			for (uint32_t j = 12; j < props.size() - 1; j++) {
 				// VisualShaderNodeCustom cannot have embeds
-				if (props.get(j).name == "VisualShaderNodeCustom") {
+				if (props[j].name == "VisualShaderNodeCustom") {
 					break;
 				}
 				// Ref<Resource> properties get classed as type Variant::Object
-				if (props.get(j).type == Variant::OBJECT) {
-					Ref<Resource> res = E.value.node->get(props.get(j).name);
+				if (props[j].type == Variant::OBJECT) {
+					Ref<Resource> res = E.value.node->get(props[j].name);
 					if (res.is_valid()) {
 						if (res->is_built_in()) {
 							return 2;
@@ -1953,9 +1953,9 @@ void VisualShader::reset_state() {
 	emit_changed();
 }
 
-void VisualShader::_get_property_list(List<PropertyInfo> *p_list) const {
+void VisualShader::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	//mode
-	p_list->push_back(PropertyInfo(Variant::INT, PNAME("mode"), PROPERTY_HINT_ENUM, "Spatial,CanvasItem,Particles,Sky,Fog"));
+	p_list.push_back(PropertyInfo(Variant::INT, PNAME("mode"), PROPERTY_HINT_ENUM, "Spatial,CanvasItem,Particles,Sky,Fog"));
 	//render modes
 
 	HashMap<String, String> blend_mode_enums;
@@ -2007,18 +2007,18 @@ void VisualShader::_get_property_list(List<PropertyInfo> *p_list) const {
 	}
 
 	for (const KeyValue<String, String> &E : blend_mode_enums) {
-		p_list->push_back(PropertyInfo(Variant::INT, vformat("%s/%s", PNAME("modes"), E.key), PROPERTY_HINT_ENUM, E.value));
+		p_list.push_back(PropertyInfo(Variant::INT, vformat("%s/%s", PNAME("modes"), E.key), PROPERTY_HINT_ENUM, E.value));
 	}
 
 	for (const String &E : toggles) {
-		p_list->push_back(PropertyInfo(Variant::BOOL, vformat("%s/%s", PNAME("flags"), E)));
+		p_list.push_back(PropertyInfo(Variant::BOOL, vformat("%s/%s", PNAME("flags"), E)));
 	}
 
 	const Vector<ShaderLanguage::ModeInfo> &smodes = ShaderTypes::get_singleton()->get_stencil_modes(RenderingServer::ShaderMode(shader_mode));
 
 	if (smodes.size() > 0) {
-		p_list->push_back(PropertyInfo(Variant::BOOL, vformat("%s/%s", PNAME("stencil"), PNAME("enabled")), PROPERTY_HINT_GROUP_ENABLE));
-		p_list->push_back(PropertyInfo(Variant::INT, vformat("%s/%s", PNAME("stencil"), PNAME("reference")), PROPERTY_HINT_RANGE, "0,255,1"));
+		p_list.push_back(PropertyInfo(Variant::BOOL, vformat("%s/%s", PNAME("stencil"), PNAME("enabled")), PROPERTY_HINT_GROUP_ENABLE));
+		p_list.push_back(PropertyInfo(Variant::INT, vformat("%s/%s", PNAME("stencil"), PNAME("reference")), PROPERTY_HINT_RANGE, "0,255,1"));
 
 		HashMap<String, String> stencil_enums;
 		HashSet<String> stencil_toggles;
@@ -2042,22 +2042,22 @@ void VisualShader::_get_property_list(List<PropertyInfo> *p_list) const {
 		}
 
 		for (const KeyValue<String, String> &E : stencil_enums) {
-			p_list->push_back(PropertyInfo(Variant::INT, vformat("%s/%s", PNAME("stencil_modes"), E.key), PROPERTY_HINT_ENUM, E.value));
+			p_list.push_back(PropertyInfo(Variant::INT, vformat("%s/%s", PNAME("stencil_modes"), E.key), PROPERTY_HINT_ENUM, E.value));
 		}
 
 		for (const String &E : stencil_toggles) {
-			p_list->push_back(PropertyInfo(Variant::BOOL, vformat("%s/%s", PNAME("stencil_flags"), E)));
+			p_list.push_back(PropertyInfo(Variant::BOOL, vformat("%s/%s", PNAME("stencil_flags"), E)));
 		}
 	}
 
 	for (const KeyValue<String, Varying> &E : varyings) {
-		p_list->push_back(PropertyInfo(Variant::STRING, vformat("%s/%s", "varyings", E.key), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+		p_list.push_back(PropertyInfo(Variant::STRING, vformat("%s/%s", "varyings", E.key), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 	}
 
 #ifdef TOOLS_ENABLED
 	if (Engine::get_singleton()->is_editor_hint()) {
 		for (const KeyValue<String, Variant> &E : preview_params) {
-			p_list->push_back(PropertyInfo(Variant::STRING, vformat("%s/%s", "preview_params", E.key), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+			p_list.push_back(PropertyInfo(Variant::STRING, vformat("%s/%s", "preview_params", E.key), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 		}
 	}
 #endif // TOOLS_ENABLED
@@ -2069,20 +2069,20 @@ void VisualShader::_get_property_list(List<PropertyInfo> *p_list) const {
 			prop_name += "/" + itos(E.key);
 
 			if (E.key != NODE_ID_OUTPUT) {
-				p_list->push_back(PropertyInfo(Variant::OBJECT, prop_name + "/node", PROPERTY_HINT_RESOURCE_TYPE, "VisualShaderNode", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_ALWAYS_DUPLICATE));
+				p_list.push_back(PropertyInfo(Variant::OBJECT, prop_name + "/node", PROPERTY_HINT_RESOURCE_TYPE, "VisualShaderNode", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_ALWAYS_DUPLICATE));
 			}
-			p_list->push_back(PropertyInfo(Variant::VECTOR2, prop_name + "/position", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+			p_list.push_back(PropertyInfo(Variant::VECTOR2, prop_name + "/position", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 
 			if (Object::cast_to<VisualShaderNodeGroupBase>(E.value.node.ptr()) != nullptr) {
-				p_list->push_back(PropertyInfo(Variant::VECTOR2, prop_name + "/size", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
-				p_list->push_back(PropertyInfo(Variant::STRING, prop_name + "/input_ports", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
-				p_list->push_back(PropertyInfo(Variant::STRING, prop_name + "/output_ports", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+				p_list.push_back(PropertyInfo(Variant::VECTOR2, prop_name + "/size", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+				p_list.push_back(PropertyInfo(Variant::STRING, prop_name + "/input_ports", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+				p_list.push_back(PropertyInfo(Variant::STRING, prop_name + "/output_ports", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 			}
 			if (Object::cast_to<VisualShaderNodeExpression>(E.value.node.ptr()) != nullptr) {
-				p_list->push_back(PropertyInfo(Variant::STRING, prop_name + "/expression", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+				p_list.push_back(PropertyInfo(Variant::STRING, prop_name + "/expression", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 			}
 		}
-		p_list->push_back(PropertyInfo(Variant::PACKED_INT32_ARRAY, "nodes/" + String(type_string[i]) + "/connections", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+		p_list.push_back(PropertyInfo(Variant::PACKED_INT32_ARRAY, "nodes/" + String(type_string[i]) + "/connections", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 	}
 }
 

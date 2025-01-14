@@ -964,13 +964,13 @@ bool AnimationTree::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void AnimationTree::_get_property_list(List<PropertyInfo> *p_list) const {
+void AnimationTree::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	if (properties_dirty) {
 		_update_properties();
 	}
 
 	for (const PropertyInfo &E : properties) {
-		p_list->push_back(E);
+		p_list.push_back(E);
 	}
 }
 

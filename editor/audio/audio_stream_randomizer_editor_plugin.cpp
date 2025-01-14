@@ -85,8 +85,8 @@ void AudioStreamRandomizerEditorPlugin::_move_stream_array_element(Object *p_und
 		undo_redo_man->add_undo_method(randomizer, "add_stream", p_from_index, Ref<AudioStream>());
 	}
 
-	List<PropertyInfo> properties;
-	randomizer->get_property_list(&properties);
+	LocalVector<PropertyInfo> properties;
+	randomizer->get_property_list(properties);
 	for (PropertyInfo pi : properties) {
 		if (pi.name.begins_with(p_array_prefix)) {
 			String str = pi.name.trim_prefix(p_array_prefix);

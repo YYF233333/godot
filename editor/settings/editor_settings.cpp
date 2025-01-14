@@ -265,7 +265,7 @@ struct _EVCSort {
 	bool operator<(const _EVCSort &p_vcs) const { return order < p_vcs.order; }
 };
 
-void EditorSettings::_get_property_list(List<PropertyInfo> *p_list) const {
+void EditorSettings::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	_THREAD_SAFE_METHOD_
 
 	RBSet<_EVCSort> vclist;
@@ -319,11 +319,11 @@ void EditorSettings::_get_property_list(List<PropertyInfo> *p_list) const {
 			pi.usage |= PROPERTY_USAGE_RESTART_IF_CHANGED;
 		}
 
-		p_list->push_back(pi);
+		p_list.push_back(pi);
 	}
 
-	p_list->push_back(PropertyInfo(Variant::ARRAY, "shortcuts", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL)); //do not edit
-	p_list->push_back(PropertyInfo(Variant::ARRAY, "builtin_action_overrides", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL));
+	p_list.push_back(PropertyInfo(Variant::ARRAY, "shortcuts", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL)); //do not edit
+	p_list.push_back(PropertyInfo(Variant::ARRAY, "builtin_action_overrides", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL));
 }
 
 void EditorSettings::_add_property_info_bind(const Dictionary &p_info) {

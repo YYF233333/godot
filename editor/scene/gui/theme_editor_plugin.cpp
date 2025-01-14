@@ -3420,8 +3420,8 @@ void ThemeTypeEditor::_update_stylebox_from_leading() {
 		}
 	}
 
-	List<PropertyInfo> props;
-	leading_stylebox.stylebox->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	leading_stylebox.stylebox->get_property_list(props);
 	for (const PropertyInfo &E : props) {
 		if (!(E.usage & PROPERTY_USAGE_STORAGE)) {
 			continue;

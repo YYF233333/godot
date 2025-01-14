@@ -140,9 +140,9 @@ void TabContainer::gui_input(const Ref<InputEvent> &p_event) {
 	}
 }
 
-void TabContainer::_get_property_list(List<PropertyInfo> *p_list) const {
-	List<PropertyInfo> properties;
-	property_helper.get_property_list(&properties);
+void TabContainer::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
+	LocalVector<PropertyInfo> properties;
+	property_helper.get_property_list(properties);
 
 	for (PropertyInfo &info : properties) {
 		int index;
@@ -154,7 +154,7 @@ void TabContainer::_get_property_list(List<PropertyInfo> *p_list) const {
 				info.usage &= ~PROPERTY_USAGE_STORAGE;
 			}
 		}
-		p_list->push_back(info);
+		p_list.push_back(info);
 	}
 }
 

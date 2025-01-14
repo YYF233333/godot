@@ -86,17 +86,17 @@ bool SkeletonModification2DPhysicalBones::_get(const StringName &p_path, Variant
 	return false;
 }
 
-void SkeletonModification2DPhysicalBones::_get_property_list(List<PropertyInfo> *p_list) const {
+void SkeletonModification2DPhysicalBones::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 #ifdef TOOLS_ENABLED
 	if (Engine::get_singleton()->is_editor_hint()) {
-		p_list->push_back(PropertyInfo(Variant::BOOL, "fetch_bones", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT));
+		p_list.push_back(PropertyInfo(Variant::BOOL, "fetch_bones", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT));
 	}
 #endif //TOOLS_ENABLED
 
 	for (int i = 0; i < physical_bone_chain.size(); i++) {
 		String base_string = "joint_" + itos(i) + "_";
 
-		p_list->push_back(PropertyInfo(Variant::NODE_PATH, base_string + "nodepath", PROPERTY_HINT_NODE_PATH_VALID_TYPES, "PhysicalBone2D", PROPERTY_USAGE_DEFAULT));
+		p_list.push_back(PropertyInfo(Variant::NODE_PATH, base_string + "nodepath", PROPERTY_HINT_NODE_PATH_VALID_TYPES, "PhysicalBone2D", PROPERTY_USAGE_DEFAULT));
 	}
 }
 

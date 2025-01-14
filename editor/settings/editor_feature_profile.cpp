@@ -610,8 +610,8 @@ void EditorFeatureProfileManager::_class_list_item_selected() {
 		option->set_metadata(0, CLASS_OPTION_DISABLE_EDITOR);
 	}
 
-	List<PropertyInfo> props;
-	ClassDB::get_property_list(class_name, &props, true);
+	LocalVector<PropertyInfo> props;
+	ClassDB::get_property_list(class_name, props, true);
 
 	bool has_editor_props = false;
 	for (const PropertyInfo &E : props) {

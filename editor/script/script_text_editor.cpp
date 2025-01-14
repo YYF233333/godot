@@ -2619,8 +2619,8 @@ void ScriptTextEditor::_assign_dragged_export_variables() {
 
 		if (!script_has_errors) {
 			bool success = false;
-			List<PropertyInfo> properties;
-			si->get_property_list(&properties);
+			LocalVector<PropertyInfo> properties;
+			si->get_property_list(properties);
 			for (const PropertyInfo &pi : properties) {
 				if (pi.name == dragged_export.variable_name && pi.hint_string == dragged_export.class_name) {
 					success = si->set(dragged_export.variable_name, dragged_export.value);

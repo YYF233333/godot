@@ -399,12 +399,12 @@ bool Control::_get(const StringName &p_name, Variant &r_ret) const {
 	return true;
 }
 
-void Control::_get_property_list(List<PropertyInfo> *p_list) const {
+void Control::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	ERR_MAIN_THREAD_GUARD;
 	List<ThemeDB::ThemeItemBind> theme_items;
 	ThemeDB::get_singleton()->get_class_items(get_class_name(), &theme_items, true);
 
-	p_list->push_back(PropertyInfo(Variant::NIL, GNAME("Theme Overrides", "theme_override_"), PROPERTY_HINT_NONE, "theme_override_", PROPERTY_USAGE_GROUP));
+	p_list.push_back(PropertyInfo(Variant::NIL, GNAME("Theme Overrides", "theme_override_"), PROPERTY_HINT_NONE, "theme_override_", PROPERTY_USAGE_GROUP));
 
 	for (const ThemeDB::ThemeItemBind &E : theme_items) {
 		uint32_t usage = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
@@ -414,42 +414,42 @@ void Control::_get_property_list(List<PropertyInfo> *p_list) const {
 				if (data.theme_color_override.has(E.item_name)) {
 					usage |= PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_CHECKED;
 				}
-				p_list->push_back(PropertyInfo(Variant::COLOR, PNAME("theme_override_colors") + String("/") + E.item_name, PROPERTY_HINT_NONE, "", usage));
+				p_list.push_back(PropertyInfo(Variant::COLOR, PNAME("theme_override_colors") + String("/") + E.item_name, PROPERTY_HINT_NONE, "", usage));
 			} break;
 
 			case Theme::DATA_TYPE_CONSTANT: {
 				if (data.theme_constant_override.has(E.item_name)) {
 					usage |= PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_CHECKED;
 				}
-				p_list->push_back(PropertyInfo(Variant::INT, PNAME("theme_override_constants") + String("/") + E.item_name, PROPERTY_HINT_RANGE, "-16384,16384", usage));
+				p_list.push_back(PropertyInfo(Variant::INT, PNAME("theme_override_constants") + String("/") + E.item_name, PROPERTY_HINT_RANGE, "-16384,16384", usage));
 			} break;
 
 			case Theme::DATA_TYPE_FONT: {
 				if (data.theme_font_override.has(E.item_name)) {
 					usage |= PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_CHECKED;
 				}
-				p_list->push_back(PropertyInfo(Variant::OBJECT, PNAME("theme_override_fonts") + String("/") + E.item_name, PROPERTY_HINT_RESOURCE_TYPE, "Font", usage));
+				p_list.push_back(PropertyInfo(Variant::OBJECT, PNAME("theme_override_fonts") + String("/") + E.item_name, PROPERTY_HINT_RESOURCE_TYPE, "Font", usage));
 			} break;
 
 			case Theme::DATA_TYPE_FONT_SIZE: {
 				if (data.theme_font_size_override.has(E.item_name)) {
 					usage |= PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_CHECKED;
 				}
-				p_list->push_back(PropertyInfo(Variant::INT, PNAME("theme_override_font_sizes") + String("/") + E.item_name, PROPERTY_HINT_RANGE, "1,256,1,or_greater,suffix:px", usage));
+				p_list.push_back(PropertyInfo(Variant::INT, PNAME("theme_override_font_sizes") + String("/") + E.item_name, PROPERTY_HINT_RANGE, "1,256,1,or_greater,suffix:px", usage));
 			} break;
 
 			case Theme::DATA_TYPE_ICON: {
 				if (data.theme_icon_override.has(E.item_name)) {
 					usage |= PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_CHECKED;
 				}
-				p_list->push_back(PropertyInfo(Variant::OBJECT, PNAME("theme_override_icons") + String("/") + E.item_name, PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", usage));
+				p_list.push_back(PropertyInfo(Variant::OBJECT, PNAME("theme_override_icons") + String("/") + E.item_name, PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", usage));
 			} break;
 
 			case Theme::DATA_TYPE_STYLEBOX: {
 				if (data.theme_style_override.has(E.item_name)) {
 					usage |= PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_CHECKED;
 				}
-				p_list->push_back(PropertyInfo(Variant::OBJECT, PNAME("theme_override_styles") + String("/") + E.item_name, PROPERTY_HINT_RESOURCE_TYPE, "StyleBox", usage));
+				p_list.push_back(PropertyInfo(Variant::OBJECT, PNAME("theme_override_styles") + String("/") + E.item_name, PROPERTY_HINT_RESOURCE_TYPE, "StyleBox", usage));
 			} break;
 
 			default: {

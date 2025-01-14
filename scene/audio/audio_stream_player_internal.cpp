@@ -231,7 +231,7 @@ bool AudioStreamPlayerInternal::get(const StringName &p_name, Variant &r_ret) co
 	return true;
 }
 
-void AudioStreamPlayerInternal::get_property_list(List<PropertyInfo> *p_list) const {
+void AudioStreamPlayerInternal::get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	if (stream.is_null()) {
 		return;
 	}
@@ -246,7 +246,7 @@ void AudioStreamPlayerInternal::get_property_list(List<PropertyInfo> *p_list) co
 			pi.usage &= ~PROPERTY_USAGE_STORAGE;
 		}
 
-		p_list->push_back(pi);
+		p_list.push_back(pi);
 	}
 }
 

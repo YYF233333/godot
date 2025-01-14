@@ -126,10 +126,10 @@ uint32_t AnimationMixer::_get_libraries_property_usage() const {
 	return PROPERTY_USAGE_DEFAULT;
 }
 
-void AnimationMixer::_get_property_list(List<PropertyInfo> *p_list) const {
+void AnimationMixer::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	for (uint32_t i = 0; i < animation_libraries.size(); i++) {
 		const String path = vformat("libraries/%s", animation_libraries[i].name);
-		p_list->push_back(PropertyInfo(Variant::OBJECT, path, PROPERTY_HINT_RESOURCE_TYPE, "AnimationLibrary", _get_libraries_property_usage()));
+		p_list.push_back(PropertyInfo(Variant::OBJECT, path, PROPERTY_HINT_RESOURCE_TYPE, "AnimationLibrary", _get_libraries_property_usage()));
 	}
 }
 

@@ -4127,8 +4127,8 @@ void GDScriptAnalyzer::reduce_identifier_from_base(GDScriptParser::IdentifierNod
 					Callable::CallError temp;
 					Variant dummy;
 					Variant::construct(base.builtin_type, dummy, nullptr, 0, temp);
-					List<PropertyInfo> properties;
-					dummy.get_property_list(&properties);
+					LocalVector<PropertyInfo> properties;
+					dummy.get_property_list(properties);
 					for (const PropertyInfo &prop : properties) {
 						if (prop.name == name) {
 							p_identifier->set_datatype(type_from_property(prop));
@@ -4266,8 +4266,8 @@ void GDScriptAnalyzer::reduce_identifier_from_base(GDScriptParser::IdentifierNod
 	Ref<Script> script_type = base.script_type;
 
 	if (base_class == nullptr && script_type.is_valid()) {
-		List<PropertyInfo> property_list;
-		script_type->get_script_property_list(&property_list);
+		LocalVector<PropertyInfo> property_list;
+		script_type->get_script_property_list(property_list);
 
 		for (const PropertyInfo &property_info : property_list) {
 			if (property_info.name != p_identifier->name) {

@@ -3575,8 +3575,8 @@ String String::format(const Variant &values, const String &placeholder) const {
 		Object *obj = values.get_validated_object();
 		ERR_FAIL_NULL_V(obj, new_string);
 
-		List<PropertyInfo> props;
-		obj->get_property_list(&props);
+		LocalVector<PropertyInfo> props;
+		obj->get_property_list(props);
 
 		for (const PropertyInfo &E : props) {
 			new_string = new_string.replace(placeholder.replace("_", E.name), obj->get(E.name));

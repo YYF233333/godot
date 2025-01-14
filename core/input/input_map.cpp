@@ -97,8 +97,8 @@ void InputMap::get_argument_options(const StringName &p_function, int p_idx, Loc
 	}
 	if (first_argument_is_action || (p_idx == 1 && pf == "event_is_action")) {
 		// Cannot rely on `get_actions()`, otherwise the actions would be in the context of the Editor (no user-defined actions).
-		List<PropertyInfo> pinfo;
-		ProjectSettings::get_singleton()->get_property_list(&pinfo);
+		LocalVector<PropertyInfo> pinfo;
+		ProjectSettings::get_singleton()->get_property_list(pinfo);
 
 		for (const PropertyInfo &pi : pinfo) {
 			if (!pi.name.begins_with("input/")) {
@@ -309,8 +309,8 @@ const HashMap<StringName, InputMap::Action> &InputMap::get_action_map() const {
 void InputMap::load_from_project_settings() {
 	input_map.clear();
 
-	List<PropertyInfo> pinfo;
-	ProjectSettings::get_singleton()->get_property_list(&pinfo);
+	LocalVector<PropertyInfo> pinfo;
+	ProjectSettings::get_singleton()->get_property_list(pinfo);
 
 	for (const PropertyInfo &pi : pinfo) {
 		if (!pi.name.begins_with("input/")) {

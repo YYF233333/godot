@@ -1988,7 +1988,11 @@ TypedArray<Image> RenderingServer::_texture_3d_get(RID p_texture) const {
 TypedArray<Dictionary> RenderingServer::_shader_get_shader_parameter_list(RID p_shader) const {
 	List<PropertyInfo> l;
 	get_shader_parameter_list(p_shader, &l);
-	return convert_property_list(&l);
+	TypedArray<Dictionary> va;
+	for (const PropertyInfo &E : l) {
+		va.push_back(Dictionary(E));
+	}
+	return va;
 }
 
 static RS::SurfaceData _dict_to_surf(const Dictionary &p_dictionary) {
@@ -2115,15 +2119,23 @@ Dictionary RenderingServer::_mesh_get_surface(RID p_mesh, int p_idx) {
 }
 
 TypedArray<Dictionary> RenderingServer::_instance_geometry_get_shader_parameter_list(RID p_instance) const {
-	List<PropertyInfo> params;
+	LocalVector<PropertyInfo> params;
 	instance_geometry_get_shader_parameter_list(p_instance, &params);
-	return convert_property_list(&params);
+	TypedArray<Dictionary> va;
+	for (const PropertyInfo &E : params) {
+		va.push_back(Dictionary(E));
+	}
+	return va;
 }
 
 TypedArray<Dictionary> RenderingServer::_canvas_item_get_instance_shader_parameter_list(RID p_instance) const {
-	List<PropertyInfo> params;
+	LocalVector<PropertyInfo> params;
 	canvas_item_get_instance_shader_parameter_list(p_instance, &params);
-	return convert_property_list(&params);
+	TypedArray<Dictionary> va;
+	for (const PropertyInfo &E : params) {
+		va.push_back(Dictionary(E));
+	}
+	return va;
 }
 
 TypedArray<Image> RenderingServer::_bake_render_uv2(RID p_base, const TypedArray<RID> &p_material_overrides, const Size2i &p_image_size) {

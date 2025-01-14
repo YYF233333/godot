@@ -87,7 +87,7 @@ bool LimitAngularVelocityModifier3D::_get(const StringName &p_path, Variant &r_r
 	return true;
 }
 
-void LimitAngularVelocityModifier3D::_get_property_list(List<PropertyInfo> *p_list) const {
+void LimitAngularVelocityModifier3D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	String enum_hint;
 	Skeleton3D *skeleton = get_skeleton();
 	if (skeleton) {
@@ -96,16 +96,16 @@ void LimitAngularVelocityModifier3D::_get_property_list(List<PropertyInfo> *p_li
 
 	for (uint32_t i = 0; i < chains.size(); i++) {
 		String path = "chains/" + itos(i) + "/";
-		p_list->push_back(PropertyInfo(Variant::STRING, path + "root_bone_name", PROPERTY_HINT_ENUM_SUGGESTION, enum_hint));
-		p_list->push_back(PropertyInfo(Variant::INT, path + "root_bone", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
-		p_list->push_back(PropertyInfo(Variant::STRING, path + "end_bone_name", PROPERTY_HINT_ENUM_SUGGESTION, enum_hint));
-		p_list->push_back(PropertyInfo(Variant::INT, path + "end_bone", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+		p_list.push_back(PropertyInfo(Variant::STRING, path + "root_bone_name", PROPERTY_HINT_ENUM_SUGGESTION, enum_hint));
+		p_list.push_back(PropertyInfo(Variant::INT, path + "root_bone", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+		p_list.push_back(PropertyInfo(Variant::STRING, path + "end_bone_name", PROPERTY_HINT_ENUM_SUGGESTION, enum_hint));
+		p_list.push_back(PropertyInfo(Variant::INT, path + "end_bone", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 	}
 
 	for (uint32_t i = 0; i < joints.size(); i++) {
 		String path = "joints/" + itos(i) + "/";
-		p_list->push_back(PropertyInfo(Variant::STRING, path + "bone_name", PROPERTY_HINT_ENUM_SUGGESTION, enum_hint, PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY));
-		p_list->push_back(PropertyInfo(Variant::INT, path + "bone", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY));
+		p_list.push_back(PropertyInfo(Variant::STRING, path + "bone_name", PROPERTY_HINT_ENUM_SUGGESTION, enum_hint, PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY));
+		p_list.push_back(PropertyInfo(Variant::INT, path + "bone", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY));
 	}
 }
 

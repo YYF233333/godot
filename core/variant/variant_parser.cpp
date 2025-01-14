@@ -2213,8 +2213,8 @@ Error VariantWriter::write(const Variant &p_variant, StoreStringFunc p_store_str
 
 			p_store_string_func(p_store_string_ud, "Object(" + obj->get_class() + ",");
 
-			List<PropertyInfo> props;
-			obj->get_property_list(&props);
+			LocalVector<PropertyInfo> props;
+			obj->get_property_list(props);
 			bool first = true;
 			for (const PropertyInfo &E : props) {
 				if (E.usage & PROPERTY_USAGE_STORAGE || E.usage & PROPERTY_USAGE_SCRIPT_VARIABLE) {

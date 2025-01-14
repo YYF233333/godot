@@ -74,8 +74,8 @@ Variant Script::_get_property_default_value(const StringName &p_property) {
 
 TypedArray<Dictionary> Script::_get_script_property_list() {
 	TypedArray<Dictionary> ret;
-	List<PropertyInfo> list;
-	get_script_property_list(&list);
+	LocalVector<PropertyInfo> list;
+	get_script_property_list(list);
 	for (const PropertyInfo &E : list) {
 		ret.append(E.operator Dictionary());
 	}
@@ -723,15 +723,15 @@ bool PlaceHolderScriptInstance::get(const StringName &p_name, Variant &r_ret) co
 	return false;
 }
 
-void PlaceHolderScriptInstance::get_property_list(List<PropertyInfo> *p_properties) const {
+void PlaceHolderScriptInstance::get_property_list(LocalVector<PropertyInfo> &p_properties) const {
 	if (script->is_placeholder_fallback_enabled()) {
 		for (const PropertyInfo &E : properties) {
-			p_properties->push_back(E);
+			p_properties.push_back(E);
 		}
 	} else {
 		for (const PropertyInfo &E : properties) {
 			PropertyInfo pinfo = E;
-			p_properties->push_back(E);
+			p_properties.push_back(E);
 		}
 	}
 }

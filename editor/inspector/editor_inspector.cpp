@@ -29,6 +29,7 @@
 /**************************************************************************/
 
 #include "editor_inspector.h"
+#include "core/object/object.h"
 #include "editor_inspector.compat.inc"
 
 #include "core/os/keyboard.h"
@@ -57,6 +58,7 @@
 #include "scene/resources/packed_scene.h"
 #include "scene/resources/style_box_flat.h"
 #include "scene/scene_string_names.h"
+#include <cstdint>
 
 void EditorInspectorActionButton::_notification(int p_what) {
 	switch (p_what) {
@@ -93,8 +95,8 @@ bool EditorInspector::_resource_properties_matches(const Ref<Resource> &p_resour
 	String subgroup;
 	String subgroup_base;
 
-	List<PropertyInfo> plist;
-	p_resource->get_property_list(&plist, true);
+	LocalVector<PropertyInfo> plist;
+	p_resource->get_property_list(plist, true);
 
 	// Employ a lighter version of the update_tree() property listing to find a match.
 	for (PropertyInfo &p : plist) {
@@ -883,8 +885,8 @@ void EditorProperty::update_editor_property_status() {
 }
 
 bool EditorProperty::use_keying_next() const {
-	List<PropertyInfo> plist;
-	object->get_property_list(&plist, true);
+	LocalVector<PropertyInfo> plist;
+	object->get_property_list(plist, true);
 
 	for (const PropertyInfo &p : plist) {
 		if (p.name == property) {
@@ -1133,8 +1135,8 @@ void EditorProperty::gui_input(const Ref<InputEvent> &p_event) {
 		if (check_rect.has_point(mpos)) {
 			accept_event();
 			if (!checked && Object::cast_to<Control>(object) && property_path.begins_with("theme_override_")) {
-				List<PropertyInfo> pinfo;
-				object->get_property_list(&pinfo);
+				LocalVector<PropertyInfo> pinfo;
+				object->get_property_list(pinfo);
 				for (const PropertyInfo &E : pinfo) {
 					if (E.type == Variant::OBJECT && E.name == property_path) {
 						EditorToaster::get_singleton()->popup_str(TTR("Toggling the checkbox is disabled for Resource properties. Modify the property using the resource picker instead."), EditorToaster::SEVERITY_WARNING);
@@ -1161,8 +1163,8 @@ void EditorProperty::_accessibility_action_click(const Variant &p_data) {
 	select();
 	if (checkable) {
 		if (!checked && Object::cast_to<Control>(object) && property_path.begins_with("theme_override_")) {
-			List<PropertyInfo> pinfo;
-			object->get_property_list(&pinfo);
+			LocalVector<PropertyInfo> pinfo;
+			object->get_property_list(pinfo);
 			for (const PropertyInfo &E : pinfo) {
 				if (E.type == Variant::OBJECT && E.name == property_path) {
 					EditorToaster::get_singleton()->popup_str(TTR("Toggling the checkbox is disabled for Resource properties. Modify the property using the resource picker instead."), EditorToaster::SEVERITY_WARNING);
@@ -2576,8 +2578,8 @@ EditorInspectorSection::~EditorInspectorSection() {
 
 int EditorInspectorArray::_get_array_count() {
 	if (mode == MODE_USE_MOVE_ARRAY_ELEMENT_FUNCTION) {
-		List<PropertyInfo> object_property_list;
-		object->get_property_list(&object_property_list);
+		LocalVector<PropertyInfo> object_property_list;
+		object->get_property_list(object_property_list);
 		return _extract_properties_as_array(object_property_list).size();
 	} else if (mode == MODE_USE_COUNT_PROPERTY) {
 		bool valid;
@@ -2765,8 +2767,8 @@ void EditorInspectorArray::_move_element(int p_element_index, int p_to_pos) {
 					// Remove element at position
 					undo_redo->add_undo_property(object, count_property, count);
 
-					List<PropertyInfo> object_property_list;
-					object->get_property_list(&object_property_list);
+					LocalVector<PropertyInfo> object_property_list;
+					object->get_property_list(object_property_list);
 
 					for (int i = p_element_index; i < count - 1; i++) {
 						undo_redo->add_do_method(object, swap_method, i, i + 1);
@@ -2810,8 +2812,8 @@ void EditorInspectorArray::_move_element(int p_element_index, int p_to_pos) {
 			}
 		} else {
 			// Use standard properties.
-			List<PropertyInfo> object_property_list;
-			object->get_property_list(&object_property_list);
+			LocalVector<PropertyInfo> object_property_list;
+			object->get_property_list(object_property_list);
 
 			Array properties_as_array = _extract_properties_as_array(object_property_list);
 			properties_as_array.resize(count);
@@ -2883,8 +2885,8 @@ void EditorInspectorArray::_clear_array() {
 			}
 		}
 	} else if (mode == MODE_USE_COUNT_PROPERTY) {
-		List<PropertyInfo> object_property_list;
-		object->get_property_list(&object_property_list);
+		LocalVector<PropertyInfo> object_property_list;
+		object->get_property_list(object_property_list);
 
 		Array properties_as_array = _extract_properties_as_array(object_property_list);
 		properties_as_array.resize(count);
@@ -2946,8 +2948,8 @@ void EditorInspectorArray::_resize_array(int p_size) {
 				}
 			}
 		} else if (mode == MODE_USE_COUNT_PROPERTY) {
-			List<PropertyInfo> object_property_list;
-			object->get_property_list(&object_property_list);
+			LocalVector<PropertyInfo> object_property_list;
+			object->get_property_list(object_property_list);
 
 			Array properties_as_array = _extract_properties_as_array(object_property_list);
 			properties_as_array.resize(count);
@@ -2977,7 +2979,7 @@ void EditorInspectorArray::_resize_array(int p_size) {
 	*/
 }
 
-Array EditorInspectorArray::_extract_properties_as_array(const List<PropertyInfo> &p_list) {
+Array EditorInspectorArray::_extract_properties_as_array(const LocalVector<PropertyInfo> &p_list) {
 	Array output;
 
 	for (const PropertyInfo &pi : p_list) {
@@ -3915,8 +3917,8 @@ void EditorInspector::update_tree() {
 	bool disable_favorite = false;
 	VBoxContainer *category_vbox = nullptr;
 
-	List<PropertyInfo> plist;
-	object->get_property_list(&plist, true);
+	LocalVector<PropertyInfo> plist;
+	object->get_property_list(plist, true);
 
 	HashMap<VBoxContainer *, HashMap<String, VBoxContainer *>> vbox_per_path;
 	HashMap<String, EditorInspectorArray *> editor_inspector_array_per_prefix;
@@ -3941,8 +3943,8 @@ void EditorInspector::update_tree() {
 	StringName doc_name;
 
 	// Get the lists of editors for properties.
-	for (List<PropertyInfo>::Element *E_property = plist.front(); E_property; E_property = E_property->next()) {
-		PropertyInfo &p = E_property->get();
+	for (uint32_t plist_idx = 0; plist_idx < plist.size(); plist_idx++) {
+		PropertyInfo &p = plist[plist_idx];
 
 		if (p.usage & PROPERTY_USAGE_SUBGROUP) {
 			// Setup a property sub-group.
@@ -3995,20 +3997,19 @@ void EditorInspector::update_tree() {
 			const bool is_custom_category = p.hint_string.is_empty();
 
 			// Iterate over remaining properties. If no properties in category, skip the category.
-			List<PropertyInfo>::Element *N = E_property->next();
 			bool valid = true;
-			while (N) {
-				if (!N->get().name.begins_with("metadata/_") && N->get().usage & PROPERTY_USAGE_EDITOR &&
-						(!filter.is_empty() || !restrict_to_basic || (N->get().usage & PROPERTY_USAGE_EDITOR_BASIC_SETTING))) {
+			for (uint32_t N_idx = plist_idx + 1; N_idx < plist.size(); N_idx++) {
+				const PropertyInfo &N = plist[N_idx];
+				if (!N.name.begins_with("metadata/_") && N.usage & PROPERTY_USAGE_EDITOR &&
+						(!filter.is_empty() || !restrict_to_basic || (N.usage & PROPERTY_USAGE_EDITOR_BASIC_SETTING))) {
 					break;
 				}
 				// Treat custom categories as second-level ones. Do not skip a normal category if it is followed by a custom one.
 				// Skip in the other 3 cases (normal -> normal, custom -> custom, custom -> normal).
-				if ((N->get().usage & PROPERTY_USAGE_CATEGORY) && (is_custom_category || !N->get().hint_string.is_empty())) {
+				if ((N.usage & PROPERTY_USAGE_CATEGORY) && (is_custom_category || !N.hint_string.is_empty())) {
 					valid = false;
 					break;
 				}
-				N = N->next();
 			}
 			if (!valid) {
 				continue; // Empty, ignore it.
@@ -5395,8 +5396,8 @@ void EditorInspector::_property_checked(const String &p_path, bool p_checked) {
 			if (control && p_path.begins_with("theme_override_")) {
 				to_create = control->get_used_theme_item(p_path);
 			} else {
-				List<PropertyInfo> pinfo;
-				object->get_property_list(&pinfo);
+				LocalVector<PropertyInfo> pinfo;
+				object->get_property_list(pinfo);
 				for (const PropertyInfo &E : pinfo) {
 					if (E.name == p_path) {
 						Callable::CallError ce;
@@ -5485,11 +5486,11 @@ void EditorInspector::_update_current_favorites() {
 	// Fetch script properties.
 	Ref<Script> scr = object->get_script();
 	if (scr.is_valid()) {
-		List<PropertyInfo> plist;
+		LocalVector<PropertyInfo> plist;
 		// FIXME: Only properties from a saved script will be available, unsaved ones will be ignored.
 		// Can cause a little wonkiness, while nothing serious, would be nice to find a way to get
 		// unsaved ones without needing to get the entire property list of an object.
-		scr->get_script_property_list(&plist);
+		scr->get_script_property_list(plist);
 
 		String path;
 		HashMap<String, LocalVector<String>> props;
@@ -5583,8 +5584,8 @@ void EditorInspector::_set_property_favorited(const String &p_path, bool p_favor
 		// Check if it's part of a script.
 		Ref<Script> scr = object->get_script();
 		if (scr.is_valid()) {
-			List<PropertyInfo> plist;
-			scr->get_script_property_list(&plist);
+			LocalVector<PropertyInfo> plist;
+			scr->get_script_property_list(plist);
 
 			String path;
 			for (PropertyInfo &p : plist) {
@@ -5627,8 +5628,8 @@ void EditorInspector::_clear_current_favorites() {
 
 	Ref<Script> scr = object->get_script();
 	if (scr.is_valid()) {
-		List<PropertyInfo> plist;
-		scr->get_script_property_list(&plist);
+		LocalVector<PropertyInfo> plist;
+		scr->get_script_property_list(plist);
 
 		for (PropertyInfo &p : plist) {
 			if (p.usage & PROPERTY_USAGE_CATEGORY && favorites.has(p.hint_string)) {

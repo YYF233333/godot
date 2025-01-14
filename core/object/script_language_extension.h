@@ -177,11 +177,11 @@ public:
 
 	GDVIRTUAL0RC_REQUIRED(TypedArray<Dictionary>, _get_script_property_list)
 
-	virtual void get_script_property_list(List<PropertyInfo> *r_propertys) const override {
+	virtual void get_script_property_list(LocalVector<PropertyInfo> &r_propertys) const override {
 		TypedArray<Dictionary> sl;
 		GDVIRTUAL_CALL(_get_script_property_list, sl);
 		for (int i = 0; i < sl.size(); i++) {
-			r_propertys->push_back(PropertyInfo::from_dict(sl[i]));
+			r_propertys.push_back(PropertyInfo::from_dict(sl[i]));
 		}
 	}
 
@@ -721,7 +721,7 @@ public:
 		}
 		return false;
 	}
-	virtual void get_property_list(List<PropertyInfo> *p_list) const override {
+	virtual void get_property_list(LocalVector<PropertyInfo> &p_list) const override {
 		if (native_info->get_property_list_func) {
 			uint32_t pcount;
 			const GDExtensionPropertyInfo *pinfo = native_info->get_property_list_func(instance, &pcount);
@@ -731,19 +731,19 @@ public:
 				if (native_info->get_class_category_func) {
 					GDExtensionPropertyInfo gdext_class_category;
 					if (native_info->get_class_category_func(instance, &gdext_class_category)) {
-						p_list->push_back(PropertyInfo(gdext_class_category));
+						p_list.push_back(PropertyInfo(gdext_class_category));
 					}
 				} else {
 					Ref<Script> script = get_script();
 					if (script.is_valid()) {
-						p_list->push_back(script->get_class_category());
+						p_list.push_back(script->get_class_category());
 					}
 				}
 			}
 #endif // TOOLS_ENABLED
 
 			for (uint32_t i = 0; i < pcount; i++) {
-				p_list->push_back(PropertyInfo(pinfo[i]));
+				p_list.push_back(PropertyInfo(pinfo[i]));
 			}
 			if (native_info->free_property_list_func) {
 				native_info->free_property_list_func(instance, pinfo, pcount);

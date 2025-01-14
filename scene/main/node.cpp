@@ -2757,8 +2757,8 @@ bool Node::is_part_of_edited_scene() const {
 
 void Node::get_storable_properties(HashSet<StringName> &r_storable_properties) const {
 	ERR_THREAD_GUARD
-	List<PropertyInfo> property_list;
-	get_property_list(&property_list);
+	LocalVector<PropertyInfo> property_list;
+	get_property_list(property_list);
 	for (const PropertyInfo &pi : property_list) {
 		if ((pi.usage & PROPERTY_USAGE_STORAGE)) {
 			r_storable_properties.insert(pi.name);
@@ -2985,8 +2985,8 @@ Node *Node::duplicate_from_editor(HashMap<const Node *, Node *> &r_duplimap, Nod
 void Node::remap_node_resources(Node *p_node, Node *p_scene_root, HashMap<Node *, HashMap<Ref<Resource>, Ref<Resource>>> &p_resource_remap) const {
 	Node *local_scene = p_node->is_instance() ? p_node : (p_node->get_owner() ? p_node->get_owner() : p_scene_root);
 
-	List<PropertyInfo> props;
-	p_node->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	p_node->get_property_list(props);
 
 	for (const PropertyInfo &E : props) {
 		if (!(E.usage & PROPERTY_USAGE_STORAGE)) {
@@ -3027,8 +3027,8 @@ void Node::remap_node_resources(Node *p_node, Node *p_scene_root, HashMap<Node *
 }
 
 void Node::remap_nested_resources(Ref<Resource> p_resource, HashMap<Ref<Resource>, Ref<Resource>> &p_resource_remap) const {
-	List<PropertyInfo> props;
-	p_resource->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	p_resource->get_property_list(props);
 
 	for (const PropertyInfo &E : props) {
 		if (!(E.usage & PROPERTY_USAGE_STORAGE)) {
@@ -3075,8 +3075,8 @@ void Node::_duplicate_scripts(const Node *p_original, Node *p_copy) const {
 // This has to be called after nodes have been duplicated since there might be properties
 // of type Node that can be updated properly only if duplicated node tree is complete.
 void Node::_duplicate_properties(const Node *p_root, const Node *p_original, Node *p_copy, int p_flags) const {
-	List<PropertyInfo> props;
-	p_original->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	p_original->get_property_list(props);
 	const StringName &script_property_name = CoreStringName(script);
 	for (const PropertyInfo &E : props) {
 		if (!(p_flags & DUPLICATE_INTERNAL_STATE) && !(E.usage & PROPERTY_USAGE_STORAGE)) {

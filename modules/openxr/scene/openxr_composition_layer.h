@@ -124,7 +124,7 @@ protected:
 	static void _bind_methods();
 
 	void _notification(int p_what);
-	void _get_property_list(List<PropertyInfo> *p_property_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_property_list) const;
 	bool _get(const StringName &p_property, Variant &r_value) const;
 	bool _set(const StringName &p_property, const Variant &p_value);
 	void _validate_property(PropertyInfo &p_property) const;

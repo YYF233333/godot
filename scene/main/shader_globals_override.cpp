@@ -91,7 +91,7 @@ bool ShaderGlobalsOverride::_get(const StringName &p_name, Variant &r_ret) const
 	return false;
 }
 
-void ShaderGlobalsOverride::_get_property_list(List<PropertyInfo> *p_list) const {
+void ShaderGlobalsOverride::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	Vector<StringName> variables;
 	variables = RS::get_singleton()->global_shader_parameter_get_list();
 	for (int i = 0; i < variables.size(); i++) {
@@ -221,7 +221,7 @@ void ShaderGlobalsOverride::_get_property_list(List<PropertyInfo> *p_list) const
 			pinfo.usage |= PROPERTY_USAGE_STORAGE;
 		}
 
-		p_list->push_back(pinfo);
+		p_list.push_back(pinfo);
 	}
 }
 

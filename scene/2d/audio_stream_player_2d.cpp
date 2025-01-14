@@ -370,7 +370,7 @@ bool AudioStreamPlayer2D::_get(const StringName &p_name, Variant &r_ret) const {
 	return internal->get(p_name, r_ret);
 }
 
-void AudioStreamPlayer2D::_get_property_list(List<PropertyInfo> *p_list) const {
+void AudioStreamPlayer2D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	internal->get_property_list(p_list);
 }
 

@@ -3943,8 +3943,8 @@ bool BindingsGenerator::_populate_object_type_interfaces() {
 
 		// Populate properties
 
-		List<PropertyInfo> property_list;
-		ClassDB::get_property_list(type_cname, &property_list, true);
+		LocalVector<PropertyInfo> property_list;
+		ClassDB::get_property_list(type_cname, property_list, true);
 
 		HashMap<StringName, StringName> accessor_methods;
 

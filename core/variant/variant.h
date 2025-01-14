@@ -804,7 +804,7 @@ public:
 	bool iter_next(Variant &r_iter, bool &r_valid) const;
 	Variant iter_get(const Variant &r_iter, bool &r_valid) const;
 
-	void get_property_list(List<PropertyInfo> *p_list) const;
+	void get_property_list(LocalVector<PropertyInfo> &p_list) const;
 
 	static void call_utility_function(const StringName &p_name, Variant *r_ret, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 	static bool has_utility_function(const StringName &p_name);

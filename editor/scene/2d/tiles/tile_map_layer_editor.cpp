@@ -3943,8 +3943,8 @@ void TileMapLayerEditor::_advanced_menu_button_id_pressed(int p_id) {
 			undo_redo->add_do_reference(new_layer);
 		}
 
-		List<PropertyInfo> prop_list;
-		tile_map->get_property_list(&prop_list);
+		LocalVector<PropertyInfo> prop_list;
+		tile_map->get_property_list(prop_list);
 		for (PropertyInfo &prop : prop_list) {
 			undo_redo->add_undo_property(tile_map, prop.name, tile_map->get(prop.name));
 		}
@@ -4181,8 +4181,8 @@ void TileMapLayerEditor::_move_tile_map_array_element(Object *p_undo_redo, Objec
 		undo_redo_man->add_undo_method(tile_map, "add_layer", p_from_index);
 	}
 
-	List<PropertyInfo> properties;
-	tile_map->get_property_list(&properties);
+	LocalVector<PropertyInfo> properties;
+	tile_map->get_property_list(properties);
 	for (PropertyInfo pi : properties) {
 		if (pi.name.begins_with(p_array_prefix)) {
 			String str = pi.name.trim_prefix(p_array_prefix);

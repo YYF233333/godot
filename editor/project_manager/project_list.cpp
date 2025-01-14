@@ -593,8 +593,8 @@ void ProjectList::_migrate_config() {
 		return;
 	}
 
-	List<PropertyInfo> properties;
-	EditorSettings::get_singleton()->get_property_list(&properties);
+	LocalVector<PropertyInfo> properties;
+	EditorSettings::get_singleton()->get_property_list(properties);
 
 	for (const PropertyInfo &E : properties) {
 		// This is actually something like "projects/C:::Documents::Godot::Projects::MyGame"

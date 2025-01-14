@@ -110,11 +110,11 @@ bool IterateIK3D::_get(const StringName &p_path, Variant &r_ret) const {
 	return true;
 }
 
-void IterateIK3D::_get_property_list(List<PropertyInfo> *p_list) const {
+void IterateIK3D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	LocalVector<PropertyInfo> props;
 	for (uint32_t i = 0; i < settings.size(); i++) {
 		String path = "settings/" + itos(i) + "/";
-		p_list->push_back(PropertyInfo(Variant::NODE_PATH, path + "target_node"));
+		p_list.push_back(PropertyInfo(Variant::NODE_PATH, path + "target_node"));
 		for (uint32_t j = 0; j < iterate_settings[i]->joints.size(); j++) {
 			String joint_path = path + "joints/" + itos(j) + "/";
 			props.push_back(PropertyInfo(Variant::INT, joint_path + "rotation_axis", PROPERTY_HINT_ENUM, SkeletonModifier3D::get_hint_rotation_axis()));
@@ -130,7 +130,7 @@ void IterateIK3D::_get_property_list(List<PropertyInfo> *p_list) const {
 
 	for (PropertyInfo &p : props) {
 		_validate_dynamic_prop(p);
-		p_list->push_back(p);
+		p_list.push_back(p);
 	}
 }
 
