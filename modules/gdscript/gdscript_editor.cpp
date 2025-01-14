@@ -966,8 +966,8 @@ static void _find_annotation_arguments(const GDScriptParser::AnnotationNode *p_a
 		if (p_argument == 1) {
 			const Ref<Theme> theme = EditorNode::get_singleton()->get_editor_theme();
 			if (theme.is_valid()) {
-				List<StringName> icon_list;
-				theme->get_icon_list(EditorStringName(EditorIcons), &icon_list);
+				LocalVector<StringName> icon_list;
+				theme->get_icon_list(EditorStringName(EditorIcons), icon_list);
 				for (const StringName &E : icon_list) {
 					ScriptLanguage::CodeCompletionOption option(E, ScriptLanguage::CODE_COMPLETION_KIND_CLASS);
 					option.insert_text = option.display.quote(p_quote_style);
@@ -1267,8 +1267,8 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 						// TODO: Need to implement Script::get_script_enum_list and retrieve the enum list from a script.
 					} else if (!p_only_functions) {
 						if (!base_type.is_meta_type) {
-							List<PropertyInfo> members;
-							scr->get_script_property_list(&members);
+							LocalVector<PropertyInfo> members;
+							scr->get_script_property_list(members);
 							for (const PropertyInfo &E : members) {
 								if (E.usage & (PROPERTY_USAGE_CATEGORY | PROPERTY_USAGE_GROUP | PROPERTY_USAGE_SUBGROUP | PROPERTY_USAGE_INTERNAL)) {
 									continue;
@@ -1360,8 +1360,8 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 					}
 
 					if (!base_type.is_meta_type || Engine::get_singleton()->has_singleton(type)) {
-						List<PropertyInfo> pinfo;
-						ClassDB::get_property_list(type, &pinfo);
+						LocalVector<PropertyInfo> pinfo;
+						ClassDB::get_property_list(type, pinfo);
 						for (const PropertyInfo &E : pinfo) {
 							if (E.usage & (PROPERTY_USAGE_CATEGORY | PROPERTY_USAGE_GROUP | PROPERTY_USAGE_SUBGROUP | PROPERTY_USAGE_INTERNAL)) {
 								continue;
@@ -1457,11 +1457,11 @@ static void _find_identifiers_in_base(const GDScriptCompletionIdentifier &p_base
 				int location = ScriptLanguage::LOCATION_OTHER;
 
 				if (!p_only_functions) {
-					List<PropertyInfo> members;
+					LocalVector<PropertyInfo> members;
 					if (p_base.value.get_type() != Variant::NIL) {
-						p_base.value.get_property_list(&members);
+						p_base.value.get_property_list(members);
 					} else {
-						tmp.get_property_list(&members);
+						tmp.get_property_list(members);
 					}
 
 					for (const PropertyInfo &E : members) {
@@ -2596,11 +2596,11 @@ static bool _guess_identifier_type_from_base(GDScriptParser::CompletionContext &
 						return true;
 					}
 
-					List<PropertyInfo> members;
+					LocalVector<PropertyInfo> members;
 					if (is_static) {
-						scr->get_property_list(&members);
+						scr->get_property_list(members);
 					} else {
-						scr->get_script_property_list(&members);
+						scr->get_script_property_list(members);
 					}
 					for (const PropertyInfo &prop : members) {
 						if (prop.name == p_identifier) {
@@ -3042,8 +3042,8 @@ static void _list_call_arguments(GDScriptParser::CompletionContext &p_context, c
 							native_type = script->get_instance_base_type();
 							int n = 0;
 							while (script.is_valid()) {
-								List<PropertyInfo> properties;
-								script->get_script_property_list(&properties);
+								LocalVector<PropertyInfo> properties;
+								script->get_script_property_list(properties);
 								for (const PropertyInfo &E : properties) {
 									if (E.usage & (PROPERTY_USAGE_SUBGROUP | PROPERTY_USAGE_GROUP | PROPERTY_USAGE_CATEGORY | PROPERTY_USAGE_INTERNAL)) {
 										continue;
@@ -3101,8 +3101,8 @@ static void _list_call_arguments(GDScriptParser::CompletionContext &p_context, c
 							break;
 					}
 
-					List<PropertyInfo> properties;
-					ClassDB::get_property_list(native_type, &properties);
+					LocalVector<PropertyInfo> properties;
+					ClassDB::get_property_list(native_type, properties);
 					for (const PropertyInfo &E : properties) {
 						if (E.usage & (PROPERTY_USAGE_SUBGROUP | PROPERTY_USAGE_GROUP | PROPERTY_USAGE_CATEGORY | PROPERTY_USAGE_INTERNAL)) {
 							continue;
@@ -3125,8 +3125,8 @@ static void _list_call_arguments(GDScriptParser::CompletionContext &p_context, c
 
 				if (p_argidx == 0 && ClassDB::is_parent_class(class_name, SNAME("Node")) && (method == SNAME("get_node") || method == SNAME("has_node"))) {
 					// Get autoloads
-					List<PropertyInfo> props;
-					ProjectSettings::get_singleton()->get_property_list(&props);
+					LocalVector<PropertyInfo> props;
+					ProjectSettings::get_singleton()->get_property_list(props);
 
 					for (const PropertyInfo &E : props) {
 						String s = E.name;
@@ -3152,8 +3152,8 @@ static void _list_call_arguments(GDScriptParser::CompletionContext &p_context, c
 
 				if (p_argidx == 0 && method_args > 0 && ClassDB::is_parent_class(class_name, SNAME("InputEvent")) && method.operator String().contains("action")) {
 					// Get input actions
-					List<PropertyInfo> props;
-					ProjectSettings::get_singleton()->get_property_list(&props);
+					LocalVector<PropertyInfo> props;
+					ProjectSettings::get_singleton()->get_property_list(props);
 					for (const PropertyInfo &E : props) {
 						String s = E.name;
 						if (!s.begins_with("input/")) {
@@ -3580,8 +3580,8 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 			// If the type is not known, we assume it is BUILTIN, since indices on arrays is the most common use case.
 			if (!subscript->is_attribute && (!res || base.type.kind == GDScriptParser::DataType::BUILTIN || base.type.is_variant())) {
 				if (base.value.get_type() == Variant::DICTIONARY) {
-					List<PropertyInfo> members;
-					base.value.get_property_list(&members);
+					LocalVector<PropertyInfo> members;
+					base.value.get_property_list(members);
 
 					for (const PropertyInfo &E : members) {
 						ScriptLanguage::CodeCompletionOption option(E.name.quote(quote_style), ScriptLanguage::CODE_COMPLETION_KIND_MEMBER, ScriptLanguage::LOCATION_LOCAL);
@@ -3989,8 +3989,8 @@ static Error _lookup_symbol_from_base(const GDScriptParser::DataType &p_base, co
 					bool found_type = false;
 					r_result.type = ScriptLanguage::LOOKUP_RESULT_SCRIPT_LOCATION;
 					{
-						List<PropertyInfo> properties;
-						scr->get_script_property_list(&properties);
+						LocalVector<PropertyInfo> properties;
+						scr->get_script_property_list(properties);
 						for (const PropertyInfo &property : properties) {
 							if (property.name == name && (property.usage & PROPERTY_USAGE_SCRIPT_VARIABLE)) {
 								found_type = true;
