@@ -476,8 +476,8 @@ SceneDebuggerObject::SceneDebuggerObject(ObjectID p_id) {
 	}
 
 	// Add base object properties.
-	List<PropertyInfo> pinfo;
-	obj->get_property_list(&pinfo, true);
+	LocalVector<PropertyInfo> pinfo;
+	obj->get_property_list(pinfo, true);
 	for (const PropertyInfo &E : pinfo) {
 		if (E.usage & (PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CATEGORY)) {
 			properties.push_back(SceneDebuggerProperty(E, obj->get(E.name)));

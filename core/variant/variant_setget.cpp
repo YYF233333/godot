@@ -1287,12 +1287,12 @@ Variant Variant::get(const Variant &p_index, bool *r_valid, VariantGetError *err
 	return ret;
 }
 
-void Variant::get_property_list(List<PropertyInfo> *p_list) const {
+void Variant::get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	if (type == DICTIONARY) {
 		const Dictionary *dic = reinterpret_cast<const Dictionary *>(_data._mem);
 		for (const Variant &E : dic->get_key_list()) {
 			if (E.is_string()) {
-				p_list->push_back(PropertyInfo(dic->get_valid(E).get_type(), E));
+				p_list.push_back(PropertyInfo(dic->get_valid(E).get_type(), E));
 			}
 		}
 	} else if (type == OBJECT) {
@@ -1305,7 +1305,7 @@ void Variant::get_property_list(List<PropertyInfo> *p_list) const {
 			PropertyInfo pi;
 			pi.name = E;
 			pi.type = get_member_type(type, E);
-			p_list->push_back(pi);
+			p_list.push_back(pi);
 		}
 	}
 }

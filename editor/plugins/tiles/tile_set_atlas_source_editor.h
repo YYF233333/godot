@@ -72,7 +72,7 @@ public:
 	protected:
 		bool _set(const StringName &p_name, const Variant &p_value);
 		bool _get(const StringName &p_name, Variant &r_ret) const;
-		void _get_property_list(List<PropertyInfo> *p_list) const;
+		void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 		static void _bind_methods();
 
 	public:
@@ -96,7 +96,7 @@ public:
 	protected:
 		bool _set(const StringName &p_name, const Variant &p_value);
 		bool _get(const StringName &p_name, Variant &r_ret) const;
-		void _get_property_list(List<PropertyInfo> *p_list) const;
+		void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 
 		static void _bind_methods();
 
@@ -196,7 +196,7 @@ private:
 	RBSet<Vector2i> drag_modified_tiles;
 	void _end_dragging();
 
-	HashMap<Vector2i, List<const PropertyInfo *>> _group_properties_per_tiles(const List<PropertyInfo> &r_list, const TileSetAtlasSource *p_atlas);
+	HashMap<Vector2i, List<const PropertyInfo *>> _group_properties_per_tiles(const LocalVector<PropertyInfo> &r_list, const TileSetAtlasSource *p_atlas);
 
 	// Popup functions.
 	enum MenuOptions {

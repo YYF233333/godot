@@ -315,7 +315,7 @@ void GDScript::get_script_method_list(LocalVector<MethodInfo> &r_list) const {
 	_get_script_method_list(r_list, true);
 }
 
-void GDScript::_get_script_property_list(List<PropertyInfo> *r_list, bool p_include_base) const {
+void GDScript::_get_script_property_list(LocalVector<PropertyInfo> &r_list, bool p_include_base) const {
 	const GDScript *sptr = this;
 	List<PropertyInfo> props;
 
@@ -338,11 +338,11 @@ void GDScript::_get_script_property_list(List<PropertyInfo> *r_list, bool p_incl
 		}
 
 #ifdef TOOLS_ENABLED
-		r_list->push_back(sptr->get_class_category());
+		r_list.push_back(sptr->get_class_category());
 #endif // TOOLS_ENABLED
 
 		for (const PropertyInfo &E : props) {
-			r_list->push_back(E);
+			r_list.push_back(E);
 		}
 
 		if (!p_include_base) {
@@ -354,7 +354,7 @@ void GDScript::_get_script_property_list(List<PropertyInfo> *r_list, bool p_incl
 	}
 }
 
-void GDScript::get_script_property_list(List<PropertyInfo> *r_list) const {
+void GDScript::get_script_property_list(LocalVector<PropertyInfo> &r_list) const {
 	_get_script_property_list(r_list, true);
 }
 
@@ -1045,8 +1045,8 @@ bool GDScript::_set(const StringName &p_name, const Variant &p_value) {
 	return false;
 }
 
-void GDScript::_get_property_list(List<PropertyInfo> *p_properties) const {
-	p_properties->push_back(PropertyInfo(Variant::STRING, "script/source", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL));
+void GDScript::_get_property_list(LocalVector<PropertyInfo> &p_properties) const {
+	p_properties.push_back(PropertyInfo(Variant::STRING, "script/source", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL));
 
 	List<const GDScript *> classes;
 	const GDScript *top = this;
@@ -1066,7 +1066,7 @@ void GDScript::_get_property_list(List<PropertyInfo> *p_properties) const {
 		msort.sort();
 
 		for (int i = 0; i < msort.size(); i++) {
-			p_properties->push_back(E->get()->static_variables_indices[msort[i].name].property_info);
+			p_properties.push_back(E->get()->static_variables_indices[msort[i].name].property_info);
 		}
 	}
 }
@@ -1864,7 +1864,7 @@ void GDScriptInstance::validate_property(PropertyInfo &p_property) const {
 	}
 }
 
-void GDScriptInstance::get_property_list(List<PropertyInfo> *p_properties) const {
+void GDScriptInstance::get_property_list(LocalVector<PropertyInfo> &p_properties) const {
 	// exported members, not done yet!
 
 	const GDScript *sptr = script.ptr();
@@ -1930,12 +1930,12 @@ void GDScriptInstance::get_property_list(List<PropertyInfo> *p_properties) const
 		}
 
 #ifdef TOOLS_ENABLED
-		p_properties->push_back(sptr->get_class_category());
+		p_properties.push_back(sptr->get_class_category());
 #endif // TOOLS_ENABLED
 
 		for (PropertyInfo &prop : props) {
 			validate_property(prop);
-			p_properties->push_back(prop);
+			p_properties.push_back(prop);
 		}
 
 		props.clear();

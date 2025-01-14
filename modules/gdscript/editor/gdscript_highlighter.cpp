@@ -814,8 +814,8 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 		const Color member_variable_color = EDITOR_GET("text_editor/theme/highlighting/member_variable_color");
 		StringName instance_base = scr->get_instance_base_type();
 		if (instance_base != StringName()) {
-			List<PropertyInfo> plist;
-			ClassDB::get_property_list(instance_base, &plist);
+			LocalVector<PropertyInfo> plist;
+			ClassDB::get_property_list(instance_base, plist);
 			for (const PropertyInfo &E : plist) {
 				String prop_name = E.name;
 				if (E.usage & PROPERTY_USAGE_CATEGORY || E.usage & PROPERTY_USAGE_GROUP || E.usage & PROPERTY_USAGE_SUBGROUP) {

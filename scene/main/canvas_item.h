@@ -156,7 +156,7 @@ private:
 protected:
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 
 	virtual void _update_self_texture_repeat(RS::CanvasItemTextureRepeat p_texture_repeat);
 	virtual void _update_self_texture_filter(RS::CanvasItemTextureFilter p_texture_filter);
