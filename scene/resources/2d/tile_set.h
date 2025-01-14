@@ -122,7 +122,7 @@ class TileMapPattern : public Resource {
 protected:
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 
 	static void _bind_methods();
 
@@ -295,7 +295,7 @@ public:
 protected:
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 	void _validate_property(PropertyInfo &p_property) const;
 
 #ifdef TOOLS_ENABLED
@@ -672,7 +672,7 @@ private:
 protected:
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 
 	void _notification(int p_notification);
 	static void _bind_methods();
@@ -797,7 +797,7 @@ private:
 protected:
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 
 	void _notification(int p_notification);
 	static void _bind_methods();
@@ -890,7 +890,7 @@ private:
 protected:
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 	static void _bind_methods();
 
 #ifndef DISABLE_DEPRECATED

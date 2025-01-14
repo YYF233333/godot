@@ -1625,18 +1625,14 @@ void ResourceFormatSaverTextInstance::_find_resources(const Variant &p_variant, 
 
 			resource_set.insert(res);
 
-			List<PropertyInfo> property_list;
+			LocalVector<PropertyInfo> property_list;
 
-			res->get_property_list(&property_list);
+			res->get_property_list(property_list);
 			property_list.sort();
 
-			List<PropertyInfo>::Element *I = property_list.front();
-
-			while (I) {
-				PropertyInfo pi = I->get();
-
+			for (const PropertyInfo &pi : property_list) {
 				if (pi.usage & PROPERTY_USAGE_STORAGE) {
-					Variant v = res->get(I->get().name);
+					Variant v = res->get(pi.name);
 
 					if (pi.usage & PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT) {
 						NonPersistentKey npk;
@@ -1655,8 +1651,6 @@ void ResourceFormatSaverTextInstance::_find_resources(const Variant &p_variant, 
 						_find_resources(v);
 					}
 				}
-
-				I = I->next();
 			}
 
 			saved_resources.push_back(res); // Saved after, so the children it needs are available when loaded
@@ -1903,20 +1897,20 @@ Error ResourceFormatSaverTextInstance::save(const String &p_path, const Ref<Reso
 
 		Dictionary missing_resource_properties = res->get_meta(META_MISSING_RESOURCES, Dictionary());
 
-		List<PropertyInfo> property_list;
-		res->get_property_list(&property_list);
-		for (List<PropertyInfo>::Element *PE = property_list.front(); PE; PE = PE->next()) {
-			if (skip_editor && PE->get().name.begins_with("__editor")) {
+		LocalVector<PropertyInfo> property_list;
+		res->get_property_list(property_list);
+		for (const PropertyInfo &PE : property_list) {
+			if (skip_editor && PE.name.begins_with("__editor")) {
 				continue;
 			}
-			if (PE->get().name == META_PROPERTY_MISSING_RESOURCES) {
+			if (PE.name == META_PROPERTY_MISSING_RESOURCES) {
 				continue;
 			}
 
-			if (PE->get().usage & PROPERTY_USAGE_STORAGE || missing_resource_properties.has(PE->get().name)) {
-				String name = PE->get().name;
+			if (PE.usage & PROPERTY_USAGE_STORAGE || missing_resource_properties.has(PE.name)) {
+				String name = PE.name;
 				Variant value;
-				if (PE->get().usage & PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT) {
+				if (PE.usage & PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT) {
 					NonPersistentKey npk;
 					npk.base = res;
 					npk.property = name;
@@ -1927,11 +1921,11 @@ Error ResourceFormatSaverTextInstance::save(const String &p_path, const Ref<Reso
 					value = res->get(name);
 				}
 
-				if (PE->get().type == Variant::OBJECT && missing_resource_properties.has(PE->get().name)) {
+				if (PE.type == Variant::OBJECT && missing_resource_properties.has(PE.name)) {
 					// Was this missing resource overridden? If so do not save the old value.
 					Ref<Resource> ures = value;
 					if (ures.is_null()) {
-						value = missing_resource_properties[PE->get().name];
+						value = missing_resource_properties[PE.name];
 					}
 				}
 
@@ -1941,7 +1935,7 @@ Error ResourceFormatSaverTextInstance::save(const String &p_path, const Ref<Reso
 					continue;
 				}
 
-				if (PE->get().type == Variant::OBJECT && value.is_zero() && !(PE->get().usage & PROPERTY_USAGE_STORE_IF_NULL)) {
+				if (PE.type == Variant::OBJECT && value.is_zero() && !(PE.usage & PROPERTY_USAGE_STORE_IF_NULL)) {
 					continue;
 				}
 

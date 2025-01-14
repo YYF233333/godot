@@ -85,7 +85,7 @@ public:
 		}
 		return false;
 	}
-	void get_property_list(List<PropertyInfo> *p_properties) const override {
+	void get_property_list(LocalVector<PropertyInfo> &p_properties) const override {
 	}
 	Variant::Type get_property_type(const StringName &p_name, bool *r_is_valid) const override {
 		return Variant::PACKED_FLOAT32_ARRAY;

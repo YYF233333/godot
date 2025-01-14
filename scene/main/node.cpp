@@ -2681,11 +2681,11 @@ bool Node::is_part_of_edited_scene() const {
 
 void Node::get_storable_properties(HashSet<StringName> &r_storable_properties) const {
 	ERR_THREAD_GUARD
-	List<PropertyInfo> pi;
-	get_property_list(&pi);
-	for (List<PropertyInfo>::Element *E = pi.front(); E; E = E->next()) {
-		if ((E->get().usage & PROPERTY_USAGE_STORAGE)) {
-			r_storable_properties.insert(E->get().name);
+	LocalVector<PropertyInfo> pi;
+	get_property_list(pi);
+	for (const PropertyInfo &E : pi) {
+		if ((E.usage & PROPERTY_USAGE_STORAGE)) {
+			r_storable_properties.insert(E.name);
 		}
 	}
 }
@@ -2917,8 +2917,8 @@ Node *Node::duplicate_from_editor(HashMap<const Node *, Node *> &r_duplimap, con
 }
 
 void Node::remap_node_resources(Node *p_node, const HashMap<Ref<Resource>, Ref<Resource>> &p_resource_remap) const {
-	List<PropertyInfo> props;
-	p_node->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	p_node->get_property_list(props);
 
 	for (const PropertyInfo &E : props) {
 		if (!(E.usage & PROPERTY_USAGE_STORAGE)) {
@@ -2943,8 +2943,8 @@ void Node::remap_node_resources(Node *p_node, const HashMap<Ref<Resource>, Ref<R
 }
 
 void Node::remap_nested_resources(Ref<Resource> p_resource, const HashMap<Ref<Resource>, Ref<Resource>> &p_resource_remap) const {
-	List<PropertyInfo> props;
-	p_resource->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	p_resource->get_property_list(props);
 
 	for (const PropertyInfo &E : props) {
 		if (!(E.usage & PROPERTY_USAGE_STORAGE)) {
@@ -2977,8 +2977,8 @@ void Node::_emit_editor_state_changed() {
 // This has to be called after nodes have been duplicated since there might be properties
 // of type Node that can be updated properly only if duplicated node tree is complete.
 void Node::_duplicate_properties(const Node *p_root, const Node *p_original, Node *p_copy, int p_flags) const {
-	List<PropertyInfo> props;
-	p_original->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	p_original->get_property_list(props);
 	const StringName &script_property_name = CoreStringName(script);
 	if (p_flags & DUPLICATE_SCRIPTS) {
 		bool is_valid = false;
