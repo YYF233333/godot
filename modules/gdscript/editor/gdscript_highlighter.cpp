@@ -877,8 +877,8 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 	if (scr.is_valid()) {
 		StringName instance_base = scr->get_instance_base_type();
 		if (instance_base != StringName()) {
-			List<PropertyInfo> property_list;
-			ClassDB::get_property_list(instance_base, &property_list);
+			LocalVector<PropertyInfo> property_list;
+			ClassDB::get_property_list(instance_base, property_list);
 			for (const PropertyInfo &E : property_list) {
 				String prop_name = E.name;
 				if (E.usage & PROPERTY_USAGE_CATEGORY || E.usage & PROPERTY_USAGE_GROUP || E.usage & PROPERTY_USAGE_SUBGROUP) {
@@ -916,8 +916,8 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 			}
 		}
 
-		List<PropertyInfo> scr_property_list;
-		scr->get_script_property_list(&scr_property_list);
+		LocalVector<PropertyInfo> scr_property_list;
+		scr->get_script_property_list(scr_property_list);
 		for (const PropertyInfo &E : scr_property_list) {
 			String prop_name = E.name;
 			if (E.usage & PROPERTY_USAGE_CATEGORY || E.usage & PROPERTY_USAGE_GROUP || E.usage & PROPERTY_USAGE_SUBGROUP) {

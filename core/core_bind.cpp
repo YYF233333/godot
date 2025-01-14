@@ -1644,8 +1644,8 @@ TypedArray<Dictionary> ClassDB::class_get_signal_list(const StringName &p_class,
 }
 
 TypedArray<Dictionary> ClassDB::class_get_property_list(const StringName &p_class, bool p_no_inheritance) const {
-	List<PropertyInfo> plist;
-	::ClassDB::get_property_list(p_class, &plist, p_no_inheritance);
+	LocalVector<PropertyInfo> plist;
+	::ClassDB::get_property_list(p_class, plist, p_no_inheritance);
 	TypedArray<Dictionary> ret;
 	for (const PropertyInfo &E : plist) {
 		ret.push_back(E.operator Dictionary());

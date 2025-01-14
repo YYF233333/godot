@@ -89,7 +89,7 @@ protected:
 	void _key_ofs_changed(const Ref<Animation> &p_anim, float from, float to);
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 };
 
 class AnimationMultiTrackKeyEdit : public Object {
@@ -127,7 +127,7 @@ protected:
 	void _key_ofs_changed(const Ref<Animation> &p_anim, float from, float to);
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 };
 
 class AnimationMarkerKeyEdit : public Object {
@@ -155,7 +155,7 @@ protected:
 	void _set_marker_name(const StringName &p_name);
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 };
 
 class AnimationMultiMarkerKeyEdit : public Object {
@@ -179,7 +179,7 @@ protected:
 	static void _bind_methods();
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 };
 
 class AnimationTimelineEdit : public Range {

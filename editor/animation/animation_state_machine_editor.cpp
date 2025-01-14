@@ -2249,15 +2249,15 @@ bool EditorAnimationMultiTransitionEdit::_get(const StringName &p_name, Variant 
 	return false;
 }
 
-void EditorAnimationMultiTransitionEdit::_get_property_list(List<PropertyInfo> *p_list) const {
+void EditorAnimationMultiTransitionEdit::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	for (int i = 0; i < transitions.size(); i++) {
-		List<PropertyInfo> plist;
-		transitions[i].transition->get_property_list(&plist, true);
+		LocalVector<PropertyInfo> plist;
+		transitions[i].transition->get_property_list(plist, true);
 
 		PropertyInfo prop_transition_path;
 		prop_transition_path.type = Variant::STRING;
 		prop_transition_path.name = itos(i) + "/" + "transition_path";
-		p_list->push_back(prop_transition_path);
+		p_list.push_back(prop_transition_path);
 
 		for (const PropertyInfo &pi : plist) {
 			if (pi.name == "script" || pi.name == "resource_name" || pi.name == "resource_path" || pi.name == "resource_local_to_scene") {
@@ -2271,7 +2271,7 @@ void EditorAnimationMultiTransitionEdit::_get_property_list(List<PropertyInfo> *
 			PropertyInfo prop = pi;
 			prop.name = itos(i) + "/" + prop.name;
 
-			p_list->push_back(prop);
+			p_list.push_back(prop);
 		}
 	}
 }

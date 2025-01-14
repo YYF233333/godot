@@ -239,7 +239,7 @@ bool ShaderMaterial::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void ShaderMaterial::_get_property_list(List<PropertyInfo> *p_list) const {
+void ShaderMaterial::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	if (shader.is_valid()) {
 		List<PropertyInfo> list;
 		shader->get_shader_uniform_list(&list, true);
@@ -378,7 +378,7 @@ void ShaderMaterial::_get_property_list(List<PropertyInfo> *p_list) const {
 			for (const String &subgroup : group_pair.second) {
 				List<PropertyInfo> &prop_infos = groups[group][subgroup];
 				for (const PropertyInfo &item : prop_infos) {
-					p_list->push_back(item);
+					p_list.push_back(item);
 				}
 			}
 		}

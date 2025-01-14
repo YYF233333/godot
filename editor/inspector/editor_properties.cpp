@@ -3378,8 +3378,8 @@ static bool _find_recursive_resources(const Variant &v, HashSet<Resource *> &res
 
 			resources_found.insert(r.ptr());
 
-			List<PropertyInfo> plist;
-			r->get_property_list(&plist);
+			LocalVector<PropertyInfo> plist;
+			r->get_property_list(plist);
 			for (const PropertyInfo &pinfo : plist) {
 				if (!(pinfo.usage & PROPERTY_USAGE_STORAGE)) {
 					continue;
@@ -3829,8 +3829,8 @@ static EditorProperty *get_input_action_editor(const String &p_hint_text, bool i
 	EditorPropertyTextEnum *editor = memnew(EditorPropertyTextEnum);
 	Vector<String> options;
 	Vector<String> builtin_options;
-	List<PropertyInfo> pinfo;
-	ProjectSettings::get_singleton()->get_property_list(&pinfo);
+	LocalVector<PropertyInfo> pinfo;
+	ProjectSettings::get_singleton()->get_property_list(pinfo);
 	Vector<String> hints = p_hint_text.remove_char(' ').split(",", false);
 
 	HashMap<String, List<Ref<InputEvent>>> builtins = InputMap::get_singleton()->get_builtins();

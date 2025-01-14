@@ -447,8 +447,8 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 
 			inheriting[c.inherits].insert(cname);
 
-			List<PropertyInfo> properties;
-			List<PropertyInfo> own_properties;
+			LocalVector<PropertyInfo> properties;
+			LocalVector<PropertyInfo> own_properties;
 
 			// Special cases for editor/project settings, and ResourceImporter classes,
 			// we have to rely on Object's property list to get settings and import options.
@@ -461,10 +461,10 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 				// We don't create the full blown EditorSettings (+ config file) with `create()`,
 				// instead we just make a local instance to get default values.
 				Ref<EditorSettings> edset = memnew(EditorSettings);
-				edset->get_property_list(&properties);
+				edset->get_property_list(properties);
 				own_properties = properties;
 			} else if (name == "ProjectSettings") {
-				ProjectSettings::get_singleton()->get_property_list(&properties);
+				ProjectSettings::get_singleton()->get_property_list(properties);
 				own_properties = properties;
 			} else if (ClassDB::is_parent_class(name, "ResourceImporter") && name != "EditorImportPlugin" && ClassDB::can_instantiate(name)) {
 				import_option = true;
@@ -491,20 +491,20 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 				}
 			} else {
 				properties_from_instance = false;
-				ClassDB::get_property_list(name, &properties);
-				ClassDB::get_property_list(name, &own_properties, true);
+				ClassDB::get_property_list(name, properties);
+				ClassDB::get_property_list(name, own_properties, true);
 			}
 
 			// Sort is still needed here to handle inherited properties, even though it is done below, do not remove.
 			properties.sort();
 			own_properties.sort();
 
-			List<PropertyInfo>::Element *EO = own_properties.front();
+			uint32_t own_properties_idx = 0;
 			for (const PropertyInfo &E : properties) {
 				bool inherited = true;
-				if (EO && EO->get() == E) {
+				if (own_properties_idx < own_properties.size() && own_properties[own_properties_idx] == E) {
 					inherited = false;
-					EO = EO->next();
+					own_properties_idx++;
 				}
 
 				if (properties_from_instance) {
@@ -906,8 +906,8 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 		c.operators.sort_custom<OperatorCompare>();
 		c.methods.sort_custom<MethodCompare>();
 
-		List<PropertyInfo> properties;
-		v.get_property_list(&properties);
+		LocalVector<PropertyInfo> properties;
+		v.get_property_list(properties);
 		for (const PropertyInfo &pi : properties) {
 			DocData::PropertyDoc property;
 			property.name = pi.name;

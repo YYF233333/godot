@@ -170,8 +170,8 @@ void AtlasMergingDialog::_generate_merged(const Vector<Ref<TileSetAtlasSource>> 
 
 					// Copy the properties.
 					TileData *src_tile_data = atlas_source->get_tile_data(tile_mapping.key, alternative_id);
-					List<PropertyInfo> properties;
-					src_tile_data->get_property_list(&properties);
+					LocalVector<PropertyInfo> properties;
+					src_tile_data->get_property_list(properties);
 
 					TileData *dst_tile_data = merged->get_tile_data(tile_mapping.value, changed_id == -1 ? alternative_id : changed_id);
 					for (PropertyInfo property : properties) {

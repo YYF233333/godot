@@ -1220,8 +1220,8 @@ Dictionary GDExtensionAPIDump::generate_extension_api(bool p_include_docs) {
 			{
 				//properties
 				Array properties;
-				List<PropertyInfo> property_list;
-				ClassDB::get_property_list(class_name, &property_list, true);
+				LocalVector<PropertyInfo> property_list;
+				ClassDB::get_property_list(class_name, property_list, true);
 				for (const PropertyInfo &F : property_list) {
 					if (F.usage & PROPERTY_USAGE_CATEGORY || F.usage & PROPERTY_USAGE_GROUP || F.usage & PROPERTY_USAGE_SUBGROUP || (F.type == Variant::NIL && F.usage & PROPERTY_USAGE_ARRAY)) {
 						continue; //not real properties

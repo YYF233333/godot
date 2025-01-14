@@ -124,8 +124,8 @@ void InspectorDock::_menu_option_confirm(int p_option, bool p_confirmed) {
 				Vector<String> resource_propnames;
 
 				if (current) {
-					List<PropertyInfo> props;
-					current->get_property_list(&props);
+					LocalVector<PropertyInfo> props;
+					current->get_property_list(props);
 
 					for (const PropertyInfo &property : props) {
 						if (!(property.usage & PROPERTY_USAGE_STORAGE)) {
@@ -167,8 +167,8 @@ void InspectorDock::_menu_option_confirm(int p_option, bool p_confirmed) {
 				editor_data->apply_changes_in_editors();
 
 				if (current) {
-					List<PropertyInfo> props;
-					current->get_property_list(&props);
+					LocalVector<PropertyInfo> props;
+					current->get_property_list(props);
 					HashMap<Ref<Resource>, Ref<Resource>> duplicates;
 					for (const PropertyInfo &prop_info : props) {
 						if (!(prop_info.usage & PROPERTY_USAGE_STORAGE)) {
@@ -655,8 +655,8 @@ void InspectorDock::apply_script_properties(Object *p_object) {
 		return;
 	}
 
-	List<PropertyInfo> properties;
-	si->get_property_list(&properties);
+	LocalVector<PropertyInfo> properties;
+	si->get_property_list(properties);
 
 	for (const Pair<StringName, Variant> &E : stored_properties) {
 		Variant current_prop;

@@ -8157,8 +8157,8 @@ Control *VisualShaderNodePluginDefault::create_editor(const Ref<Resource> &p_par
 		return nullptr;
 	}
 
-	List<PropertyInfo> props;
-	p_node->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	p_node->get_property_list(props);
 
 	Vector<PropertyInfo> pinfo;
 
@@ -8261,8 +8261,8 @@ void EditorPropertyVisualShaderMode::_option_selected(int p_which) {
 	}
 
 	//3. restore enums and flags
-	List<PropertyInfo> props;
-	visual_shader->get_property_list(&props);
+	LocalVector<PropertyInfo> props;
+	visual_shader->get_property_list(props);
 
 	for (const PropertyInfo &E : props) {
 		if (E.name.begins_with("flags/") || E.name.begins_with("modes/")) {

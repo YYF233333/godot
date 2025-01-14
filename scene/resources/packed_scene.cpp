@@ -102,8 +102,8 @@ Ref<Resource> SceneState::get_remap_resource(const Ref<Resource> &p_resource, Ha
 	if (reuse_fallback) { // Simply copy the data from the source resource to update the fallback resource that was previously set.
 		p_fallback->reset_state(); // May want to reset state.
 
-		List<PropertyInfo> pi;
-		p_resource->get_property_list(&pi);
+		LocalVector<PropertyInfo> pi;
+		p_resource->get_property_list(pi);
 		for (const PropertyInfo &E : pi) {
 			if (!(E.usage & PROPERTY_USAGE_STORAGE)) {
 				continue;
@@ -858,8 +858,8 @@ Error SceneState::_parse_node(Node *p_owner, Node *p_node, int p_parent_idx, Has
 	// all setup, we then proceed to check all properties for the node
 	// and save the ones that are worth saving
 
-	List<PropertyInfo> plist;
-	p_node->get_property_list(&plist);
+	LocalVector<PropertyInfo> plist;
+	p_node->get_property_list(plist);
 
 	Array pinned_props = _sanitize_node_pinned_properties(p_node);
 	Dictionary missing_resource_properties = p_node->get_meta(META_MISSING_RESOURCES, Dictionary());

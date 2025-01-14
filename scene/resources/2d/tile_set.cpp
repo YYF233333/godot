@@ -205,8 +205,8 @@ bool TileMapPattern::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void TileMapPattern::_get_property_list(List<PropertyInfo> *p_list) const {
-	p_list->push_back(PropertyInfo(Variant::OBJECT, "tile_data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL));
+void TileMapPattern::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
+	p_list.push_back(PropertyInfo(Variant::OBJECT, "tile_data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL));
 }
 
 void TileMapPattern::_bind_methods() {
@@ -4140,65 +4140,65 @@ bool TileSet::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void TileSet::_get_property_list(List<PropertyInfo> *p_list) const {
+void TileSet::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	PropertyInfo property_info;
 	// Rendering.
-	p_list->push_back(PropertyInfo(Variant::NIL, GNAME("Rendering", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
+	p_list.push_back(PropertyInfo(Variant::NIL, GNAME("Rendering", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
 	for (int i = 0; i < occlusion_layers.size(); i++) {
-		p_list->push_back(PropertyInfo(Variant::INT, vformat("occlusion_layer_%d/light_mask", i), PROPERTY_HINT_LAYERS_2D_RENDER));
+		p_list.push_back(PropertyInfo(Variant::INT, vformat("occlusion_layer_%d/light_mask", i), PROPERTY_HINT_LAYERS_2D_RENDER));
 
 		// occlusion_layer_%d/sdf_collision
 		property_info = PropertyInfo(Variant::BOOL, vformat("occlusion_layer_%d/sdf_collision", i));
 		if (occlusion_layers[i].sdf_collision == false) {
 			property_info.usage ^= PROPERTY_USAGE_STORAGE;
 		}
-		p_list->push_back(property_info);
+		p_list.push_back(property_info);
 	}
 
 #ifndef PHYSICS_2D_DISABLED
 	// Physics.
-	p_list->push_back(PropertyInfo(Variant::NIL, GNAME("Physics", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
+	p_list.push_back(PropertyInfo(Variant::NIL, GNAME("Physics", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
 	for (int i = 0; i < physics_layers.size(); i++) {
-		p_list->push_back(PropertyInfo(Variant::INT, vformat("physics_layer_%d/collision_layer", i), PROPERTY_HINT_LAYERS_2D_PHYSICS));
+		p_list.push_back(PropertyInfo(Variant::INT, vformat("physics_layer_%d/collision_layer", i), PROPERTY_HINT_LAYERS_2D_PHYSICS));
 
 		// physics_layer_%d/collision_mask
 		property_info = PropertyInfo(Variant::INT, vformat("physics_layer_%d/collision_mask", i), PROPERTY_HINT_LAYERS_2D_PHYSICS);
 		if (physics_layers[i].collision_mask == 1) {
 			property_info.usage ^= PROPERTY_USAGE_STORAGE;
 		}
-		p_list->push_back(property_info);
+		p_list.push_back(property_info);
 
 		// physics_layer_%d/collision_priority
 		property_info = PropertyInfo(Variant::FLOAT, vformat("physics_layer_%d/collision_priority", i));
 		if (physics_layers[i].collision_priority == 1.0) {
 			property_info.usage ^= PROPERTY_USAGE_STORAGE;
 		}
-		p_list->push_back(property_info);
+		p_list.push_back(property_info);
 
 		// physics_layer_%d/physics_material
 		property_info = PropertyInfo(Variant::OBJECT, vformat("physics_layer_%d/physics_material", i), PROPERTY_HINT_RESOURCE_TYPE, "PhysicsMaterial");
 		if (physics_layers[i].physics_material.is_null()) {
 			property_info.usage ^= PROPERTY_USAGE_STORAGE;
 		}
-		p_list->push_back(property_info);
+		p_list.push_back(property_info);
 	}
 #endif // PHYSICS_2D_DISABLED
 
 	// Terrains.
-	p_list->push_back(PropertyInfo(Variant::NIL, GNAME("Terrains", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
+	p_list.push_back(PropertyInfo(Variant::NIL, GNAME("Terrains", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
 	for (int terrain_set_index = 0; terrain_set_index < terrain_sets.size(); terrain_set_index++) {
-		p_list->push_back(PropertyInfo(Variant::INT, vformat("terrain_set_%d/mode", terrain_set_index), PROPERTY_HINT_ENUM, "Match Corners and Sides,Match Corners,Match Sides"));
-		p_list->push_back(PropertyInfo(Variant::NIL, vformat("terrain_set_%d/terrains", terrain_set_index), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_ARRAY, vformat("terrain_set_%d/terrain_", terrain_set_index)));
+		p_list.push_back(PropertyInfo(Variant::INT, vformat("terrain_set_%d/mode", terrain_set_index), PROPERTY_HINT_ENUM, "Match Corners and Sides,Match Corners,Match Sides"));
+		p_list.push_back(PropertyInfo(Variant::NIL, vformat("terrain_set_%d/terrains", terrain_set_index), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_ARRAY, vformat("terrain_set_%d/terrain_", terrain_set_index)));
 		for (int terrain_index = 0; terrain_index < terrain_sets[terrain_set_index].terrains.size(); terrain_index++) {
-			p_list->push_back(PropertyInfo(Variant::STRING, vformat("terrain_set_%d/terrain_%d/name", terrain_set_index, terrain_index)));
-			p_list->push_back(PropertyInfo(Variant::COLOR, vformat("terrain_set_%d/terrain_%d/color", terrain_set_index, terrain_index)));
+			p_list.push_back(PropertyInfo(Variant::STRING, vformat("terrain_set_%d/terrain_%d/name", terrain_set_index, terrain_index)));
+			p_list.push_back(PropertyInfo(Variant::COLOR, vformat("terrain_set_%d/terrain_%d/color", terrain_set_index, terrain_index)));
 		}
 	}
 
 	// Navigation.
-	p_list->push_back(PropertyInfo(Variant::NIL, GNAME("Navigation", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
+	p_list.push_back(PropertyInfo(Variant::NIL, GNAME("Navigation", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
 	for (int i = 0; i < navigation_layers.size(); i++) {
-		p_list->push_back(PropertyInfo(Variant::INT, vformat("navigation_layer_%d/layers", i), PROPERTY_HINT_LAYERS_2D_NAVIGATION));
+		p_list.push_back(PropertyInfo(Variant::INT, vformat("navigation_layer_%d/layers", i), PROPERTY_HINT_LAYERS_2D_NAVIGATION));
 	}
 
 	// Custom data.
@@ -4206,28 +4206,28 @@ void TileSet::_get_property_list(List<PropertyInfo> *p_list) const {
 	for (int i = 1; i < Variant::VARIANT_MAX; i++) {
 		argt += "," + Variant::get_type_name(Variant::Type(i));
 	}
-	p_list->push_back(PropertyInfo(Variant::NIL, GNAME("Custom Data", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
+	p_list.push_back(PropertyInfo(Variant::NIL, GNAME("Custom Data", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
 	for (int i = 0; i < custom_data_layers.size(); i++) {
-		p_list->push_back(PropertyInfo(Variant::STRING, vformat("custom_data_layer_%d/name", i)));
-		p_list->push_back(PropertyInfo(Variant::INT, vformat("custom_data_layer_%d/type", i), PROPERTY_HINT_ENUM, argt));
+		p_list.push_back(PropertyInfo(Variant::STRING, vformat("custom_data_layer_%d/name", i)));
+		p_list.push_back(PropertyInfo(Variant::INT, vformat("custom_data_layer_%d/type", i), PROPERTY_HINT_ENUM, argt));
 	}
 
 	// Sources.
 	// Note: sources have to be listed in at the end as some TileData rely on the TileSet properties being initialized first.
 	for (const KeyValue<int, Ref<TileSetSource>> &E_source : sources) {
-		p_list->push_back(PropertyInfo(Variant::OBJECT, vformat("sources/%d", E_source.key), PROPERTY_HINT_RESOURCE_TYPE, "TileSetAtlasSource", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_ALWAYS_DUPLICATE));
+		p_list.push_back(PropertyInfo(Variant::OBJECT, vformat("sources/%d", E_source.key), PROPERTY_HINT_RESOURCE_TYPE, "TileSetAtlasSource", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_ALWAYS_DUPLICATE));
 	}
 
 	// Tile Proxies.
 	// Note: proxies need to be set after sources are set.
-	p_list->push_back(PropertyInfo(Variant::NIL, "Tile Proxies", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
-	p_list->push_back(PropertyInfo(Variant::ARRAY, "tile_proxies/source_level", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
-	p_list->push_back(PropertyInfo(Variant::ARRAY, "tile_proxies/coords_level", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
-	p_list->push_back(PropertyInfo(Variant::ARRAY, "tile_proxies/alternative_level", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+	p_list.push_back(PropertyInfo(Variant::NIL, "Tile Proxies", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
+	p_list.push_back(PropertyInfo(Variant::ARRAY, "tile_proxies/source_level", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+	p_list.push_back(PropertyInfo(Variant::ARRAY, "tile_proxies/coords_level", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
+	p_list.push_back(PropertyInfo(Variant::ARRAY, "tile_proxies/alternative_level", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
 
 	// Patterns.
 	for (unsigned int pattern_index = 0; pattern_index < patterns.size(); pattern_index++) {
-		p_list->push_back(PropertyInfo(Variant::OBJECT, vformat("pattern_%d", pattern_index), PROPERTY_HINT_RESOURCE_TYPE, "TileMapPattern", PROPERTY_USAGE_NO_EDITOR));
+		p_list.push_back(PropertyInfo(Variant::OBJECT, vformat("pattern_%d", pattern_index), PROPERTY_HINT_RESOURCE_TYPE, "TileMapPattern", PROPERTY_USAGE_NO_EDITOR));
 	}
 }
 
@@ -4885,7 +4885,7 @@ bool TileSetAtlasSource::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void TileSetAtlasSource::_get_property_list(List<PropertyInfo> *p_list) const {
+void TileSetAtlasSource::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	// Atlases data.
 	PropertyInfo property_info;
 	for (const KeyValue<Vector2i, TileAlternativesData> &E_tile : tiles) {
@@ -4954,8 +4954,8 @@ void TileSetAtlasSource::_get_property_list(List<PropertyInfo> *p_list) const {
 
 			// Get the alternative tile's properties and append them to the list of properties.
 			const String alternative_property_info_prefix = formatted_key + '/';
-			List<PropertyInfo> alternative_property_list;
-			E_alternative.value->get_property_list(&alternative_property_list);
+			LocalVector<PropertyInfo> alternative_property_list;
+			E_alternative.value->get_property_list(alternative_property_list);
 			for (PropertyInfo &alternative_property_info : alternative_property_list) {
 				Variant default_value = ClassDB::class_get_default_property_value("TileData", alternative_property_info.name);
 				Variant value = E_alternative.value->get(alternative_property_info.name);
@@ -4971,7 +4971,7 @@ void TileSetAtlasSource::_get_property_list(List<PropertyInfo> *p_list) const {
 		const String property_info_prefix = vformat("%d:%d/", E_tile.key.x, E_tile.key.y);
 		for (PropertyInfo &tile_property_info : tile_property_list) {
 			tile_property_info.name = property_info_prefix + tile_property_info.name;
-			p_list->push_back(tile_property_info);
+			p_list.push_back(tile_property_info);
 		}
 	}
 }
@@ -5907,15 +5907,15 @@ bool TileSetScenesCollectionSource::_get(const StringName &p_name, Variant &r_re
 	return false;
 }
 
-void TileSetScenesCollectionSource::_get_property_list(List<PropertyInfo> *p_list) const {
+void TileSetScenesCollectionSource::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	for (int i = 0; i < scenes_ids.size(); i++) {
-		p_list->push_back(PropertyInfo(Variant::OBJECT, vformat("%s/%d/%s", PNAME("scenes"), scenes_ids[i], PNAME("scene")), PROPERTY_HINT_RESOURCE_TYPE, "TileSetScenesCollectionSource"));
+		p_list.push_back(PropertyInfo(Variant::OBJECT, vformat("%s/%d/%s", PNAME("scenes"), scenes_ids[i], PNAME("scene")), PROPERTY_HINT_RESOURCE_TYPE, "TileSetScenesCollectionSource"));
 
 		PropertyInfo property_info = PropertyInfo(Variant::BOOL, vformat("%s/%d/%s", PNAME("scenes"), scenes_ids[i], PNAME("display_placeholder")));
 		if (scenes[scenes_ids[i]].display_placeholder == false) {
 			property_info.usage ^= PROPERTY_USAGE_STORAGE;
 		}
-		p_list->push_back(property_info);
+		p_list.push_back(property_info);
 	}
 }
 
@@ -6972,43 +6972,43 @@ bool TileData::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void TileData::_get_property_list(List<PropertyInfo> *p_list) const {
+void TileData::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	PropertyInfo property_info;
 	// Add the groups manually.
 	if (tile_set) {
 		// Occlusion layers.
-		p_list->push_back(PropertyInfo(Variant::NIL, GNAME("Rendering", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
+		p_list.push_back(PropertyInfo(Variant::NIL, GNAME("Rendering", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
 		for (int i = 0; i < occluders.size(); i++) {
-			p_list->push_back(PropertyInfo(Variant::INT, vformat("occlusion_layer_%d/%s", i, PNAME("polygons_count")), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR));
+			p_list.push_back(PropertyInfo(Variant::INT, vformat("occlusion_layer_%d/%s", i, PNAME("polygons_count")), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR));
 			for (int j = 0; j < occluders[i].polygons.size(); j++) {
 				// occlusion_layer_%d/polygon_%d/polygon
 				property_info = PropertyInfo(Variant::OBJECT, vformat("occlusion_layer_%d/polygon_%d/%s", i, j, PNAME("polygon")), PROPERTY_HINT_RESOURCE_TYPE, "OccluderPolygon2D", PROPERTY_USAGE_DEFAULT);
 				if (occluders[i].polygons[j].occluder_polygon.is_null()) {
 					property_info.usage ^= PROPERTY_USAGE_STORAGE;
 				}
-				p_list->push_back(property_info);
+				p_list.push_back(property_info);
 			}
 		}
 
 #ifndef PHYSICS_2D_DISABLED
 		// Physics layers.
-		p_list->push_back(PropertyInfo(Variant::NIL, GNAME("Physics", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
+		p_list.push_back(PropertyInfo(Variant::NIL, GNAME("Physics", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
 		for (int i = 0; i < physics.size(); i++) {
 			// physics_layer_%d/linear_velocity
 			property_info = PropertyInfo(Variant::VECTOR2, vformat("physics_layer_%d/%s", i, PNAME("linear_velocity")), PROPERTY_HINT_NONE);
 			if (physics[i].linear_velocity == Vector2()) {
 				property_info.usage ^= PROPERTY_USAGE_STORAGE;
 			}
-			p_list->push_back(property_info);
+			p_list.push_back(property_info);
 
 			// physics_layer_%d/angular_velocity
 			property_info = PropertyInfo(Variant::FLOAT, vformat("physics_layer_%d/%s", i, PNAME("angular_velocity")), PROPERTY_HINT_NONE);
 			if (physics[i].angular_velocity == 0.0) {
 				property_info.usage ^= PROPERTY_USAGE_STORAGE;
 			}
-			p_list->push_back(property_info);
+			p_list.push_back(property_info);
 
-			p_list->push_back(PropertyInfo(Variant::INT, vformat("physics_layer_%d/%s", i, PNAME("polygons_count")), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR));
+			p_list.push_back(PropertyInfo(Variant::INT, vformat("physics_layer_%d/%s", i, PNAME("polygons_count")), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR));
 
 			for (int j = 0; j < physics[i].polygons.size(); j++) {
 				// physics_layer_%d/points
@@ -7016,28 +7016,28 @@ void TileData::_get_property_list(List<PropertyInfo> *p_list) const {
 				if (physics[i].polygons[j].polygon.is_empty()) {
 					property_info.usage ^= PROPERTY_USAGE_STORAGE;
 				}
-				p_list->push_back(property_info);
+				p_list.push_back(property_info);
 
 				// physics_layer_%d/polygon_%d/one_way
 				property_info = PropertyInfo(Variant::BOOL, vformat("physics_layer_%d/polygon_%d/%s", i, j, PNAME("one_way")));
 				if (physics[i].polygons[j].one_way == false) {
 					property_info.usage ^= PROPERTY_USAGE_STORAGE;
 				}
-				p_list->push_back(property_info);
+				p_list.push_back(property_info);
 
 				// physics_layer_%d/polygon_%d/one_way_margin
 				property_info = PropertyInfo(Variant::FLOAT, vformat("physics_layer_%d/polygon_%d/%s", i, j, PNAME("one_way_margin")));
 				if (physics[i].polygons[j].one_way_margin == 1.0) {
 					property_info.usage ^= PROPERTY_USAGE_STORAGE;
 				}
-				p_list->push_back(property_info);
+				p_list.push_back(property_info);
 			}
 		}
 #endif // PHYSICS_2D_DISABLED
 
 		// Terrain data
 		if (terrain_set >= 0) {
-			p_list->push_back(PropertyInfo(Variant::NIL, GNAME("Terrains", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
+			p_list.push_back(PropertyInfo(Variant::NIL, GNAME("Terrains", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
 			for (int i = 0; i < TileSet::CELL_NEIGHBOR_MAX; i++) {
 				TileSet::CellNeighbor bit = TileSet::CellNeighbor(i);
 				if (is_valid_terrain_peering_bit(bit)) {
@@ -7045,25 +7045,25 @@ void TileData::_get_property_list(List<PropertyInfo> *p_list) const {
 					if (get_terrain_peering_bit(bit) == -1) {
 						property_info.usage ^= PROPERTY_USAGE_STORAGE;
 					}
-					p_list->push_back(property_info);
+					p_list.push_back(property_info);
 				}
 			}
 		}
 
 #ifndef NAVIGATION_2D_DISABLED
 		// Navigation layers.
-		p_list->push_back(PropertyInfo(Variant::NIL, GNAME("Navigation", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
+		p_list.push_back(PropertyInfo(Variant::NIL, GNAME("Navigation", ""), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
 		for (int i = 0; i < navigation.size(); i++) {
 			property_info = PropertyInfo(Variant::OBJECT, vformat("navigation_layer_%d/%s", i, PNAME("polygon")), PROPERTY_HINT_RESOURCE_TYPE, "NavigationPolygon", PROPERTY_USAGE_DEFAULT);
 			if (navigation[i].navigation_polygon.is_null()) {
 				property_info.usage ^= PROPERTY_USAGE_STORAGE;
 			}
-			p_list->push_back(property_info);
+			p_list.push_back(property_info);
 		}
 #endif // NAVIGATION_2D_DISABLED
 
 		// Custom data layers.
-		p_list->push_back(PropertyInfo(Variant::NIL, GNAME("Custom Data", "custom_data_"), PROPERTY_HINT_NONE, "custom_data_", PROPERTY_USAGE_GROUP));
+		p_list.push_back(PropertyInfo(Variant::NIL, GNAME("Custom Data", "custom_data_"), PROPERTY_HINT_NONE, "custom_data_", PROPERTY_USAGE_GROUP));
 		for (int i = 0; i < custom_data.size(); i++) {
 			Variant default_val;
 			Callable::CallError error;
@@ -7072,7 +7072,7 @@ void TileData::_get_property_list(List<PropertyInfo> *p_list) const {
 			if (custom_data[i] == default_val) {
 				property_info.usage ^= PROPERTY_USAGE_STORAGE;
 			}
-			p_list->push_back(property_info);
+			p_list.push_back(property_info);
 		}
 	}
 }

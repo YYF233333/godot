@@ -350,7 +350,7 @@ protected:
 	bool _get(const StringName &p_path, Variant &r_ret) const;
 	bool _set(const StringName &p_path, const Variant &p_value);
 	static void _bind_methods();
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 
 public:
 	virtual void get_parameter_list(List<PropertyInfo> *r_list) const override;
@@ -420,7 +420,7 @@ protected:
 	static void _bind_methods();
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 
 	virtual void _tree_changed() override;
 	virtual void _animation_node_renamed(const ObjectID &p_oid, const String &p_old_name, const String &p_new_name) override;

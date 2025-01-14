@@ -276,9 +276,9 @@ void BonePropertiesEditor::_update_properties() {
 		return;
 	}
 	int selected = Skeleton3DEditor::get_singleton()->get_selected_bone();
-	List<PropertyInfo> props;
+	LocalVector<PropertyInfo> props;
 	HashSet<StringName> meta_seen;
-	skeleton->get_property_list(&props);
+	skeleton->get_property_list(props);
 	for (const PropertyInfo &E : props) {
 		PackedStringArray split = E.name.split("/");
 		if (split.size() >= 3 && split[0] == "bones") {

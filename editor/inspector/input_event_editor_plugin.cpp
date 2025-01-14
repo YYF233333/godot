@@ -66,8 +66,8 @@ void InputEventConfigContainer::_config_dialog_confirmed() {
 		}
 	}
 
-	List<PropertyInfo> pi;
-	ie->get_property_list(&pi);
+	LocalVector<PropertyInfo> pi;
+	ie->get_property_list(pi);
 	for (const PropertyInfo &E : pi) {
 		if (E.name == "resource_path") {
 			continue; // Do not change path.

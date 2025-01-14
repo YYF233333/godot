@@ -548,7 +548,7 @@ bool AnimationTrackKeyEdit::_get(const StringName &p_name, Variant &r_ret) const
 	return false;
 }
 
-void AnimationTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) const {
+void AnimationTrackKeyEdit::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	if (animation.is_null()) {
 		return;
 	}
@@ -559,16 +559,16 @@ void AnimationTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) const
 
 	switch (animation->track_get_type(track)) {
 		case Animation::TYPE_POSITION_3D: {
-			p_list->push_back(PropertyInfo(Variant::VECTOR3, PNAME("position")));
+			p_list.push_back(PropertyInfo(Variant::VECTOR3, PNAME("position")));
 		} break;
 		case Animation::TYPE_ROTATION_3D: {
-			p_list->push_back(PropertyInfo(Variant::QUATERNION, PNAME("rotation")));
+			p_list.push_back(PropertyInfo(Variant::QUATERNION, PNAME("rotation")));
 		} break;
 		case Animation::TYPE_SCALE_3D: {
-			p_list->push_back(PropertyInfo(Variant::VECTOR3, PNAME("scale")));
+			p_list.push_back(PropertyInfo(Variant::VECTOR3, PNAME("scale")));
 		} break;
 		case Animation::TYPE_BLEND_SHAPE: {
-			p_list->push_back(PropertyInfo(Variant::FLOAT, PNAME("value")));
+			p_list.push_back(PropertyInfo(Variant::FLOAT, PNAME("value")));
 		} break;
 		case Animation::TYPE_VALUE: {
 			Variant v = animation->track_get_key_value(track, key);
@@ -576,7 +576,7 @@ void AnimationTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) const
 			if (hint.type != Variant::NIL) {
 				PropertyInfo pi = hint;
 				pi.name = PNAME("value");
-				p_list->push_back(pi);
+				p_list.push_back(pi);
 			} else {
 				PropertyHint val_hint = PROPERTY_HINT_NONE;
 				String val_hint_string;
@@ -591,14 +591,14 @@ void AnimationTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) const
 				}
 
 				if (v.get_type() != Variant::NIL) {
-					p_list->push_back(PropertyInfo(v.get_type(), PNAME("value"), val_hint, val_hint_string));
+					p_list.push_back(PropertyInfo(v.get_type(), PNAME("value"), val_hint, val_hint_string));
 				}
 			}
 
 		} break;
 		case Animation::TYPE_METHOD: {
-			p_list->push_back(PropertyInfo(Variant::STRING_NAME, PNAME("name")));
-			p_list->push_back(PropertyInfo(Variant::INT, PNAME("arg_count"), PROPERTY_HINT_RANGE, "0,32,1,or_greater"));
+			p_list.push_back(PropertyInfo(Variant::STRING_NAME, PNAME("name")));
+			p_list.push_back(PropertyInfo(Variant::INT, PNAME("arg_count"), PROPERTY_HINT_RANGE, "0,32,1,or_greater"));
 
 			Dictionary d = animation->track_get_key_value(track, key);
 			ERR_FAIL_COND(!d.has("args"));
@@ -612,32 +612,32 @@ void AnimationTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) const
 			}
 
 			for (int i = 0; i < args.size(); i++) {
-				p_list->push_back(PropertyInfo(Variant::INT, vformat("%s/%d/%s", PNAME("args"), i, PNAME("type")), PROPERTY_HINT_ENUM, vtypes));
+				p_list.push_back(PropertyInfo(Variant::INT, vformat("%s/%d/%s", PNAME("args"), i, PNAME("type")), PROPERTY_HINT_ENUM, vtypes));
 				if (args[i].get_type() != Variant::NIL) {
-					p_list->push_back(PropertyInfo(args[i].get_type(), vformat("%s/%d/%s", PNAME("args"), i, PNAME("value"))));
+					p_list.push_back(PropertyInfo(args[i].get_type(), vformat("%s/%d/%s", PNAME("args"), i, PNAME("value"))));
 				}
 			}
 
 		} break;
 		case Animation::TYPE_BEZIER: {
 			Animation::HandleMode hm = animation->bezier_track_get_key_handle_mode(track, key);
-			p_list->push_back(PropertyInfo(Variant::FLOAT, PNAME("value")));
+			p_list.push_back(PropertyInfo(Variant::FLOAT, PNAME("value")));
 			if (hm == Animation::HANDLE_MODE_LINEAR) {
-				p_list->push_back(PropertyInfo(Variant::VECTOR2, PNAME("in_handle"), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_READ_ONLY));
-				p_list->push_back(PropertyInfo(Variant::VECTOR2, PNAME("out_handle"), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_READ_ONLY));
+				p_list.push_back(PropertyInfo(Variant::VECTOR2, PNAME("in_handle"), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_READ_ONLY));
+				p_list.push_back(PropertyInfo(Variant::VECTOR2, PNAME("out_handle"), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_READ_ONLY));
 			} else {
-				p_list->push_back(PropertyInfo(Variant::VECTOR2, PNAME("in_handle")));
-				p_list->push_back(PropertyInfo(Variant::VECTOR2, PNAME("out_handle")));
+				p_list.push_back(PropertyInfo(Variant::VECTOR2, PNAME("in_handle")));
+				p_list.push_back(PropertyInfo(Variant::VECTOR2, PNAME("out_handle")));
 			}
-			p_list->push_back(PropertyInfo(Variant::INT, PNAME("handle_mode"), PROPERTY_HINT_ENUM, "Free,Linear,Balanced,Mirrored"));
+			p_list.push_back(PropertyInfo(Variant::INT, PNAME("handle_mode"), PROPERTY_HINT_ENUM, "Free,Linear,Balanced,Mirrored"));
 
 		} break;
 		case Animation::TYPE_AUDIO: {
-			p_list->push_back(PropertyInfo(Variant::OBJECT, PNAME("stream"), PROPERTY_HINT_RESOURCE_TYPE, "AudioStream"));
+			p_list.push_back(PropertyInfo(Variant::OBJECT, PNAME("stream"), PROPERTY_HINT_RESOURCE_TYPE, "AudioStream"));
 			Ref<AudioStream> audio_stream = animation->audio_track_get_key_stream(track, key);
 			String hint_string = vformat("0,%.4f,0.0001,or_greater", audio_stream.is_valid() ? audio_stream->get_length() : 3600.0);
-			p_list->push_back(PropertyInfo(Variant::FLOAT, PNAME("start_offset"), PROPERTY_HINT_RANGE, hint_string));
-			p_list->push_back(PropertyInfo(Variant::FLOAT, PNAME("end_offset"), PROPERTY_HINT_RANGE, hint_string));
+			p_list.push_back(PropertyInfo(Variant::FLOAT, PNAME("start_offset"), PROPERTY_HINT_RANGE, hint_string));
+			p_list.push_back(PropertyInfo(Variant::FLOAT, PNAME("end_offset"), PROPERTY_HINT_RANGE, hint_string));
 
 		} break;
 		case Animation::TYPE_ANIMATION: {
@@ -663,13 +663,13 @@ void AnimationTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) const
 			}
 			animations += "[stop]";
 
-			p_list->push_back(PropertyInfo(Variant::STRING_NAME, PNAME("animation"), PROPERTY_HINT_ENUM, animations));
+			p_list.push_back(PropertyInfo(Variant::STRING_NAME, PNAME("animation"), PROPERTY_HINT_ENUM, animations));
 
 		} break;
 	}
 
 	if (animation->track_get_type(track) == Animation::TYPE_VALUE) {
-		p_list->push_back(PropertyInfo(Variant::FLOAT, PNAME("easing"), PROPERTY_HINT_EXP_EASING));
+		p_list.push_back(PropertyInfo(Variant::FLOAT, PNAME("easing"), PROPERTY_HINT_EXP_EASING));
 	}
 }
 
@@ -1127,7 +1127,7 @@ bool AnimationMultiTrackKeyEdit::_get(const StringName &p_name, Variant &r_ret) 
 	return false;
 }
 
-void AnimationMultiTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) const {
+void AnimationMultiTrackKeyEdit::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	if (animation.is_null()) {
 		return;
 	}
@@ -1168,16 +1168,16 @@ void AnimationMultiTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) 
 	if (same_track_type) {
 		switch (animation->track_get_type(first_track)) {
 			case Animation::TYPE_POSITION_3D: {
-				p_list->push_back(PropertyInfo(Variant::VECTOR3, "position"));
+				p_list.push_back(PropertyInfo(Variant::VECTOR3, "position"));
 			} break;
 			case Animation::TYPE_ROTATION_3D: {
-				p_list->push_back(PropertyInfo(Variant::QUATERNION, "rotation"));
+				p_list.push_back(PropertyInfo(Variant::QUATERNION, "rotation"));
 			} break;
 			case Animation::TYPE_SCALE_3D: {
-				p_list->push_back(PropertyInfo(Variant::VECTOR3, "scale"));
+				p_list.push_back(PropertyInfo(Variant::VECTOR3, "scale"));
 			} break;
 			case Animation::TYPE_BLEND_SHAPE: {
-				p_list->push_back(PropertyInfo(Variant::FLOAT, "value"));
+				p_list.push_back(PropertyInfo(Variant::FLOAT, "value"));
 			} break;
 			case Animation::TYPE_VALUE: {
 				if (same_key_type) {
@@ -1186,7 +1186,7 @@ void AnimationMultiTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) 
 					if (hint.type != Variant::NIL) {
 						PropertyInfo pi = hint;
 						pi.name = "value";
-						p_list->push_back(pi);
+						p_list.push_back(pi);
 					} else {
 						PropertyHint val_hint = PROPERTY_HINT_NONE;
 						String val_hint_string;
@@ -1201,17 +1201,17 @@ void AnimationMultiTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) 
 						}
 
 						if (v.get_type() != Variant::NIL) {
-							p_list->push_back(PropertyInfo(v.get_type(), "value", val_hint, val_hint_string));
+							p_list.push_back(PropertyInfo(v.get_type(), "value", val_hint, val_hint_string));
 						}
 					}
 				}
 
-				p_list->push_back(PropertyInfo(Variant::FLOAT, "easing", PROPERTY_HINT_EXP_EASING));
+				p_list.push_back(PropertyInfo(Variant::FLOAT, "easing", PROPERTY_HINT_EXP_EASING));
 			} break;
 			case Animation::TYPE_METHOD: {
-				p_list->push_back(PropertyInfo(Variant::STRING_NAME, "name"));
+				p_list.push_back(PropertyInfo(Variant::STRING_NAME, "name"));
 
-				p_list->push_back(PropertyInfo(Variant::INT, "arg_count", PROPERTY_HINT_RANGE, "0,32,1,or_greater"));
+				p_list.push_back(PropertyInfo(Variant::INT, "arg_count", PROPERTY_HINT_RANGE, "0,32,1,or_greater"));
 
 				Dictionary d = animation->track_get_key_value(first_track, first_key);
 				ERR_FAIL_COND(!d.has("args"));
@@ -1225,22 +1225,22 @@ void AnimationMultiTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) 
 				}
 
 				for (int i = 0; i < args.size(); i++) {
-					p_list->push_back(PropertyInfo(Variant::INT, "args/" + itos(i) + "/type", PROPERTY_HINT_ENUM, vtypes));
+					p_list.push_back(PropertyInfo(Variant::INT, "args/" + itos(i) + "/type", PROPERTY_HINT_ENUM, vtypes));
 					if (args[i].get_type() != Variant::NIL) {
-						p_list->push_back(PropertyInfo(args[i].get_type(), "args/" + itos(i) + "/value"));
+						p_list.push_back(PropertyInfo(args[i].get_type(), "args/" + itos(i) + "/value"));
 					}
 				}
 			} break;
 			case Animation::TYPE_BEZIER: {
-				p_list->push_back(PropertyInfo(Variant::FLOAT, "value"));
-				p_list->push_back(PropertyInfo(Variant::VECTOR2, "in_handle"));
-				p_list->push_back(PropertyInfo(Variant::VECTOR2, "out_handle"));
-				p_list->push_back(PropertyInfo(Variant::INT, "handle_mode", PROPERTY_HINT_ENUM, "Free,Linear,Balanced,Mirrored"));
+				p_list.push_back(PropertyInfo(Variant::FLOAT, "value"));
+				p_list.push_back(PropertyInfo(Variant::VECTOR2, "in_handle"));
+				p_list.push_back(PropertyInfo(Variant::VECTOR2, "out_handle"));
+				p_list.push_back(PropertyInfo(Variant::INT, "handle_mode", PROPERTY_HINT_ENUM, "Free,Linear,Balanced,Mirrored"));
 			} break;
 			case Animation::TYPE_AUDIO: {
-				p_list->push_back(PropertyInfo(Variant::OBJECT, "stream", PROPERTY_HINT_RESOURCE_TYPE, "AudioStream"));
-				p_list->push_back(PropertyInfo(Variant::FLOAT, "start_offset", PROPERTY_HINT_RANGE, "0,3600,0.0001,or_greater"));
-				p_list->push_back(PropertyInfo(Variant::FLOAT, "end_offset", PROPERTY_HINT_RANGE, "0,3600,0.0001,or_greater"));
+				p_list.push_back(PropertyInfo(Variant::OBJECT, "stream", PROPERTY_HINT_RESOURCE_TYPE, "AudioStream"));
+				p_list.push_back(PropertyInfo(Variant::FLOAT, "start_offset", PROPERTY_HINT_RANGE, "0,3600,0.0001,or_greater"));
+				p_list.push_back(PropertyInfo(Variant::FLOAT, "end_offset", PROPERTY_HINT_RANGE, "0,3600,0.0001,or_greater"));
 			} break;
 			case Animation::TYPE_ANIMATION: {
 				if (key_ofs_map.size() > 1) {
@@ -1269,7 +1269,7 @@ void AnimationMultiTrackKeyEdit::_get_property_list(List<PropertyInfo> *p_list) 
 				}
 				animations += "[stop]";
 
-				p_list->push_back(PropertyInfo(Variant::STRING_NAME, "animation", PROPERTY_HINT_ENUM, animations));
+				p_list.push_back(PropertyInfo(Variant::STRING_NAME, "animation", PROPERTY_HINT_ENUM, animations));
 			} break;
 		}
 	}
@@ -4886,8 +4886,8 @@ PropertyInfo AnimationTrackEditor::_find_hint_for_track(int p_idx, NodePath &r_b
 		return PropertyInfo();
 	}
 
-	List<PropertyInfo> pinfo;
-	property_info_base.get_property_list(&pinfo);
+	LocalVector<PropertyInfo> pinfo;
+	property_info_base.get_property_list(pinfo);
 
 	for (const PropertyInfo &E : pinfo) {
 		if (E.name == leftover_path[leftover_path.size() - 1]) {
@@ -9765,13 +9765,13 @@ bool AnimationMarkerKeyEdit::_get(const StringName &p_name, Variant &r_ret) cons
 	return false;
 }
 
-void AnimationMarkerKeyEdit::_get_property_list(List<PropertyInfo> *p_list) const {
+void AnimationMarkerKeyEdit::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	if (animation.is_null()) {
 		return;
 	}
 
-	p_list->push_back(PropertyInfo(Variant::STRING_NAME, "name", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY | PROPERTY_USAGE_EDITOR));
-	p_list->push_back(PropertyInfo(Variant::COLOR, "color", PROPERTY_HINT_COLOR_NO_ALPHA));
+	p_list.push_back(PropertyInfo(Variant::STRING_NAME, "name", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY | PROPERTY_USAGE_EDITOR));
+	p_list.push_back(PropertyInfo(Variant::COLOR, "color", PROPERTY_HINT_COLOR_NO_ALPHA));
 }
 
 void AnimationMultiMarkerKeyEdit::_bind_methods() {
@@ -9812,12 +9812,12 @@ bool AnimationMultiMarkerKeyEdit::_get(const StringName &p_name, Variant &r_ret)
 	return false;
 }
 
-void AnimationMultiMarkerKeyEdit::_get_property_list(List<PropertyInfo> *p_list) const {
+void AnimationMultiMarkerKeyEdit::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	if (animation.is_null()) {
 		return;
 	}
 
-	p_list->push_back(PropertyInfo(Variant::COLOR, "color", PROPERTY_HINT_COLOR_NO_ALPHA));
+	p_list.push_back(PropertyInfo(Variant::COLOR, "color", PROPERTY_HINT_COLOR_NO_ALPHA));
 }
 
 // AnimationMarkerKeyEditEditorPlugin

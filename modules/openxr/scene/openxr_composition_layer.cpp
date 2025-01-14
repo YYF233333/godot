@@ -702,7 +702,7 @@ void OpenXRCompositionLayer::_notification(int p_what) {
 	}
 }
 
-void OpenXRCompositionLayer::_get_property_list(List<PropertyInfo> *p_property_list) const {
+void OpenXRCompositionLayer::_get_property_list(LocalVector<PropertyInfo> &p_property_list) const {
 	List<PropertyInfo> extension_properties;
 	for (OpenXRExtensionWrapper *extension : OpenXRAPI::get_registered_extension_wrappers()) {
 		extension->get_viewport_composition_layer_extension_properties(&extension_properties);
@@ -714,7 +714,7 @@ void OpenXRCompositionLayer::_get_property_list(List<PropertyInfo> *p_property_l
 			WARN_PRINT_ONCE(vformat("Discarding OpenXRCompositionLayer property name '%s' from extension because it doesn't contain a '/'."));
 			continue;
 		}
-		p_property_list->push_back(pinfo);
+		p_property_list.push_back(pinfo);
 	}
 }
 

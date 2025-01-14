@@ -123,10 +123,10 @@ PropertyInfo PropertyInfo::from_dict(const Dictionary &p_dict) {
 	return pi;
 }
 
-TypedArray<Dictionary> convert_property_list(const List<PropertyInfo> *p_list) {
+TypedArray<Dictionary> convert_property_list(const LocalVector<PropertyInfo> &p_list) {
 	TypedArray<Dictionary> va;
-	for (const List<PropertyInfo>::Element *E = p_list->front(); E; E = E->next()) {
-		va.push_back(Dictionary(E->get()));
+	for (const PropertyInfo &E : p_list) {
+		va.push_back(Dictionary(E));
 	}
 
 	return va;
@@ -574,7 +574,7 @@ Variant Object::get_indexed(const Vector<StringName> &p_names, bool *r_valid) co
 	return current_value;
 }
 
-void Object::get_property_list(List<PropertyInfo> *p_list, bool p_reversed) const {
+void Object::get_property_list(LocalVector<PropertyInfo> &p_list, bool p_reversed) const {
 	if (script_instance && p_reversed) {
 		script_instance->get_property_list(p_list);
 	}
@@ -582,7 +582,7 @@ void Object::get_property_list(List<PropertyInfo> *p_list, bool p_reversed) cons
 	if (_extension) {
 		const ObjectGDExtension *current_extension = _extension;
 		while (current_extension) {
-			p_list->push_back(PropertyInfo(Variant::NIL, current_extension->class_name, PROPERTY_HINT_NONE, current_extension->class_name, PROPERTY_USAGE_CATEGORY));
+			p_list.push_back(PropertyInfo(Variant::NIL, current_extension->class_name, PROPERTY_HINT_NONE, current_extension->class_name, PROPERTY_USAGE_CATEGORY));
 
 			ClassDB::get_property_list(current_extension->class_name, p_list, true, this);
 
@@ -595,7 +595,7 @@ void Object::get_property_list(List<PropertyInfo> *p_list, bool p_reversed) cons
 					uint32_t pcount;
 					const GDExtensionPropertyInfo *pinfo = current_extension->get_property_list(_extension_instance, &pcount);
 					for (uint32_t i = 0; i < pcount; i++) {
-						p_list->push_back(PropertyInfo(pinfo[i]));
+						p_list.push_back(PropertyInfo(pinfo[i]));
 					}
 					if (current_extension->free_property_list2) {
 						current_extension->free_property_list2(_extension_instance, pinfo, pcount);
@@ -617,7 +617,7 @@ void Object::get_property_list(List<PropertyInfo> *p_list, bool p_reversed) cons
 	_get_property_listv(p_list, p_reversed);
 
 	if (!is_class("Script")) { // can still be set, but this is for user-friendliness
-		p_list->push_back(PropertyInfo(Variant::OBJECT, "script", PROPERTY_HINT_RESOURCE_TYPE, "Script", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NEVER_DUPLICATE));
+		p_list.push_back(PropertyInfo(Variant::OBJECT, "script", PROPERTY_HINT_RESOURCE_TYPE, "Script", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NEVER_DUPLICATE));
 	}
 
 	if (script_instance && !p_reversed) {
@@ -636,7 +636,7 @@ void Object::get_property_list(List<PropertyInfo> *p_list, bool p_reversed) cons
 				pi.hint_string = "Resource";
 			}
 		}
-		p_list->push_back(pi);
+		p_list.push_back(pi);
 	}
 }
 
@@ -1171,9 +1171,9 @@ void Object::merge_meta_from(const Object *p_src) {
 }
 
 TypedArray<Dictionary> Object::_get_property_list_bind() const {
-	List<PropertyInfo> lpi;
-	get_property_list(&lpi);
-	return convert_property_list(&lpi);
+	LocalVector<PropertyInfo> lpi;
+	get_property_list(lpi);
+	return convert_property_list(lpi);
 }
 
 TypedArray<Dictionary> Object::_get_method_list_bind() const {
@@ -1844,7 +1844,7 @@ void Object::_add_class_to_classdb(const GDType &p_type, const GDType *p_inherit
 	ClassDB::_add_class(p_type, p_inherits);
 }
 
-void Object::_get_property_list_from_classdb(const StringName &p_class, List<PropertyInfo> *p_list, bool p_no_inheritance, const Object *p_validator) {
+void Object::_get_property_list_from_classdb(const StringName &p_class, LocalVector<PropertyInfo> &p_list, bool p_no_inheritance, const Object *p_validator) {
 	ClassDB::get_property_list(p_class, p_list, p_no_inheritance, p_validator);
 }
 
@@ -1868,9 +1868,9 @@ bool Object::editor_is_section_unfolded(const String &p_section) {
 #endif
 
 void Object::clear_internal_resource_paths() {
-	List<PropertyInfo> pinfo;
+	LocalVector<PropertyInfo> pinfo;
 
-	get_property_list(&pinfo);
+	get_property_list(pinfo);
 
 	for (const PropertyInfo &E : pinfo) {
 		_clear_internal_resource_paths(get(E.name));
@@ -2483,8 +2483,8 @@ void Object::get_argument_options(const StringName &p_function, int p_idx, List<
 				r_options->push_back(E.name.quote());
 			}
 		} else if (pf == "set" || pf == "set_deferred" || pf == "get") {
-			List<PropertyInfo> properties;
-			get_property_list(&properties);
+			LocalVector<PropertyInfo> properties;
+			get_property_list(properties);
 			for (const PropertyInfo &E : properties) {
 				if (E.usage & PROPERTY_USAGE_DEFAULT && !(E.usage & PROPERTY_USAGE_INTERNAL)) {
 					r_options->push_back(E.name.quote());

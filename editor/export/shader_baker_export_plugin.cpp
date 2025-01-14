@@ -318,8 +318,8 @@ Node *ShaderBakerExportPlugin::_customize_scene(Node *p_root, const String &p_pa
 			properties["alpha_antialiasing_mode"] = StandardMaterial3D::ALPHA_ANTIALIASING_OFF;
 			properties["alpha_cut"] = SpriteBase3D::ALPHA_CUT_DISABLED;
 
-			List<PropertyInfo> property_list;
-			node->get_property_list(&property_list);
+			LocalVector<PropertyInfo> property_list;
+			node->get_property_list(property_list);
 			for (const PropertyInfo &info : property_list) {
 				bool valid = false;
 				Variant property = node->get(info.name, &valid);

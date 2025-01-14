@@ -1404,8 +1404,8 @@ void AnimationPlayerEditor::_animation_duplicate() {
 
 Ref<Animation> AnimationPlayerEditor::_animation_clone(Ref<Animation> p_anim) {
 	Ref<Animation> new_anim = memnew(Animation);
-	List<PropertyInfo> plist;
-	p_anim->get_property_list(&plist);
+	LocalVector<PropertyInfo> plist;
+	p_anim->get_property_list(plist);
 
 	for (const PropertyInfo &E : plist) {
 		if (E.usage & PROPERTY_USAGE_STORAGE) {
@@ -2428,8 +2428,8 @@ void AnimationPlayerEditorPlugin::_update_dummy_player(AnimationMixer *p_mixer) 
 
 	// Convert AnimationTree (AnimationMixer) to AnimationPlayer.
 	AnimationMixer *default_node = memnew(AnimationMixer);
-	List<PropertyInfo> pinfo;
-	default_node->get_property_list(&pinfo);
+	LocalVector<PropertyInfo> pinfo;
+	default_node->get_property_list(pinfo);
 	for (const PropertyInfo &E : pinfo) {
 		if (!(E.usage & PROPERTY_USAGE_STORAGE)) {
 			continue;

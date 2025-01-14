@@ -54,7 +54,7 @@ public:
 	LocalVector<PropertyInfo> prop_list;
 	HashMap<StringName, Variant> prop_values;
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 
 	struct ResourceCache {
 		HashMap<String, Ref<Resource>> cache;

@@ -290,7 +290,7 @@ public:
 	void canvas_item_set_use_parent_material(RID p_item, bool p_enable);
 
 	void canvas_item_set_instance_shader_parameter(RID p_item, const StringName &p_parameter, const Variant &p_value);
-	void canvas_item_get_instance_shader_parameter_list(RID p_item, List<PropertyInfo> *p_parameters) const;
+	void canvas_item_get_instance_shader_parameter_list(RID p_item, LocalVector<PropertyInfo> *p_parameters) const;
 	Variant canvas_item_get_instance_shader_parameter(RID p_item, const StringName &p_parameter) const;
 	Variant canvas_item_get_instance_shader_parameter_default_value(RID p_item, const StringName &p_parameter) const;
 

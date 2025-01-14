@@ -147,7 +147,7 @@ bool MultiNodeEdit::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void MultiNodeEdit::_get_property_list(List<PropertyInfo> *p_list) const {
+void MultiNodeEdit::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	HashMap<String, PLData> usage;
 
 	Node *es = EditorNode::get_singleton()->get_edited_scene();
@@ -157,7 +157,7 @@ void MultiNodeEdit::_get_property_list(List<PropertyInfo> *p_list) const {
 
 	int nc = 0;
 
-	List<PLData *> data_list;
+	LocalVector<PLData *> data_list;
 
 	for (const NodePath &E : nodes) {
 		Node *n = es->get_node_or_null(E);
@@ -165,8 +165,8 @@ void MultiNodeEdit::_get_property_list(List<PropertyInfo> *p_list) const {
 			continue;
 		}
 
-		List<PropertyInfo> plist;
-		n->get_property_list(&plist, true);
+		LocalVector<PropertyInfo> plist;
+		n->get_property_list(plist, true);
 
 		for (PropertyInfo F : plist) {
 			if (F.name == "script") {
@@ -197,11 +197,11 @@ void MultiNodeEdit::_get_property_list(List<PropertyInfo> *p_list) const {
 
 	for (const PLData *E : data_list) {
 		if (nc == E->uses) {
-			p_list->push_back(E->info);
+			p_list.push_back(E->info);
 		}
 	}
 
-	p_list->push_back(PropertyInfo(Variant::OBJECT, "scripts", PROPERTY_HINT_RESOURCE_TYPE, "Script"));
+	p_list.push_back(PropertyInfo(Variant::OBJECT, "scripts", PROPERTY_HINT_RESOURCE_TYPE, "Script"));
 }
 
 String MultiNodeEdit::_get_editor_name() const {

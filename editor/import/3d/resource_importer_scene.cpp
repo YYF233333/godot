@@ -1392,8 +1392,8 @@ Node *ResourceImporterScene::_replace_node_with_type_and_script(Node *p_node, St
 		// what the scene import gave us, replace the root node.
 		Node *new_base_node = Object::cast_to<Node>(ClassDB::instantiate(p_node_type));
 		if (new_base_node) {
-			List<PropertyInfo> old_properties;
-			p_node->get_property_list(&old_properties);
+			LocalVector<PropertyInfo> old_properties;
+			p_node->get_property_list(old_properties);
 			for (const PropertyInfo &prop : old_properties) {
 				if (!(prop.usage & PROPERTY_USAGE_STORAGE)) {
 					continue;

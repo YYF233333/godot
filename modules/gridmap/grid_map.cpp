@@ -150,12 +150,12 @@ bool GridMap::_get(const StringName &p_name, Variant &r_ret) const {
 	return true;
 }
 
-void GridMap::_get_property_list(List<PropertyInfo> *p_list) const {
+void GridMap::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	if (baked_meshes.size()) {
-		p_list->push_back(PropertyInfo(Variant::ARRAY, "baked_meshes", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE));
+		p_list.push_back(PropertyInfo(Variant::ARRAY, "baked_meshes", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE));
 	}
 
-	p_list->push_back(PropertyInfo(Variant::DICTIONARY, "data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE));
+	p_list.push_back(PropertyInfo(Variant::DICTIONARY, "data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE));
 }
 
 #ifndef PHYSICS_3D_DISABLED

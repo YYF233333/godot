@@ -211,7 +211,7 @@ private:
 
 	void _save_orphaned_subclasses(GDScript::ClearData *p_clear_data);
 
-	void _get_script_property_list(List<PropertyInfo> *r_list, bool p_include_base) const;
+	void _get_script_property_list(LocalVector<PropertyInfo> &r_list, bool p_include_base) const;
 	void _get_script_method_list(List<MethodInfo> *r_list, bool p_include_base) const;
 	void _get_script_signal_list(List<MethodInfo> *r_list, bool p_include_base) const;
 
@@ -222,7 +222,7 @@ private:
 protected:
 	bool _get(const StringName &p_name, Variant &r_ret) const;
 	bool _set(const StringName &p_name, const Variant &p_value);
-	void _get_property_list(List<PropertyInfo> *p_properties) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_properties) const;
 
 	Variant callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
 
@@ -329,7 +329,7 @@ public:
 
 	virtual MethodInfo get_method_info(const StringName &p_method) const override;
 
-	virtual void get_script_property_list(List<PropertyInfo> *p_list) const override;
+	virtual void get_script_property_list(LocalVector<PropertyInfo> &p_list) const override;
 
 	virtual ScriptLanguage *get_language() const override;
 
@@ -383,7 +383,7 @@ public:
 
 	virtual bool set(const StringName &p_name, const Variant &p_value);
 	virtual bool get(const StringName &p_name, Variant &r_ret) const;
-	virtual void get_property_list(List<PropertyInfo> *p_properties) const;
+	virtual void get_property_list(LocalVector<PropertyInfo> &p_properties) const;
 	virtual Variant::Type get_property_type(const StringName &p_name, bool *r_is_valid = nullptr) const;
 	virtual void validate_property(PropertyInfo &p_property) const;
 

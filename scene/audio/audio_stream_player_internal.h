@@ -84,7 +84,7 @@ public:
 	void validate_property(PropertyInfo &p_property) const;
 	bool set(const StringName &p_name, const Variant &p_value);
 	bool get(const StringName &p_name, Variant &r_ret) const;
-	void get_property_list(List<PropertyInfo> *p_list) const;
+	void get_property_list(LocalVector<PropertyInfo> &p_LocalVector) const;
 
 	void set_stream(Ref<AudioStream> p_stream);
 	void set_pitch_scale(float p_pitch_scale);

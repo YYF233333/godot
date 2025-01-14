@@ -50,8 +50,8 @@
 #include "scene/resources/image_texture.h"
 
 static bool _has_sub_resources(const Ref<Resource> &p_res) {
-	List<PropertyInfo> property_list;
-	p_res->get_property_list(&property_list);
+	LocalVector<PropertyInfo> property_list;
+	p_res->get_property_list(property_list);
 	for (const PropertyInfo &p : property_list) {
 		Variant value = p_res->get(p.name);
 		if (p.type == Variant::OBJECT && p.hint == PROPERTY_HINT_RESOURCE_TYPE && !(p.usage & PROPERTY_USAGE_NEVER_DUPLICATE) && p_res->get(p.name).get_validated_object()) {
@@ -1246,8 +1246,8 @@ void EditorResourcePicker::_gather_resources_to_duplicate(const Ref<Resource> p_
 		p_item->set_checked(0, true);
 	}
 
-	List<PropertyInfo> plist;
-	p_resource->get_property_list(&plist);
+	LocalVector<PropertyInfo> plist;
+	p_resource->get_property_list(plist);
 
 	for (const PropertyInfo &E : plist) {
 		if (!(E.usage & PROPERTY_USAGE_STORAGE) || (E.type != Variant::OBJECT && E.type != Variant::ARRAY && E.type != Variant::DICTIONARY)) {

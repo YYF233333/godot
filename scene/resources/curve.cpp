@@ -631,30 +631,30 @@ bool Curve::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void Curve::_get_property_list(List<PropertyInfo> *p_list) const {
+void Curve::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	for (uint32_t i = 0; i < _points.size(); i++) {
 		PropertyInfo pi = PropertyInfo(Variant::VECTOR2, vformat("point_%d/position", i));
 		pi.usage &= ~PROPERTY_USAGE_STORAGE;
-		p_list->push_back(pi);
+		p_list.push_back(pi);
 
 		if (i != 0) {
 			pi = PropertyInfo(Variant::FLOAT, vformat("point_%d/left_tangent", i));
 			pi.usage &= ~PROPERTY_USAGE_STORAGE;
-			p_list->push_back(pi);
+			p_list.push_back(pi);
 
 			pi = PropertyInfo(Variant::INT, vformat("point_%d/left_mode", i), PROPERTY_HINT_ENUM, "Free,Linear");
 			pi.usage &= ~PROPERTY_USAGE_STORAGE;
-			p_list->push_back(pi);
+			p_list.push_back(pi);
 		}
 
 		if (i != _points.size() - 1) {
 			pi = PropertyInfo(Variant::FLOAT, vformat("point_%d/right_tangent", i));
 			pi.usage &= ~PROPERTY_USAGE_STORAGE;
-			p_list->push_back(pi);
+			p_list.push_back(pi);
 
 			pi = PropertyInfo(Variant::INT, vformat("point_%d/right_mode", i), PROPERTY_HINT_ENUM, "Free,Linear");
 			pi.usage &= ~PROPERTY_USAGE_STORAGE;
-			p_list->push_back(pi);
+			p_list.push_back(pi);
 		}
 	}
 }
@@ -1379,22 +1379,22 @@ bool Curve2D::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void Curve2D::_get_property_list(List<PropertyInfo> *p_list) const {
+void Curve2D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	for (uint32_t i = 0; i < points.size(); i++) {
 		PropertyInfo pi = PropertyInfo(Variant::VECTOR2, vformat("point_%d/position", i));
 		pi.usage &= ~PROPERTY_USAGE_STORAGE;
-		p_list->push_back(pi);
+		p_list.push_back(pi);
 
 		if (i != 0) {
 			pi = PropertyInfo(Variant::VECTOR2, vformat("point_%d/in", i));
 			pi.usage &= ~PROPERTY_USAGE_STORAGE;
-			p_list->push_back(pi);
+			p_list.push_back(pi);
 		}
 
 		if (i != points.size() - 1) {
 			pi = PropertyInfo(Variant::VECTOR2, vformat("point_%d/out", i));
 			pi.usage &= ~PROPERTY_USAGE_STORAGE;
-			p_list->push_back(pi);
+			p_list.push_back(pi);
 		}
 	}
 }
@@ -2448,27 +2448,27 @@ bool Curve3D::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void Curve3D::_get_property_list(List<PropertyInfo> *p_list) const {
+void Curve3D::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	for (uint32_t i = 0; i < points.size(); i++) {
 		PropertyInfo pi = PropertyInfo(Variant::VECTOR3, vformat("point_%d/position", i));
 		pi.usage &= ~PROPERTY_USAGE_STORAGE;
-		p_list->push_back(pi);
+		p_list.push_back(pi);
 
 		if (closed || i != 0) {
 			pi = PropertyInfo(Variant::VECTOR3, vformat("point_%d/in", i));
 			pi.usage &= ~PROPERTY_USAGE_STORAGE;
-			p_list->push_back(pi);
+			p_list.push_back(pi);
 		}
 
 		if (closed || i != points.size() - 1) {
 			pi = PropertyInfo(Variant::VECTOR3, vformat("point_%d/out", i));
 			pi.usage &= ~PROPERTY_USAGE_STORAGE;
-			p_list->push_back(pi);
+			p_list.push_back(pi);
 		}
 
 		pi = PropertyInfo(Variant::FLOAT, vformat("point_%d/tilt", i), PROPERTY_HINT_RANGE, "-360,360,0.1,or_less,or_greater,radians_as_degrees");
 		pi.usage &= ~PROPERTY_USAGE_STORAGE;
-		p_list->push_back(pi);
+		p_list.push_back(pi);
 	}
 }
 

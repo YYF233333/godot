@@ -59,8 +59,8 @@ Variant ScriptInstance::call_const(const StringName &p_method, const Variant **p
 }
 
 void ScriptInstance::get_property_state(List<Pair<StringName, Variant>> &state) {
-	List<PropertyInfo> pinfo;
-	get_property_list(&pinfo);
+	LocalVector<PropertyInfo> pinfo;
+	get_property_list(pinfo);
 	for (const PropertyInfo &E : pinfo) {
 		if (E.usage & PROPERTY_USAGE_STORAGE) {
 			Pair<StringName, Variant> p;

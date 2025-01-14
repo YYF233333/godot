@@ -371,7 +371,7 @@ protected:
 
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	void _get_property_list(List<PropertyInfo> *p_list) const;
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const;
 	void _validate_property(PropertyInfo &p_property) const;
 
 	bool _property_can_revert(const StringName &p_name) const;

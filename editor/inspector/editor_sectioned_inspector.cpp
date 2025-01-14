@@ -89,13 +89,13 @@ class SectionedInspectorFilter : public Object {
 		r_ret = edited->get(name, &valid);
 		return valid;
 	}
-	void _get_property_list(List<PropertyInfo> *p_list) const {
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const {
 		if (!edited) {
 			return;
 		}
 
-		List<PropertyInfo> pinfo;
-		edited->get_property_list(&pinfo);
+		LocalVector<PropertyInfo> pinfo;
+		edited->get_property_list(pinfo);
 		for (PropertyInfo &pi : pinfo) {
 			int sp = pi.name.find_char('/');
 
@@ -112,7 +112,7 @@ class SectionedInspectorFilter : public Object {
 				if (!allow_sub && pi.name.contains_char('/')) {
 					continue;
 				}
-				p_list->push_back(pi);
+				p_list.push_back(pi);
 			}
 		}
 	}
@@ -227,8 +227,8 @@ void SectionedInspector::update_category_list() {
 		return;
 	}
 
-	List<PropertyInfo> pinfo;
-	o->get_property_list(&pinfo);
+	LocalVector<PropertyInfo> pinfo;
+	o->get_property_list(pinfo);
 
 	section_map.clear();
 

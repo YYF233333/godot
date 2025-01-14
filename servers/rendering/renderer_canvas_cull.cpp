@@ -1968,7 +1968,7 @@ Variant RendererCanvasCull::canvas_item_get_instance_shader_parameter_default_va
 	return item->instance_uniforms.get_default(p_parameter);
 }
 
-void RendererCanvasCull::canvas_item_get_instance_shader_parameter_list(RID p_item, List<PropertyInfo> *p_parameters) const {
+void RendererCanvasCull::canvas_item_get_instance_shader_parameter_list(RID p_item, LocalVector<PropertyInfo> *p_parameters) const {
 	ERR_FAIL_NULL(p_parameters);
 	const Item *item = const_cast<RendererCanvasCull *>(this)->canvas_item_owner.get_or_null(p_item);
 	ERR_FAIL_NULL(item);

@@ -811,8 +811,8 @@ Variant JSON::_from_native(const Variant &p_variant, bool p_full_objects, int p_
 
 			ERR_FAIL_COND_V(!ClassDB::can_instantiate(obj->get_class()), Variant());
 
-			List<PropertyInfo> prop_list;
-			obj->get_property_list(&prop_list);
+			LocalVector<PropertyInfo> prop_list;
+			obj->get_property_list(prop_list);
 
 			Array props;
 			for (const PropertyInfo &pi : prop_list) {
