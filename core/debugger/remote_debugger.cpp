@@ -573,8 +573,8 @@ void RemoteDebugger::debug(bool p_can_continue, bool p_is_error_breakpoint) {
 					input_vals.append(V);
 				}
 
-				List<StringName> native_types;
-				ClassDB::get_class_list(&native_types);
+				LocalVector<StringName> native_types;
+				ClassDB::get_class_list(native_types);
 				for (const StringName &E : native_types) {
 					if (!ClassDB::is_class_exposed(E) || !Engine::get_singleton()->has_singleton(E) || Engine::get_singleton()->is_singleton_editor_only(E)) {
 						continue;
@@ -584,8 +584,8 @@ void RemoteDebugger::debug(bool p_can_continue, bool p_is_error_breakpoint) {
 					input_vals.append(Engine::get_singleton()->get_singleton_object(E));
 				}
 
-				List<StringName> user_types;
-				ScriptServer::get_global_class_list(&user_types);
+				LocalVector<StringName> user_types;
+				ScriptServer::get_global_class_list(user_types);
 				for (const StringName &S : user_types) {
 					String scr_path = ScriptServer::get_global_class_path(S);
 					Ref<Script> scr = ResourceLoader::load(scr_path, "Script");

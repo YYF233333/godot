@@ -288,8 +288,8 @@ EditorPlugin *EditorData::get_editor_by_name(const String &p_name) {
 void EditorData::copy_object_params(Object *p_object) {
 	clipboard.clear();
 
-	List<PropertyInfo> pinfo;
-	p_object->get_property_list(&pinfo);
+	LocalVector<PropertyInfo> pinfo;
+	p_object->get_property_list(pinfo);
 
 	for (const PropertyInfo &E : pinfo) {
 		if (!(E.usage & PROPERTY_USAGE_EDITOR) || E.name == "script" || E.name == "scripts" || E.name == "resource_path") {
@@ -595,8 +595,8 @@ void EditorData::remove_custom_type(const String &p_type) {
 void EditorData::instantiate_object_properties(Object *p_object) {
 	ERR_FAIL_NULL(p_object);
 	// Check if any Object-type property should be instantiated.
-	List<PropertyInfo> pinfo;
-	p_object->get_property_list(&pinfo);
+	LocalVector<PropertyInfo> pinfo;
+	p_object->get_property_list(pinfo);
 
 	for (const PropertyInfo &pi : pinfo) {
 		if (pi.type == Variant::OBJECT && pi.usage & PROPERTY_USAGE_EDITOR_INSTANTIATE_OBJECT) {

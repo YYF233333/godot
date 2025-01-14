@@ -127,7 +127,7 @@ bool GraphNode::_get(const StringName &p_name, Variant &r_ret) const {
 	return true;
 }
 
-void GraphNode::_get_property_list(List<PropertyInfo> *p_list) const {
+void GraphNode::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	int idx = 0;
 	for (int i = 0; i < get_child_count(false); i++) {
 		Control *child = as_sortable_control(get_child(i, false), SortableVisibilityMode::IGNORE);
@@ -137,15 +137,15 @@ void GraphNode::_get_property_list(List<PropertyInfo> *p_list) const {
 
 		String base = "slot/" + itos(idx) + "/";
 
-		p_list->push_back(PropertyInfo(Variant::BOOL, base + "left_enabled"));
-		p_list->push_back(PropertyInfo(Variant::INT, base + "left_type"));
-		p_list->push_back(PropertyInfo(Variant::COLOR, base + "left_color"));
-		p_list->push_back(PropertyInfo(Variant::OBJECT, base + "left_icon", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_STORE_IF_NULL));
-		p_list->push_back(PropertyInfo(Variant::BOOL, base + "right_enabled"));
-		p_list->push_back(PropertyInfo(Variant::INT, base + "right_type"));
-		p_list->push_back(PropertyInfo(Variant::COLOR, base + "right_color"));
-		p_list->push_back(PropertyInfo(Variant::OBJECT, base + "right_icon", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_STORE_IF_NULL));
-		p_list->push_back(PropertyInfo(Variant::BOOL, base + "draw_stylebox"));
+		p_list.push_back(PropertyInfo(Variant::BOOL, base + "left_enabled"));
+		p_list.push_back(PropertyInfo(Variant::INT, base + "left_type"));
+		p_list.push_back(PropertyInfo(Variant::COLOR, base + "left_color"));
+		p_list.push_back(PropertyInfo(Variant::OBJECT, base + "left_icon", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_STORE_IF_NULL));
+		p_list.push_back(PropertyInfo(Variant::BOOL, base + "right_enabled"));
+		p_list.push_back(PropertyInfo(Variant::INT, base + "right_type"));
+		p_list.push_back(PropertyInfo(Variant::COLOR, base + "right_color"));
+		p_list.push_back(PropertyInfo(Variant::OBJECT, base + "right_icon", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_STORE_IF_NULL));
+		p_list.push_back(PropertyInfo(Variant::BOOL, base + "draw_stylebox"));
 		idx++;
 	}
 }

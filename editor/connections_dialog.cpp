@@ -107,9 +107,9 @@ public:
 		return true;
 	}
 
-	void _get_property_list(List<PropertyInfo> *p_list) const {
+	void _get_property_list(LocalVector<PropertyInfo> &p_list) const {
 		for (int i = 0; i < params.size(); i++) {
-			p_list->push_back(PropertyInfo(params[i].get_type(), "bind/argument_" + itos(i + 1)));
+			p_list.push_back(PropertyInfo(params[i].get_type(), "bind/argument_" + itos(i + 1)));
 		}
 	}
 
