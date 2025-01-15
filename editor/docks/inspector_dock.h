@@ -104,7 +104,7 @@ class InspectorDock : public EditorDock {
 	Tree *unique_resources_list_tree = nullptr;
 
 	EditorPropertyNameProcessor::Style property_name_style;
-	List<Pair<StringName, Variant>> stored_properties;
+	LocalVector<Pair<StringName, Variant>> stored_properties;
 
 	void _prepare_menu();
 	void _menu_option(int p_option);
