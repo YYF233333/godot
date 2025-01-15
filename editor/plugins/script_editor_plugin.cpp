@@ -195,9 +195,7 @@ void EditorStandardSyntaxHighlighter::_update_cache() {
 
 		/* Comments */
 		const Color comment_color = EDITOR_GET("text_editor/theme/highlighting/comment_color");
-		List<String> comments;
-		scr_lang->get_comment_delimiters(&comments);
-		for (const String &comment : comments) {
+		for (const String &comment : scr_lang->get_comment_delimiters()) {
 			String beg = comment.get_slicec(' ', 0);
 			String end = comment.get_slice_count(" ") > 1 ? comment.get_slicec(' ', 1) : String();
 			highlighter->add_color_region(beg, end, comment_color, end.is_empty());
