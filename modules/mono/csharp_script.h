@@ -499,7 +499,7 @@ public:
 	void finalize();
 
 	/* EDITOR FUNCTIONS */
-	void get_reserved_words(List<String> *p_words) const override;
+	Vector<String> get_reserved_words() const override;
 	bool is_control_flow_keyword(const String &p_keyword) const override;
 	void get_comment_delimiters(List<String> *p_delimiters) const override;
 	void get_doc_comment_delimiters(List<String> *p_delimiters) const override;

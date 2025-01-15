@@ -255,7 +255,7 @@ public:
 	};
 
 	LocalVector<String> get_core_type_words() const;
-	virtual void get_reserved_words(List<String> *p_words) const = 0;
+	virtual Vector<String> get_reserved_words() const = 0;
 	virtual bool is_control_flow_keyword(const String &p_string) const = 0;
 	virtual void get_comment_delimiters(List<String> *p_delimiters) const = 0;
 	virtual void get_doc_comment_delimiters(List<String> *p_delimiters) const = 0;

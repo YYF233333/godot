@@ -130,9 +130,7 @@ bool EditorAutoloadSettings::_autoload_name_is_valid(const String &p_name, Strin
 	}
 
 	for (int i = 0; i < ScriptServer::get_language_count(); i++) {
-		List<String> keywords;
-		ScriptServer::get_language(i)->get_reserved_words(&keywords);
-		for (const String &E : keywords) {
+		for (const String &E : ScriptServer::get_language(i)->get_reserved_words()) {
 			if (E == p_name) {
 				if (r_error) {
 					*r_error = TTR("Invalid name.") + " " + TTR("Keyword cannot be used as an Autoload name.");
