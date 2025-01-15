@@ -241,12 +241,10 @@ public:
 
 	GDVIRTUAL0RC_REQUIRED(Vector<String>, _get_reserved_words)
 
-	virtual void get_reserved_words(List<String> *p_words) const override {
+	virtual Vector<String> get_reserved_words() const override {
 		Vector<String> ret;
 		GDVIRTUAL_CALL(_get_reserved_words, ret);
-		for (int i = 0; i < ret.size(); i++) {
-			p_words->push_back(ret[i]);
-		}
+		return ret;
 	}
 	EXBIND1RC(bool, is_control_flow_keyword, const String &)
 

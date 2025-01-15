@@ -2721,69 +2721,63 @@ void GDScriptLanguage::frame() {
 }
 
 /* EDITOR FUNCTIONS */
-void GDScriptLanguage::get_reserved_words(List<String> *p_words) const {
+Vector<String> GDScriptLanguage::get_reserved_words() const {
 	// Please keep alphabetical order within categories.
-	static const char *_reserved_words[] = {
+	Vector<String> ret = {
 		// Control flow.
-		"break",
-		"continue",
-		"elif",
-		"else",
-		"for",
-		"if",
-		"match",
-		"pass",
-		"return",
-		"when",
-		"while",
+		String("break"),
+		String("continue"),
+		String("elif"),
+		String("else"),
+		String("for"),
+		String("if"),
+		String("match"),
+		String("pass"),
+		String("return"),
+		String("when"),
+		String("while"),
 		// Declarations.
-		"class",
-		"class_name",
-		"const",
-		"enum",
-		"extends",
-		"func",
-		"namespace", // Reserved for potential future use.
-		"signal",
-		"static",
-		"trait", // Reserved for potential future use.
-		"var",
+		String("class"),
+		String("class_name"),
+		String("const"),
+		String("enum"),
+		String("extends"),
+		String("func"),
+		String("namespace"), // Reserved for potential future use.
+		String("signal"),
+		String("static"),
+		String("trait"), // Reserved for potential future use.
+		String("var"),
 		// Other keywords.
-		"await",
-		"breakpoint",
-		"self",
-		"super",
-		"yield", // Reserved for potential future use.
+		String("await"),
+		String("breakpoint"),
+		String("self"),
+		String("super"),
+		String("yield"), // Reserved for potential future use.
 		// Operators.
-		"and",
-		"as",
-		"in",
-		"is",
-		"not",
-		"or",
+		String("and"),
+		String("as"),
+		String("in"),
+		String("is"),
+		String("not"),
+		String("or"),
 		// Special values (tokenizer treats them as literals, not as tokens).
-		"false",
-		"null",
-		"true",
+		String("false"),
+		String("null"),
+		String("true"),
 		// Constants.
-		"INF",
-		"NAN",
-		"PI",
-		"TAU",
+		String("INF"),
+		String("NAN"),
+		String("PI"),
+		String("TAU"),
 		// Functions (highlighter uses global function color instead).
-		"assert",
-		"preload",
+		String("assert"),
+		String("preload"),
 		// Types (highlighter uses type color instead).
-		"void",
-		nullptr,
+		String("void"),
 	};
 
-	const char **w = _reserved_words;
-
-	while (*w) {
-		p_words->push_back(*w);
-		w++;
-	}
+	return ret;
 }
 
 bool GDScriptLanguage::is_control_flow_keyword(const String &p_keyword) const {
