@@ -140,7 +140,7 @@ static void test_directory(const String &p_dir) {
 			List<Dictionary> exclude;
 			to_dict_list(conf.get_value("output", "exclude", Array()), exclude);
 
-			List<ScriptLanguage::CodeCompletionOption> options;
+			LocalVector<ScriptLanguage::CodeCompletionOption> options;
 			String call_hint;
 			bool forced;
 
@@ -183,7 +183,7 @@ static void test_directory(const String &p_dir) {
 				owner->set_script(scr);
 			}
 
-			GDScriptLanguage::get_singleton()->complete_code(code, res_path, owner, &options, forced, call_hint);
+			GDScriptLanguage::get_singleton()->complete_code(code, res_path, owner, options, forced, call_hint);
 			String contains_excluded;
 			for (ScriptLanguage::CodeCompletionOption &option : options) {
 				for (const Dictionary &E : exclude) {
