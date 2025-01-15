@@ -98,7 +98,7 @@ public:
 	static bool is_global_class_abstract(const String &p_class);
 	static bool is_global_class_tool(const String &p_class);
 	static void get_global_class_list(LocalVector<StringName> &r_global_classes);
-	static void get_inheriters_list(const StringName &p_base_type, List<StringName> *r_classes);
+	static Vector<StringName> get_inheriters_list(const StringName &p_base_type);
 	static void save_global_classes();
 
 	static void init_languages();
@@ -261,7 +261,7 @@ public:
 		}
 	};
 
-	void get_core_type_words(List<String> *p_core_type_words) const;
+	LocalVector<String> get_core_type_words() const;
 	virtual void get_reserved_words(List<String> *p_words) const = 0;
 	virtual bool is_control_flow_keyword(const String &p_string) const = 0;
 	virtual void get_comment_delimiters(List<String> *p_delimiters) const = 0;
