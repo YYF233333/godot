@@ -61,12 +61,15 @@ Vector<String> GDScriptLanguage::get_doc_comment_delimiters() const {
 	return delimiters;
 }
 
-void GDScriptLanguage::get_string_delimiters(List<String> *p_delimiters) const {
-	p_delimiters->push_back("\" \"");
-	p_delimiters->push_back("' '");
-	p_delimiters->push_back("\"\"\" \"\"\"");
-	p_delimiters->push_back("''' '''");
+Vector<String> GDScriptLanguage::get_string_delimiters() const {
+	Vector<String> delimiters = {
+		"\" \"",
+		"' '",
+		"\"\"\" \"\"\"",
+		"''' '''",
+	};
 	// NOTE: StringName, NodePath and r-strings are not listed here.
+	return delimiters;
 }
 
 bool GDScriptLanguage::is_using_templates() {
