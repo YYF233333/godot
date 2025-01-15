@@ -162,9 +162,7 @@ void EditorStandardSyntaxHighlighter::_update_cache() {
 		/* Reserved words. */
 		const Color keyword_color = EDITOR_GET("text_editor/theme/highlighting/keyword_color");
 		const Color control_flow_keyword_color = EDITOR_GET("text_editor/theme/highlighting/control_flow_keyword_color");
-		List<String> keywords;
-		scr_lang->get_reserved_words(&keywords);
-		for (const String &E : keywords) {
+		for (const String &E : scr_lang->get_reserved_words()) {
 			if (scr_lang->is_control_flow_keyword(E)) {
 				highlighter->add_keyword_color(E, control_flow_keyword_color);
 			} else {
