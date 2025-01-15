@@ -1061,10 +1061,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 			}
 
 			// Get constants.
-			List<Pair<String, Variant>> cinfo;
-			lang->get_public_constants(&cinfo);
-
-			for (const Pair<String, Variant> &E : cinfo) {
+			for (const Pair<String, Variant> &E : lang->get_public_constants()) {
 				DocData::ConstantDoc cd;
 				cd.name = E.first;
 				cd.value = E.second;
