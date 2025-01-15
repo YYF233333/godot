@@ -423,7 +423,7 @@ public:
 	virtual void get_recognized_extensions(LocalVector<String> &p_extensions) const = 0;
 	virtual LocalVector<MethodInfo> get_public_functions() const = 0;
 	virtual LocalVector<Pair<String, Variant>> get_public_constants() const = 0;
-	virtual void get_public_annotations(List<MethodInfo> *p_annotations) const = 0;
+	virtual LocalVector<MethodInfo> get_public_annotations() const = 0;
 
 	struct ProfilingInfo {
 		StringName signature;
