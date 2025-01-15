@@ -1079,10 +1079,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 			}
 
 			// Get annotations.
-			List<MethodInfo> ainfo;
-			lang->get_public_annotations(&ainfo);
-
-			for (const MethodInfo &ai : ainfo) {
+			for (const MethodInfo &ai : lang->get_public_annotations()) {
 				DocData::MethodDoc atd;
 				atd.name = ai.name;
 

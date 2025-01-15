@@ -563,7 +563,7 @@ public:
 
 	/* TODO? */ LocalVector<MethodInfo> get_public_functions() const override { return LocalVector<MethodInfo>(); }
 	/* TODO? */ LocalVector<Pair<String, Variant>> get_public_constants() const override { return LocalVector<Pair<String, Variant>>(); }
-	/* TODO? */ void get_public_annotations(List<MethodInfo> *p_annotations) const override {}
+	/* TODO? */ LocalVector<MethodInfo> get_public_annotations() const override { return LocalVector<MethodInfo>(); }
 
 	void reload_all_scripts() override;
 	void reload_scripts(const Array &p_scripts, bool p_soft_reload) override;

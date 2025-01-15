@@ -643,7 +643,7 @@ public:
 
 	virtual LocalVector<MethodInfo> get_public_functions() const override;
 	virtual LocalVector<Pair<String, Variant>> get_public_constants() const override;
-	virtual void get_public_annotations(List<MethodInfo> *p_annotations) const override;
+	virtual LocalVector<MethodInfo> get_public_annotations() const override;
 
 	virtual void profiling_start() override;
 	virtual void profiling_stop() override;

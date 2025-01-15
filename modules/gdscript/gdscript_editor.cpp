@@ -516,14 +516,9 @@ LocalVector<Pair<String, Variant>> GDScriptLanguage::get_public_constants() cons
 	return constants;
 }
 
-void GDScriptLanguage::get_public_annotations(List<MethodInfo> *p_annotations) const {
+LocalVector<MethodInfo> GDScriptLanguage::get_public_annotations() const {
 	GDScriptParser parser;
-	List<MethodInfo> annotations;
-	parser.get_annotation_list(&annotations);
-
-	for (const MethodInfo &E : annotations) {
-		p_annotations->push_back(E);
-	}
+	return parser.get_annotation_list();
 }
 
 String GDScriptLanguage::make_function(const String &p_class, const String &p_name, const PackedStringArray &p_args) const {
@@ -3464,9 +3459,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 		case GDScriptParser::COMPLETION_NONE:
 			break;
 		case GDScriptParser::COMPLETION_ANNOTATION: {
-			List<MethodInfo> annotations;
-			parser.get_annotation_list(&annotations);
-			for (const MethodInfo &E : annotations) {
+			for (const MethodInfo &E : parser.get_annotation_list()) {
 				ScriptLanguage::CodeCompletionOption option(E.name.substr(1), ScriptLanguage::CODE_COMPLETION_KIND_PLAIN_TEXT);
 				if (E.arguments.size() > 0) {
 					option.insert_text += "(";

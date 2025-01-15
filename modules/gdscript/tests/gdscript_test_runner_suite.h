@@ -119,11 +119,8 @@ TEST_CASE("[Modules][GDScript] Validate built-in API") {
 	}
 
 	// Validate annotations.
-	List<MethodInfo> builtin_annotations;
-	lang->get_public_annotations(&builtin_annotations);
-
 	SUBCASE("[Modules][GDScript] Validate built-in annotations") {
-		for (const MethodInfo &ai : builtin_annotations) {
+		for (const MethodInfo &ai : lang->get_public_annotations()) {
 			for (int64_t i = 0; i < ai.arguments.size(); ++i) {
 				TEST_COND((ai.arguments[i].name.is_empty() || ai.arguments[i].name.begins_with("_unnamed_arg")),
 						vformat("Unnamed argument in position %d of built-in annotation '%s'.", i, ai.name));

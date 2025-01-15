@@ -85,10 +85,13 @@ void GDScriptParser::cleanup() {
 	valid_annotations.clear();
 }
 
-void GDScriptParser::get_annotation_list(List<MethodInfo> *r_annotations) const {
+LocalVector<MethodInfo> GDScriptParser::get_annotation_list() const {
+	LocalVector<MethodInfo> annotations;
+	annotations.reserve(valid_annotations.size());
 	for (const KeyValue<StringName, AnnotationInfo> &E : valid_annotations) {
-		r_annotations->push_back(E.value.info);
+		annotations.push_back(E.value.info);
 	}
+	return annotations;
 }
 
 bool GDScriptParser::annotation_exists(const String &p_annotation_name) const {
