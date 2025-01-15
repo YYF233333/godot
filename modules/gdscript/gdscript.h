@@ -204,7 +204,7 @@ private:
 #endif
 
 #ifdef DEBUG_ENABLED
-	HashMap<ObjectID, List<Pair<StringName, Variant>>> pending_reload_state;
+	HashMap<ObjectID, LocalVector<Pair<StringName, Variant>>> pending_reload_state;
 #endif
 
 	bool _update_exports(bool *r_err = nullptr, bool p_recursive_call = false, PlaceHolderScriptInstance *p_instance_to_update = nullptr, bool p_base_exports_changed = false);
