@@ -392,14 +392,14 @@ public:
 
 	GDVIRTUAL3RC_REQUIRED(Dictionary, _complete_code, const String &, const String &, Object *)
 
-	virtual Error complete_code(const String &p_code, const String &p_path, Object *p_owner, List<CodeCompletionOption> *r_options, bool &r_force, String &r_call_hint) override {
+	virtual Error complete_code(const String &p_code, const String &p_path, Object *p_owner, LocalVector<CodeCompletionOption> &r_options, bool &r_force, String &r_call_hint) override {
 		Dictionary ret;
 		GDVIRTUAL_CALL(_complete_code, p_code, p_path, p_owner, ret);
 		if (!ret.has("result")) {
 			return ERR_UNAVAILABLE;
 		}
 
-		if (r_options != nullptr && ret.has("options")) {
+		if (ret.has("options")) {
 			Array options = ret["options"];
 			for (const Variant &var : options) {
 				Dictionary op = var;
@@ -426,7 +426,7 @@ public:
 					}
 				}
 				option.matches_dirty = true;
-				r_options->push_back(option);
+				r_options.push_back(option);
 			}
 		}
 

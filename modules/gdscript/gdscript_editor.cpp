@@ -3435,7 +3435,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 	r_forced = r_result.size() > 0;
 }
 
-::Error GDScriptLanguage::complete_code(const String &p_code, const String &p_path, Object *p_owner, List<ScriptLanguage::CodeCompletionOption> *r_options, bool &r_forced, String &r_call_hint) {
+::Error GDScriptLanguage::complete_code(const String &p_code, const String &p_path, Object *p_owner, LocalVector<ScriptLanguage::CodeCompletionOption> &r_options, bool &r_forced, String &r_call_hint) {
 	const String quote_style = EDITOR_GET("text_editor/completion/use_single_quotes") ? "'" : "\"";
 
 	GDScriptParser parser;
@@ -3836,7 +3836,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 	}
 
 	for (const KeyValue<String, ScriptLanguage::CodeCompletionOption> &E : options) {
-		r_options->push_back(E.value);
+		r_options.push_back(E.value);
 	}
 
 	return OK;
@@ -3844,7 +3844,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 
 #else // !TOOLS_ENABLED
 
-Error GDScriptLanguage::complete_code(const String &p_code, const String &p_path, Object *p_owner, List<ScriptLanguage::CodeCompletionOption> *r_options, bool &r_forced, String &r_call_hint) {
+Error GDScriptLanguage::complete_code(const String &p_code, const String &p_path, Object *p_owner, LocalVector<ScriptLanguage::CodeCompletionOption> &r_options, bool &r_forced, String &r_call_hint) {
 	return OK;
 }
 
