@@ -87,11 +87,8 @@ TEST_CASE("[Modules][GDScript] Validate built-in API") {
 	}
 
 	// Validate annotations.
-	List<MethodInfo> builtin_annotations;
-	lang->get_public_annotations(&builtin_annotations);
-
 	SUBCASE("[Modules][GDScript] Validate built-in annotations") {
-		for (const MethodInfo &ai : builtin_annotations) {
+		for (const MethodInfo &ai : lang->get_public_annotations()) {
 			int i = 0;
 			for (LocalVector<PropertyInfo>::ConstIterator itr = ai.arguments.begin(); itr != ai.arguments.end(); ++itr, ++i) {
 				TEST_COND((itr->name.is_empty() || itr->name.begins_with("_unnamed_arg")),
