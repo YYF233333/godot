@@ -2592,7 +2592,7 @@ void GDScriptLanguage::reload_scripts(const Array &p_scripts, bool p_soft_reload
 
 	//when someone asks you why dynamically typed languages are easier to write....
 
-	HashMap<Ref<GDScript>, HashMap<ObjectID, List<Pair<StringName, Variant>>>> to_reload;
+	HashMap<Ref<GDScript>, HashMap<ObjectID, LocalVector<Pair<StringName, Variant>>>> to_reload;
 
 	//as scripts are going to be reloaded, must proceed without locking here
 
@@ -2605,16 +2605,16 @@ void GDScriptLanguage::reload_scripts(const Array &p_scripts, bool p_soft_reload
 			continue;
 		}
 
-		to_reload.insert(scr, HashMap<ObjectID, List<Pair<StringName, Variant>>>());
+		to_reload.insert(scr, HashMap<ObjectID, LocalVector<Pair<StringName, Variant>>>());
 
 		if (!p_soft_reload) {
 			//save state and remove script from instances
-			HashMap<ObjectID, List<Pair<StringName, Variant>>> &map = to_reload[scr];
+			HashMap<ObjectID, LocalVector<Pair<StringName, Variant>>> &map = to_reload[scr];
 
 			while (scr->instances.front()) {
 				Object *obj = scr->instances.front()->get();
 				//save instance info
-				List<Pair<StringName, Variant>> state;
+				LocalVector<Pair<StringName, Variant>> state;
 				if (obj->get_script_instance()) {
 					obj->get_script_instance()->get_property_state(state);
 					map[obj->get_instance_id()] = state;
@@ -2630,8 +2630,8 @@ void GDScriptLanguage::reload_scripts(const Array &p_scripts, bool p_soft_reload
 
 				//save instance info
 				if (obj->get_script_instance()) {
-					map.insert(obj->get_instance_id(), List<Pair<StringName, Variant>>());
-					List<Pair<StringName, Variant>> &state = map[obj->get_instance_id()];
+					map.insert(obj->get_instance_id(), LocalVector<Pair<StringName, Variant>>());
+					LocalVector<Pair<StringName, Variant>> &state = map[obj->get_instance_id()];
 					obj->get_script_instance()->get_property_state(state);
 					obj->set_script(Variant());
 				} else {
@@ -2642,13 +2642,13 @@ void GDScriptLanguage::reload_scripts(const Array &p_scripts, bool p_soft_reload
 
 #endif // TOOLS_ENABLED
 
-			for (const KeyValue<ObjectID, List<Pair<StringName, Variant>>> &F : scr->pending_reload_state) {
+			for (const KeyValue<ObjectID, LocalVector<Pair<StringName, Variant>>> &F : scr->pending_reload_state) {
 				map[F.key] = F.value; //pending to reload, use this one instead
 			}
 		}
 	}
 
-	for (KeyValue<Ref<GDScript>, HashMap<ObjectID, List<Pair<StringName, Variant>>>> &E : to_reload) {
+	for (KeyValue<Ref<GDScript>, HashMap<ObjectID, LocalVector<Pair<StringName, Variant>>>> &E : to_reload) {
 		Ref<GDScript> scr = E.key;
 		print_verbose("GDScript: Reloading: " + scr->get_path());
 		if (scr->is_built_in()) {
@@ -2667,8 +2667,8 @@ void GDScriptLanguage::reload_scripts(const Array &p_scripts, bool p_soft_reload
 		scr->reload(p_soft_reload);
 
 		//restore state if saved
-		for (KeyValue<ObjectID, List<Pair<StringName, Variant>>> &F : E.value) {
-			List<Pair<StringName, Variant>> &saved_state = F.value;
+		for (KeyValue<ObjectID, LocalVector<Pair<StringName, Variant>>> &F : E.value) {
+			LocalVector<Pair<StringName, Variant>> &saved_state = F.value;
 
 			Object *obj = ObjectDB::get_instance(F.key);
 			if (!obj) {
@@ -2693,12 +2693,12 @@ void GDScriptLanguage::reload_scripts(const Array &p_scripts, bool p_soft_reload
 
 			if (script_inst->is_placeholder() && scr->is_placeholder_fallback_enabled()) {
 				PlaceHolderScriptInstance *placeholder = static_cast<PlaceHolderScriptInstance *>(script_inst);
-				for (List<Pair<StringName, Variant>>::Element *G = saved_state.front(); G; G = G->next()) {
-					placeholder->property_set_fallback(G->get().first, G->get().second);
+				for (const Pair<StringName, Variant> &G : saved_state) {
+					placeholder->property_set_fallback(G.first, G.second);
 				}
 			} else {
-				for (List<Pair<StringName, Variant>>::Element *G = saved_state.front(); G; G = G->next()) {
-					script_inst->set(G->get().first, G->get().second);
+				for (const Pair<StringName, Variant> &G : saved_state) {
+					script_inst->set(G.first, G.second);
 				}
 			}
 
