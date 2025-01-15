@@ -251,9 +251,7 @@ void ScriptTextEditor::_set_theme_for_script() {
 		}
 	}
 
-	List<String> doc_comments;
-	script->get_language()->get_doc_comment_delimiters(&doc_comments);
-	for (const String &doc_comment : doc_comments) {
+	for (const String &doc_comment : script->get_language()->get_doc_comment_delimiters()) {
 		String beg = doc_comment.get_slice(" ", 0);
 		String end = doc_comment.get_slice_count(" ") > 1 ? doc_comment.get_slice(" ", 1) : String();
 		text_edit->add_comment_delimiter(beg, end, end.is_empty());

@@ -778,9 +778,7 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 
 	/* Doc comments */
 	const Color doc_comment_color = EDITOR_GET("text_editor/theme/highlighting/doc_comment_color");
-	List<String> doc_comments;
-	gdscript->get_doc_comment_delimiters(&doc_comments);
-	for (const String &doc_comment : doc_comments) {
+	for (const String &doc_comment : gdscript->get_doc_comment_delimiters()) {
 		String beg = doc_comment.get_slice(" ", 0);
 		String end = doc_comment.get_slice_count(" ") > 1 ? doc_comment.get_slice(" ", 1) : String();
 		add_color_region(ColorRegion::TYPE_COMMENT, beg, end, doc_comment_color, end.is_empty());
