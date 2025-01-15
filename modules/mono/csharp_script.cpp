@@ -333,9 +333,12 @@ Vector<String> CSharpLanguage::get_comment_delimiters() const {
 	return delimiters;
 }
 
-void CSharpLanguage::get_doc_comment_delimiters(List<String> *p_delimiters) const {
-	p_delimiters->push_back("///"); // single-line doc comment
-	p_delimiters->push_back("/** */"); // delimited doc comment
+Vector<String> CSharpLanguage::get_doc_comment_delimiters() const {
+	Vector<String> delimiters = {
+		"///", // single-line doc comment
+		"/** */" // delimited doc comment
+	};
+	return delimiters;
 }
 
 void CSharpLanguage::get_string_delimiters(List<String> *p_delimiters) const {
