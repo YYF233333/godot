@@ -1025,12 +1025,12 @@ void CodeTextEditor::_code_complete_timer_timeout() {
 }
 
 void CodeTextEditor::_complete_request() {
-	List<ScriptLanguage::CodeCompletionOption> entries;
+	LocalVector<ScriptLanguage::CodeCompletionOption> entries;
 	String ctext = text_editor->get_text_for_code_completion();
-	_code_complete_script(ctext, &entries);
+	_code_complete_script(ctext, entries);
 	bool forced = false;
 	if (code_complete_func) {
-		code_complete_func(code_complete_ud, ctext, &entries, forced);
+		code_complete_func(code_complete_ud, ctext, entries, forced);
 	}
 
 	for (const ScriptLanguage::CodeCompletionOption &e : entries) {

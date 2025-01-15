@@ -1263,7 +1263,7 @@ public:
 	};
 
 	Error compile(const String &p_code, const ShaderCompileInfo &p_info);
-	Error complete(const String &p_code, const ShaderCompileInfo &p_info, List<ScriptLanguage::CodeCompletionOption> *r_options, String &r_call_hint);
+	Error complete(const String &p_code, const ShaderCompileInfo &p_info, LocalVector<ScriptLanguage::CodeCompletionOption> &r_options, String &r_call_hint);
 
 	String get_error_text();
 	Vector<FilePosition> get_include_positions();

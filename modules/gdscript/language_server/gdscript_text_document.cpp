@@ -186,8 +186,8 @@ Array GDScriptTextDocument::completion(const Dictionary &p_params) {
 	params.load(p_params);
 	Dictionary request_data = params.to_json();
 
-	List<ScriptLanguage::CodeCompletionOption> options;
-	GDScriptLanguageProtocol::get_singleton()->get_workspace()->completion(params, &options);
+	LocalVector<ScriptLanguage::CodeCompletionOption> options;
+	GDScriptLanguageProtocol::get_singleton()->get_workspace()->completion(params, options);
 
 	if (!options.is_empty()) {
 		int i = 0;
