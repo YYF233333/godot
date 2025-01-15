@@ -51,8 +51,9 @@
 #include "editor/editor_settings.h"
 #endif
 
-void GDScriptLanguage::get_comment_delimiters(List<String> *p_delimiters) const {
-	p_delimiters->push_back("#");
+Vector<String> GDScriptLanguage::get_comment_delimiters() const {
+	Vector<String> delimiters = { "#" };
+	return delimiters;
 }
 
 void GDScriptLanguage::get_doc_comment_delimiters(List<String> *p_delimiters) const {
