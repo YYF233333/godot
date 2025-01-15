@@ -613,15 +613,18 @@ public:
 		return functions;
 	}
 	GDVIRTUAL0RC_REQUIRED(Dictionary, _get_public_constants)
-	virtual void get_public_constants(List<Pair<String, Variant>> *p_constants) const override {
+	virtual LocalVector<Pair<String, Variant>> get_public_constants() const override {
 		Dictionary ret;
 		GDVIRTUAL_CALL(_get_public_constants, ret);
+		LocalVector<Pair<String, Variant>> constants;
+		constants.reserve(ret.size());
 		for (int i = 0; i < ret.size(); i++) {
 			Dictionary d = ret[i];
 			ERR_CONTINUE(!d.has("name"));
 			ERR_CONTINUE(!d.has("value"));
-			p_constants->push_back(Pair<String, Variant>(d["name"], d["value"]));
+			constants.push_back(Pair<String, Variant>(d["name"], d["value"]));
 		}
+		return constants;
 	}
 	GDVIRTUAL0RC_REQUIRED(TypedArray<Dictionary>, _get_public_annotations)
 	virtual void get_public_annotations(List<MethodInfo> *p_annotations) const override {

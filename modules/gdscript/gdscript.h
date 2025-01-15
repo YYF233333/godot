@@ -642,7 +642,7 @@ public:
 	virtual void frame() override;
 
 	virtual LocalVector<MethodInfo> get_public_functions() const override;
-	virtual void get_public_constants(List<Pair<String, Variant>> *p_constants) const override;
+	virtual LocalVector<Pair<String, Variant>> get_public_constants() const override;
 	virtual void get_public_annotations(List<MethodInfo> *p_annotations) const override;
 
 	virtual void profiling_start() override;
