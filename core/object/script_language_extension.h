@@ -264,12 +264,10 @@ public:
 
 	GDVIRTUAL0RC_REQUIRED(Vector<String>, _get_string_delimiters)
 
-	virtual void get_string_delimiters(List<String> *p_words) const override {
+	virtual Vector<String> get_string_delimiters() const override {
 		Vector<String> ret;
 		GDVIRTUAL_CALL(_get_string_delimiters, ret);
-		for (int i = 0; i < ret.size(); i++) {
-			p_words->push_back(ret[i]);
-		}
+		return ret;
 	}
 
 	EXBIND3RC(Ref<Script>, make_template, const String &, const String &, const String &)
