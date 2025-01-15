@@ -787,9 +787,7 @@ static void _add_allowed_type(const StringName &p_type, List<StringName> *p_vect
 		p_vector->push_back(p_type);
 	}
 
-	List<StringName> inheriters;
-	ScriptServer::get_inheriters_list(p_type, &inheriters);
-	for (const StringName &S : inheriters) {
+	for (const StringName &S : ScriptServer::get_inheriters_list(p_type)) {
 		_add_allowed_type(S, p_vector);
 	}
 }
