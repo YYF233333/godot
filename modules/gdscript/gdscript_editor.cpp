@@ -388,8 +388,7 @@ void GDScriptLanguage::debug_get_globals(List<String> *p_globals, List<Variant> 
 	const HashMap<StringName, int> &name_idx = GDScriptLanguage::get_singleton()->get_global_map();
 	const Variant *gl_array = GDScriptLanguage::get_singleton()->get_global_array();
 
-	List<Pair<String, Variant>> cinfo;
-	get_public_constants(&cinfo);
+	LocalVector<Pair<String, Variant>> cinfo = get_public_constants();
 
 	for (const KeyValue<StringName, int> &E : name_idx) {
 		if (GDScriptAnalyzer::class_exists(E.key) || Engine::get_singleton()->has_singleton(E.key)) {
@@ -397,8 +396,8 @@ void GDScriptLanguage::debug_get_globals(List<String> *p_globals, List<Variant> 
 		}
 
 		bool is_script_constant = false;
-		for (List<Pair<String, Variant>>::Element *CE = cinfo.front(); CE; CE = CE->next()) {
-			if (CE->get().first == E.key) {
+		for (const Pair<String, Variant> &CE : cinfo) {
+			if (CE.first == E.key) {
 				is_script_constant = true;
 				break;
 			}
@@ -491,26 +490,30 @@ LocalVector<MethodInfo> GDScriptLanguage::get_public_functions() const {
 	return functions;
 }
 
-void GDScriptLanguage::get_public_constants(List<Pair<String, Variant>> *p_constants) const {
+LocalVector<Pair<String, Variant>> GDScriptLanguage::get_public_constants() const {
 	Pair<String, Variant> pi;
 	pi.first = "PI";
 	pi.second = Math::PI;
-	p_constants->push_back(pi);
 
 	Pair<String, Variant> tau;
 	tau.first = "TAU";
 	tau.second = Math::TAU;
-	p_constants->push_back(tau);
 
 	Pair<String, Variant> infinity;
 	infinity.first = "INF";
 	infinity.second = Math::INF;
-	p_constants->push_back(infinity);
 
 	Pair<String, Variant> nan;
 	nan.first = "NAN";
 	nan.second = Math::NaN;
-	p_constants->push_back(nan);
+
+	LocalVector<Pair<String, Variant>> constants = {
+		pi,
+		tau,
+		infinity,
+		nan,
+	};
+	return constants;
 }
 
 void GDScriptLanguage::get_public_annotations(List<MethodInfo> *p_annotations) const {
