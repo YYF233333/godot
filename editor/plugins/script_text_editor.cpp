@@ -231,8 +231,7 @@ void ScriptTextEditor::_set_theme_for_script() {
 	CodeEdit *text_edit = code_editor->get_text_editor();
 	text_edit->get_syntax_highlighter()->update_cache();
 
-	List<String> strings;
-	script->get_language()->get_string_delimiters(&strings);
+	Vector<String> strings = script->get_language()->get_string_delimiters();
 	text_edit->clear_string_delimiters();
 	for (const String &string : strings) {
 		String beg = string.get_slicec(' ', 0);
