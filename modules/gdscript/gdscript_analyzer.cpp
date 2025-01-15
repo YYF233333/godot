@@ -5992,10 +5992,7 @@ void GDScriptAnalyzer::is_shadowing(GDScriptParser::IdentifierNode *p_identifier
 	const StringName &name = p_identifier->name;
 
 	{
-		List<MethodInfo> gdscript_funcs;
-		GDScriptLanguage::get_singleton()->get_public_functions(&gdscript_funcs);
-
-		for (MethodInfo &info : gdscript_funcs) {
+		for (MethodInfo &info : GDScriptLanguage::get_singleton()->get_public_functions()) {
 			if (info.name == name) {
 				parser->push_warning(p_identifier, GDScriptWarning::SHADOWED_GLOBAL_IDENTIFIER, p_context, name, "built-in function");
 				return;

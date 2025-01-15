@@ -421,7 +421,7 @@ public:
 	/* LOADER FUNCTIONS */
 
 	virtual void get_recognized_extensions(LocalVector<String> &p_extensions) const = 0;
-	virtual void get_public_functions(List<MethodInfo> *p_functions) const = 0;
+	virtual LocalVector<MethodInfo> get_public_functions() const = 0;
 	virtual void get_public_constants(List<Pair<String, Variant>> *p_constants) const = 0;
 	virtual void get_public_annotations(List<MethodInfo> *p_annotations) const = 0;
 

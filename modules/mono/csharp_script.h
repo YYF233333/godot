@@ -561,7 +561,7 @@ public:
 
 	void frame() override;
 
-	/* TODO? */ void get_public_functions(List<MethodInfo> *p_functions) const override {}
+	/* TODO? */ LocalVector<MethodInfo> get_public_functions() const override { return LocalVector<MethodInfo>(); }
 	/* TODO? */ void get_public_constants(List<Pair<String, Variant>> *p_constants) const override {}
 	/* TODO? */ void get_public_annotations(List<MethodInfo> *p_annotations) const override {}
 

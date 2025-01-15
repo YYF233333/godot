@@ -1040,10 +1040,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 			inheriting[""].insert(cname);
 
 			// Get functions.
-			List<MethodInfo> minfo;
-			lang->get_public_functions(&minfo);
-
-			for (const MethodInfo &mi : minfo) {
+			for (const MethodInfo &mi : lang->get_public_functions()) {
 				DocData::MethodDoc md;
 				md.name = mi.name;
 

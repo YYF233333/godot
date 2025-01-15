@@ -463,9 +463,12 @@ void GDScriptLanguage::get_recognized_extensions(LocalVector<String> &p_extensio
 	p_extensions.push_back("gd");
 }
 
-void GDScriptLanguage::get_public_functions(List<MethodInfo> *p_functions) const {
-	for (const StringName &E : GDScriptUtilityFunctions::get_function_list()) {
-		p_functions->push_back(GDScriptUtilityFunctions::get_function_info(E));
+LocalVector<MethodInfo> GDScriptLanguage::get_public_functions() const {
+	LocalVector<MethodInfo> functions;
+	const Vector<StringName> &func_names = GDScriptUtilityFunctions::get_function_list();
+	functions.reserve(func_names.size() + 2);
+	for (const StringName &func_name : func_names) {
+		functions.push_back(GDScriptUtilityFunctions::get_function_info(func_name));
 	}
 
 	// Not really "functions", but show in documentation.
@@ -474,7 +477,7 @@ void GDScriptLanguage::get_public_functions(List<MethodInfo> *p_functions) const
 		mi.name = "preload";
 		mi.arguments.push_back(PropertyInfo(Variant::STRING, "path"));
 		mi.return_val = PropertyInfo(Variant::OBJECT, "", PROPERTY_HINT_RESOURCE_TYPE, "Resource");
-		p_functions->push_back(mi);
+		functions.push_back(mi);
 	}
 	{
 		MethodInfo mi;
@@ -483,8 +486,9 @@ void GDScriptLanguage::get_public_functions(List<MethodInfo> *p_functions) const
 		mi.arguments.push_back(PropertyInfo(Variant::BOOL, "condition"));
 		mi.arguments.push_back(PropertyInfo(Variant::STRING, "message"));
 		mi.default_arguments.push_back(String());
-		p_functions->push_back(mi);
+		functions.push_back(mi);
 	}
+	return functions;
 }
 
 void GDScriptLanguage::get_public_constants(List<Pair<String, Variant>> *p_constants) const {
