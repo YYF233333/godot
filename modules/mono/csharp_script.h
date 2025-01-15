@@ -156,7 +156,7 @@ private:
 		// TODO
 		// Replace with buffer containing the serialized state of managed scripts.
 		// Keep variant state backup to use only with script instance placeholders.
-		List<Pair<StringName, Variant>> properties;
+		LocalVector<Pair<StringName, Variant>> properties;
 		Dictionary event_signals;
 	};
 
