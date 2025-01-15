@@ -325,9 +325,12 @@ bool CSharpLanguage::is_control_flow_keyword(const String &p_keyword) const {
 			p_keyword == "while";
 }
 
-void CSharpLanguage::get_comment_delimiters(List<String> *p_delimiters) const {
-	p_delimiters->push_back("//"); // single-line comment
-	p_delimiters->push_back("/* */"); // delimited comment
+Vector<String> CSharpLanguage::get_comment_delimiters() const {
+	Vector<String> delimiters = {
+		"//", // single-line comment
+		"/* */" // delimited comment
+	};
+	return delimiters;
 }
 
 void CSharpLanguage::get_doc_comment_delimiters(List<String> *p_delimiters) const {
