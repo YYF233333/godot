@@ -248,12 +248,10 @@ public:
 
 	GDVIRTUAL0RC_REQUIRED(Vector<String>, _get_comment_delimiters)
 
-	virtual void get_comment_delimiters(List<String> *p_words) const override {
+	virtual Vector<String> get_comment_delimiters() const override {
 		Vector<String> ret;
 		GDVIRTUAL_CALL(_get_comment_delimiters, ret);
-		for (int i = 0; i < ret.size(); i++) {
-			p_words->push_back(ret[i]);
-		}
+		return ret;
 	}
 
 	GDVIRTUAL0RC(Vector<String>, _get_doc_comment_delimiters)
