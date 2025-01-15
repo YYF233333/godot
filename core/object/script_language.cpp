@@ -421,7 +421,7 @@ void ScriptServer::remove_global_class(const StringName &p_class) {
 	inheriters_cache_dirty = true;
 }
 
-void ScriptServer::get_inheriters_list(const StringName &p_base_type, List<StringName> *r_classes) {
+Vector<StringName> ScriptServer::get_inheriters_list(const StringName &p_base_type) {
 	if (inheriters_cache_dirty) {
 		inheriters_cache.clear();
 		for (const KeyValue<StringName, GlobalScriptClass> &K : global_classes) {
@@ -437,13 +437,10 @@ void ScriptServer::get_inheriters_list(const StringName &p_base_type, List<Strin
 	}
 
 	if (!inheriters_cache.has(p_base_type)) {
-		return;
+		return Vector<StringName>();
 	}
 
-	const Vector<StringName> &v = inheriters_cache[p_base_type];
-	for (int i = 0; i < v.size(); i++) {
-		r_classes->push_back(v[i]);
-	}
+	return inheriters_cache[p_base_type];
 }
 
 void ScriptServer::remove_global_class_by_path(const String &p_path) {
@@ -543,41 +540,43 @@ ScriptCodeCompletionCache::ScriptCodeCompletionCache() {
 	singleton = this;
 }
 
-void ScriptLanguage::get_core_type_words(List<String> *p_core_type_words) const {
-	p_core_type_words->push_back("String");
-	p_core_type_words->push_back("Vector2");
-	p_core_type_words->push_back("Vector2i");
-	p_core_type_words->push_back("Rect2");
-	p_core_type_words->push_back("Rect2i");
-	p_core_type_words->push_back("Vector3");
-	p_core_type_words->push_back("Vector3i");
-	p_core_type_words->push_back("Transform2D");
-	p_core_type_words->push_back("Vector4");
-	p_core_type_words->push_back("Vector4i");
-	p_core_type_words->push_back("Plane");
-	p_core_type_words->push_back("Quaternion");
-	p_core_type_words->push_back("AABB");
-	p_core_type_words->push_back("Basis");
-	p_core_type_words->push_back("Transform3D");
-	p_core_type_words->push_back("Projection");
-	p_core_type_words->push_back("Color");
-	p_core_type_words->push_back("StringName");
-	p_core_type_words->push_back("NodePath");
-	p_core_type_words->push_back("RID");
-	p_core_type_words->push_back("Callable");
-	p_core_type_words->push_back("Signal");
-	p_core_type_words->push_back("Dictionary");
-	p_core_type_words->push_back("Array");
-	p_core_type_words->push_back("PackedByteArray");
-	p_core_type_words->push_back("PackedInt32Array");
-	p_core_type_words->push_back("PackedInt64Array");
-	p_core_type_words->push_back("PackedFloat32Array");
-	p_core_type_words->push_back("PackedFloat64Array");
-	p_core_type_words->push_back("PackedStringArray");
-	p_core_type_words->push_back("PackedVector2Array");
-	p_core_type_words->push_back("PackedVector3Array");
-	p_core_type_words->push_back("PackedColorArray");
-	p_core_type_words->push_back("PackedVector4Array");
+LocalVector<String> ScriptLanguage::get_core_type_words() const {
+	LocalVector<String> core_type_words;
+	core_type_words.push_back("String");
+	core_type_words.push_back("Vector2");
+	core_type_words.push_back("Vector2i");
+	core_type_words.push_back("Rect2");
+	core_type_words.push_back("Rect2i");
+	core_type_words.push_back("Vector3");
+	core_type_words.push_back("Vector3i");
+	core_type_words.push_back("Transform2D");
+	core_type_words.push_back("Vector4");
+	core_type_words.push_back("Vector4i");
+	core_type_words.push_back("Plane");
+	core_type_words.push_back("Quaternion");
+	core_type_words.push_back("AABB");
+	core_type_words.push_back("Basis");
+	core_type_words.push_back("Transform3D");
+	core_type_words.push_back("Projection");
+	core_type_words.push_back("Color");
+	core_type_words.push_back("StringName");
+	core_type_words.push_back("NodePath");
+	core_type_words.push_back("RID");
+	core_type_words.push_back("Callable");
+	core_type_words.push_back("Signal");
+	core_type_words.push_back("Dictionary");
+	core_type_words.push_back("Array");
+	core_type_words.push_back("PackedByteArray");
+	core_type_words.push_back("PackedInt32Array");
+	core_type_words.push_back("PackedInt64Array");
+	core_type_words.push_back("PackedFloat32Array");
+	core_type_words.push_back("PackedFloat64Array");
+	core_type_words.push_back("PackedStringArray");
+	core_type_words.push_back("PackedVector2Array");
+	core_type_words.push_back("PackedVector3Array");
+	core_type_words.push_back("PackedColorArray");
+	core_type_words.push_back("PackedVector4Array");
+	return core_type_words;
 }
 
 void ScriptLanguage::frame() {
