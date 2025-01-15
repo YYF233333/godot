@@ -211,9 +211,7 @@ void EditorStandardSyntaxHighlighter::_update_cache() {
 
 		/* Strings */
 		const Color string_color = EDITOR_GET("text_editor/theme/highlighting/string_color");
-		List<String> strings;
-		scr_lang->get_string_delimiters(&strings);
-		for (const String &string : strings) {
+		for (const String &string : scr_lang->get_string_delimiters()) {
 			String beg = string.get_slice(" ", 0);
 			String end = string.get_slice_count(" ") > 1 ? string.get_slice(" ", 1) : String();
 			highlighter->add_color_region(beg, end, string_color, end.is_empty());
