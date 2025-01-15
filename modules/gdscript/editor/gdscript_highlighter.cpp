@@ -745,9 +745,7 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 	/* Reserved words. */
 	const Color keyword_color = EDITOR_GET("text_editor/theme/highlighting/keyword_color");
 	const Color control_flow_keyword_color = EDITOR_GET("text_editor/theme/highlighting/control_flow_keyword_color");
-	List<String> keyword_list;
-	gdscript->get_reserved_words(&keyword_list);
-	for (const String &E : keyword_list) {
+	for (const String &E : gdscript->get_reserved_words()) {
 		if (gdscript->is_control_flow_keyword(E)) {
 			reserved_keywords[StringName(E)] = control_flow_keyword_color;
 		} else {
