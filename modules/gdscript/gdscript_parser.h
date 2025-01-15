@@ -1627,7 +1627,7 @@ public:
 	static Variant::Type get_builtin_type(const StringName &p_type); // Excluding `Variant::NIL` and `Variant::OBJECT`.
 
 	CompletionContext get_completion_context() const { return completion_context; }
-	void get_annotation_list(List<MethodInfo> *r_annotations) const;
+	LocalVector<MethodInfo> get_annotation_list() const;
 	bool annotation_exists(const String &p_annotation_name) const;
 
 	const List<ParserError> &get_errors() const { return errors; }

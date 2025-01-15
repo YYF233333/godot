@@ -627,13 +627,16 @@ public:
 		return constants;
 	}
 	GDVIRTUAL0RC_REQUIRED(TypedArray<Dictionary>, _get_public_annotations)
-	virtual void get_public_annotations(List<MethodInfo> *p_annotations) const override {
+	virtual LocalVector<MethodInfo> get_public_annotations() const override {
 		TypedArray<Dictionary> ret;
 		GDVIRTUAL_CALL(_get_public_annotations, ret);
+		LocalVector<MethodInfo> annotations;
+		annotations.reserve(ret.size());
 		for (const Variant &var : ret) {
 			MethodInfo mi = MethodInfo::from_dict(var);
-			p_annotations->push_back(mi);
+			annotations.push_back(mi);
 		}
+		return annotations;
 	}
 
 	EXBIND0(profiling_start)
