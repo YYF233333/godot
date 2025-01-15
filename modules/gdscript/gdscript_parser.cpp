@@ -1576,11 +1576,6 @@ GDScriptParser::EnumNode *GDScriptParser::parse_enum(bool p_is_static) {
 
 	HashMap<StringName, int> elements;
 
-#ifdef DEBUG_ENABLED
-	List<MethodInfo> gdscript_funcs;
-	GDScriptLanguage::get_singleton()->get_public_functions(&gdscript_funcs);
-#endif
-
 	do {
 		if (check(GDScriptTokenizer::Token::BRACE_CLOSE)) {
 			break; // Allow trailing comma.

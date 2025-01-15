@@ -601,13 +601,16 @@ public:
 	}
 
 	GDVIRTUAL0RC_REQUIRED(TypedArray<Dictionary>, _get_public_functions)
-	virtual void get_public_functions(List<MethodInfo> *p_functions) const override {
+	virtual LocalVector<MethodInfo> get_public_functions() const override {
 		TypedArray<Dictionary> ret;
 		GDVIRTUAL_CALL(_get_public_functions, ret);
+		LocalVector<MethodInfo> functions;
+		functions.reserve(ret.size());
 		for (const Variant &var : ret) {
 			MethodInfo mi = MethodInfo::from_dict(var);
-			p_functions->push_back(mi);
+			functions.push_back(mi);
 		}
+		return functions;
 	}
 	GDVIRTUAL0RC_REQUIRED(Dictionary, _get_public_constants)
 	virtual void get_public_constants(List<Pair<String, Variant>> *p_constants) const override {
