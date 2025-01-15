@@ -156,7 +156,7 @@ private:
 	HashSet<ObjectID> inheriters_cache;
 	bool source_changed_cache = false;
 	bool placeholder_fallback_enabled = false;
-	void _update_exports_values(HashMap<StringName, Variant> &values, List<PropertyInfo> &propnames);
+	void _update_exports_values(HashMap<StringName, Variant> &values, LocalVector<PropertyInfo> &propnames);
 
 	StringName doc_class_name;
 	DocData::ClassDoc doc;
