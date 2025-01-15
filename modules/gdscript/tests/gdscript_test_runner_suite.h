@@ -76,11 +76,8 @@ TEST_CASE("[Modules][GDScript] Validate built-in API") {
 	GDScriptLanguage *lang = GDScriptLanguage::get_singleton();
 
 	// Validate methods.
-	List<MethodInfo> builtin_methods;
-	lang->get_public_functions(&builtin_methods);
-
 	SUBCASE("[Modules][GDScript] Validate built-in methods") {
-		for (const MethodInfo &mi : builtin_methods) {
+		for (const MethodInfo &mi : lang->get_public_functions()) {
 			int i = 0;
 			for (LocalVector<PropertyInfo>::ConstIterator itr = mi.arguments.begin(); itr != mi.arguments.end(); ++itr, ++i) {
 				TEST_COND((itr->name.is_empty() || itr->name.begins_with("_unnamed_arg")),
