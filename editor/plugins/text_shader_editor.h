@@ -80,7 +80,7 @@ protected:
 	static void _bind_methods();
 	virtual void _load_theme_settings() override;
 
-	virtual void _code_complete_script(const String &p_code, List<ScriptLanguage::CodeCompletionOption> *r_options) override;
+	virtual void _code_complete_script(const String &p_code, LocalVector<ScriptLanguage::CodeCompletionOption> &r_options) override;
 
 public:
 	void set_block_shader_changed(bool p_block) { block_shader_changed = p_block; }
