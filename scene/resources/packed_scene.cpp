@@ -342,7 +342,7 @@ Node *SceneState::instantiate(GenEditState p_edit_state) const {
 						//https://github.com/godotengine/godot/issues/2958
 
 						//store old state
-						List<Pair<StringName, Variant>> old_state;
+						LocalVector<Pair<StringName, Variant>> old_state;
 						if (node->get_script_instance()) {
 							node->get_script_instance()->get_property_state(old_state);
 						}
