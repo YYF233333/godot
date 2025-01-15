@@ -456,7 +456,7 @@ void GDScript::set_source_code(const String &p_code) {
 }
 
 #ifdef TOOLS_ENABLED
-void GDScript::_update_exports_values(HashMap<StringName, Variant> &values, List<PropertyInfo> &propnames) {
+void GDScript::_update_exports_values(HashMap<StringName, Variant> &values, LocalVector<PropertyInfo> &propnames) {
 	for (const KeyValue<StringName, Variant> &E : member_default_values_cache) {
 		values[E.key] = E.value;
 	}
@@ -610,7 +610,7 @@ bool GDScript::_update_exports(bool *r_err, bool p_recursive_call, PlaceHolderSc
 
 		// update placeholders if any
 		HashMap<StringName, Variant> values;
-		List<PropertyInfo> propnames;
+		LocalVector<PropertyInfo> propnames;
 		_update_exports_values(values, propnames);
 
 		if (changed) {

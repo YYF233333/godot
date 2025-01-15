@@ -791,7 +791,7 @@ Variant PlaceHolderScriptInstance::callp(const StringName &p_method, const Varia
 #endif // TOOLS_ENABLED
 }
 
-void PlaceHolderScriptInstance::update(const List<PropertyInfo> &p_properties, const HashMap<StringName, Variant> &p_values) {
+void PlaceHolderScriptInstance::update(const LocalVector<PropertyInfo> &p_properties, const HashMap<StringName, Variant> &p_values) {
 	HashSet<StringName> new_values;
 	for (const PropertyInfo &E : p_properties) {
 		if (E.usage & (PROPERTY_USAGE_GROUP | PROPERTY_USAGE_SUBGROUP | PROPERTY_USAGE_CATEGORY)) {

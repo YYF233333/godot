@@ -454,7 +454,7 @@ extern uint8_t script_encryption_key[32];
 
 class PlaceHolderScriptInstance : public ScriptInstance {
 	Object *owner = nullptr;
-	List<PropertyInfo> properties;
+	LocalVector<PropertyInfo> properties;
 	HashMap<StringName, Variant> values;
 	HashMap<StringName, Variant> constants;
 	ScriptLanguage *language = nullptr;
@@ -489,7 +489,7 @@ public:
 
 	Object *get_owner() override { return owner; }
 
-	void update(const List<PropertyInfo> &p_properties, const HashMap<StringName, Variant> &p_values); //likely changed in editor
+	void update(const LocalVector<PropertyInfo> &p_properties, const HashMap<StringName, Variant> &p_values); //likely changed in editor
 
 	virtual bool is_placeholder() const override { return true; }
 

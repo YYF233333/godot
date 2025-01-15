@@ -2106,7 +2106,7 @@ void CSharpScript::_placeholder_erased(PlaceHolderScriptInstance *p_placeholder)
 #endif
 
 #ifdef TOOLS_ENABLED
-void CSharpScript::_update_exports_values(HashMap<StringName, Variant> &values, List<PropertyInfo> &propnames) {
+void CSharpScript::_update_exports_values(HashMap<StringName, Variant> &values, LocalVector<PropertyInfo> &propnames) {
 	for (const KeyValue<StringName, Variant> &E : exported_members_defval_cache) {
 		values[E.key] = E.value;
 	}
@@ -2213,7 +2213,7 @@ bool CSharpScript::_update_exports(PlaceHolderScriptInstance *p_instance_to_upda
 		if ((changed || p_instance_to_update) && placeholders.size()) {
 			// Update placeholders if any
 			HashMap<StringName, Variant> values;
-			List<PropertyInfo> propnames;
+			LocalVector<PropertyInfo> propnames;
 			_update_exports_values(values, propnames);
 
 			if (changed) {

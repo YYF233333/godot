@@ -196,7 +196,7 @@ private:
 	bool source_changed_cache = false;
 	bool placeholder_fallback_enabled = false;
 	bool exports_invalidated = true;
-	void _update_exports_values(HashMap<StringName, Variant> &values, List<PropertyInfo> &propnames);
+	void _update_exports_values(HashMap<StringName, Variant> &values, LocalVector<PropertyInfo> &propnames);
 	void _placeholder_erased(PlaceHolderScriptInstance *p_placeholder) override;
 #endif
 
