@@ -256,10 +256,11 @@ bool EditorExportPlatformExtension::has_valid_project_configuration(const Ref<Ed
 	return ret;
 }
 
-List<String> EditorExportPlatformExtension::get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const {
-	List<String> ret_list;
+LocalVector<String> EditorExportPlatformExtension::get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const {
+	LocalVector<String> ret_list;
 	Vector<String> ret;
 	if (GDVIRTUAL_CALL(_get_binary_extensions, p_preset, ret)) {
+		ret_list.reserve(ret.size());
 		for (const String &E : ret) {
 			ret_list.push_back(E);
 		}
