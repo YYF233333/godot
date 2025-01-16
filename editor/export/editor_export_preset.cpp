@@ -61,9 +61,9 @@ bool EditorExportPreset::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 Variant EditorExportPreset::get_project_setting(const StringName &p_name) {
-	List<String> ftr_list;
-	platform->get_platform_features(&ftr_list);
-	platform->get_preset_features(this, &ftr_list);
+	LocalVector<String> ftr_list;
+	platform->get_platform_features(ftr_list);
+	platform->get_preset_features(this, ftr_list);
 
 	Vector<String> features;
 	for (const String &E : ftr_list) {
