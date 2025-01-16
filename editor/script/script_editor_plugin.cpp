@@ -1994,7 +1994,7 @@ Vector<String> ScriptEditor::_get_breakpoints() {
 	return ret;
 }
 
-void ScriptEditor::get_breakpoints(List<String> *p_breakpoints) {
+void ScriptEditor::get_breakpoints(LocalVector<String> &p_breakpoints) {
 	HashSet<String> loaded_scripts;
 	for (int i = 0; i < tab_container->get_tab_count(); i++) {
 		ScriptEditorBase *se = Object::cast_to<ScriptEditorBase>(tab_container->get_tab_control(i));
@@ -2015,7 +2015,7 @@ void ScriptEditor::get_breakpoints(List<String> *p_breakpoints) {
 
 		PackedInt32Array bpoints = se->get_breakpoints();
 		for (int32_t bpoint : bpoints) {
-			p_breakpoints->push_back(base + ":" + itos((int)bpoint + 1));
+			p_breakpoints.push_back(base + ":" + itos((int)bpoint + 1));
 		}
 	}
 
@@ -2028,7 +2028,7 @@ void ScriptEditor::get_breakpoints(List<String> *p_breakpoints) {
 
 		Array breakpoints = _get_cached_breakpoints_for_script(E);
 		for (int breakpoint : breakpoints) {
-			p_breakpoints->push_back(E + ":" + itos((int)breakpoint + 1));
+			p_breakpoints.push_back(E + ":" + itos((int)breakpoint + 1));
 		}
 	}
 }
@@ -4803,7 +4803,7 @@ void ScriptEditorPlugin::get_window_layout(Ref<ConfigFile> p_layout) {
 	}
 }
 
-void ScriptEditorPlugin::get_breakpoints(List<String> *p_breakpoints) {
+void ScriptEditorPlugin::get_breakpoints(LocalVector<String> &p_breakpoints) {
 	script_editor->get_breakpoints(p_breakpoints);
 }
 

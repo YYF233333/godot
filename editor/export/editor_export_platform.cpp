@@ -2303,15 +2303,15 @@ Vector<String> EditorExportPlatform::gen_export_flags(BitField<EditorExportPlatf
 
 		ret.push_back(get_debug_protocol() + host + ":" + String::num_int64(remote_port));
 
-		List<String> breakpoints;
-		ScriptEditor::get_singleton()->get_breakpoints(&breakpoints);
+		LocalVector<String> breakpoints;
+		ScriptEditor::get_singleton()->get_breakpoints(breakpoints);
 
 		if (breakpoints.size()) {
 			ret.push_back("--breakpoints");
 			String bpoints;
-			for (List<String>::Element *E = breakpoints.front(); E; E = E->next()) {
-				bpoints += E->get().replace(" ", "%20");
-				if (E->next()) {
+			for (uint32_t i = 0; i < breakpoints.size(); i++) {
+				bpoints += breakpoints[i].replace(" ", "%20");
+				if (i + 1 < breakpoints.size()) {
 					bpoints += ",";
 				}
 			}
