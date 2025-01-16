@@ -224,7 +224,7 @@ private:
 	struct ScanData {
 		Thread *thread = nullptr;
 		PackedStringArray paths_to_scan;
-		List<String> found_projects;
+		LocalVector<String> found_projects;
 		SafeFlag scan_in_progress;
 	};
 	ScanData *scan_data = nullptr;
@@ -243,7 +243,7 @@ private:
 
 	// Project list updates.
 
-	static void _scan_folder_recursive(const String &p_path, List<String> *r_projects, const SafeFlag &p_scan_active);
+	static void _scan_folder_recursive(const String &p_path, LocalVector<String> &r_projects, const SafeFlag &p_scan_active);
 
 	// Project list items.
 
