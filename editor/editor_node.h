@@ -858,7 +858,7 @@ public:
 	Error load_scene_or_resource(const String &p_file, bool p_ignore_broken_deps = false, bool p_change_scene_tab_if_already_open = true);
 
 	HashMap<StringName, Variant> get_modified_properties_for_node(Node *p_node, bool p_node_references_only);
-	HashMap<StringName, Variant> get_modified_properties_reference_to_nodes(Node *p_node, List<Node *> &p_nodes_referenced_by);
+	HashMap<StringName, Variant> get_modified_properties_reference_to_nodes(Node *p_node, LocalVector<Node *> &p_nodes_referenced_by);
 
 	void set_unfocused_low_processor_usage_mode_enabled(bool p_enabled);
 
@@ -919,9 +919,9 @@ public:
 			Node *p_root,
 			Node *p_node,
 			HashSet<Node *> &p_excluded_nodes,
-			List<Node *> &p_instance_list_with_children,
+			LocalVector<Node *> &p_instance_list_with_children,
 			HashMap<NodePath, ModificationNodeEntry> &p_modification_table);
-	void get_children_nodes(Node *p_node, List<Node *> &p_nodes);
+	void get_children_nodes(Node *p_node, LocalVector<Node *> &p_nodes);
 	bool is_additional_node_in_scene(Node *p_edited_scene, Node *p_reimported_root, Node *p_node);
 
 	void replace_history_reimported_nodes(Node *p_original_root_node, Node *p_new_root_node, Node *p_node);

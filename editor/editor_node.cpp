@@ -4865,7 +4865,7 @@ HashMap<StringName, Variant> EditorNode::get_modified_properties_for_node(Node *
 	return modified_property_map;
 }
 
-HashMap<StringName, Variant> EditorNode::get_modified_properties_reference_to_nodes(Node *p_node, List<Node *> &p_nodes_referenced_by) {
+HashMap<StringName, Variant> EditorNode::get_modified_properties_reference_to_nodes(Node *p_node, LocalVector<Node *> &p_nodes_referenced_by) {
 	HashMap<StringName, Variant> modified_property_map;
 
 	List<PropertyInfo> pinfo;
@@ -4877,7 +4877,7 @@ HashMap<StringName, Variant> EditorNode::get_modified_properties_reference_to_no
 			}
 			Variant current_value = p_node->get(E.name);
 			Node *target_node = Object::cast_to<Node>(current_value);
-			if (target_node && p_nodes_referenced_by.find(target_node)) {
+			if (target_node && p_nodes_referenced_by.has(target_node)) {
 				modified_property_map[E.name] = p_node->get_path_to(target_node);
 			}
 		}
@@ -5133,7 +5133,7 @@ void EditorNode::get_preload_modifications_reference_to_nodes(
 		Node *p_root,
 		Node *p_node,
 		HashSet<Node *> &p_excluded_nodes,
-		List<Node *> &p_instance_list_with_children,
+		LocalVector<Node *> &p_instance_list_with_children,
 		HashMap<NodePath, ModificationNodeEntry> &p_modification_table) {
 	if (!p_excluded_nodes.find(p_node)) {
 		HashMap<StringName, Variant> modified_properties = get_modified_properties_reference_to_nodes(p_node, p_instance_list_with_children);
@@ -5151,7 +5151,7 @@ void EditorNode::get_preload_modifications_reference_to_nodes(
 	}
 }
 
-void EditorNode::get_children_nodes(Node *p_node, List<Node *> &p_nodes) {
+void EditorNode::get_children_nodes(Node *p_node, LocalVector<Node *> &p_nodes) {
 	for (int i = 0; i < p_node->get_child_count(); i++) {
 		Node *child = p_node->get_child(i);
 		p_nodes.push_back(child);
@@ -6957,7 +6957,7 @@ void EditorNode::preload_reimporting_with_path_in_edited_scenes(const List<Strin
 				if (instances_to_reimport.size() > 0) {
 					editor_data.set_edited_scene(current_scene_idx);
 
-					List<Node *> instance_list_with_children;
+					LocalVector<Node *> instance_list_with_children;
 					for (Node *original_node : instances_to_reimport) {
 						InstanceModificationsEntry instance_modifications;
 
