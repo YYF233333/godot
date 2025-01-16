@@ -91,7 +91,7 @@ void EditorAbout::_item_list_resized(ItemList *p_il) {
 	p_il->set_fixed_column_width(p_il->get_size().x / 3.0 - 16 * EDSCALE * 2.5); // Weird. Should be 3.0 and that's it?.
 }
 
-ScrollContainer *EditorAbout::_populate_list(const String &p_name, const List<String> &p_sections, const char *const *const p_src[], const int p_single_column_flags, const bool p_allow_website) {
+ScrollContainer *EditorAbout::_populate_list(const String &p_name, const LocalVector<String> &p_sections, const char *const *const p_src[], const int p_single_column_flags, const bool p_allow_website) {
 	ScrollContainer *sc = memnew(ScrollContainer);
 	sc->set_name(p_name);
 	sc->set_v_size_flags(Control::SIZE_EXPAND);
@@ -103,13 +103,13 @@ ScrollContainer *EditorAbout::_populate_list(const String &p_name, const List<St
 	Ref<StyleBoxEmpty> empty_stylebox = memnew(StyleBoxEmpty);
 
 	int i = 0;
-	for (List<String>::ConstIterator itr = p_sections.begin(); itr != p_sections.end(); ++itr, ++i) {
+	for (const String &section : p_sections) {
 		bool single_column = p_single_column_flags & (1 << i);
 		const char *const *names_ptr = p_src[i];
 		if (*names_ptr) {
 			Label *lbl = memnew(Label);
 			lbl->set_theme_type_variation("HeaderSmall");
-			lbl->set_text(*itr);
+			lbl->set_text(section);
 			vbc->add_child(lbl);
 
 			ItemList *il = memnew(ItemList);
@@ -213,12 +213,13 @@ EditorAbout::EditorAbout() {
 
 	// Authors.
 
-	List<String> dev_sections;
-	dev_sections.push_back(TTR("Project Founders"));
-	dev_sections.push_back(TTR("Lead Developer"));
-	// TRANSLATORS: This refers to a job title.
-	dev_sections.push_back(TTR("Project Manager", "Job Title"));
-	dev_sections.push_back(TTR("Developers"));
+	LocalVector<String> dev_sections = {
+		TTR("Project Founders"),
+		TTR("Lead Developer"),
+		// TRANSLATORS: This refers to a job title.
+		TTR("Project Manager", "Job Title"),
+		TTR("Developers"),
+	};
 	const char *const *dev_src[] = {
 		AUTHORS_FOUNDERS,
 		AUTHORS_LEAD_DEVELOPERS,
@@ -229,15 +230,16 @@ EditorAbout::EditorAbout() {
 
 	// Donors.
 
-	List<String> donor_sections;
-	donor_sections.push_back(TTR("Patrons"));
-	donor_sections.push_back(TTR("Platinum Sponsors"));
-	donor_sections.push_back(TTR("Gold Sponsors"));
-	donor_sections.push_back(TTR("Silver Sponsors"));
-	donor_sections.push_back(TTR("Diamond Members"));
-	donor_sections.push_back(TTR("Titanium Members"));
-	donor_sections.push_back(TTR("Platinum Members"));
-	donor_sections.push_back(TTR("Gold Members"));
+	LocalVector<String> donor_sections = {
+		TTR("Patrons"),
+		TTR("Platinum Sponsors"),
+		TTR("Gold Sponsors"),
+		TTR("Silver Sponsors"),
+		TTR("Diamond Members"),
+		TTR("Titanium Members"),
+		TTR("Platinum Members"),
+		TTR("Gold Members")
+	};
 	const char *const *donor_src[] = {
 		DONORS_PATRONS,
 		DONORS_SPONSORS_PLATINUM,
