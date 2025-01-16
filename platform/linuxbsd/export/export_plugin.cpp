@@ -181,10 +181,10 @@ bool EditorExportPlatformLinuxBSD::get_export_option_visibility(const EditorExpo
 	return true;
 }
 
-void EditorExportPlatformLinuxBSD::get_export_options(List<ExportOption> *r_options) const {
-	EditorExportPlatformPC::get_export_options(r_options);
+LocalVector<EditorExportPlatform::ExportOption> EditorExportPlatformLinuxBSD::get_export_options() const {
+	LocalVector<ExportOption> r_options = EditorExportPlatformPC::get_export_options();
 
-	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "binary_format/architecture", PROPERTY_HINT_ENUM, "x86_64,x86_32,arm64,arm32,rv64,ppc64,ppc32,loongarch64"), "x86_64"));
+	r_options.push_back(ExportOption(PropertyInfo(Variant::STRING, "binary_format/architecture", PROPERTY_HINT_ENUM, "x86_64,x86_32,arm64,arm32,rv64,ppc64,ppc32,loongarch64"), "x86_64"));
 
 	String run_script = "#!/usr/bin/env bash\n"
 						"export DISPLAY=:0\n"
@@ -195,14 +195,16 @@ void EditorExportPlatformLinuxBSD::get_export_options(List<ExportOption> *r_opti
 							"kill $(pgrep -x -f \"{temp_dir}/{exe_name} {cmd_args}\")\n"
 							"rm -rf \"{temp_dir}\"";
 
-	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "ssh_remote_deploy/enabled"), false, true));
-	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "ssh_remote_deploy/host"), "user@host_ip"));
-	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "ssh_remote_deploy/port"), "22"));
+	r_options.push_back(ExportOption(PropertyInfo(Variant::BOOL, "ssh_remote_deploy/enabled"), false, true));
+	r_options.push_back(ExportOption(PropertyInfo(Variant::STRING, "ssh_remote_deploy/host"), "user@host_ip"));
+	r_options.push_back(ExportOption(PropertyInfo(Variant::STRING, "ssh_remote_deploy/port"), "22"));
 
-	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "ssh_remote_deploy/extra_args_ssh", PROPERTY_HINT_MULTILINE_TEXT), ""));
-	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "ssh_remote_deploy/extra_args_scp", PROPERTY_HINT_MULTILINE_TEXT), ""));
-	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "ssh_remote_deploy/run_script", PROPERTY_HINT_MULTILINE_TEXT), run_script));
-	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "ssh_remote_deploy/cleanup_script", PROPERTY_HINT_MULTILINE_TEXT), cleanup_script));
+	r_options.push_back(ExportOption(PropertyInfo(Variant::STRING, "ssh_remote_deploy/extra_args_ssh", PROPERTY_HINT_MULTILINE_TEXT), ""));
+	r_options.push_back(ExportOption(PropertyInfo(Variant::STRING, "ssh_remote_deploy/extra_args_scp", PROPERTY_HINT_MULTILINE_TEXT), ""));
+	r_options.push_back(ExportOption(PropertyInfo(Variant::STRING, "ssh_remote_deploy/run_script", PROPERTY_HINT_MULTILINE_TEXT), run_script));
+	r_options.push_back(ExportOption(PropertyInfo(Variant::STRING, "ssh_remote_deploy/cleanup_script", PROPERTY_HINT_MULTILINE_TEXT), cleanup_script));
+
+	return r_options;
 }
 
 bool EditorExportPlatformLinuxBSD::is_elf(const String &p_path) const {
