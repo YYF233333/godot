@@ -122,15 +122,15 @@ Error EditorRun::run(const String &p_scene, const String &p_write_movie, const V
 		args.push_back("--fullscreen");
 	}
 
-	List<String> breakpoints;
-	EditorNode::get_editor_data().get_editor_breakpoints(&breakpoints);
+	LocalVector<String> breakpoints;
+	EditorNode::get_editor_data().get_editor_breakpoints(breakpoints);
 
 	if (!breakpoints.is_empty()) {
 		args.push_back("--breakpoints");
 		String bpoints;
-		for (const List<String>::Element *E = breakpoints.front(); E; E = E->next()) {
-			bpoints += E->get().replace(" ", "%20");
-			if (E->next()) {
+		for (uint32_t i = 0; i < breakpoints.size(); i++) {
+			bpoints += breakpoints[i].replace(" ", "%20");
+			if (i + 1 < breakpoints.size()) {
 				bpoints += ",";
 			}
 		}
