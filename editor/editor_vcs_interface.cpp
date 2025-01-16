@@ -49,13 +49,14 @@ void EditorVCSInterface::set_credentials(const String &p_username, const String 
 	GDVIRTUAL_CALL(_set_credentials, p_username, p_password, p_ssh_public_key, p_ssh_private_key, p_ssh_passphrase);
 }
 
-List<String> EditorVCSInterface::get_remotes() {
+LocalVector<String> EditorVCSInterface::get_remotes() {
 	TypedArray<String> result;
 	if (!GDVIRTUAL_CALL(_get_remotes, result)) {
 		return {};
 	}
 
-	List<String> remotes;
+	LocalVector<String> remotes;
+	remotes.reserve(result.size());
 	for (int i = 0; i < result.size(); i++) {
 		remotes.push_back(result[i]);
 	}
