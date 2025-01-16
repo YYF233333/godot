@@ -1936,10 +1936,13 @@ Ref<Shortcut> EditorSettings::get_shortcut(const String &p_name) const {
 	return Ref<Shortcut>();
 }
 
-void EditorSettings::get_shortcut_list(List<String> *r_shortcuts) {
+LocalVector<String> EditorSettings::get_shortcut_list() {
+	LocalVector<String> r_shortcuts;
+	r_shortcuts.reserve(shortcuts.size());
 	for (const KeyValue<String, Ref<Shortcut>> &E : shortcuts) {
-		r_shortcuts->push_back(E.key);
+		r_shortcuts.push_back(E.key);
 	}
+	return r_shortcuts;
 }
 
 Ref<Shortcut> ED_GET_SHORTCUT(const String &p_path) {
