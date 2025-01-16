@@ -197,7 +197,7 @@ public:
 	void add_shortcut(const String &p_name, const Ref<Shortcut> &p_shortcut);
 	bool is_shortcut(const String &p_name, const Ref<InputEvent> &p_event) const;
 	Ref<Shortcut> get_shortcut(const String &p_name) const;
-	void get_shortcut_list(List<String> *r_shortcuts);
+	LocalVector<String> get_shortcut_list();
 
 	void set_builtin_action_override(const String &p_name, const TypedArray<InputEvent> &p_events);
 	const Array get_builtin_action_overrides(const String &p_name) const;
