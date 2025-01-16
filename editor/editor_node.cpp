@@ -2338,7 +2338,7 @@ void EditorNode::_save_scene_silently() {
 	}
 }
 
-static void _reset_animation_mixers(Node *p_node, List<Pair<AnimationMixer *, Ref<AnimatedValuesBackup>>> *r_anim_backups) {
+static void _reset_animation_mixers(Node *p_node, LocalVector<Pair<AnimationMixer *, Ref<AnimatedValuesBackup>>> &r_anim_backups) {
 	for (int i = 0; i < p_node->get_child_count(); i++) {
 		AnimationMixer *mixer = Object::cast_to<AnimationMixer>(p_node->get_child(i));
 		if (mixer && mixer->is_active() && mixer->is_reset_on_save_enabled() && mixer->can_apply_reset()) {
@@ -2354,7 +2354,7 @@ static void _reset_animation_mixers(Node *p_node, List<Pair<AnimationMixer *, Re
 				Pair<AnimationMixer *, Ref<AnimatedValuesBackup>> pair;
 				pair.first = mixer;
 				pair.second = backup;
-				r_anim_backups->push_back(pair);
+				r_anim_backups.push_back(pair);
 			}
 		}
 		_reset_animation_mixers(p_node->get_child(i), r_anim_backups);
@@ -2380,8 +2380,8 @@ void EditorNode::_save_scene(String p_file, int idx) {
 
 	editor_data.apply_changes_in_editors();
 	save_default_environment();
-	List<Pair<AnimationMixer *, Ref<AnimatedValuesBackup>>> anim_backups;
-	_reset_animation_mixers(scene, &anim_backups);
+	LocalVector<Pair<AnimationMixer *, Ref<AnimatedValuesBackup>>> anim_backups;
+	_reset_animation_mixers(scene, anim_backups);
 	_save_editor_states(p_file, idx);
 
 	Ref<PackedScene> sdata;
