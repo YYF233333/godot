@@ -249,7 +249,7 @@ void VersionControlEditorPlugin::_refresh_commit_list() {
 void VersionControlEditorPlugin::_refresh_remote_list() {
 	CHECK_PLUGIN_INITIALIZED();
 
-	List<String> remotes = EditorVCSInterface::get_singleton()->get_remotes();
+	LocalVector<String> remotes = EditorVCSInterface::get_singleton()->get_remotes();
 
 	String current_remote = remote_select->get_selected_metadata();
 	remote_select->clear();
@@ -257,13 +257,14 @@ void VersionControlEditorPlugin::_refresh_remote_list() {
 	remote_select->set_disabled(remotes.is_empty());
 
 	int i = 0;
-	for (List<String>::ConstIterator itr = remotes.begin(); itr != remotes.end(); ++itr, ++i) {
-		remote_select->add_icon_item(EditorNode::get_singleton()->get_editor_theme()->get_icon(SNAME("ArrowUp"), EditorStringName(EditorIcons)), *itr, i);
-		remote_select->set_item_metadata(i, *itr);
+	for (const String &remote : remotes) {
+		remote_select->add_icon_item(EditorNode::get_singleton()->get_editor_theme()->get_icon(SNAME("ArrowUp"), EditorStringName(EditorIcons)), remote, i);
+		remote_select->set_item_metadata(i, remote);
 
-		if (*itr == current_remote) {
+		if (remote == current_remote) {
 			remote_select->select(i);
 		}
+		i++;
 	}
 }
 
