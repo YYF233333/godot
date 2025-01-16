@@ -47,17 +47,19 @@ void EditorExportPlatformPC::get_preset_features(const Ref<EditorExportPreset> &
 	r_features.push_back(p_preset->get("binary_format/architecture"));
 }
 
-void EditorExportPlatformPC::get_export_options(List<ExportOption> *r_options) const {
+LocalVector<EditorExportPlatform::ExportOption> EditorExportPlatformPC::get_export_options() const {
 	String ext_filter = (get_os_name() == "Windows") ? "*.exe" : "";
-	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "custom_template/debug", PROPERTY_HINT_GLOBAL_FILE, ext_filter), ""));
-	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, "custom_template/release", PROPERTY_HINT_GLOBAL_FILE, ext_filter), ""));
+	LocalVector<ExportOption> r_options;
+	r_options.push_back(ExportOption(PropertyInfo(Variant::STRING, "custom_template/debug", PROPERTY_HINT_GLOBAL_FILE, ext_filter), ""));
+	r_options.push_back(ExportOption(PropertyInfo(Variant::STRING, "custom_template/release", PROPERTY_HINT_GLOBAL_FILE, ext_filter), ""));
 
-	r_options->push_back(ExportOption(PropertyInfo(Variant::INT, "debug/export_console_wrapper", PROPERTY_HINT_ENUM, "No,Debug Only,Debug and Release"), 1));
+	r_options.push_back(ExportOption(PropertyInfo(Variant::INT, "debug/export_console_wrapper", PROPERTY_HINT_ENUM, "No,Debug Only,Debug and Release"), 1));
 
-	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "binary_format/embed_pck"), false));
+	r_options.push_back(ExportOption(PropertyInfo(Variant::BOOL, "binary_format/embed_pck"), false));
 
-	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "texture_format/s3tc_bptc"), true));
-	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "texture_format/etc2_astc"), false));
+	r_options.push_back(ExportOption(PropertyInfo(Variant::BOOL, "texture_format/s3tc_bptc"), true));
+	r_options.push_back(ExportOption(PropertyInfo(Variant::BOOL, "texture_format/etc2_astc"), false));
+	return r_options;
 }
 
 String EditorExportPlatformPC::get_name() const {
