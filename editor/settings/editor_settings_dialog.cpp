@@ -598,8 +598,7 @@ void EditorSettingsDialog::_update_shortcuts() {
 
 	// Editor Shortcuts
 
-	List<String> slist;
-	EditorSettings::get_singleton()->get_shortcut_list(&slist);
+	LocalVector<String> slist = EditorSettings::get_singleton()->get_shortcut_list();
 	slist.sort(); // Sort alphabetically.
 
 	const EditorPropertyNameProcessor::Style name_style = EditorPropertyNameProcessor::get_settings_style();

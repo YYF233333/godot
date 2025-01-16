@@ -2004,19 +2004,20 @@ Ref<Shortcut> EditorSettings::get_shortcut(const String &p_path) const {
 }
 
 Vector<String> EditorSettings::_get_shortcut_list() {
-	List<String> shortcut_list;
-	get_shortcut_list(&shortcut_list);
 	Vector<String> ret;
-	for (const String &shortcut : shortcut_list) {
+	for (const String &shortcut : get_shortcut_list()) {
 		ret.push_back(shortcut);
 	}
 	return ret;
 }
 
-void EditorSettings::get_shortcut_list(List<String> *r_shortcuts) {
+LocalVector<String> EditorSettings::get_shortcut_list() {
+	LocalVector<String> r_shortcuts;
+	r_shortcuts.reserve(shortcuts.size());
 	for (const KeyValue<String, Ref<Shortcut>> &E : shortcuts) {
-		r_shortcuts->push_back(E.key);
+		r_shortcuts.push_back(E.key);
 	}
+	return r_shortcuts;
 }
 
 Ref<Shortcut> ED_GET_SHORTCUT(const String &p_path) {
