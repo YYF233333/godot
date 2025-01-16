@@ -241,7 +241,7 @@ public:
 	virtual bool has_valid_project_configuration(const Ref<EditorExportPreset> &p_preset, String &r_error) const override;
 	static bool has_valid_username_and_password(const Ref<EditorExportPreset> &p_preset, String &r_error);
 
-	virtual List<String> get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const override;
+	virtual LocalVector<String> get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const override;
 
 	String _get_deprecated_plugins_names(const Ref<EditorExportPreset> &p_preset) const;
 
