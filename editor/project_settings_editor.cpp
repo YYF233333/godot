@@ -313,16 +313,16 @@ void ProjectSettingsEditor::_add_feature_overrides() {
 	EditorExport *ee = EditorExport::get_singleton();
 
 	for (int i = 0; i < ee->get_export_platform_count(); i++) {
-		List<String> p;
-		ee->get_export_platform(i)->get_platform_features(&p);
+		LocalVector<String> p;
+		ee->get_export_platform(i)->get_platform_features(p);
 		for (const String &E : p) {
 			presets.insert(E);
 		}
 	}
 
 	for (int i = 0; i < ee->get_export_preset_count(); i++) {
-		List<String> p;
-		ee->get_export_preset(i)->get_platform()->get_preset_features(ee->get_export_preset(i), &p);
+		LocalVector<String> p;
+		ee->get_export_preset(i)->get_platform()->get_preset_features(ee->get_export_preset(i), p);
 		for (const String &E : p) {
 			presets.insert(E);
 		}
