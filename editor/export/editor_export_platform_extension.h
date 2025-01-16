@@ -123,7 +123,7 @@ public:
 	virtual bool has_valid_project_configuration(const Ref<EditorExportPreset> &p_preset, String &r_error) const override;
 	GDVIRTUAL1RC_REQUIRED(bool, _has_valid_project_configuration, Ref<EditorExportPreset>);
 
-	virtual List<String> get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const override;
+	virtual LocalVector<String> get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const override;
 	GDVIRTUAL1RC_REQUIRED(Vector<String>, _get_binary_extensions, Ref<EditorExportPreset>);
 
 	virtual Error export_project(const Ref<EditorExportPreset> &p_preset, bool p_debug, const String &p_path, BitField<EditorExportPlatform::DebugFlags> p_flags = 0) override;

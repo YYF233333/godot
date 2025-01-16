@@ -153,10 +153,11 @@ String EditorExportPlatformLinuxBSD::get_template_file_name(const String &p_targ
 	return "linux_" + p_target + "." + p_arch;
 }
 
-List<String> EditorExportPlatformLinuxBSD::get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const {
-	List<String> list;
-	list.push_back(p_preset->get("binary_format/architecture"));
-	list.push_back("zip");
+LocalVector<String> EditorExportPlatformLinuxBSD::get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const {
+	LocalVector<String> list = {
+		p_preset->get("binary_format/architecture"),
+		"zip"
+	};
 
 	return list;
 }
