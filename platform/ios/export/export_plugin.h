@@ -187,8 +187,8 @@ public:
 		return export_options_changed;
 	}
 
-	virtual List<String> get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const override {
-		List<String> list;
+	virtual LocalVector<String> get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const override {
+		LocalVector<String> list;
 		if (p_preset.is_valid()) {
 			bool project_only = p_preset->get("application/export_project_only");
 			if (project_only) {
