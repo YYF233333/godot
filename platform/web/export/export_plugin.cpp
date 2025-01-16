@@ -463,9 +463,8 @@ bool EditorExportPlatformWeb::has_valid_project_configuration(const Ref<EditorEx
 	return valid;
 }
 
-List<String> EditorExportPlatformWeb::get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const {
-	List<String> list;
-	list.push_back("html");
+LocalVector<String> EditorExportPlatformWeb::get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const {
+	LocalVector<String> list = { "html" };
 	return list;
 }
 
