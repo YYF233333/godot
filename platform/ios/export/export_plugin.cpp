@@ -3092,15 +3092,15 @@ Error EditorExportPlatformIOS::run(const Ref<EditorExportPreset> &p_preset, int 
 
 		cmd_args_list.push_back(get_debug_protocol() + host + ":" + String::num_int64(remote_port));
 
-		List<String> breakpoints;
-		ScriptEditor::get_singleton()->get_breakpoints(&breakpoints);
+		LocalVector<String> breakpoints;
+		ScriptEditor::get_singleton()->get_breakpoints(breakpoints);
 
 		if (breakpoints.size()) {
 			cmd_args_list.push_back("--breakpoints");
 			String bpoints;
-			for (const List<String>::Element *E = breakpoints.front(); E; E = E->next()) {
-				bpoints += E->get().replace(" ", "%20");
-				if (E->next()) {
+			for (uint32_t idx = 0; idx < breakpoints.size(); idx++) {
+				bpoints += breakpoints[idx].replace(" ", "%20");
+				if (idx + 1 < breakpoints.size()) {
 					bpoints += ",";
 				}
 			}
