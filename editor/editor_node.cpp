@@ -6932,7 +6932,7 @@ void EditorNode::find_all_instances_inheriting_path_in_node(Node *p_root, Node *
 	}
 }
 
-void EditorNode::preload_reimporting_with_path_in_edited_scenes(const List<String> &p_scenes) {
+void EditorNode::preload_reimporting_with_path_in_edited_scenes(const LocalVector<String> &p_scenes) {
 	EditorProgress progress("preload_reimporting_scene", TTR("Preparing scenes for reload"), editor_data.get_edited_scene_count());
 
 	int original_edited_scene_idx = editor_data.get_edited_scene();
