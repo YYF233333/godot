@@ -479,9 +479,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 				properties_from_instance = false;
 				Ref<EditorExportPlatform> platform = Object::cast_to<EditorExportPlatform>(ClassDB::instantiate(name));
 				if (platform.is_valid()) {
-					List<EditorExportPlatform::ExportOption> options;
-					platform->get_export_options(&options);
-					for (const EditorExportPlatform::ExportOption &E : options) {
+					for (const EditorExportPlatform::ExportOption &E : platform->get_export_options()) {
 						properties.push_back(E.option);
 					}
 					own_properties = properties;

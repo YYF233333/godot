@@ -148,8 +148,8 @@ String EditorExportPlugin::_has_valid_export_configuration(const Ref<EditorExpor
 	}
 
 	set_export_preset(p_preset);
-	List<EditorExportPlatform::ExportOption> options;
-	_get_export_options(p_export_platform, &options);
+	LocalVector<EditorExportPlatform::ExportOption> options;
+	_get_export_options(p_export_platform, options);
 	for (const EditorExportPlatform::ExportOption &E : options) {
 		String option_warning = _get_export_option_warning(p_export_platform, E.option.name);
 		if (!option_warning.is_empty()) {
@@ -270,7 +270,7 @@ PackedStringArray EditorExportPlugin::_get_export_features(const Ref<EditorExpor
 	return ret;
 }
 
-void EditorExportPlugin::_get_export_options(const Ref<EditorExportPlatform> &p_platform, List<EditorExportPlatform::ExportOption> *r_options) const {
+void EditorExportPlugin::_get_export_options(const Ref<EditorExportPlatform> &p_platform, LocalVector<EditorExportPlatform::ExportOption> &r_options) const {
 	TypedArray<Dictionary> ret;
 	GDVIRTUAL_CALL(_get_export_options, p_platform, ret);
 	for (int i = 0; i < ret.size(); i++) {
@@ -280,7 +280,7 @@ void EditorExportPlugin::_get_export_options(const Ref<EditorExportPlatform> &p_
 		PropertyInfo property_info = PropertyInfo::from_dict(option["option"]);
 		Variant default_value = option["default_value"];
 		bool update_visibility = option.has("update_visibility") && option["update_visibility"];
-		r_options->push_back(EditorExportPlatform::ExportOption(property_info, default_value, update_visibility));
+		r_options.push_back(EditorExportPlatform::ExportOption(property_info, default_value, update_visibility));
 	}
 }
 

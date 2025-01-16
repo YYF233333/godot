@@ -71,7 +71,7 @@ class EditorExportPlatformLinuxBSD : public EditorExportPlatformPC {
 	String _get_exe_arch(const String &p_path) const;
 
 public:
-	virtual void get_export_options(List<ExportOption> *r_options) const override;
+	virtual LocalVector<ExportOption> get_export_options() const override;
 	virtual List<String> get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const override;
 	virtual bool get_export_option_visibility(const EditorExportPreset *p_preset, const String &p_option) const override;
 	virtual bool has_valid_export_configuration(const Ref<EditorExportPreset> &p_preset, String &r_error, bool &r_missing_templates, bool p_debug = false) const override;
