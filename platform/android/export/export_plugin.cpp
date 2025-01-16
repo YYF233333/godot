@@ -2848,10 +2848,11 @@ bool EditorExportPlatformAndroid::has_valid_project_configuration(const Ref<Edit
 	return valid;
 }
 
-List<String> EditorExportPlatformAndroid::get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const {
-	List<String> list;
-	list.push_back("apk");
-	list.push_back("aab");
+LocalVector<String> EditorExportPlatformAndroid::get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const {
+	LocalVector<String> list = {
+		"apk",
+		"aab"
+	};
 	return list;
 }
 
