@@ -94,9 +94,10 @@ bool EditorExportPlatformExtension::is_executable(const String &p_path) const {
 	return ret;
 }
 
-void EditorExportPlatformExtension::get_export_options(List<ExportOption> *r_options) const {
+LocalVector<EditorExportPlatform::ExportOption> EditorExportPlatformExtension::get_export_options() const {
 	TypedArray<Dictionary> ret;
-	if (GDVIRTUAL_CALL(_get_export_options, ret) && r_options) {
+	LocalVector<ExportOption> r_options;
+	if (GDVIRTUAL_CALL(_get_export_options, ret)) {
 		for (const Variant &var : ret) {
 			const Dictionary &d = var;
 			ERR_CONTINUE(!d.has("name"));
@@ -119,9 +120,10 @@ void EditorExportPlatformExtension::get_export_options(List<ExportOption> *r_opt
 				required = d["required"];
 			}
 
-			r_options->push_back(ExportOption(pinfo, default_value, update_visibility, required));
+			r_options.push_back(ExportOption(pinfo, default_value, update_visibility, required));
 		}
 	}
+	return r_options;
 }
 
 bool EditorExportPlatformExtension::should_update_export_options() {
