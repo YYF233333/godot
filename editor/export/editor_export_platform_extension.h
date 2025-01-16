@@ -50,7 +50,7 @@ public:
 	virtual bool is_executable(const String &p_path) const override;
 	GDVIRTUAL1RC(bool, _is_executable, const String &);
 
-	virtual void get_export_options(List<ExportOption> *r_options) const override;
+	virtual LocalVector<ExportOption> get_export_options() const override;
 	GDVIRTUAL0RC(TypedArray<Dictionary>, _get_export_options);
 
 	virtual bool should_update_export_options() override;
