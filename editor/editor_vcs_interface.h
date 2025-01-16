@@ -150,7 +150,7 @@ public:
 	String get_vcs_name();
 	List<Commit> get_previous_commits(int p_max_commits);
 	List<String> get_branch_list();
-	List<String> get_remotes();
+	LocalVector<String> get_remotes();
 	void create_branch(const String &p_branch_name);
 	void remove_branch(const String &p_branch_name);
 	void create_remote(const String &p_remote_name, const String &p_remote_url);
