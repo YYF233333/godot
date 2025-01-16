@@ -365,10 +365,11 @@ String EditorExportPlatformWindows::get_template_file_name(const String &p_targe
 	return "windows_" + p_target + "_" + p_arch + ".exe";
 }
 
-List<String> EditorExportPlatformWindows::get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const {
-	List<String> list;
-	list.push_back("exe");
-	list.push_back("zip");
+LocalVector<String> EditorExportPlatformWindows::get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const {
+	LocalVector<String> list = {
+		"exe",
+		"zip"
+	};
 	return list;
 }
 

@@ -363,8 +363,8 @@ bool EditorExportPlatformMacOS::get_export_option_visibility(const EditorExportP
 	return true;
 }
 
-List<String> EditorExportPlatformMacOS::get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const {
-	List<String> list;
+LocalVector<String> EditorExportPlatformMacOS::get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const {
+	LocalVector<String> list;
 
 	if (p_preset.is_valid()) {
 		int dist_type = p_preset->get("export/distribution_type");
