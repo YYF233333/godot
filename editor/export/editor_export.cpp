@@ -353,7 +353,7 @@ void EditorExport::load_config() {
 }
 
 void EditorExport::update_export_presets() {
-	HashMap<StringName, List<EditorExportPlatform::ExportOption>> platform_options;
+	HashMap<StringName, LocalVector<EditorExportPlatform::ExportOption>> platform_options;
 
 	if (should_reload_presets) {
 		should_reload_presets = false;
@@ -371,11 +371,10 @@ void EditorExport::update_export_presets() {
 		}
 
 		if (should_update) {
-			List<EditorExportPlatform::ExportOption> options;
-			platform->get_export_options(&options);
+			LocalVector<EditorExportPlatform::ExportOption> options = platform->get_export_options();
 
 			for (int j = 0; j < export_plugins.size(); j++) {
-				export_plugins[j]->_get_export_options(platform, &options);
+				export_plugins[j]->_get_export_options(platform, options);
 			}
 
 			platform_options[platform->get_name()] = options;
@@ -390,7 +389,7 @@ void EditorExport::update_export_presets() {
 			export_presets_updated = true;
 
 			bool update_value_overrides = false;
-			List<EditorExportPlatform::ExportOption> options = platform_options[preset->get_platform()->get_name()];
+			LocalVector<EditorExportPlatform::ExportOption> options = platform_options[preset->get_platform()->get_name()];
 
 			// Clear the preset properties prior to reloading, keep the values to preserve options from plugins that may be currently disabled.
 			preset->properties.clear();
