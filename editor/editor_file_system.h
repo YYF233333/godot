@@ -352,7 +352,7 @@ class EditorFileSystem : public Node {
 	HashSet<ObjectID> folders_to_sort;
 
 	Error _copy_file(const String &p_from, const String &p_to);
-	bool _copy_directory(const String &p_from, const String &p_to, List<CopiedFile> *p_files);
+	bool _copy_directory(const String &p_from, const String &p_to, LocalVector<CopiedFile> &p_files);
 	void _queue_refresh_filesystem();
 	void _refresh_filesystem();
 

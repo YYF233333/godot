@@ -3058,7 +3058,7 @@ Error EditorFileSystem::_copy_file(const String &p_from, const String &p_to) {
 	return OK;
 }
 
-bool EditorFileSystem::_copy_directory(const String &p_from, const String &p_to, List<CopiedFile> *p_files) {
+bool EditorFileSystem::_copy_directory(const String &p_from, const String &p_to, LocalVector<CopiedFile> &p_files) {
 	Ref<DirAccess> old_dir = DirAccess::open(p_from);
 	ERR_FAIL_COND_V(old_dir.is_null(), false);
 
@@ -3078,7 +3078,7 @@ bool EditorFileSystem::_copy_directory(const String &p_from, const String &p_to,
 			CopiedFile copy;
 			copy.from = p_from.path_join(F);
 			copy.to = p_to.path_join(F);
-			p_files->push_back(copy);
+			p_files.push_back(copy);
 		}
 	}
 	return success;
@@ -3472,8 +3472,8 @@ Error EditorFileSystem::copy_file(const String &p_from, const String &p_to) {
 }
 
 Error EditorFileSystem::copy_directory(const String &p_from, const String &p_to) {
-	List<CopiedFile> files;
-	bool success = _copy_directory(p_from, p_to, &files);
+	LocalVector<CopiedFile> files;
+	bool success = _copy_directory(p_from, p_to, files);
 
 	EditorProgress *ep = nullptr;
 	if (files.size() > 10) {
