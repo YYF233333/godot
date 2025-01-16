@@ -427,12 +427,11 @@ Ref<EditorExportPreset> EditorExportPlatform::create_preset() {
 	preset.instantiate();
 	preset->platform = Ref<EditorExportPlatform>(this);
 
-	List<ExportOption> options;
-	get_export_options(&options);
+	LocalVector<ExportOption> options = get_export_options();
 
 	Vector<Ref<EditorExportPlugin>> export_plugins = EditorExport::get_singleton()->get_export_plugins();
 	for (int i = 0; i < export_plugins.size(); i++) {
-		export_plugins.write[i]->_get_export_options(Ref<EditorExportPlatform>(this), &options);
+		export_plugins.write[i]->_get_export_options(Ref<EditorExportPlatform>(this), options);
 	}
 
 	for (const ExportOption &E : options) {

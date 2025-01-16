@@ -157,7 +157,7 @@ protected:
 	virtual void _end_customize_resources();
 
 	virtual PackedStringArray _get_export_features(const Ref<EditorExportPlatform> &p_export_platform, bool p_debug) const;
-	virtual void _get_export_options(const Ref<EditorExportPlatform> &p_export_platform, List<EditorExportPlatform::ExportOption> *r_options) const;
+	virtual void _get_export_options(const Ref<EditorExportPlatform> &p_export_platform, LocalVector<EditorExportPlatform::ExportOption> &r_options) const;
 	virtual Dictionary _get_export_options_overrides(const Ref<EditorExportPlatform> &p_export_platform) const;
 	virtual bool _should_update_export_options(const Ref<EditorExportPlatform> &p_export_platform) const;
 	virtual bool _get_export_option_visibility(const Ref<EditorExportPlatform> &p_export_platform, const String &p_option_name) const;

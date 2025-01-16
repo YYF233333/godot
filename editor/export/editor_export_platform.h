@@ -284,7 +284,7 @@ public:
 
 	virtual bool fill_log_messages(RichTextLabel *p_log, Error p_err);
 
-	virtual void get_export_options(List<ExportOption> *r_options) const = 0;
+	virtual LocalVector<ExportOption> get_export_options() const = 0;
 	virtual bool should_update_export_options() { return false; }
 	virtual bool get_export_option_visibility(const EditorExportPreset *p_preset, const String &p_option) const { return true; }
 	virtual String get_export_option_warning(const EditorExportPreset *p_preset, const StringName &p_name) const { return String(); }
