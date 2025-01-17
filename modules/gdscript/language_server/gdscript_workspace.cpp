@@ -216,7 +216,7 @@ const LSP::DocumentSymbol *GDScriptWorkspace::get_local_symbol_at(const ExtendGD
 }
 
 void GDScriptWorkspace::reload_all_workspace_scripts() {
-	List<String> paths;
+	LocalVector<String> paths;
 	list_script_files("res://", paths);
 	for (const String &path : paths) {
 		Error err;
@@ -235,7 +235,7 @@ void GDScriptWorkspace::reload_all_workspace_scripts() {
 	}
 }
 
-void GDScriptWorkspace::list_script_files(const String &p_root_dir, List<String> &r_files) {
+void GDScriptWorkspace::list_script_files(const String &p_root_dir, LocalVector<String> &r_files) {
 	Error err;
 	Ref<DirAccess> dir = DirAccess::open(p_root_dir, &err);
 	if (OK != err) {
@@ -560,7 +560,7 @@ Vector<LSP::Location> GDScriptWorkspace::find_all_usages(const LSP::DocumentSymb
 		return find_usages_in_file(p_symbol, p_symbol.script_path);
 	}
 	// Search in all documents.
-	List<String> paths;
+	LocalVector<String> paths;
 	list_script_files("res://", paths);
 
 	Vector<LSP::Location> usages;
