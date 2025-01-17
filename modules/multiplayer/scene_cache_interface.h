@@ -72,7 +72,7 @@ private:
 	NodeCache &_track(Node *p_node);
 
 protected:
-	Error _send_confirm_path(Node *p_node, NodeCache &p_cache, const List<int> &p_peers);
+	Error _send_confirm_path(Node *p_node, NodeCache &p_cache, const LocalVector<int> &p_peers);
 
 public:
 	void clear();
