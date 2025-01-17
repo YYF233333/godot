@@ -88,7 +88,7 @@ public:
 	const lsp::DocumentSymbol *resolve_symbol(const lsp::TextDocumentPositionParams &p_doc_pos, const String &p_symbol_name = "", bool p_func_required = false);
 	LocalVector<const lsp::DocumentSymbol *> resolve_related_symbols(const lsp::TextDocumentPositionParams &p_doc_pos);
 	const lsp::DocumentSymbol *resolve_native_symbol(const lsp::NativeSymbolInspectParams &p_params);
-	void resolve_document_links(const String &p_uri, List<lsp::DocumentLink> &r_list);
+	LocalVector<lsp::DocumentLink> resolve_document_links(const String &p_uri);
 	Dictionary generate_script_api(const String &p_path);
 	Error resolve_signature(const lsp::TextDocumentPositionParams &p_doc_pos, lsp::SignatureHelp &r_signature);
 	void did_delete_files(const Dictionary &p_params);
