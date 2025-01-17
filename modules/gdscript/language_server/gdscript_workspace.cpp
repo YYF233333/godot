@@ -790,12 +790,14 @@ const lsp::DocumentSymbol *GDScriptWorkspace::resolve_native_symbol(const lsp::N
 	return nullptr;
 }
 
-void GDScriptWorkspace::resolve_document_links(const String &p_uri, List<lsp::DocumentLink> &r_list) {
+LocalVector<lsp::DocumentLink> GDScriptWorkspace::resolve_document_links(const String &p_uri) {
+	LocalVector<lsp::DocumentLink> r_list;
 	if (const ExtendGDScriptParser *parser = get_parse_successed_script(get_file_path(p_uri))) {
 		for (const lsp::DocumentLink &link : parser->get_document_links()) {
 			r_list.push_back(link);
 		}
 	}
+	return r_list;
 }
 
 Dictionary GDScriptWorkspace::generate_script_api(const String &p_path) {
