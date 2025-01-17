@@ -403,9 +403,9 @@ Error MultiplayerSynchronizer::_watch_changes(uint64_t p_usec) {
 	return OK;
 }
 
-List<Variant> MultiplayerSynchronizer::get_delta_state(uint64_t p_cur_usec, uint64_t p_last_usec, uint64_t &r_indexes) {
+LocalVector<Variant> MultiplayerSynchronizer::get_delta_state(uint64_t p_cur_usec, uint64_t p_last_usec, uint64_t &r_indexes) {
 	r_indexes = 0;
-	List<Variant> out;
+	LocalVector<Variant> out;
 
 	if (last_watch_usec == p_cur_usec) {
 		// We already watched for changes in this frame.
