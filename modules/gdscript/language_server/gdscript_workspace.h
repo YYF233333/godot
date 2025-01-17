@@ -41,7 +41,7 @@ class GDScriptWorkspace : public RefCounted {
 	GDCLASS(GDScriptWorkspace, RefCounted);
 
 private:
-	void _get_owners(EditorFileSystemDirectory *efsd, String p_path, List<String> &owners);
+	void _get_owners(EditorFileSystemDirectory *efsd, String p_path, LocalVector<String> &owners);
 	Node *_get_owner_scene_node(String p_path);
 
 protected:
