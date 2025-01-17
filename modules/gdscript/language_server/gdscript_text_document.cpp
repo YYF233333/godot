@@ -368,9 +368,7 @@ Array GDScriptTextDocument::documentLink(const Dictionary &p_params) {
 	LSP::DocumentLinkParams params;
 	params.load(p_params);
 
-	List<LSP::DocumentLink> links;
-	GDScriptLanguageProtocol::get_singleton()->get_workspace()->resolve_document_links(params.textDocument.uri, links);
-	for (const LSP::DocumentLink &E : links) {
+	for (const LSP::DocumentLink &E : GDScriptLanguageProtocol::get_singleton()->get_workspace()->resolve_document_links(params.textDocument.uri)) {
 		ret.push_back(E.to_json());
 	}
 	return ret;
