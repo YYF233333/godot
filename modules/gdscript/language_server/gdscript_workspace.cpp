@@ -836,7 +836,8 @@ const LSP::DocumentSymbol *GDScriptWorkspace::resolve_symbol(const LSP::TextDocu
 	return symbol;
 }
 
-void GDScriptWorkspace::resolve_related_symbols(const LSP::TextDocumentPositionParams &p_doc_pos, List<const LSP::DocumentSymbol *> &r_list) {
+LocalVector<const LSP::DocumentSymbol *> GDScriptWorkspace::resolve_related_symbols(const LSP::TextDocumentPositionParams &p_doc_pos) {
+	LocalVector<const LSP::DocumentSymbol *> r_list;
 	String path = get_file_path(p_doc_pos.textDocument.uri);
 	if (const ExtendGDScriptParser *parser = get_parse_result(path)) {
 		String symbol_identifier;
@@ -865,6 +866,7 @@ void GDScriptWorkspace::resolve_related_symbols(const LSP::TextDocumentPositionP
 			}
 		}
 	}
+	return r_list;
 }
 
 const LSP::DocumentSymbol *GDScriptWorkspace::resolve_native_symbol(const LSP::NativeSymbolInspectParams &p_params) {
@@ -906,12 +908,12 @@ Error GDScriptWorkspace::resolve_signature(const LSP::TextDocumentPositionParams
 		text_pos.textDocument = p_doc_pos.textDocument;
 
 		if (parser->get_left_function_call(p_doc_pos.position, text_pos.position, r_signature.activeParameter) == OK) {
-			List<const LSP::DocumentSymbol *> symbols;
+			LocalVector<const LSP::DocumentSymbol *> symbols;
 
 			if (const LSP::DocumentSymbol *symbol = resolve_symbol(text_pos)) {
 				symbols.push_back(symbol);
 			} else if (GDScriptLanguageProtocol::get_singleton()->is_smart_resolve_enabled()) {
-				GDScriptLanguageProtocol::get_singleton()->get_workspace()->resolve_related_symbols(text_pos, symbols);
+				symbols = GDScriptLanguageProtocol::get_singleton()->get_workspace()->resolve_related_symbols(text_pos);
 			}
 
 			for (const LSP::DocumentSymbol *const &symbol : symbols) {
