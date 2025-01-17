@@ -398,9 +398,7 @@ Variant GDScriptTextDocument::hover(const Dictionary &p_params) {
 	} else if (GDScriptLanguageProtocol::get_singleton()->is_smart_resolve_enabled()) {
 		Dictionary ret;
 		Array contents;
-		List<const lsp::DocumentSymbol *> list;
-		GDScriptLanguageProtocol::get_singleton()->get_workspace()->resolve_related_symbols(params, list);
-		for (const lsp::DocumentSymbol *&E : list) {
+		for (const lsp::DocumentSymbol *&E : GDScriptLanguageProtocol::get_singleton()->get_workspace()->resolve_related_symbols(params)) {
 			if (const lsp::DocumentSymbol *s = E) {
 				contents.push_back(s->render().value);
 			}
@@ -501,9 +499,7 @@ Array GDScriptTextDocument::find_symbols(const lsp::TextDocumentPositionParams &
 		}
 		r_list.push_back(symbol);
 	} else if (GDScriptLanguageProtocol::get_singleton()->is_smart_resolve_enabled()) {
-		List<const lsp::DocumentSymbol *> list;
-		GDScriptLanguageProtocol::get_singleton()->get_workspace()->resolve_related_symbols(p_location, list);
-		for (const lsp::DocumentSymbol *&E : list) {
+		for (const lsp::DocumentSymbol *&E : GDScriptLanguageProtocol::get_singleton()->get_workspace()->resolve_related_symbols(p_location)) {
 			if (const lsp::DocumentSymbol *s = E) {
 				if (!s->uri.is_empty()) {
 					lsp::Location location;

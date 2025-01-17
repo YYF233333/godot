@@ -86,7 +86,7 @@ public:
 	void completion(const lsp::CompletionParams &p_params, LocalVector<ScriptLanguage::CodeCompletionOption> &r_options);
 
 	const lsp::DocumentSymbol *resolve_symbol(const lsp::TextDocumentPositionParams &p_doc_pos, const String &p_symbol_name = "", bool p_func_required = false);
-	void resolve_related_symbols(const lsp::TextDocumentPositionParams &p_doc_pos, List<const lsp::DocumentSymbol *> &r_list);
+	LocalVector<const lsp::DocumentSymbol *> resolve_related_symbols(const lsp::TextDocumentPositionParams &p_doc_pos);
 	const lsp::DocumentSymbol *resolve_native_symbol(const lsp::NativeSymbolInspectParams &p_params);
 	void resolve_document_links(const String &p_uri, List<lsp::DocumentLink> &r_list);
 	Dictionary generate_script_api(const String &p_path);
