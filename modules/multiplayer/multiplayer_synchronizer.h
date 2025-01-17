@@ -117,7 +117,7 @@ public:
 	void remove_visibility_filter(Callable p_callback);
 	VisibilityUpdateMode get_visibility_update_mode() const;
 
-	List<Variant> get_delta_state(uint64_t p_cur_usec, uint64_t p_last_usec, uint64_t &r_indexes);
+	LocalVector<Variant> get_delta_state(uint64_t p_cur_usec, uint64_t p_last_usec, uint64_t &r_indexes);
 	LocalVector<NodePath> get_delta_properties(uint64_t p_indexes);
 	SceneReplicationConfig *get_replication_config_ptr() const;
 
