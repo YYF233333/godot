@@ -839,7 +839,7 @@ const lsp::DocumentSymbol *ExtendGDScriptParser::get_member_symbol(const String 
 	return nullptr;
 }
 
-const List<lsp::DocumentLink> &ExtendGDScriptParser::get_document_links() const {
+const LocalVector<lsp::DocumentLink> &ExtendGDScriptParser::get_document_links() const {
 	return document_links;
 }
 

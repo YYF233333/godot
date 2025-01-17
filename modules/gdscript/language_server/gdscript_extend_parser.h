@@ -116,7 +116,7 @@ class ExtendGDScriptParser : public GDScriptParser {
 
 	lsp::DocumentSymbol class_symbol;
 	Vector<lsp::Diagnostic> diagnostics;
-	List<lsp::DocumentLink> document_links;
+	LocalVector<lsp::DocumentLink> document_links;
 	ClassMembers members;
 	HashMap<String, ClassMembers> inner_classes;
 
@@ -161,7 +161,7 @@ public:
 	 */
 	const lsp::DocumentSymbol *get_symbol_defined_at_line(int p_line, const String &p_symbol_name = "") const;
 	const lsp::DocumentSymbol *get_member_symbol(const String &p_name, const String &p_subclass = "") const;
-	const List<lsp::DocumentLink> &get_document_links() const;
+	const LocalVector<lsp::DocumentLink> &get_document_links() const;
 
 	const Array &get_member_completions();
 	Dictionary generate_api() const;
