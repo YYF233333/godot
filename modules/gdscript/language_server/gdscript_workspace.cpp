@@ -886,9 +886,8 @@ const LSP::DocumentSymbol *GDScriptWorkspace::resolve_native_symbol(const LSP::N
 
 void GDScriptWorkspace::resolve_document_links(const String &p_uri, List<LSP::DocumentLink> &r_list) {
 	if (const ExtendGDScriptParser *parser = get_parse_successed_script(get_file_path(p_uri))) {
-		const List<LSP::DocumentLink> &links = parser->get_document_links();
-		for (const LSP::DocumentLink &E : links) {
-			r_list.push_back(E);
+		for (const LSP::DocumentLink &link : parser->get_document_links()) {
+			r_list.push_back(link);
 		}
 	}
 }
