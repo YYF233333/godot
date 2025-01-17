@@ -3658,7 +3658,7 @@ const BindingsGenerator::TypeInterface *BindingsGenerator::_get_type_or_singleto
 	return itype;
 }
 
-const String BindingsGenerator::_get_generic_type_parameters(const TypeInterface &p_itype, const List<TypeReference> &p_generic_type_parameters) {
+const String BindingsGenerator::_get_generic_type_parameters(const TypeInterface &p_itype, const LocalVector<TypeReference> &p_generic_type_parameters) {
 	if (p_generic_type_parameters.is_empty()) {
 		return "";
 	}
@@ -3684,7 +3684,7 @@ const String BindingsGenerator::_get_generic_type_parameters(const TypeInterface
 		}
 
 		params += param_itype->cs_type;
-		if (i < p_generic_type_parameters.size() - 1) {
+		if (i < (int64_t)p_generic_type_parameters.size() - 1) {
 			params += ", ";
 		}
 
