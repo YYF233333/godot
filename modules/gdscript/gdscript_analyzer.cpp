@@ -312,15 +312,14 @@ Error GDScriptAnalyzer::check_class_member_name_conflict(const GDScriptParser::C
 	return OK;
 }
 
-void GDScriptAnalyzer::get_class_node_current_scope_classes(GDScriptParser::ClassNode *p_node, List<GDScriptParser::ClassNode *> *p_list, GDScriptParser::Node *p_source) {
+void GDScriptAnalyzer::get_class_node_current_scope_classes(GDScriptParser::ClassNode *p_node, LocalVector<GDScriptParser::ClassNode *> &p_list, GDScriptParser::Node *p_source) {
 	ERR_FAIL_NULL(p_node);
-	ERR_FAIL_NULL(p_list);
 
-	if (p_list->find(p_node) != nullptr) {
+	if (p_list.has(p_node)) {
 		return;
 	}
 
-	p_list->push_back(p_node);
+	p_list.push_back(p_node);
 
 	// TODO: Try to solve class inheritance if not yet resolving.
 
@@ -524,8 +523,8 @@ Error GDScriptAnalyzer::resolve_class_inheritance(GDScriptParser::ClassNode *p_c
 			} else {
 				// Look for other classes in script.
 				bool found = false;
-				List<GDScriptParser::ClassNode *> script_classes;
-				get_class_node_current_scope_classes(p_class, &script_classes, id);
+				LocalVector<GDScriptParser::ClassNode *> script_classes;
+				get_class_node_current_scope_classes(p_class, script_classes, id);
 				for (GDScriptParser::ClassNode *look_class : script_classes) {
 					if (look_class->identifier && look_class->identifier->name == name) {
 						if (!look_class->get_datatype().is_set()) {
@@ -840,9 +839,9 @@ GDScriptParser::DataType GDScriptAnalyzer::resolve_datatype(GDScriptParser::Type
 			result = make_global_enum_type(first, StringName());
 		} else {
 			// Classes in current scope.
-			List<GDScriptParser::ClassNode *> script_classes;
+			LocalVector<GDScriptParser::ClassNode *> script_classes;
 			bool found = false;
-			get_class_node_current_scope_classes(parser->current_class, &script_classes, p_type);
+			get_class_node_current_scope_classes(parser->current_class, script_classes, p_type);
 			for (GDScriptParser::ClassNode *script_class : script_classes) {
 				if (found) {
 					break;
@@ -4161,11 +4160,11 @@ void GDScriptAnalyzer::reduce_identifier_from_base(GDScriptParser::IdentifierNod
 	}
 
 	GDScriptParser::ClassNode *base_class = base.class_type;
-	List<GDScriptParser::ClassNode *> script_classes;
+	LocalVector<GDScriptParser::ClassNode *> script_classes;
 	bool is_base = true;
 
 	if (base_class != nullptr) {
-		get_class_node_current_scope_classes(base_class, &script_classes, p_identifier);
+		get_class_node_current_scope_classes(base_class, script_classes, p_identifier);
 	}
 
 	bool is_constructor = base.is_meta_type && p_identifier->name == SNAME("new");
