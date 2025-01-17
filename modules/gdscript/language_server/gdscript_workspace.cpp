@@ -684,7 +684,7 @@ void GDScriptWorkspace::publish_diagnostics(const String &p_path) {
 	GDScriptLanguageProtocol::get_singleton()->notify_client("textDocument/publishDiagnostics", params);
 }
 
-void GDScriptWorkspace::_get_owners(EditorFileSystemDirectory *efsd, String p_path, List<String> &owners) {
+void GDScriptWorkspace::_get_owners(EditorFileSystemDirectory *efsd, String p_path, LocalVector<String> &owners) {
 	if (!efsd) {
 		return;
 	}
@@ -712,7 +712,7 @@ void GDScriptWorkspace::_get_owners(EditorFileSystemDirectory *efsd, String p_pa
 
 Node *GDScriptWorkspace::_get_owner_scene_node(String p_path) {
 	Node *owner_scene_node = nullptr;
-	List<String> owners;
+	LocalVector<String> owners;
 
 	_get_owners(EditorFileSystem::get_singleton()->get_filesystem(), p_path, owners);
 
