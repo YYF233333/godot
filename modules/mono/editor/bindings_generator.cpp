@@ -1434,7 +1434,7 @@ bool BindingsGenerator::_validate_api_type(const TypeInterface *p_target_itype, 
 int BindingsGenerator::_determine_enum_prefix(const EnumInterface &p_ienum) {
 	CRASH_COND(p_ienum.constants.is_empty());
 
-	const ConstantInterface &front_iconstant = p_ienum.constants.front()->get();
+	const ConstantInterface &front_iconstant = p_ienum.constants[0];
 	Vector<String> front_parts = front_iconstant.name.split("_", /* p_allow_empty: */ true);
 	int candidate_len = front_parts.size() - 1;
 
@@ -2268,7 +2268,7 @@ Error BindingsGenerator::_generate_cs_type(const TypeInterface &itype, const Str
 		output.append(" : long");
 		output.append(MEMBER_BEGIN OPEN_BLOCK);
 
-		const ConstantInterface &last = ienum.constants.back()->get();
+		const ConstantInterface &last = ienum.constants[ienum.constants.size() - 1];
 		for (const ConstantInterface &iconstant : ienum.constants) {
 			if (iconstant.const_doc && iconstant.const_doc->description.size()) {
 				String xml_summary = bbcode_to_xml(fix_doc_description(iconstant.const_doc->description), &itype);
@@ -3662,7 +3662,7 @@ const String BindingsGenerator::_get_generic_type_parameters(const TypeInterface
 		return "";
 	}
 
-	ERR_FAIL_COND_V_MSG(p_itype.type_parameter_count != p_generic_type_parameters.size(), "",
+	ERR_FAIL_COND_V_MSG(p_itype.type_parameter_count != (int64_t)p_generic_type_parameters.size(), "",
 			"Generic type parameter count mismatch for type '" + p_itype.name + "'." +
 					" Found " + itos(p_generic_type_parameters.size()) + ", but requires " +
 					itos(p_itype.type_parameter_count) + ".");
