@@ -63,7 +63,7 @@ class BindingsGenerator {
 	struct EnumInterface {
 		StringName cname;
 		String proxy_name;
-		List<ConstantInterface> constants;
+		LocalVector<ConstantInterface> constants;
 		bool is_flags = false;
 
 		_FORCE_INLINE_ bool operator==(const EnumInterface &p_ienum) const {
@@ -452,11 +452,11 @@ class BindingsGenerator {
 		bool is_deprecated = false;
 		String deprecation_message;
 
-		List<ConstantInterface> constants;
-		List<EnumInterface> enums;
-		List<PropertyInterface> properties;
-		List<MethodInterface> methods;
-		List<SignalInterface> signals_;
+		LocalVector<ConstantInterface> constants;
+		LocalVector<EnumInterface> enums;
+		LocalVector<PropertyInterface> properties;
+		LocalVector<MethodInterface> methods;
+		LocalVector<SignalInterface> signals_;
 		HashSet<String> ignored_members;
 
 		bool has_virtual_methods = false;
@@ -655,7 +655,7 @@ class BindingsGenerator {
 	HashMap<StringName, TypeInterface> enum_types;
 
 	List<EnumInterface> global_enums;
-	List<ConstantInterface> global_constants;
+	LocalVector<ConstantInterface> global_constants;
 
 	List<InternalCall> method_icalls;
 	/// Stores the unique internal calls from [method_icalls] that are assigned to each method.
@@ -749,7 +749,7 @@ class BindingsGenerator {
 
 	NameCache name_cache;
 
-	const ConstantInterface *find_constant_by_name(const String &p_name, const List<ConstantInterface> &p_constants) const {
+	const ConstantInterface *find_constant_by_name(const String &p_name, const LocalVector<ConstantInterface> &p_constants) const {
 		for (const ConstantInterface &E : p_constants) {
 			if (E.name == p_name) {
 				return &E;
