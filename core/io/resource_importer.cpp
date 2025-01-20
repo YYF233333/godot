@@ -472,13 +472,13 @@ void ResourceFormatImporter::add_importer(const Ref<ResourceImporter> &p_importe
 	}
 }
 
-void ResourceFormatImporter::get_importers_for_file(const String &p_file, List<Ref<ResourceImporter>> *r_importers) {
+void ResourceFormatImporter::get_importers_for_file(const String &p_file, LocalVector<Ref<ResourceImporter>> &r_importers) {
 	for (int i = 0; i < importers.size(); i++) {
 		LocalVector<String> local_exts;
 		importers[i]->get_recognized_extensions(local_exts);
 		for (const String &F : local_exts) {
 			if (p_file.right(F.length()).nocasecmp_to(F) == 0) {
-				r_importers->push_back(importers[i]);
+				r_importers.push_back(importers[i]);
 				break;
 			}
 		}
