@@ -502,10 +502,8 @@ LocalVector<Ref<ResourceImporter>> ResourceFormatImporter::get_importers_for_fil
     return r_importers;
 }
 
-void ResourceFormatImporter::get_importers(List<Ref<ResourceImporter>> *r_importers) {
-	for (int i = 0; i < importers.size(); i++) {
-		r_importers->push_back(importers[i]);
-	}
+Vector<Ref<ResourceImporter>> ResourceFormatImporter::get_importers() {
+	return importers;
 }
 
 Ref<ResourceImporter> ResourceFormatImporter::get_importer_by_file(const String &p_file) const {
