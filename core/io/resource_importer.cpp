@@ -326,12 +326,13 @@ String ResourceFormatImporter::get_internal_resource_path(const String &p_path) 
 	return pat.path;
 }
 
-void ResourceFormatImporter::get_internal_resource_path_list(const String &p_path, List<String> *r_paths) {
+LocalVector<String> ResourceFormatImporter::get_internal_resource_path_list(const String &p_path) {
+	LocalVector<String> r_paths;
 	Error err;
 	Ref<FileAccess> f = FileAccess::open(p_path + ".import", FileAccess::READ, &err);
 
 	if (f.is_null()) {
-		return;
+		return r_paths;
 	}
 
 	VariantParser::StreamFile stream;
@@ -350,22 +351,24 @@ void ResourceFormatImporter::get_internal_resource_path_list(const String &p_pat
 
 		err = VariantParser::parse_tag_assign_eof(&stream, lines, error_text, next_tag, assign, value, nullptr, true);
 		if (err == ERR_FILE_EOF) {
-			return;
+			return r_paths;
 		} else if (err != OK) {
 			ERR_PRINT(vformat("ResourceFormatImporter::get_internal_resource_path_list - %s.import:%d error: %s.", p_path, lines, error_text));
-			return;
+			return r_paths;
 		}
 
 		if (!assign.is_empty()) {
 			if (assign.begins_with("path.")) {
-				r_paths->push_back(value);
+				r_paths.push_back(value);
 			} else if (assign == "path") {
-				r_paths->push_back(value);
+				r_paths.push_back(value);
 			}
 		} else if (next_tag.name != "remap") {
 			break;
 		}
 	}
+
+	return r_paths;
 }
 
 String ResourceFormatImporter::get_import_group_file(const String &p_path) const {
