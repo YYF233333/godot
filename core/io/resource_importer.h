@@ -87,7 +87,7 @@ public:
 	Error get_import_order_threads_and_importer(const String &p_path, int &r_order, bool &r_can_threads, String &r_importer) const;
 
 	String get_internal_resource_path(const String &p_path) const;
-	void get_internal_resource_path_list(const String &p_path, List<String> *r_paths);
+	LocalVector<String> get_internal_resource_path_list(const String &p_path);
 
 	void add_importer(const Ref<ResourceImporter> &p_importer, bool p_first_priority = false);
 

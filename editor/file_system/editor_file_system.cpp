@@ -1605,10 +1605,8 @@ void EditorFileSystem::_scan_fs_changes(EditorFileSystemDirectory *p_dir, ScanPr
 
 void EditorFileSystem::_delete_internal_files(const String &p_file) {
 	if (FileAccess::exists(p_file + ".import")) {
-		List<String> paths;
-		ResourceFormatImporter::get_singleton()->get_internal_resource_path_list(p_file, &paths);
 		Ref<DirAccess> da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
-		for (const String &E : paths) {
+		for (const String &E : ResourceFormatImporter::get_singleton()->get_internal_resource_path_list(p_file)) {
 			da->remove(E);
 		}
 		da->remove(p_file + ".import");
