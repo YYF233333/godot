@@ -65,7 +65,7 @@ String ResourceImporterImage::get_preset_name(int p_idx) const {
 	return String();
 }
 
-void ResourceImporterImage::get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset) const {
+void ResourceImporterImage::get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset) const {
 }
 
 Error ResourceImporterImage::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
