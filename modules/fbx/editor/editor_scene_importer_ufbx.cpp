@@ -41,7 +41,7 @@ void EditorSceneFormatImporterUFBX::get_extensions(LocalVector<String> &r_extens
 
 Node *EditorSceneFormatImporterUFBX::import_scene(const String &p_path, uint32_t p_flags,
 		const HashMap<StringName, Variant> &p_options,
-		List<String> *r_missing_deps, Error *r_err) {
+		LocalVector<String> *r_missing_deps, Error *r_err) {
 	// FIXME: Hack to work around GH-86309.
 	if (p_options.has("fbx/importer") && int(p_options["fbx/importer"]) == FBX_IMPORTER_FBX2GLTF && GLOBAL_GET_CACHED(bool, "filesystem/import/fbx2gltf/enabled")) {
 		Ref<EditorSceneFormatImporterFBX2GLTF> fbx2gltf_importer;

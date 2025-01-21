@@ -40,7 +40,7 @@ void EditorSceneFormatImporterGLTF::get_extensions(LocalVector<String> &r_extens
 
 Node *EditorSceneFormatImporterGLTF::import_scene(const String &p_path, uint32_t p_flags,
 		const HashMap<StringName, Variant> &p_options,
-		List<String> *r_missing_deps, Error *r_err) {
+		LocalVector<String> *r_missing_deps, Error *r_err) {
 	Ref<GLTFDocument> gltf;
 	gltf.instantiate();
 	Ref<GLTFState> state;
