@@ -37,7 +37,7 @@ class EditorOBJImporter : public EditorSceneFormatImporter {
 
 public:
 	virtual void get_extensions(LocalVector<String> &r_extensions) const override;
-	virtual Node *import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, List<String> *r_missing_deps, Error *r_err = nullptr) override;
+	virtual Node *import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, LocalVector<String> *r_missing_deps, Error *r_err = nullptr) override;
 };
 
 class ResourceImporterOBJ : public ResourceImporter {
