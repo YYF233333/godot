@@ -411,7 +411,7 @@ public:
 	void clear_connections();
 	virtual PackedVector2Array get_connection_line(const Vector2 &p_from, const Vector2 &p_to) const;
 	Ref<Connection> get_closest_connection_at_point(const Vector2 &p_point, float p_max_distance = 4.0) const;
-	List<Ref<Connection>> get_connections_intersecting_with_rect(const Rect2 &p_rect) const;
+	LocalVector<Ref<Connection>> get_connections_intersecting_with_rect(const Rect2 &p_rect) const;
 
 	virtual bool is_node_hover_valid(const StringName &p_from, int p_from_port, const StringName &p_to, int p_to_port);
 
