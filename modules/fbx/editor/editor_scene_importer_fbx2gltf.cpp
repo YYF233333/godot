@@ -132,7 +132,7 @@ Variant EditorSceneFormatImporterFBX2GLTF::get_option_visibility(const String &p
 	r_options->push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::INT, SNAME(PATH), PROPERTY_HINT_ENUM, ENUM_HINT), VALUE));
 
 void EditorSceneFormatImporterFBX2GLTF::get_import_options(const String &p_path,
-		List<ResourceImporter::ImportOption> *r_options) {
+		LocalVector<ResourceImporter::ImportOption> &r_options) {
 }
 
 void EditorSceneFormatImporterFBX2GLTF::handle_compatibility_options(HashMap<StringName, Variant> &p_import_params) const {
