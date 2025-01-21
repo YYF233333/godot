@@ -469,8 +469,8 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 			} else if (ClassDB::is_parent_class(name, "ResourceImporter") && name != "EditorImportPlugin" && ClassDB::can_instantiate(name)) {
 				import_option = true;
 				ResourceImporter *resimp = Object::cast_to<ResourceImporter>(ClassDB::instantiate(name));
-				List<ResourceImporter::ImportOption> options;
-				resimp->get_import_options("", &options);
+				LocalVector<ResourceImporter::ImportOption> options;
+				resimp->get_import_options("", options);
 				for (const ResourceImporter::ImportOption &option : options) {
 					const PropertyInfo &prop = option.option;
 					properties.push_back(prop);

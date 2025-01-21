@@ -126,8 +126,8 @@ void ImportDefaultsEditor::_update_importer() {
 	settings->importer = importer;
 
 	if (importer.is_valid()) {
-		List<ResourceImporter::ImportOption> options;
-		importer->get_import_options("", &options);
+		LocalVector<ResourceImporter::ImportOption> options;
+		importer->get_import_options("", options);
 		Dictionary d;
 		if (ProjectSettings::get_singleton()->has_setting("importer_defaults/" + importer->get_importer_name())) {
 			d = GLOBAL_GET("importer_defaults/" + importer->get_importer_name());

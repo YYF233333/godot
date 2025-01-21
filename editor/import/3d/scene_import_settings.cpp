@@ -53,7 +53,7 @@ class SceneImportSettingsData : public Object {
 	HashMap<StringName, Variant> *settings = nullptr;
 	HashMap<StringName, Variant> current;
 	HashMap<StringName, Variant> defaults;
-	List<ResourceImporter::ImportOption> options;
+	LocalVector<ResourceImporter::ImportOption> options;
 	Vector<String> animation_list;
 
 	bool hide_options = false;
@@ -709,8 +709,8 @@ void SceneImportSettingsDialog::_load_default_subresource_settings(HashMap<Strin
 		Dictionary d = base_subresource_settings[p_type];
 		if (d.has(p_import_id)) {
 			d = d[p_import_id];
-			List<ResourceImporterScene::ImportOption> options;
-			_resource_importer_scene->get_internal_import_options(p_category, &options);
+			LocalVector<ResourceImporterScene::ImportOption> options;
+			_resource_importer_scene->get_internal_import_options(p_category, options);
 			for (const ResourceImporterScene::ImportOption &E : options) {
 				String key = E.option.name;
 				if (d.has(key)) {
@@ -985,12 +985,12 @@ void SceneImportSettingsDialog::_select(Tree *p_from, const String &p_type, cons
 
 	_update_camera();
 
-	List<ResourceImporter::ImportOption> options;
+	LocalVector<ResourceImporter::ImportOption> options;
 
 	if (scene_import_settings_data->category == ResourceImporterScene::INTERNAL_IMPORT_CATEGORY_MAX) {
-		_resource_importer_scene->get_import_options(base_path, &options);
+		_resource_importer_scene->get_import_options(base_path, options);
 	} else {
-		_resource_importer_scene->get_internal_import_options(scene_import_settings_data->category, &options);
+		_resource_importer_scene->get_internal_import_options(scene_import_settings_data->category, options);
 	}
 
 	scene_import_settings_data->defaults.clear();

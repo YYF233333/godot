@@ -49,7 +49,7 @@ class Material;
 class EditorSceneFormatImporter : public RefCounted {
 	GDCLASS(EditorSceneFormatImporter, RefCounted);
 
-	List<ResourceImporter::ImportOption> *current_option_list = nullptr;
+	LocalVector<ResourceImporter::ImportOption> *current_option_list = nullptr;
 
 protected:
 	static void _bind_methods();
@@ -77,7 +77,7 @@ public:
 	void add_import_option_advanced(Variant::Type p_type, const String &p_name, const Variant &p_default_value, PropertyHint p_hint = PROPERTY_HINT_NONE, const String &p_hint_string = String(), int p_usage_flags = PROPERTY_USAGE_DEFAULT);
 	virtual void get_extensions(LocalVector<String> &r_extensions) const;
 	virtual Node *import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, List<String> *r_missing_deps, Error *r_err = nullptr);
-	virtual void get_import_options(const String &p_path, List<ResourceImporter::ImportOption> *r_options);
+	virtual void get_import_options(const String &p_path, LocalVector<ResourceImporter::ImportOption> &r_options);
 	virtual Variant get_option_visibility(const String &p_path, const String &p_scene_import_type, const String &p_option, const HashMap<StringName, Variant> &p_options);
 	virtual void handle_compatibility_options(HashMap<StringName, Variant> &p_import_params) const {}
 };
@@ -116,7 +116,7 @@ public:
 private:
 	mutable const HashMap<StringName, Variant> *current_options = nullptr;
 	mutable const Dictionary *current_options_dict = nullptr;
-	List<ResourceImporter::ImportOption> *current_option_list = nullptr;
+	LocalVector<ResourceImporter::ImportOption> *current_option_list = nullptr;
 
 protected:
 	GDVIRTUAL1(_get_internal_import_options, int)
@@ -135,13 +135,13 @@ public:
 	void add_import_option(const String &p_name, const Variant &p_default_value);
 	void add_import_option_advanced(Variant::Type p_type, const String &p_name, const Variant &p_default_value, PropertyHint p_hint = PROPERTY_HINT_NONE, const String &p_hint_string = String(), int p_usage_flags = PROPERTY_USAGE_DEFAULT);
 
-	virtual void get_internal_import_options(InternalImportCategory p_category, List<ResourceImporter::ImportOption> *r_options);
+	virtual void get_internal_import_options(InternalImportCategory p_category, LocalVector<ResourceImporter::ImportOption> &r_options);
 	virtual Variant get_internal_option_visibility(InternalImportCategory p_category, const String &p_scene_import_type, const String &p_option, const HashMap<StringName, Variant> &p_options) const;
 	virtual Variant get_internal_option_update_view_required(InternalImportCategory p_category, const String &p_option, const HashMap<StringName, Variant> &p_options) const;
 
 	virtual void internal_process(InternalImportCategory p_category, Node *p_base_scene, Node *p_node, Ref<Resource> p_resource, const Dictionary &p_options);
 
-	virtual void get_import_options(const String &p_path, List<ResourceImporter::ImportOption> *r_options);
+	virtual void get_import_options(const String &p_path, LocalVector<ResourceImporter::ImportOption> &r_options);
 	virtual Variant get_option_visibility(const String &p_path, const String &p_scene_import_type, const String &p_option, const HashMap<StringName, Variant> &p_options) const;
 
 	virtual void pre_process(Node *p_scene, const HashMap<StringName, Variant> &p_options);
@@ -268,11 +268,11 @@ public:
 		INTERNAL_IMPORT_CATEGORY_MAX = EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_MAX
 	};
 
-	void get_internal_import_options(InternalImportCategory p_category, List<ImportOption> *r_options) const;
+	void get_internal_import_options(InternalImportCategory p_category, LocalVector<ImportOption> &r_options) const;
 	bool get_internal_option_visibility(InternalImportCategory p_category, const String &p_option, const HashMap<StringName, Variant> &p_options) const;
 	bool get_internal_option_update_view_required(InternalImportCategory p_category, const String &p_option, const HashMap<StringName, Variant> &p_options) const;
 
-	virtual void get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset = 0) const override;
+	virtual void get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset = 0) const override;
 	virtual bool get_option_visibility(const String &p_path, const String &p_option, const HashMap<StringName, Variant> &p_options) const override;
 	virtual void handle_compatibility_options(HashMap<StringName, Variant> &p_import_params) const override;
 	// Import scenes *after* everything else (such as textures).

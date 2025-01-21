@@ -67,11 +67,11 @@ String ResourceImporterCSVTranslation::get_preset_name(int p_idx) const {
 	return "";
 }
 
-void ResourceImporterCSVTranslation::get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset) const {
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "compress", PROPERTY_HINT_ENUM, "Disabled,Auto"), 1)); // Enum for compatibility with previous versions.
-	r_options->push_back(ImportOption(PropertyInfo(Variant::INT, "delimiter", PROPERTY_HINT_ENUM, "Comma,Semicolon,Tab"), 0));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "unescape_keys"), false));
-	r_options->push_back(ImportOption(PropertyInfo(Variant::BOOL, "unescape_translations"), true));
+void ResourceImporterCSVTranslation::get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset) const {
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "compress", PROPERTY_HINT_ENUM, "Disabled,Auto"), 1)); // Enum for compatibility with previous versions.
+	r_options.push_back(ImportOption(PropertyInfo(Variant::INT, "delimiter", PROPERTY_HINT_ENUM, "Comma,Semicolon,Tab"), 0));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "unescape_keys"), false));
+	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "unescape_translations"), true));
 }
 
 Error ResourceImporterCSVTranslation::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
