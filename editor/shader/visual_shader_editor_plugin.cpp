@@ -4349,13 +4349,13 @@ bool VisualShaderEditor::_check_node_drop_on_connection(const Vector2 &p_positio
 	}
 
 	// Check whether the dragged node was dropped over a connection.
-	List<Ref<GraphEdit::Connection>> intersecting_connections = graph->get_connections_intersecting_with_rect(selected_node_rect);
+	LocalVector<Ref<GraphEdit::Connection>> intersecting_connections = graph->get_connections_intersecting_with_rect(selected_node_rect);
 
 	if (intersecting_connections.is_empty()) {
 		return false;
 	}
 
-	Ref<GraphEdit::Connection> intersecting_connection = intersecting_connections.front()->get();
+	Ref<GraphEdit::Connection> intersecting_connection = intersecting_connections[0];
 
 	if (selected_vsnode->is_any_port_connected() || selected_vsnode->get_input_port_count() == 0 || selected_vsnode->get_output_port_count() == 0) {
 		return false;
