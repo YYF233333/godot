@@ -51,7 +51,7 @@ class SceneImportSettingsData : public Object {
 	HashMap<StringName, Variant> *settings = nullptr;
 	HashMap<StringName, Variant> current;
 	HashMap<StringName, Variant> defaults;
-	List<ResourceImporter::ImportOption> options;
+	LocalVector<ResourceImporter::ImportOption> options;
 	Vector<String> animation_list;
 
 	bool hide_options = false;
@@ -682,11 +682,11 @@ void SceneImportSettingsDialog::_load_default_subresource_settings(HashMap<Strin
 		Dictionary d = base_subresource_settings[p_type];
 		if (d.has(p_import_id)) {
 			d = d[p_import_id];
-			List<ResourceImporterScene::ImportOption> options;
+			LocalVector<ResourceImporterScene::ImportOption> options;
 			if (editing_animation) {
-				ResourceImporterScene::get_animation_singleton()->get_internal_import_options(p_category, &options);
+				ResourceImporterScene::get_animation_singleton()->get_internal_import_options(p_category, options);
 			} else {
-				ResourceImporterScene::get_scene_singleton()->get_internal_import_options(p_category, &options);
+				ResourceImporterScene::get_scene_singleton()->get_internal_import_options(p_category, options);
 			}
 			for (const ResourceImporterScene::ImportOption &E : options) {
 				String key = E.option.name;
@@ -952,20 +952,20 @@ void SceneImportSettingsDialog::_select(Tree *p_from, const String &p_type, cons
 
 	_update_camera();
 
-	List<ResourceImporter::ImportOption> options;
+	LocalVector<ResourceImporter::ImportOption> options;
 
 	if (editing_animation) {
 		if (scene_import_settings_data->category == ResourceImporterScene::INTERNAL_IMPORT_CATEGORY_MAX) {
-			ResourceImporterScene::get_animation_singleton()->get_import_options(base_path, &options);
+			ResourceImporterScene::get_animation_singleton()->get_import_options(base_path, options);
 		} else {
-			ResourceImporterScene::get_animation_singleton()->get_internal_import_options(scene_import_settings_data->category, &options);
+			ResourceImporterScene::get_animation_singleton()->get_internal_import_options(scene_import_settings_data->category, options);
 		}
 
 	} else {
 		if (scene_import_settings_data->category == ResourceImporterScene::INTERNAL_IMPORT_CATEGORY_MAX) {
-			ResourceImporterScene::get_scene_singleton()->get_import_options(base_path, &options);
+			ResourceImporterScene::get_scene_singleton()->get_import_options(base_path, options);
 		} else {
-			ResourceImporterScene::get_scene_singleton()->get_internal_import_options(scene_import_settings_data->category, &options);
+			ResourceImporterScene::get_scene_singleton()->get_internal_import_options(scene_import_settings_data->category, options);
 		}
 	}
 

@@ -120,7 +120,7 @@ int EditorImportPlugin::get_format_version() const {
 	return 0;
 }
 
-void EditorImportPlugin::get_import_options(const String &p_path, List<ResourceImporter::ImportOption> *r_options, int p_preset) const {
+void EditorImportPlugin::get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset) const {
 	Array needed;
 	needed.push_back("name");
 	needed.push_back("default_value");
@@ -148,7 +148,7 @@ void EditorImportPlugin::get_import_options(const String &p_path, List<ResourceI
 			}
 
 			ImportOption option(PropertyInfo(default_value.get_type(), name, hint, hint_string, usage), default_value);
-			r_options->push_back(option);
+			r_options.push_back(option);
 		}
 		return;
 	}
