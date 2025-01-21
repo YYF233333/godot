@@ -59,8 +59,8 @@ private:
 		String message;
 		MessageType type;
 	};
-	List<OutputString> output_strings;
-	List<ErrorMessage> errors;
+	LocalVector<OutputString> output_strings;
+	LocalVector<ErrorMessage> errors;
 
 	int n_messages_dropped = 0;
 	int max_errors_per_second = 0;
