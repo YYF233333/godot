@@ -1576,11 +1576,11 @@ Ref<GraphEdit::Connection> GraphEdit::get_closest_connection_at_point(const Vect
 	return closest_connection;
 }
 
-List<Ref<GraphEdit::Connection>> GraphEdit::get_connections_intersecting_with_rect(const Rect2 &p_rect) const {
+LocalVector<Ref<GraphEdit::Connection>> GraphEdit::get_connections_intersecting_with_rect(const Rect2 &p_rect) const {
 	Rect2 transformed_rect = p_rect;
 	transformed_rect.position += get_scroll_offset();
 
-	List<Ref<Connection>> intersecting_connections;
+	LocalVector<Ref<Connection>> intersecting_connections;
 	for (const Ref<Connection> &conn : connections) {
 		if (!conn->_cache.aabb.intersects(transformed_rect)) {
 			continue;
@@ -2580,7 +2580,7 @@ Dictionary GraphEdit::_get_closest_connection_at_point(const Vector2 &p_point, f
 }
 
 TypedArray<Dictionary> GraphEdit::_get_connections_intersecting_with_rect(const Rect2 &p_rect) const {
-	List<Ref<Connection>> intersecting_connections = get_connections_intersecting_with_rect(p_rect);
+	LocalVector<Ref<Connection>> intersecting_connections = get_connections_intersecting_with_rect(p_rect);
 
 	TypedArray<Dictionary> arr;
 	for (const Ref<Connection> &conn : intersecting_connections) {
