@@ -295,7 +295,7 @@ void ResourceImporterLayeredTexture::_save_tex(Vector<Ref<Image>> p_images, cons
 	}
 }
 
-Error ResourceImporterLayeredTexture::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
+Error ResourceImporterLayeredTexture::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
 	int compress_mode = p_options["compress/mode"];
 	float lossy = p_options["compress/lossy_quality"];
 	bool high_quality = p_options["compress/high_quality"];
@@ -396,7 +396,7 @@ Error ResourceImporterLayeredTexture::import(ResourceUID::ID p_source_id, const 
 	texture_import->csource = &csource;
 	texture_import->save_path = p_save_path;
 	texture_import->options = p_options;
-	texture_import->platform_variants = r_platform_variants;
+	texture_import->platform_variants = &r_platform_variants;
 	texture_import->image = image;
 	texture_import->formats_imported = formats_imported;
 	texture_import->slices = &slices;
