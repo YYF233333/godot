@@ -521,7 +521,7 @@ void ScriptEditorDebugger::_msg_stack_dump(uint64_t p_thread_id, const Array &p_
 	Array stack_dump_info;
 
 	int i = 0;
-	for (List<ScriptLanguage::StackInfo>::Iterator itr = stack.frames.begin(); itr != stack.frames.end(); ++itr, ++i) {
+	for (LocalVector<ScriptLanguage::StackInfo>::Iterator itr = stack.frames.begin(); itr != stack.frames.end(); ++itr, ++i) {
 		TreeItem *s = stack_dump->create_item(r);
 		Dictionary d;
 		d["frame"] = i;
