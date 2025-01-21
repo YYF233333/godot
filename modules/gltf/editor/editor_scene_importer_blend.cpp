@@ -101,7 +101,7 @@ void EditorSceneFormatImporterBlend::get_extensions(LocalVector<String> &r_exten
 
 Node *EditorSceneFormatImporterBlend::import_scene(const String &p_path, uint32_t p_flags,
 		const HashMap<StringName, Variant> &p_options,
-		List<String> *r_missing_deps, Error *r_err) {
+		LocalVector<String> *r_missing_deps, Error *r_err) {
 	String blender_path = EDITOR_GET("filesystem/import/blender/blender_path");
 
 	ERR_FAIL_COND_V_MSG(blender_path.is_empty(), nullptr, "Blender path is empty, check your Editor Settings.");
