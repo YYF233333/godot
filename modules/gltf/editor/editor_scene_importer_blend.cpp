@@ -336,15 +336,15 @@ Variant EditorSceneFormatImporterBlend::get_option_visibility(const String &p_pa
 	return true;
 }
 
-void EditorSceneFormatImporterBlend::get_import_options(const String &p_path, List<ResourceImporter::ImportOption> *r_options) {
+void EditorSceneFormatImporterBlend::get_import_options(const String &p_path, LocalVector<ResourceImporter::ImportOption> &r_options) {
 	// Returns all the options when path is empty because that means it's for the Project Settings.
 	if (!p_path.is_empty() && p_path.get_extension().to_lower() != "blend") {
 		return;
 	}
 #define ADD_OPTION_BOOL(PATH, VALUE) \
-	r_options->push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::BOOL, SNAME(PATH)), VALUE));
+	r_options.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::BOOL, SNAME(PATH)), VALUE));
 #define ADD_OPTION_ENUM(PATH, ENUM_HINT, VALUE) \
-	r_options->push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::INT, SNAME(PATH), PROPERTY_HINT_ENUM, ENUM_HINT), VALUE));
+	r_options.push_back(ResourceImporter::ImportOption(PropertyInfo(Variant::INT, SNAME(PATH), PROPERTY_HINT_ENUM, ENUM_HINT), VALUE));
 
 	ADD_OPTION_ENUM("blender/nodes/visible", "All,Visible Only,Renderable", BLEND_VISIBLE_ALL);
 	ADD_OPTION_BOOL("blender/nodes/active_collection_only", false);
