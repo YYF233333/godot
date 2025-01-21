@@ -52,7 +52,7 @@ public:
 	virtual int get_preset_count() const override;
 	virtual String get_preset_name(int p_idx) const override;
 
-	virtual void get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset = 0) const override;
+	virtual void get_import_options(const String &p_path, LocalVector<ImportOption> &r_options, int p_preset = 0) const override;
 	virtual bool get_option_visibility(const String &p_path, const String &p_option, const HashMap<StringName, Variant> &p_options) const override;
 
 	bool has_advanced_options() const override;
