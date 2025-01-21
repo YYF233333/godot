@@ -658,7 +658,7 @@ bool ResourceImporterOBJ::get_option_visibility(const String &p_path, const Stri
 	return true;
 }
 
-Error ResourceImporterOBJ::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
+Error ResourceImporterOBJ::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
 	List<Ref<ImporterMesh>> meshes;
 
 	Vector<uint8_t> src_lightmap_cache;
@@ -695,7 +695,7 @@ Error ResourceImporterOBJ::import(ResourceUID::ID p_source_id, const String &p_s
 
 	ERR_FAIL_COND_V_MSG(err != OK, err, "Cannot save Mesh to file '" + save_path + "'.");
 
-	r_gen_files->push_back(save_path);
+	r_gen_files.push_back(save_path);
 
 	return OK;
 }

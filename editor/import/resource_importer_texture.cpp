@@ -698,7 +698,7 @@ void ResourceImporterTexture::_clamp_hdr_exposure(Ref<Image> &r_image) {
 	}
 }
 
-Error ResourceImporterTexture::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
+Error ResourceImporterTexture::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
 	// Parse import options.
 	int32_t loader_flags = ImageFormatLoader::FLAG_NONE;
 
@@ -944,7 +944,7 @@ Error ResourceImporterTexture::import(ResourceUID::ID p_source_id, const String 
 
 				_save_ctex(image, p_save_path + "." + image_compress_format + ".ctex", compress_mode, lossy, basisu_params, image_compress_mode, mipmaps,
 						stream, detect_3d, detect_roughness, detect_normal, force_normal, srgb_friendly_pack, false, mipmap_limit, normal_image, roughness_channel);
-				r_platform_variants->push_back(image_compress_format);
+				r_platform_variants.push_back(image_compress_format);
 			}
 
 			if (can_etc2_astc) {
@@ -960,7 +960,7 @@ Error ResourceImporterTexture::import(ResourceUID::ID p_source_id, const String 
 
 				_save_ctex(image, p_save_path + "." + image_compress_format + ".ctex", compress_mode, lossy, basisu_params, image_compress_mode, mipmaps, stream, detect_3d,
 						detect_roughness, detect_normal, force_normal, srgb_friendly_pack, false, mipmap_limit, normal_image, roughness_channel);
-				r_platform_variants->push_back(image_compress_format);
+				r_platform_variants.push_back(image_compress_format);
 			}
 		}
 	} else {

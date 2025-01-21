@@ -74,7 +74,7 @@ void ResourceImporterCSVTranslation::get_import_options(const String &p_path, Lo
 	r_options.push_back(ImportOption(PropertyInfo(Variant::BOOL, "unescape_translations"), true));
 }
 
-Error ResourceImporterCSVTranslation::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
+Error ResourceImporterCSVTranslation::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
 	Ref<FileAccess> f = FileAccess::open(p_source_file, FileAccess::READ);
 	ERR_FAIL_COND_V_MSG(f.is_null(), ERR_INVALID_PARAMETER, "Cannot open file from path '" + p_source_file + "'.");
 
@@ -251,9 +251,7 @@ Error ResourceImporterCSVTranslation::import(ResourceUID::ID p_source_id, const 
 		}
 
 		ResourceSaver::save(xlt, save_path);
-		if (r_gen_files) {
-			r_gen_files->push_back(save_path);
-		}
+		r_gen_files.push_back(save_path);
 		if (!uid_already_exists) {
 			// No need to call set_uid if save_path already refers to save_id.
 			ResourceSaver::set_uid(save_path, save_id);

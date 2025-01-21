@@ -2894,10 +2894,10 @@ Error EditorFileSystem::_reimport_file(const String &p_file, const HashMap<Strin
 	//finally, perform import!!
 	String base_path = ResourceFormatImporter::get_singleton()->get_import_base_path(p_file);
 
-	List<String> import_variants;
-	List<String> gen_files;
+	LocalVector<String> import_variants;
+	LocalVector<String> gen_files;
 	Variant meta;
-	Error err = importer->import(uid, p_file, base_path, params, &import_variants, &gen_files, &meta);
+	Error err = importer->import(uid, p_file, base_path, params, import_variants, gen_files, &meta);
 
 	// As import is complete, save the .import file.
 
