@@ -99,7 +99,8 @@ static Node *gltf_import(const String &p_file) {
 
 	// Process gltf file, note that this generates `.scn` resource from the 2nd argument.
 	String scene_file = "res://" + p_file.get_file().get_basename();
-	Error err = import_scene->import(0, p_file, scene_file, options, nullptr, nullptr, nullptr);
+	LocalVector<String> _platform_variants, _gen_files; // placeholder, unused.
+	Error err = import_scene->import(0, p_file, scene_file, options, _platform_variants, _gen_files, nullptr);
 	CHECK_MESSAGE(err == OK, "GLTF import failed.");
 
 	Ref<PackedScene> packed_scene = ResourceLoader::load(scene_file + ".scn", "", ResourceFormatLoader::CACHE_MODE_REPLACE, &err);

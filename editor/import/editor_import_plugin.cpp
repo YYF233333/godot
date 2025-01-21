@@ -147,7 +147,7 @@ bool EditorImportPlugin::get_option_visibility(const String &p_path, const Strin
 	return true;
 }
 
-Error EditorImportPlugin::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files, Variant *r_metadata) {
+Error EditorImportPlugin::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
 	Dictionary options;
 	TypedArray<String> platform_variants, gen_files;
 
@@ -160,10 +160,10 @@ Error EditorImportPlugin::import(ResourceUID::ID p_source_id, const String &p_so
 	Error err = OK;
 	GDVIRTUAL_CALL(_import, p_source_file, p_save_path, options, platform_variants, gen_files, err);
 	for (int i = 0; i < platform_variants.size(); i++) {
-		r_platform_variants->push_back(platform_variants[i]);
+		r_platform_variants.push_back(platform_variants[i]);
 	}
 	for (int i = 0; i < gen_files.size(); i++) {
-		r_gen_files->push_back(gen_files[i]);
+		r_gen_files.push_back(gen_files[i]);
 	}
 	return err;
 }
