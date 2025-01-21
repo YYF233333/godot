@@ -176,10 +176,10 @@ void ImportDock::_update_options(const String &p_path, const Ref<ConfigFile> &p_
 		import_opts->set_object_class(params->importer->get_class_name());
 	}
 
-	List<ResourceImporter::ImportOption> options;
+	LocalVector<ResourceImporter::ImportOption> options;
 
 	if (params->importer.is_valid()) {
-		params->importer->get_import_options(p_path, &options);
+		params->importer->get_import_options(p_path, options);
 	}
 
 	params->properties.clear();
@@ -277,8 +277,8 @@ void ImportDock::set_edit_multiple_paths(const Vector<String> &p_paths) {
 	if (extensions.size() == 1 && p_paths.size() > 0) {
 		base_path = p_paths[0];
 	}
-	List<ResourceImporter::ImportOption> options;
-	params->importer->get_import_options(base_path, &options);
+	LocalVector<ResourceImporter::ImportOption> options;
+	params->importer->get_import_options(base_path, options);
 
 	params->properties.clear();
 	params->values.clear();
@@ -465,9 +465,9 @@ void ImportDock::_preset_selected(int p_idx) {
 			_update_preset_menu();
 		} break;
 		default: {
-			List<ResourceImporter::ImportOption> options;
+			LocalVector<ResourceImporter::ImportOption> options;
 
-			params->importer->get_import_options(params->base_options_path, &options, p_idx);
+			params->importer->get_import_options(params->base_options_path, options, p_idx);
 
 			if (params->checking) {
 				params->checked.clear();
