@@ -1514,8 +1514,8 @@ Variant VisualShaderEditedProperty::get_edited_property() const {
 /////////////////
 
 Vector2 VisualShaderEditor::selection_center;
-List<VisualShaderEditor::CopyItem> VisualShaderEditor::copy_items_buffer;
-List<VisualShader::Connection> VisualShaderEditor::copy_connections_buffer;
+LocalVector<VisualShaderEditor::CopyItem> VisualShaderEditor::copy_items_buffer;
+LocalVector<VisualShader::Connection> VisualShaderEditor::copy_connections_buffer;
 
 void VisualShaderEditor::edit_shader(const Ref<Shader> &p_shader) {
 	bool changed = false;
@@ -5329,7 +5329,7 @@ void VisualShaderEditor::_frame_rect_changed(const GraphFrame *p_frame, const Re
 	vsnode->set_size(p_new_rect.size / graph->get_zoom());
 }
 
-void VisualShaderEditor::_dup_copy_nodes(int p_type, List<CopyItem> &r_items, List<VisualShader::Connection> &r_connections) {
+void VisualShaderEditor::_dup_copy_nodes(int p_type, LocalVector<CopyItem> &r_items, LocalVector<VisualShader::Connection> &r_connections) {
 	VisualShader::Type type = (VisualShader::Type)p_type;
 
 	selection_center.x = 0.0f;
@@ -5392,7 +5392,7 @@ void VisualShaderEditor::_dup_copy_nodes(int p_type, List<CopyItem> &r_items, Li
 	selection_center /= (float)r_items.size();
 }
 
-void VisualShaderEditor::_dup_paste_nodes(int p_type, List<CopyItem> &r_items, const List<VisualShader::Connection> &p_connections, const Vector2 &p_offset, bool p_duplicate) {
+void VisualShaderEditor::_dup_paste_nodes(int p_type, const LocalVector<CopyItem> &r_items, const LocalVector<VisualShader::Connection> &p_connections, const Vector2 &p_offset, bool p_duplicate) {
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 	if (p_duplicate) {
 		undo_redo->create_action(TTR("Duplicate VisualShader Node(s)"));
@@ -5419,7 +5419,7 @@ void VisualShaderEditor::_dup_paste_nodes(int p_type, List<CopyItem> &r_items, c
 	HashSet<int> unsupported_set;
 	HashSet<int> added_set;
 
-	for (CopyItem &item : r_items) {
+	for (const CopyItem &item : r_items) {
 		if (item.disabled) {
 			unsupported_set.insert(item.id);
 			continue;
@@ -5515,8 +5515,8 @@ void VisualShaderEditor::_clear_copy_buffer() {
 void VisualShaderEditor::_duplicate_nodes() {
 	int type = get_current_shader_type();
 
-	List<CopyItem> items;
-	List<VisualShader::Connection> node_connections;
+	LocalVector<CopyItem> items;
+	LocalVector<VisualShader::Connection> node_connections;
 
 	_dup_copy_nodes(type, items, node_connections);
 
