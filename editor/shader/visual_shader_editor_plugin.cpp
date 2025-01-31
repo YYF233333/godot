@@ -4775,7 +4775,7 @@ void VisualShaderEditor::_convert_constants_to_parameters(bool p_vice_versa) {
 	undo_redo->commit_action();
 }
 
-void VisualShaderEditor::_detach_nodes_from_frame(int p_type, const List<int> &p_nodes) {
+void VisualShaderEditor::_detach_nodes_from_frame(int p_type, const LocalVector<int> &p_nodes) {
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 	for (int node_id : p_nodes) {
 		Ref<VisualShaderNode> node = visual_shader->get_node((VisualShader::Type)p_type, node_id);
@@ -4794,7 +4794,7 @@ void VisualShaderEditor::_detach_nodes_from_frame(int p_type, const List<int> &p
 
 void VisualShaderEditor::_detach_nodes_from_frame_request() {
 	// Called from context menu.
-	List<int> to_detach_node_ids;
+	LocalVector<int> to_detach_node_ids;
 	for (int i = 0; i < graph->get_child_count(); i++) {
 		GraphElement *gn = Object::cast_to<GraphElement>(graph->get_child(i));
 		if (gn) {
