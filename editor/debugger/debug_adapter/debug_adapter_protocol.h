@@ -81,7 +81,7 @@ private:
 	static DebugAdapterProtocol *singleton;
 	DebugAdapterParser *parser = nullptr;
 
-	List<Ref<DAPeer>> clients;
+	LocalVector<Ref<DAPeer>> clients;
 	Ref<TCPServer> server;
 
 	Error on_client_connected();
