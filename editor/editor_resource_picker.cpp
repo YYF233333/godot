@@ -578,8 +578,8 @@ String EditorResourcePicker::_get_resource_type(const Ref<Resource> &p_resource)
 	return res_type;
 }
 
-static void _add_allowed_type(const StringName &p_type, List<StringName> *p_vector) {
-	if (p_vector->find(p_type)) {
+static void _add_allowed_type(const StringName &p_type, LocalVector<StringName> &p_vector) {
+	if (p_vector.has(p_type)) {
 		// Already added.
 		return;
 	}
@@ -588,7 +588,7 @@ static void _add_allowed_type(const StringName &p_type, List<StringName> *p_vect
 		// Engine class,
 
 		if (!ClassDB::is_virtual(p_type)) {
-			p_vector->push_back(p_type);
+			p_vector.push_back(p_type);
 		}
 
 		LocalVector<StringName> inheriters;
@@ -598,7 +598,7 @@ static void _add_allowed_type(const StringName &p_type, List<StringName> *p_vect
 		}
 	} else {
 		// Script class.
-		p_vector->push_back(p_type);
+		p_vector.push_back(p_type);
 	}
 
 	for (const StringName &S : ScriptServer::get_inheriters_list(p_type)) {
@@ -611,7 +611,7 @@ void EditorResourcePicker::_ensure_allowed_types() const {
 		return;
 	}
 
-	List<StringName> final_allowed;
+	LocalVector<StringName> final_allowed;
 
 	Vector<String> allowed_types = base_type.split(",");
 	int size = allowed_types.size();
@@ -622,7 +622,7 @@ void EditorResourcePicker::_ensure_allowed_types() const {
 			final_allowed.erase(base.right(-1));
 			continue;
 		}
-		_add_allowed_type(base, &final_allowed);
+		_add_allowed_type(base, final_allowed);
 	}
 
 	for (const StringName &SN : final_allowed) {
