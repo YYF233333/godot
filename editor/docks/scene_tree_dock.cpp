@@ -4612,7 +4612,7 @@ void SceneTreeDock::_create_remap_for_resource(Ref<Resource> p_resource, HashMap
 void SceneTreeDock::_list_all_subresources(PopupMenu *p_menu) {
 	p_menu->clear();
 
-	List<Pair<Ref<Resource>, Node *>> all_resources;
+	LocalVector<Pair<Ref<Resource>, Node *>> all_resources;
 	if (edited_scene) {
 		_gather_resources(edited_scene, all_resources);
 	}
@@ -4657,7 +4657,7 @@ void SceneTreeDock::_list_all_subresources(PopupMenu *p_menu) {
 	p_menu->reset_size();
 }
 
-void SceneTreeDock::_gather_resources(Node *p_node, List<Pair<Ref<Resource>, Node *>> &r_resources) {
+void SceneTreeDock::_gather_resources(Node *p_node, LocalVector<Pair<Ref<Resource>, Node *>> &r_resources) {
 	if (p_node != edited_scene && p_node->get_owner() != edited_scene) {
 		return;
 	}

@@ -291,7 +291,7 @@ class SceneTreeDock : public EditorDock {
 	void _create_remap_for_resource(Ref<Resource> p_resource, HashMap<Ref<Resource>, Ref<Resource>> &r_remap);
 
 	void _list_all_subresources(PopupMenu *p_menu);
-	void _gather_resources(Node *p_node, List<Pair<Ref<Resource>, Node *>> &r_resources);
+	void _gather_resources(Node *p_node, LocalVector<Pair<Ref<Resource>, Node *>> &r_resources);
 	void _edit_subresource(int p_idx, const PopupMenu *p_from_menu);
 
 	bool profile_allow_editing = true;
