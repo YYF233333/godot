@@ -1020,7 +1020,7 @@ void EditorFileDialog::update_file_list() {
 	dir_access->list_dir_begin();
 
 	LocalVector<FileInfo> file_infos;
-	List<String> dirs;
+	LocalVector<String> dirs;
 
 	String item = dir_access->get_next();
 
@@ -1095,9 +1095,7 @@ void EditorFileDialog::update_file_list() {
 		}
 	}
 
-	while (!dirs.is_empty()) {
-		const String &dir_name = dirs.front()->get();
-
+	for (const String &dir_name : dirs) {
 		bool bundle = dir_access->is_bundle(dir_name);
 		bool found = true;
 		if (bundle) {
@@ -1129,8 +1127,6 @@ void EditorFileDialog::update_file_list() {
 			item_list->set_item_metadata(-1, d);
 			item_list->set_item_icon_modulate(-1, FileSystemDock::get_dir_icon_color(String(d["path"]), theme_cache.folder_icon_color));
 		}
-
-		dirs.pop_front();
 	}
 
 	for (const FileInfo &file_info : file_infos) {
