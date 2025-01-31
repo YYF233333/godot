@@ -4282,8 +4282,8 @@ void SceneTreeDock::open_instance_child_dialog() {
 	_tool_selected(TOOL_INSTANTIATE, true);
 }
 
-List<Node *> SceneTreeDock::paste_nodes(bool p_paste_as_sibling) {
-	List<Node *> pasted_nodes;
+LocalVector<Node *> SceneTreeDock::paste_nodes(bool p_paste_as_sibling) {
+	LocalVector<Node *> pasted_nodes;
 
 	if (node_clipboard.is_empty()) {
 		return pasted_nodes;

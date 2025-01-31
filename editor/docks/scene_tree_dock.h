@@ -353,7 +353,7 @@ public:
 	void open_add_child_dialog();
 	void open_instance_child_dialog();
 
-	List<Node *> paste_nodes(bool p_paste_as_sibling = false);
+	LocalVector<Node *> paste_nodes(bool p_paste_as_sibling = false);
 	List<Node *> get_node_clipboard() const;
 
 	ScriptCreateDialog *get_script_create_dialog() {

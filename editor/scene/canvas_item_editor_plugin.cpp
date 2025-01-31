@@ -998,7 +998,7 @@ void CanvasItemEditor::_add_node_pressed(int p_result) {
 			SceneTreeDock::get_singleton()->open_instance_child_dialog();
 		} break;
 		case ADD_PASTE: {
-			nodes_to_move = SceneTreeDock::get_singleton()->paste_nodes();
+			SceneTreeDock::get_singleton()->paste_nodes();
 			[[fallthrough]];
 		}
 		case ADD_MOVE: {
