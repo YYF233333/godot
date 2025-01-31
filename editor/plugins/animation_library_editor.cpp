@@ -209,11 +209,9 @@ void AnimationLibraryEditor::_file_popup_selected(int p_id) {
 		} break;
 		case FILE_MENU_MAKE_LIBRARY_UNIQUE: {
 			StringName lib_name = file_dialog_library;
-			List<StringName> animation_list;
 
 			Ref<AnimationLibrary> ald = memnew(AnimationLibrary);
-			al->get_animation_list(&animation_list);
-			for (const StringName &animation_name : animation_list) {
+			for (const StringName &animation_name : al->get_animation_list()) {
 				Ref<Animation> animation = al->get_animation(animation_name);
 				if (EditorNode::get_singleton()->is_resource_read_only(animation)) {
 					animation = animation->duplicate();
@@ -418,10 +416,8 @@ void AnimationLibraryEditor::_load_files(const PackedStringArray &p_paths) {
 					continue;
 				}
 
-				List<StringName> anims;
-				al->get_animation_list(&anims);
 				bool is_already_added = false;
-				for (const StringName &K : anims) {
+				for (const StringName &K : al->get_animation_list()) {
 					if (al->get_animation(K) == anim) {
 						// Prioritize the "invalid" error message.
 						if (!show_error_diag) {
@@ -736,9 +732,7 @@ void AnimationLibraryEditor::update_tree() {
 
 		libitem->set_custom_bg_color(0, ss_color);
 
-		List<StringName> animations;
-		al->get_animation_list(&animations);
-		for (const StringName &L : animations) {
+		for (const StringName &L : al->get_animation_list()) {
 			TreeItem *anitem = tree->create_item(libitem);
 			anitem->set_text(0, L);
 			anitem->set_editable(0, !animation_library_is_foreign);
@@ -954,10 +948,8 @@ String AnimationLibraryEditor::_get_mixer_signature() const {
 		signature += "::" + String(lib_name);
 		Ref<AnimationLibrary> lib = mixer->get_animation_library(lib_name);
 		if (lib.is_valid()) {
-			List<StringName> anims;
-			lib->get_animation_list(&anims);
-			anims.sort_custom<StringName::AlphCompare>();
-			for (const StringName &anim_name : anims) {
+			// Animations have already been sorted, so no need to sort them again
+			for (const StringName &anim_name : lib->get_animation_list()) {
 				signature += "," + String(anim_name);
 			}
 		}
