@@ -35,6 +35,7 @@
 #include "core/object/class_db.h"
 #include "core/object/gdvirtual.gen.inc"
 #include "core/templates/hash_map.h"
+#include "core/templates/list.h"
 #include "core/templates/rid.h"
 #include "core/variant/native_ptr.h"
 #include "core/variant/typed_array.h"
