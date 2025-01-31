@@ -1131,7 +1131,7 @@ void SpriteFramesEditor::_select_animation(const String &p_name, bool p_update_n
 	_update_library();
 }
 
-static void _find_anim_sprites(Node *p_node, List<Node *> *r_nodes, Ref<SpriteFrames> p_sfames) {
+static void _find_anim_sprites(Node *p_node, LocalVector<Node *> &r_nodes, Ref<SpriteFrames> p_sfames) {
 	Node *edited = EditorNode::get_singleton()->get_edited_scene();
 	if (!edited) {
 		return;
@@ -1143,14 +1143,14 @@ static void _find_anim_sprites(Node *p_node, List<Node *> *r_nodes, Ref<SpriteFr
 	{
 		AnimatedSprite2D *as = Object::cast_to<AnimatedSprite2D>(p_node);
 		if (as && as->get_sprite_frames() == p_sfames) {
-			r_nodes->push_back(p_node);
+			r_nodes.push_back(p_node);
 		}
 	}
 
 	{
 		AnimatedSprite3D *as = Object::cast_to<AnimatedSprite3D>(p_node);
 		if (as && as->get_sprite_frames() == p_sfames) {
-			r_nodes->push_back(p_node);
+			r_nodes.push_back(p_node);
 		}
 	}
 
@@ -1213,8 +1213,8 @@ void SpriteFramesEditor::_animation_name_edited() {
 }
 
 void SpriteFramesEditor::_rename_node_animation(EditorUndoRedoManager *undo_redo, bool is_undo, const String &p_filter, const String &p_new_animation, const String &p_new_autoplay) {
-	List<Node *> nodes;
-	_find_anim_sprites(EditorNode::get_singleton()->get_edited_scene(), &nodes, Ref<SpriteFrames>(frames));
+	LocalVector<Node *> nodes;
+	_find_anim_sprites(EditorNode::get_singleton()->get_edited_scene(), nodes, Ref<SpriteFrames>(frames));
 
 	if (is_undo) {
 		for (Node *E : nodes) {
