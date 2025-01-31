@@ -32,7 +32,7 @@
 #define FILE_INFO_H
 
 #include "core/string/string_name.h"
-#include "core/templates/list.h"
+#include "core/templates/local_vector.h"
 
 enum class FileSortOption {
 	FILE_SORT_NAME = 0,
@@ -70,6 +70,6 @@ struct FileInfoModifiedTimeComparator {
 	}
 };
 
-void sort_file_info_list(List<FileInfo> &r_file_list, FileSortOption p_file_sort_option);
+void sort_file_info_list(LocalVector<FileInfo> &r_file_list, FileSortOption p_file_sort_option);
 
 #endif // FILE_INFO_H

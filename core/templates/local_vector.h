@@ -155,6 +155,8 @@ public:
 		}
 	}
 
+	_FORCE_INLINE_ void reverse() { invert(); }
+
 	_FORCE_INLINE_ void clear() { resize(0); }
 	_FORCE_INLINE_ void reset() {
 		clear();
