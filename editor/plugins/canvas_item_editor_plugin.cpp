@@ -703,7 +703,7 @@ void CanvasItemEditor::_get_canvas_items_at_pos(const Point2 &p_pos, Vector<_Sel
 	}
 }
 
-void CanvasItemEditor::_find_canvas_items_in_rect(const Rect2 &p_rect, Node *p_node, List<CanvasItem *> *r_items, const Transform2D &p_parent_xform, const Transform2D &p_canvas_xform) {
+void CanvasItemEditor::_find_canvas_items_in_rect(const Rect2 &p_rect, Node *p_node, LocalVector<CanvasItem *> &r_items, const Transform2D &p_parent_xform, const Transform2D &p_canvas_xform) {
 	if (!p_node) {
 		return;
 	}
@@ -758,11 +758,11 @@ void CanvasItemEditor::_find_canvas_items_in_rect(const Rect2 &p_rect, Node *p_n
 					p_rect.has_point(xform.xform(rect.position + Vector2(rect.size.x, 0))) &&
 					p_rect.has_point(xform.xform(rect.position + Vector2(rect.size.x, rect.size.y))) &&
 					p_rect.has_point(xform.xform(rect.position + Vector2(0, rect.size.y)))) {
-				r_items->push_back(ci);
+				r_items.push_back(ci);
 			}
 		} else {
 			if (p_rect.has_point(xform.xform(Point2()))) {
-				r_items->push_back(ci);
+				r_items.push_back(ci);
 			}
 		}
 	}
@@ -2588,7 +2588,7 @@ bool CanvasItemEditor::_gui_input_select(const Ref<InputEvent> &p_event) {
 			// Confirms box selection.
 			Node *scene = EditorNode::get_singleton()->get_edited_scene();
 			if (scene) {
-				List<CanvasItem *> selitems;
+				LocalVector<CanvasItem *> selitems;
 
 				Point2 bsfrom = drag_from;
 				Point2 bsto = box_selecting_to;
@@ -2599,9 +2599,9 @@ bool CanvasItemEditor::_gui_input_select(const Ref<InputEvent> &p_event) {
 					SWAP(bsfrom.y, bsto.y);
 				}
 
-				_find_canvas_items_in_rect(Rect2(bsfrom, bsto - bsfrom), scene, &selitems);
+				_find_canvas_items_in_rect(Rect2(bsfrom, bsto - bsfrom), scene, selitems);
 				if (selitems.size() == 1 && editor_selection->get_top_selected_node_list().is_empty()) {
-					EditorNode::get_singleton()->push_item(selitems.front()->get());
+					EditorNode::get_singleton()->push_item(selitems[0]);
 				}
 				for (CanvasItem *E : selitems) {
 					editor_selection->add_node(E);
