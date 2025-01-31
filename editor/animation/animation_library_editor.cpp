@@ -354,7 +354,7 @@ void AnimationLibraryEditor::_load_files(const PackedStringArray &p_paths) {
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 	bool has_created_action = false;
 	bool show_error_diag = false;
-	List<String> name_list;
+	LocalVector<String> name_list;
 
 	switch (file_dialog_action) {
 		case FILE_DIALOG_ACTION_OPEN_LIBRARY: {
@@ -392,7 +392,7 @@ void AnimationLibraryEditor::_load_files(const PackedStringArray &p_paths) {
 
 				String name = AnimationLibrary::validate_library_name(path.get_file().get_basename());
 				int attempt = 1;
-				while (bool(mixer->has_animation_library(name)) || name_list.find(name)) {
+				while (bool(mixer->has_animation_library(name)) || name_list.has(name)) {
 					attempt++;
 					name = path.get_file().get_basename() + " " + itos(attempt);
 				}
@@ -436,7 +436,7 @@ void AnimationLibraryEditor::_load_files(const PackedStringArray &p_paths) {
 
 				String name = path.get_file().get_basename();
 				int attempt = 1;
-				while (al->has_animation(name) || name_list.find(name)) {
+				while (al->has_animation(name) || name_list.has(name)) {
 					attempt++;
 					name = path.get_file().get_basename() + " " + itos(attempt);
 				}
