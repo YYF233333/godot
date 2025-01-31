@@ -149,7 +149,7 @@ public:
 	bool shut_down();
 	String get_vcs_name();
 	LocalVector<Commit> get_previous_commits(int p_max_commits);
-	List<String> get_branch_list();
+	LocalVector<String> get_branch_list();
 	LocalVector<String> get_remotes();
 	void create_branch(const String &p_branch_name);
 	void remove_branch(const String &p_branch_name);
