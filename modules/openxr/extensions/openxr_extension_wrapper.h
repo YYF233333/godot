@@ -34,6 +34,7 @@
 #include "core/error/error_macros.h"
 #include "core/math/projection.h"
 #include "core/templates/hash_map.h"
+#include "core/templates/list.h"
 #include "core/templates/rid.h"
 #include "core/variant/variant.h"
 
