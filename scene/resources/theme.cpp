@@ -110,7 +110,7 @@ bool Theme::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void Theme::_get_property_list(List<PropertyInfo> *p_list) const {
-	List<PropertyInfo> list;
+	LocalVector<PropertyInfo> list;
 
 	// Type variations.
 	for (const KeyValue<StringName, StringName> &E : variation_map) {
