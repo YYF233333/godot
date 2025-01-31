@@ -288,7 +288,7 @@ void FileSystemDock::_create_tree(TreeItem *p_parent, EditorFileSystemDirectory 
 	// Create all items for the files in the subdirectory.
 	if (display_mode == DISPLAY_MODE_TREE_ONLY) {
 		// Build the list of the files to display.
-		List<FileInfo> file_list;
+		LocalVector<FileInfo> file_list;
 		for (int i = 0; i < p_dir->get_file_count(); i++) {
 			String file_type = p_dir->get_file_type(i);
 			if (_is_file_type_disabled_by_feature_profile(file_type)) {
@@ -903,8 +903,8 @@ bool FileSystemDock::_is_file_type_disabled_by_feature_profile(const StringName 
 	return false;
 }
 
-void FileSystemDock::_search(EditorFileSystemDirectory *p_path, List<FileInfo> *matches, int p_max_items) {
-	if (matches->size() > p_max_items) {
+void FileSystemDock::_search(EditorFileSystemDirectory *p_path, LocalVector<FileInfo> &matches, uint32_t p_max_items) {
+	if (matches.size() > p_max_items) {
 		return;
 	}
 
@@ -928,8 +928,8 @@ void FileSystemDock::_search(EditorFileSystemDirectory *p_path, List<FileInfo> *
 				continue;
 			}
 
-			matches->push_back(file_info);
-			if (matches->size() > p_max_items) {
+			matches.push_back(file_info);
+			if (matches.size() > p_max_items) {
 				return;
 			}
 		}
@@ -996,7 +996,7 @@ void FileSystemDock::_update_file_list(bool p_keep_selection) {
 	const Color default_folder_color = get_theme_color(SNAME("folder_icon_color"), SNAME("FileDialog"));
 
 	// Build the FileInfo list.
-	List<FileInfo> file_list;
+	LocalVector<FileInfo> file_list;
 	if (current_path == "Favorites") {
 		// Display the favorites.
 		Vector<String> favorites_list = EditorSettings::get_singleton()->get_favorites();
@@ -1064,7 +1064,7 @@ void FileSystemDock::_update_file_list(bool p_keep_selection) {
 		if (!searched_tokens.is_empty()) {
 			// Display the search results.
 			// Limit the number of results displayed to avoid an infinite loop.
-			_search(EditorFileSystem::get_singleton()->get_filesystem(), &file_list, 10000);
+			_search(EditorFileSystem::get_singleton()->get_filesystem(), file_list, 10000);
 		} else {
 			if (display_mode == DISPLAY_MODE_TREE_ONLY || always_show_folders) {
 				// Check for a folder color to inherit (if one is assigned).
