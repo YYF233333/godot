@@ -160,7 +160,7 @@ public:
 	void pull(const String &p_remote);
 	void push(const String &p_remote, bool p_force);
 	void fetch(const String &p_remote);
-	List<DiffHunk> get_line_diff(const String &p_file_path, const String &p_text);
+	LocalVector<DiffHunk> get_line_diff(const String &p_file_path, const String &p_text);
 
 	// Helper functions to create and convert Dictionary into data structures
 	Dictionary create_diff_line(int p_new_line_no, int p_old_line_no, const String &p_content, const String &p_status);
