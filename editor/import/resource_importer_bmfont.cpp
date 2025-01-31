@@ -74,21 +74,21 @@ Error ResourceImporterBMFont::import(ResourceUID::ID p_source_id, const String &
 	Ref<FontFile> font;
 	font.instantiate();
 
-	List<String> image_files;
+	LocalVector<String> image_files;
 	Error err = font->_load_bitmap_font(p_source_file, &image_files);
 	ERR_FAIL_COND_V_MSG(err != OK, err, "Cannot load font to file \"" + p_source_file + "\".");
 
 	// Update import settings for the image files used by font.
-	for (List<String>::Element *E = image_files.front(); E; E = E->next()) {
+	for (const String &E : image_files) {
 		Ref<ConfigFile> config;
 		config.instantiate();
 
-		err = config->load(E->get() + ".import");
+		err = config->load(E + ".import");
 		if (err == OK) {
 			config->clear();
 			config->set_value("remap", "importer", "skip");
 
-			config->save(E->get() + ".import");
+			config->save(E + ".import");
 		}
 	}
 
