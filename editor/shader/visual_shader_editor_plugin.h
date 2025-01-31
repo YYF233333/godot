@@ -510,7 +510,7 @@ class VisualShaderEditor : public ShaderEditor {
 
 	void _convert_constants_to_parameters(bool p_vice_versa);
 	void _detach_nodes_from_frame_request();
-	void _detach_nodes_from_frame(int p_type, const List<int> &p_nodes);
+	void _detach_nodes_from_frame(int p_type, const LocalVector<int> &p_nodes);
 	void _replace_node(VisualShader::Type p_type_id, int p_node_id, const StringName &p_from, const StringName &p_to);
 	void _update_constant(VisualShader::Type p_type_id, int p_node_id, const Variant &p_var, int p_preview_port);
 	void _update_parameter(VisualShader::Type p_type_id, int p_node_id, const Variant &p_var, int p_preview_port);
