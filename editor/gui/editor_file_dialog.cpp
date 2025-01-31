@@ -1046,7 +1046,7 @@ void EditorFileDialog::update_file_list() {
 
 	dir_access->list_dir_begin();
 
-	List<FileInfo> file_infos;
+	LocalVector<FileInfo> file_infos;
 	List<String> dirs;
 
 	String item = dir_access->get_next();
@@ -1160,10 +1160,9 @@ void EditorFileDialog::update_file_list() {
 		dirs.pop_front();
 	}
 
-	while (!file_infos.is_empty()) {
+	for (const FileInfo &file_info : file_infos) {
 		bool match = patterns.is_empty();
 
-		FileInfo file_info = file_infos.front()->get();
 		for (const String &E : patterns) {
 			if (file_info.name.matchn(E)) {
 				match = true;
@@ -1207,8 +1206,6 @@ void EditorFileDialog::update_file_list() {
 				item_list->set_current(item_list->get_item_count() - 1);
 			}
 		}
-
-		file_infos.pop_front();
 	}
 
 	if (favorites->get_current() >= 0) {
