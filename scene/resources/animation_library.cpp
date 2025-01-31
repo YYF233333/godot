@@ -94,9 +94,7 @@ Ref<Animation> AnimationLibrary::get_animation(const StringName &p_name) const {
 
 TypedArray<StringName> AnimationLibrary::_get_animation_list() const {
 	TypedArray<StringName> ret;
-	List<StringName> names;
-	get_animation_list(&names);
-	for (const StringName &K : names) {
+	for (const StringName &K : get_animation_list()) {
 		ret.push_back(K);
 	}
 	return ret;
@@ -106,7 +104,7 @@ void AnimationLibrary::_animation_changed(const StringName &p_name) {
 	emit_signal(SceneStringName(animation_changed), p_name);
 }
 
-void AnimationLibrary::get_animation_list(List<StringName> *p_animations) const {
+LocalVector<StringName> AnimationLibrary::get_animation_list() const {
 	LocalVector<StringName> anims;
 	anims.reserve(animations.size());
 
@@ -116,9 +114,7 @@ void AnimationLibrary::get_animation_list(List<StringName> *p_animations) const 
 
 	anims.sort_custom<StringName::AlphCompare>();
 
-	for (const StringName &E : anims) {
-		p_animations->push_back(E);
-	}
+	return anims;
 }
 
 int AnimationLibrary::get_animation_list_size() const {
@@ -147,9 +143,7 @@ Dictionary AnimationLibrary::_get_data() const {
 void AnimationLibrary::get_argument_options(const StringName &p_function, int p_idx, LocalVector<String> &r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0 && (pf == "get_animation" || pf == "has_animation" || pf == "rename_animation" || pf == "remove_animation")) {
-		List<StringName> names;
-		get_animation_list(&names);
-		for (const StringName &E : names) {
+		for (const StringName &E : get_animation_list()) {
 			r_options.push_back(E.operator String().quote());
 		}
 	}
