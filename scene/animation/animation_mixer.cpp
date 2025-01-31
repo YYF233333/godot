@@ -1619,8 +1619,8 @@ void AnimationMixer::_blend_process(double p_delta, bool p_update_only) {
 								t_obj->set_indexed(t->subpath, value);
 							}
 						} else {
-							List<int> indices;
-							a->track_get_key_indices_in_range(i, time, delta, &indices, looped_flag);
+							LocalVector<int> indices;
+							a->track_get_key_indices_in_range(i, time, delta, indices, looped_flag);
 							for (int &F : indices) {
 								t->use_discrete = true;
 								Variant value = a->track_get_key_value(i, F);
@@ -1652,8 +1652,8 @@ void AnimationMixer::_blend_process(double p_delta, bool p_update_only) {
 						Vector<Variant> params = a->method_track_get_params(i, idx);
 						_call_object(t->object_id, method, params, callback_mode_method == ANIMATION_CALLBACK_MODE_METHOD_DEFERRED);
 					} else {
-						List<int> indices;
-						a->track_get_key_indices_in_range(i, time, delta, &indices, looped_flag);
+						LocalVector<int> indices;
+						a->track_get_key_indices_in_range(i, time, delta, indices, looped_flag);
 						for (int &F : indices) {
 							StringName method = a->method_track_get_name(i, F);
 							Vector<Variant> params = a->method_track_get_params(i, F);
@@ -1700,10 +1700,10 @@ void AnimationMixer::_blend_process(double p_delta, bool p_update_only) {
 							map.erase(idx);
 						}
 					} else {
-						List<int> to_play;
-						a->track_get_key_indices_in_range(i, time, delta, &to_play, looped_flag);
+						LocalVector<int> to_play;
+						a->track_get_key_indices_in_range(i, time, delta, to_play, looped_flag);
 						if (to_play.size()) {
-							idx = to_play.back()->get();
+							idx = to_play.back();
 						}
 					}
 					if (idx < 0) {
@@ -1815,10 +1815,10 @@ void AnimationMixer::_blend_process(double p_delta, bool p_update_only) {
 						}
 					} else {
 						// Find stuff to play.
-						List<int> to_play;
-						a->track_get_key_indices_in_range(i, time, delta, &to_play, looped_flag);
+						LocalVector<int> to_play;
+						a->track_get_key_indices_in_range(i, time, delta, to_play, looped_flag);
 						if (to_play.size()) {
-							int idx = to_play.back()->get();
+							int idx = to_play.back();
 							StringName anim_name = a->animation_track_get_key_animation(i, idx);
 							if (String(anim_name) == "[stop]" || !player2->has_animation(anim_name)) {
 								if (playing_caches.has(t)) {
