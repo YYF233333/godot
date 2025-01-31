@@ -245,10 +245,13 @@ Ref<Texture> Shader::get_default_texture_parameter(const StringName &p_name, int
 	return Ref<Texture2D>();
 }
 
-void Shader::get_default_texture_parameter_list(List<StringName> *r_textures) const {
+LocalVector<StringName> Shader::get_default_texture_parameter_list() const {
+	LocalVector<StringName> textures;
+	textures.reserve(default_textures.size());
 	for (const KeyValue<StringName, HashMap<int, Ref<Texture>>> &E : default_textures) {
-		r_textures->push_back(E.key);
+		textures.push_back(E.key);
 	}
+	return textures;
 }
 
 bool Shader::is_text_shader() const {
