@@ -629,7 +629,7 @@ void VersionControlEditorPlugin::_display_diff(int p_idx) {
 	}
 }
 
-void VersionControlEditorPlugin::_display_diff_split_view(List<EditorVCSInterface::DiffLine> &p_diff_content) {
+void VersionControlEditorPlugin::_display_diff_split_view(LocalVector<EditorVCSInterface::DiffLine> &p_diff_content) {
 	LocalVector<EditorVCSInterface::DiffLine> parsed_diff;
 
 	for (EditorVCSInterface::DiffLine diff_line : p_diff_content) {
@@ -748,7 +748,7 @@ void VersionControlEditorPlugin::_display_diff_split_view(List<EditorVCSInterfac
 	diff->pop();
 }
 
-void VersionControlEditorPlugin::_display_diff_unified_view(List<EditorVCSInterface::DiffLine> &p_diff_content) {
+void VersionControlEditorPlugin::_display_diff_unified_view(LocalVector<EditorVCSInterface::DiffLine> &p_diff_content) {
 	diff->push_table(4);
 	diff->set_table_column_expand(3, true);
 
