@@ -140,7 +140,7 @@ public:
 	// Proxies to the editor for use
 	bool initialize(const String &p_project_path);
 	void set_credentials(const String &p_username, const String &p_password, const String &p_ssh_public_key_path, const String &p_ssh_private_key_path, const String &p_ssh_passphrase);
-	List<StatusFile> get_modified_files_data();
+	LocalVector<StatusFile> get_modified_files_data();
 	void stage_file(const String &p_file_path);
 	void unstage_file(const String &p_file_path);
 	void discard_file(const String &p_file_path);
