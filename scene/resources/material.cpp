@@ -240,9 +240,6 @@ bool ShaderMaterial::_get(const StringName &p_name, Variant &r_ret) const {
 
 void ShaderMaterial::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	if (shader.is_valid()) {
-		List<PropertyInfo> list;
-		shader->get_shader_uniform_list(&list, true);
-
 		HashMap<String, HashMap<String, List<PropertyInfo>>> groups;
 		LocalVector<Pair<String, LocalVector<String>>> vgroups;
 		{
@@ -257,10 +254,10 @@ void ShaderMaterial::_get_property_list(LocalVector<PropertyInfo> &p_list) const
 		bool is_none_group_undefined = true;
 		bool is_none_group = true;
 
-		for (List<PropertyInfo>::Element *E = list.front(); E; E = E->next()) {
-			if (E->get().usage == PROPERTY_USAGE_GROUP) {
-				if (!E->get().name.is_empty()) {
-					Vector<String> vgroup = E->get().name.split("::");
+		for (PropertyInfo &E : shader->get_shader_uniform_list(true)) {
+			if (E.usage == PROPERTY_USAGE_GROUP) {
+				if (!E.name.is_empty()) {
+					Vector<String> vgroup = E.name.split("::");
 					last_group = vgroup[0];
 					if (vgroup.size() > 1) {
 						last_subgroup = vgroup[1];
@@ -322,23 +319,23 @@ void ShaderMaterial::_get_property_list(LocalVector<PropertyInfo> &p_list) const
 				vgroups.push_back(Pair<String, LocalVector<String>>("<None>", { "<None>" }));
 			}
 
-			const bool is_uniform_cached = param_cache.has(E->get().name);
+			const bool is_uniform_cached = param_cache.has(E.name);
 			bool is_uniform_type_compatible = true;
 
 			if (is_uniform_cached) {
 				// Check if the uniform Variant type changed, for example vec3 to vec4.
-				const Variant &cached = param_cache.get(E->get().name);
+				const Variant &cached = param_cache.get(E.name);
 
 				if (cached.is_array()) {
 					// Allow some array conversions for backwards compatibility.
-					is_uniform_type_compatible = Variant::can_convert(E->get().type, cached.get_type());
+					is_uniform_type_compatible = Variant::can_convert(E.type, cached.get_type());
 				} else {
-					is_uniform_type_compatible = E->get().type == cached.get_type();
+					is_uniform_type_compatible = E.type == cached.get_type();
 				}
 
 #ifndef DISABLE_DEPRECATED
 				// PackedFloat32Array -> PackedVector4Array conversion.
-				if (!is_uniform_type_compatible && E->get().type == Variant::PACKED_VECTOR4_ARRAY && cached.get_type() == Variant::PACKED_FLOAT32_ARRAY) {
+				if (!is_uniform_type_compatible && E.type == Variant::PACKED_VECTOR4_ARRAY && cached.get_type() == Variant::PACKED_FLOAT32_ARRAY) {
 					PackedVector4Array varray;
 					PackedFloat32Array array = (PackedFloat32Array)cached;
 
@@ -346,28 +343,28 @@ void ShaderMaterial::_get_property_list(LocalVector<PropertyInfo> &p_list) const
 						varray.push_back(Vector4(array[i], array[i + 1], array[i + 2], array[i + 3]));
 					}
 
-					param_cache.insert(E->get().name, varray);
+					param_cache.insert(E.name, varray);
 					is_uniform_type_compatible = true;
 				}
 #endif
 
-				if (is_uniform_type_compatible && E->get().type == Variant::OBJECT && cached.get_type() == Variant::OBJECT) {
+				if (is_uniform_type_compatible && E.type == Variant::OBJECT && cached.get_type() == Variant::OBJECT) {
 					// Check if the Object class (hint string) changed, for example Texture2D sampler to Texture3D.
 					// Allow inheritance, Texture2D type sampler should also accept CompressedTexture2D.
 					Object *cached_obj = cached;
-					if (!cached_obj->is_class(E->get().hint_string)) {
+					if (!cached_obj->is_class(E.hint_string)) {
 						is_uniform_type_compatible = false;
 					}
 				}
 			}
 
-			PropertyInfo info = E->get();
+			PropertyInfo info = E;
 			info.name = "shader_parameter/" + info.name;
 			if (!is_uniform_cached || !is_uniform_type_compatible) {
 				// Property has never been edited or its type changed, retrieve with default value.
-				Variant default_value = RenderingServer::get_singleton()->shader_get_parameter_default(shader->get_rid(), E->get().name);
-				param_cache.insert(E->get().name, default_value);
-				remap_cache.insert(info.name, E->get().name);
+				Variant default_value = RenderingServer::get_singleton()->shader_get_parameter_default(shader->get_rid(), E.name);
+				param_cache.insert(E.name, default_value);
+				remap_cache.insert(info.name, E.name);
 			}
 			groups[last_group][last_subgroup].push_back(info);
 		}
@@ -530,9 +527,7 @@ void ShaderMaterial::get_argument_options(const StringName &p_function, int p_id
 	const String pf = p_function;
 	if (p_idx == 0 && (pf == "get_shader_parameter" || pf == "set_shader_parameter")) {
 		if (shader.is_valid()) {
-			List<PropertyInfo> pl;
-			shader->get_shader_uniform_list(&pl);
-			for (const PropertyInfo &E : pl) {
+			for (const PropertyInfo &E : shader->get_shader_uniform_list()) {
 				r_options.push_back(E.name.replace_first("shader_parameter/", "").quote());
 			}
 		}
