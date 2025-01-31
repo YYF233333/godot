@@ -189,7 +189,7 @@ void VersionControlEditorPlugin::_update_set_up_warning(const String &p_new_text
 void VersionControlEditorPlugin::_refresh_branch_list() {
 	CHECK_PLUGIN_INITIALIZED();
 
-	List<String> branch_list = EditorVCSInterface::get_singleton()->get_branch_list();
+	LocalVector<String> branch_list = EditorVCSInterface::get_singleton()->get_branch_list();
 	branch_select->clear();
 
 	branch_select->set_disabled(branch_list.is_empty());
@@ -197,12 +197,14 @@ void VersionControlEditorPlugin::_refresh_branch_list() {
 	String current_branch = EditorVCSInterface::get_singleton()->get_current_branch_name();
 
 	int i = 0;
-	for (List<String>::ConstIterator itr = branch_list.begin(); itr != branch_list.end(); ++itr, ++i) {
-		branch_select->add_icon_item(EditorNode::get_singleton()->get_editor_theme()->get_icon(SNAME("VcsBranches"), EditorStringName(EditorIcons)), *itr, i);
+	for (const String &branch : branch_list) {
+		branch_select->add_icon_item(EditorNode::get_singleton()->get_editor_theme()->get_icon(SNAME("VcsBranches"), EditorStringName(EditorIcons)), branch, i);
 
-		if (*itr == current_branch) {
+		if (branch == current_branch) {
 			branch_select->select(i);
 		}
+
+		i++;
 	}
 }
 
