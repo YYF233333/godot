@@ -370,9 +370,8 @@ void VersionControlEditorPlugin::_refresh_stage_area() {
 	staged_files->get_root()->clear_children();
 	unstaged_files->get_root()->clear_children();
 
-	List<EditorVCSInterface::StatusFile> status_files = EditorVCSInterface::get_singleton()->get_modified_files_data();
-	for (List<EditorVCSInterface::StatusFile>::Element *E = status_files.front(); E; E = E->next()) {
-		EditorVCSInterface::StatusFile sf = E->get();
+	LocalVector<EditorVCSInterface::StatusFile> status_files = EditorVCSInterface::get_singleton()->get_modified_files_data();
+	for (const EditorVCSInterface::StatusFile &sf : status_files) {
 		if (sf.area == EditorVCSInterface::TREE_AREA_STAGED) {
 			_add_new_item(staged_files, sf.file_path, sf.change_type);
 		} else if (sf.area == EditorVCSInterface::TREE_AREA_UNSTAGED) {
