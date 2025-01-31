@@ -121,13 +121,14 @@ LocalVector<EditorVCSInterface::Commit> EditorVCSInterface::get_previous_commits
 	return commits;
 }
 
-List<String> EditorVCSInterface::get_branch_list() {
+LocalVector<String> EditorVCSInterface::get_branch_list() {
 	TypedArray<String> result;
 	if (!GDVIRTUAL_CALL(_get_branch_list, result)) {
 		return {};
 	}
 
-	List<String> branch_list;
+	LocalVector<String> branch_list;
+	branch_list.reserve(result.size());
 	for (int i = 0; i < result.size(); i++) {
 		branch_list.push_back(result[i]);
 	}
