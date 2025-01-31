@@ -1161,20 +1161,18 @@ StringName Theme::get_type_variation_base(const StringName &p_theme_type) const 
 	return variation_map[p_theme_type];
 }
 
-void Theme::get_type_variation_list(const StringName &p_base_type, List<StringName> *p_list) const {
-	ERR_FAIL_NULL(p_list);
-
+void Theme::get_type_variation_list(const StringName &p_base_type, LocalVector<StringName> &p_list) const {
 	if (!variation_base_map.has(p_base_type)) {
 		return;
 	}
 
 	for (const StringName &E : variation_base_map[p_base_type]) {
 		// Prevent infinite loops if variants were set to be cross-dependent (that's still invalid usage, but handling for stability sake).
-		if (p_list->find(E)) {
+		if (p_list.has(E)) {
 			continue;
 		}
 
-		p_list->push_back(E);
+		p_list.push_back(E);
 		// Continue looking for sub-variations.
 		get_type_variation_list(E, p_list);
 	}
@@ -1204,8 +1202,8 @@ void Theme::remove_type(const StringName &p_theme_type) {
 	}
 
 	// If type is a variation base, remove all those connections.
-	List<StringName> names;
-	get_type_variation_list(p_theme_type, &names);
+	LocalVector<StringName> names;
+	get_type_variation_list(p_theme_type, names);
 	for (const StringName &E : names) {
 		clear_type_variation(E);
 	}
@@ -1493,15 +1491,16 @@ Vector<String> Theme::_get_theme_item_type_list(DataType p_data_type) const {
 
 Vector<String> Theme::_get_type_variation_list(const StringName &p_theme_type) const {
 	Vector<String> ilret;
-	List<StringName> il;
+	LocalVector<StringName> il;
 
-	get_type_variation_list(p_theme_type, &il);
+	get_type_variation_list(p_theme_type, il);
 	ilret.resize(il.size());
 
 	int i = 0;
 	String *w = ilret.ptrw();
-	for (List<StringName>::Element *E = il.front(); E; E = E->next(), i++) {
-		w[i] = E->get();
+	for (const StringName &E : il) {
+		w[i] = E;
+		i++;
 	}
 	return ilret;
 }
