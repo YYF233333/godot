@@ -78,7 +78,7 @@ void NavigationRegion3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 
 	Vector<Vector3> vertices = navigationmesh->get_vertices();
 	const Vector3 *vr = vertices.ptr();
-	List<Face3> faces;
+	LocalVector<Face3> faces;
 	for (int i = 0; i < navigationmesh->get_polygon_count(); i++) {
 		Vector<int> p = navigationmesh->get_polygon(i);
 
