@@ -147,7 +147,7 @@ void Shader::inspect_native_shader_code() {
 	}
 }
 
-void Shader::get_shader_uniform_list(List<PropertyInfo> *p_params, bool p_get_groups) const {
+LocalVector<PropertyInfo> Shader::get_shader_uniform_list(bool p_get_groups) const {
 	_update_shader();
 	_check_shader_rid();
 
@@ -164,6 +164,7 @@ void Shader::get_shader_uniform_list(List<PropertyInfo> *p_params, bool p_get_gr
 	}
 #endif
 
+	LocalVector<PropertyInfo> params;
 	for (PropertyInfo &pi : local) {
 		bool is_group = pi.usage == PROPERTY_USAGE_GROUP || pi.usage == PROPERTY_USAGE_SUBGROUP;
 		if (!p_get_groups && is_group) {
@@ -174,11 +175,10 @@ void Shader::get_shader_uniform_list(List<PropertyInfo> *p_params, bool p_get_gr
 				continue;
 			}
 		}
-		if (p_params) {
-			//small little hack
-			if (pi.type == Variant::RID) {
-				pi.type = Variant::OBJECT;
-			}
+		//small little hack
+		if (pi.type == Variant::RID) {
+			pi.type = Variant::OBJECT;
+		}
 #ifdef TOOLS_ENABLED
 			if (generate_doc) {
 				DocData::PropertyDoc prop_doc;
@@ -198,14 +198,14 @@ void Shader::get_shader_uniform_list(List<PropertyInfo> *p_params, bool p_get_gr
 				}
 			}
 #endif
-			p_params->push_back(pi);
-		}
+		params.push_back(pi);
 	}
 #ifdef TOOLS_ENABLED
 	if (generate_doc && class_doc.properties.size() > 0) {
 		EditorHelp::add_doc(class_doc);
 	}
 #endif
+	return params;
 }
 
 RID Shader::get_rid() const {
@@ -260,10 +260,8 @@ void Shader::_update_shader() const {
 }
 
 Array Shader::_get_shader_uniform_list(bool p_get_groups) {
-	List<PropertyInfo> uniform_list;
-	get_shader_uniform_list(&uniform_list, p_get_groups);
 	Array ret;
-	for (const PropertyInfo &pi : uniform_list) {
+	for (const PropertyInfo &pi : get_shader_uniform_list(p_get_groups)) {
 		ret.push_back(pi.operator Dictionary());
 	}
 	return ret;
