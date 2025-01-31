@@ -227,7 +227,7 @@ protected:
 	virtual void reset_state() override;
 
 public:
-	Error _load_bitmap_font(const String &p_path, List<String> *r_image_files);
+	Error _load_bitmap_font(const String &p_path, LocalVector<String> *r_image_files);
 
 	Error load_bitmap_font(const String &p_path);
 	Error load_dynamic_font(const String &p_path);
