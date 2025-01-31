@@ -175,13 +175,14 @@ void EditorVCSInterface::fetch(const String &p_remote) {
 	GDVIRTUAL_CALL(_fetch, p_remote);
 }
 
-List<EditorVCSInterface::DiffHunk> EditorVCSInterface::get_line_diff(const String &p_file_path, const String &p_text) {
+LocalVector<EditorVCSInterface::DiffHunk> EditorVCSInterface::get_line_diff(const String &p_file_path, const String &p_text) {
 	TypedArray<Dictionary> result;
 	if (!GDVIRTUAL_CALL(_get_line_diff, p_file_path, p_text, result)) {
 		return {};
 	}
 
-	List<DiffHunk> diff_hunks;
+	LocalVector<DiffHunk> diff_hunks;
+	diff_hunks.reserve(result.size());
 	for (int i = 0; i < result.size(); i++) {
 		diff_hunks.push_back(_convert_diff_hunk(result[i]));
 	}
