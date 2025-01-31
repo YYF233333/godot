@@ -139,10 +139,9 @@ class SceneImportSettingsData : public Object {
 						hint_string = anim->get_name();
 					}
 					if (library.is_valid()) {
-						List<StringName> anim_names;
-						library->get_animation_list(&anim_names);
+						LocalVector<StringName> anim_names = library->get_animation_list();
 						if (anim_names.size() == 1) {
-							(*settings)["rest_pose/selected_animation"] = String(anim_names.front()->get());
+							(*settings)["rest_pose/selected_animation"] = String(anim_names[0]);
 						}
 						for (StringName anim_name : anim_names) {
 							hint_string += "," + anim_name; // Include preceding, as a catch-all.
