@@ -93,13 +93,14 @@ void EditorVCSInterface::commit(const String &p_msg) {
 	GDVIRTUAL_CALL(_commit, p_msg);
 }
 
-List<EditorVCSInterface::DiffFile> EditorVCSInterface::get_diff(const String &p_identifier, TreeArea p_area) {
+LocalVector<EditorVCSInterface::DiffFile> EditorVCSInterface::get_diff(const String &p_identifier, TreeArea p_area) {
 	TypedArray<Dictionary> result;
 	if (!GDVIRTUAL_CALL(_get_diff, p_identifier, int(p_area), result)) {
 		return {};
 	}
 
-	List<DiffFile> diff_files;
+	LocalVector<DiffFile> diff_files;
+	diff_files.reserve(result.size());
 	for (int i = 0; i < result.size(); i++) {
 		diff_files.push_back(_convert_diff_file(result[i]));
 	}
