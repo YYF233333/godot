@@ -107,13 +107,14 @@ LocalVector<EditorVCSInterface::DiffFile> EditorVCSInterface::get_diff(const Str
 	return diff_files;
 }
 
-List<EditorVCSInterface::Commit> EditorVCSInterface::get_previous_commits(int p_max_commits) {
+LocalVector<EditorVCSInterface::Commit> EditorVCSInterface::get_previous_commits(int p_max_commits) {
 	TypedArray<Dictionary> result;
 	if (!GDVIRTUAL_CALL(_get_previous_commits, p_max_commits, result)) {
 		return {};
 	}
 
-	List<EditorVCSInterface::Commit> commits;
+	LocalVector<EditorVCSInterface::Commit> commits;
+	commits.reserve(result.size());
 	for (int i = 0; i < result.size(); i++) {
 		commits.push_back(_convert_commit(result[i]));
 	}
