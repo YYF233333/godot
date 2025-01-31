@@ -241,9 +241,6 @@ bool ShaderMaterial::_get(const StringName &p_name, Variant &r_ret) const {
 
 void ShaderMaterial::_get_property_list(List<PropertyInfo> *p_list) const {
 	if (shader.is_valid()) {
-		List<PropertyInfo> list;
-		shader->get_shader_uniform_list(&list, true);
-
 		HashMap<String, HashMap<String, List<PropertyInfo>>> groups;
 		LocalVector<Pair<String, LocalVector<String>>> vgroups;
 		{
@@ -258,7 +255,7 @@ void ShaderMaterial::_get_property_list(List<PropertyInfo> *p_list) const {
 		bool is_none_group_undefined = true;
 		bool is_none_group = true;
 
-		for (const PropertyInfo &pi : list) {
+		for (const PropertyInfo &pi : shader->get_shader_uniform_list(true)) {
 			if (pi.usage == PROPERTY_USAGE_GROUP) {
 				if (!pi.name.is_empty()) {
 					Vector<String> vgroup = pi.name.split("::");
@@ -531,9 +528,7 @@ void ShaderMaterial::get_argument_options(const StringName &p_function, int p_id
 	const String pf = p_function;
 	if (p_idx == 0 && (pf == "get_shader_parameter" || pf == "set_shader_parameter")) {
 		if (shader.is_valid()) {
-			List<PropertyInfo> pl;
-			shader->get_shader_uniform_list(&pl);
-			for (const PropertyInfo &E : pl) {
+			for (const PropertyInfo &E : shader->get_shader_uniform_list()) {
 				r_options.push_back(E.name.replace_first("shader_parameter/", "").quote());
 			}
 		}
