@@ -63,13 +63,14 @@ LocalVector<String> EditorVCSInterface::get_remotes() {
 	return remotes;
 }
 
-List<EditorVCSInterface::StatusFile> EditorVCSInterface::get_modified_files_data() {
+LocalVector<EditorVCSInterface::StatusFile> EditorVCSInterface::get_modified_files_data() {
 	TypedArray<Dictionary> result;
 	if (!GDVIRTUAL_CALL(_get_modified_files_data, result)) {
 		return {};
 	}
 
-	List<EditorVCSInterface::StatusFile> status_files;
+	LocalVector<EditorVCSInterface::StatusFile> status_files;
+	status_files.reserve(result.size());
 	for (int i = 0; i < result.size(); i++) {
 		status_files.push_back(_convert_status_file(result[i]));
 	}
