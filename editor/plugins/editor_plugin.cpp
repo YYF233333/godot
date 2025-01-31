@@ -387,7 +387,7 @@ void EditorPlugin::get_breakpoints(LocalVector<String> &p_breakpoints) {
 	}
 }
 
-bool EditorPlugin::get_remove_list(List<Node *> *p_list) {
+bool EditorPlugin::get_remove_list(LocalVector<Node *> &p_list) {
 	return false;
 }
 
