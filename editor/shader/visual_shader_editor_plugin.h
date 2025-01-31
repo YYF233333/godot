@@ -553,14 +553,14 @@ class VisualShaderEditor : public ShaderEditor {
 		bool disabled = false;
 	};
 
-	void _dup_copy_nodes(int p_type, List<CopyItem> &r_nodes, List<VisualShader::Connection> &r_connections);
-	void _dup_paste_nodes(int p_type, List<CopyItem> &r_items, const List<VisualShader::Connection> &p_connections, const Vector2 &p_offset, bool p_duplicate);
+	void _dup_copy_nodes(int p_type, LocalVector<CopyItem> &r_nodes, LocalVector<VisualShader::Connection> &r_connections);
+	void _dup_paste_nodes(int p_type, const LocalVector<CopyItem> &r_items, const LocalVector<VisualShader::Connection> &p_connections, const Vector2 &p_offset, bool p_duplicate);
 
 	void _duplicate_nodes();
 
 	static Vector2 selection_center;
-	static List<CopyItem> copy_items_buffer;
-	static List<VisualShader::Connection> copy_connections_buffer;
+	static LocalVector<CopyItem> copy_items_buffer;
+	static LocalVector<VisualShader::Connection> copy_connections_buffer;
 
 	void _clear_copy_buffer();
 	void _copy_nodes(bool p_cut);
