@@ -222,7 +222,7 @@ void VersionControlEditorPlugin::_refresh_commit_list() {
 
 	commit_list->get_root()->clear_children();
 
-	List<EditorVCSInterface::Commit> commit_info_list = EditorVCSInterface::get_singleton()->get_previous_commits(commit_list_size_button->get_selected_metadata());
+	LocalVector<EditorVCSInterface::Commit> commit_info_list = EditorVCSInterface::get_singleton()->get_previous_commits(commit_list_size_button->get_selected_metadata());
 
 	for (const EditorVCSInterface::Commit &commit : commit_info_list) {
 		TreeItem *item = commit_list->create_item();
