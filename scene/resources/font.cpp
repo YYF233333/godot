@@ -1450,7 +1450,7 @@ Error FontFile::load_bitmap_font(const String &p_path) {
 	return _load_bitmap_font(p_path, nullptr);
 }
 
-Error FontFile::_load_bitmap_font(const String &p_path, List<String> *r_image_files) {
+Error FontFile::_load_bitmap_font(const String &p_path, LocalVector<String> *r_image_files) {
 	reset_state();
 
 	antialiasing = TextServer::FONT_ANTIALIASING_NONE;
