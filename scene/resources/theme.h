@@ -138,7 +138,7 @@ public:
 	void get_icon_list(const StringName &p_theme_type, LocalVector<StringName> &p_list) const;
 	void add_icon_type(const StringName &p_theme_type);
 	void remove_icon_type(const StringName &p_theme_type);
-	void get_icon_type_list(List<StringName> *p_list) const;
+	LocalVector<StringName> get_icon_type_list() const;
 
 	void set_stylebox(const StringName &p_name, const StringName &p_theme_type, const Ref<StyleBox> &p_style);
 	virtual Ref<StyleBox> get_stylebox(const StringName &p_name, const StringName &p_theme_type) const;
@@ -149,7 +149,7 @@ public:
 	void get_stylebox_list(const StringName &p_theme_type, LocalVector<StringName> &p_list) const;
 	void add_stylebox_type(const StringName &p_theme_type);
 	void remove_stylebox_type(const StringName &p_theme_type);
-	void get_stylebox_type_list(List<StringName> *p_list) const;
+	LocalVector<StringName> get_stylebox_type_list() const;
 
 	void set_font(const StringName &p_name, const StringName &p_theme_type, const Ref<Font> &p_font);
 	virtual Ref<Font> get_font(const StringName &p_name, const StringName &p_theme_type) const;
@@ -161,7 +161,7 @@ public:
 	void get_font_list(const StringName &p_theme_type, LocalVector<StringName> &p_list) const;
 	void add_font_type(const StringName &p_theme_type);
 	void remove_font_type(const StringName &p_theme_type);
-	void get_font_type_list(List<StringName> *p_list) const;
+	LocalVector<StringName> get_font_type_list() const;
 
 	void set_font_size(const StringName &p_name, const StringName &p_theme_type, int p_font_size);
 	virtual int get_font_size(const StringName &p_name, const StringName &p_theme_type) const;
@@ -173,7 +173,7 @@ public:
 	void get_font_size_list(const StringName &p_theme_type, LocalVector<StringName> &p_list) const;
 	void add_font_size_type(const StringName &p_theme_type);
 	void remove_font_size_type(const StringName &p_theme_type);
-	void get_font_size_type_list(List<StringName> *p_list) const;
+	LocalVector<StringName> get_font_size_type_list() const;
 
 	void set_color(const StringName &p_name, const StringName &p_theme_type, const Color &p_color);
 	virtual Color get_color(const StringName &p_name, const StringName &p_theme_type) const;
@@ -184,7 +184,7 @@ public:
 	void get_color_list(const StringName &p_theme_type, LocalVector<StringName> &p_list) const;
 	void add_color_type(const StringName &p_theme_type);
 	void remove_color_type(const StringName &p_theme_type);
-	void get_color_type_list(List<StringName> *p_list) const;
+	LocalVector<StringName> get_color_type_list() const;
 
 	void set_constant(const StringName &p_name, const StringName &p_theme_type, int p_constant);
 	virtual int get_constant(const StringName &p_name, const StringName &p_theme_type) const;
@@ -195,7 +195,7 @@ public:
 	void get_constant_list(const StringName &p_theme_type, LocalVector<StringName> &p_list) const;
 	void add_constant_type(const StringName &p_theme_type);
 	void remove_constant_type(const StringName &p_theme_type);
-	void get_constant_type_list(List<StringName> *p_list) const;
+	LocalVector<StringName> get_constant_type_list() const;
 
 	void set_theme_item(DataType p_data_type, const StringName &p_name, const StringName &p_theme_type, const Variant &p_value);
 	Variant get_theme_item(DataType p_data_type, const StringName &p_name, const StringName &p_theme_type) const;
@@ -206,7 +206,7 @@ public:
 	void get_theme_item_list(DataType p_data_type, const StringName &p_theme_type, LocalVector<StringName> &p_list) const;
 	void add_theme_item_type(DataType p_data_type, const StringName &p_theme_type);
 	void remove_theme_item_type(DataType p_data_type, const StringName &p_theme_type);
-	void get_theme_item_type_list(DataType p_data_type, List<StringName> *p_list) const;
+	LocalVector<StringName> get_theme_item_type_list(DataType p_data_type) const;
 
 	void set_type_variation(const StringName &p_theme_type, const StringName &p_base_type);
 	bool is_type_variation(const StringName &p_theme_type, const StringName &p_base_type) const;
