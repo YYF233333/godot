@@ -104,7 +104,7 @@ protected:
 	HashMap<StringName, ThemeColorMap> color_map;
 	HashMap<StringName, ThemeConstantMap> constant_map;
 	HashMap<StringName, StringName> variation_map;
-	HashMap<StringName, List<StringName>> variation_base_map;
+	HashMap<StringName, LocalVector<StringName>> variation_base_map;
 
 	static void _bind_methods();
 
