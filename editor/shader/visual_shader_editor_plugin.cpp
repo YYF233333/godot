@@ -2067,9 +2067,7 @@ void VisualShaderEditor::_preview_tools_menu_option(int p_idx) {
 				EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 				undo_redo->create_action(TTR("Copy Preview Shader Parameters From Material"));
 
-				List<PropertyInfo> params;
-				preview_material->get_shader()->get_shader_uniform_list(&params);
-				for (const PropertyInfo &E : params) {
+				for (const PropertyInfo &E : preview_material->get_shader()->get_shader_uniform_list()) {
 					undo_redo->add_do_method(visual_shader.ptr(), "_set_preview_shader_parameter", E.name, src_mat->get_shader_parameter(E.name));
 					undo_redo->add_undo_method(visual_shader.ptr(), "_set_preview_shader_parameter", E.name, preview_material->get_shader_parameter(E.name));
 				}
@@ -2082,9 +2080,7 @@ void VisualShaderEditor::_preview_tools_menu_option(int p_idx) {
 				EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 				undo_redo->create_action(TTR("Paste Preview Shader Parameters To Material"));
 
-				List<PropertyInfo> params;
-				preview_material->get_shader()->get_shader_uniform_list(&params);
-				for (const PropertyInfo &E : params) {
+				for (const PropertyInfo &E : preview_material->get_shader()->get_shader_uniform_list()) {
 					undo_redo->add_do_method(src_mat, "set_shader_parameter", E.name, preview_material->get_shader_parameter(E.name));
 					undo_redo->add_undo_method(src_mat, "set_shader_parameter", E.name, src_mat->get_shader_parameter(E.name));
 				}
@@ -8361,9 +8357,7 @@ void VisualShaderNodePortPreview::_shader_changed() {
 	mat->set_shader(preview_shader);
 
 	if (preview_mat.is_valid() && preview_mat->get_shader().is_valid()) {
-		List<PropertyInfo> params;
-		preview_mat->get_shader()->get_shader_uniform_list(&params);
-		for (const PropertyInfo &E : params) {
+		for (const PropertyInfo &E : preview_mat->get_shader()->get_shader_uniform_list()) {
 			mat->set_shader_parameter(E.name, preview_mat->get_shader_parameter(E.name));
 		}
 	}
