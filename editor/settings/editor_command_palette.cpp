@@ -219,10 +219,13 @@ void EditorCommandPalette::open_popup() {
 	search_options->scroll_to_item(search_options->get_root());
 }
 
-void EditorCommandPalette::get_actions_list(List<String> *p_list) const {
+LocalVector<String> EditorCommandPalette::get_actions_list() const {
+	LocalVector<String> actions;
+	actions.reserve(commands.size());
 	for (const KeyValue<String, Command> &E : commands) {
-		p_list->push_back(E.key);
+		actions.push_back(E.key);
 	}
+	return actions;
 }
 
 void EditorCommandPalette::remove_command(String p_key_name) {
