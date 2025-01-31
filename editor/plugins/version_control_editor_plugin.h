@@ -134,7 +134,7 @@ private:
 	RichTextLabel *diff = nullptr;
 	OptionButton *diff_view_type_select = nullptr;
 	bool show_commit_diff_header = false;
-	List<EditorVCSInterface::DiffFile> diff_content;
+	LocalVector<EditorVCSInterface::DiffFile> diff_content;
 
 	void _notification(int p_what);
 	void _initialize_vcs();
