@@ -70,8 +70,8 @@ static void _rename_theme_type(EditorUndoRedoManager *p_ur, Theme *p_theme, cons
 			p_ur->add_undo_method(p_theme, "set_type_variation", p_old_theme_type, old_base_type);
 		}
 
-		List<StringName> names;
-		p_theme->get_type_variation_list(p_old_theme_type, &names);
+		LocalVector<StringName> names;
+		p_theme->get_type_variation_list(p_old_theme_type, names);
 		for (const StringName &E : names) {
 			p_ur->add_undo_method(p_theme, "set_type_variation", E, p_old_theme_type);
 		}

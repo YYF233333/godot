@@ -220,7 +220,7 @@ public:
 	bool is_type_variation(const StringName &p_theme_type, const StringName &p_base_type) const;
 	void clear_type_variation(const StringName &p_theme_type);
 	StringName get_type_variation_base(const StringName &p_theme_type) const;
-	void get_type_variation_list(const StringName &p_base_type, List<StringName> *p_list) const;
+	void get_type_variation_list(const StringName &p_base_type, LocalVector<StringName> &p_list) const;
 
 	void add_type(const StringName &p_theme_type);
 	void remove_type(const StringName &p_theme_type);
