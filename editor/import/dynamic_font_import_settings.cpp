@@ -69,16 +69,16 @@ bool DynamicFontImportSettingsData::_get(const StringName &p_name, Variant &r_re
 }
 
 void DynamicFontImportSettingsData::_get_property_list(List<PropertyInfo> *p_list) const {
-	for (const List<ResourceImporter::ImportOption>::Element *E = options.front(); E; E = E->next()) {
+	for (const ResourceImporter::ImportOption &E : options) {
 		if (owner && owner->import_settings_data.is_valid()) {
-			if (owner->import_settings_data->get("multichannel_signed_distance_field") && (E->get().option.name == "size" || E->get().option.name == "outline_size" || E->get().option.name == "oversampling")) {
+			if (owner->import_settings_data->get("multichannel_signed_distance_field") && (E.option.name == "size" || E.option.name == "outline_size" || E.option.name == "oversampling")) {
 				continue;
 			}
-			if (!owner->import_settings_data->get("multichannel_signed_distance_field") && (E->get().option.name == "msdf_pixel_range" || E->get().option.name == "msdf_size")) {
+			if (!owner->import_settings_data->get("multichannel_signed_distance_field") && (E.option.name == "msdf_pixel_range" || E.option.name == "msdf_size")) {
 				continue;
 			}
 		}
-		p_list->push_back(E->get().option);
+		p_list->push_back(E.option);
 	}
 }
 
