@@ -4445,7 +4445,7 @@ void VisualShaderEditor::_handle_node_drop_on_connection() {
 	call_deferred(SNAME("_update_graph"));
 }
 
-void VisualShaderEditor::_delete_nodes(int p_type, const List<int> &p_nodes) {
+void VisualShaderEditor::_delete_nodes(int p_type, const LocalVector<int> &p_nodes) {
 	VisualShader::Type type = VisualShader::Type(p_type);
 	List<VisualShader::Connection> conns;
 	visual_shader->get_node_connections(type, &conns);
@@ -4820,8 +4820,7 @@ void VisualShaderEditor::_delete_node_request(int p_type, int p_node) {
 		return;
 	}
 
-	List<int> to_erase;
-	to_erase.push_back(p_node);
+	LocalVector<int> to_erase = { p_node };
 
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 	undo_redo->create_action(TTR("Delete VisualShader Node"));
@@ -4830,7 +4829,7 @@ void VisualShaderEditor::_delete_node_request(int p_type, int p_node) {
 }
 
 void VisualShaderEditor::_delete_nodes_request(const TypedArray<StringName> &p_nodes) {
-	List<int> to_erase;
+	LocalVector<int> to_erase;
 
 	if (p_nodes.is_empty()) {
 		// Called from context menu.
@@ -5616,7 +5615,8 @@ void VisualShaderEditor::_copy_nodes(bool p_cut) {
 		EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 		undo_redo->create_action(TTR("Cut VisualShader Node(s)"));
 
-		List<int> ids;
+		LocalVector<int> ids;
+		ids.reserve(copy_items_buffer.size());
 		for (const CopyItem &E : copy_items_buffer) {
 			ids.push_back(E.id);
 		}
