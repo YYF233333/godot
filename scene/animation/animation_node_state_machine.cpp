@@ -1432,7 +1432,7 @@ void AnimationNodeStateMachine::_rename_transitions(const StringName &p_name, co
 	updating_transitions = false;
 }
 
-void AnimationNodeStateMachine::get_node_list(List<StringName> *r_nodes) const {
+LocalVector<StringName> AnimationNodeStateMachine::get_node_list() const {
 	LocalVector<StringName> nodes;
 	nodes.reserve(states.size());
 	for (const KeyValue<StringName, State> &E : states) {
@@ -1440,9 +1440,7 @@ void AnimationNodeStateMachine::get_node_list(List<StringName> *r_nodes) const {
 	}
 	nodes.sort_custom<StringName::AlphCompare>();
 
-	for (const StringName &E : nodes) {
-		r_nodes->push_back(E);
-	}
+	return nodes;
 }
 
 bool AnimationNodeStateMachine::has_transition(const StringName &p_from, const StringName &p_to) const {
