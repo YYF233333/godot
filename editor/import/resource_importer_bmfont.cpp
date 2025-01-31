@@ -74,7 +74,7 @@ Error ResourceImporterBMFont::import(ResourceUID::ID p_source_id, const String &
 	Ref<FontFile> font;
 	font.instantiate();
 
-	List<String> image_files;
+	LocalVector<String> image_files;
 	Error err = font->_load_bitmap_font(p_source_file, &image_files);
 	ERR_FAIL_COND_V_MSG(err != OK, err, "Cannot load font to file \"" + p_source_file + "\".");
 
