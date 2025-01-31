@@ -94,7 +94,7 @@ public:
 
 	void set_default_texture_parameter(const StringName &p_name, const Ref<Texture> &p_texture, int p_index = 0);
 	Ref<Texture> get_default_texture_parameter(const StringName &p_name, int p_index = 0) const;
-	void get_default_texture_parameter_list(List<StringName> *r_textures) const;
+	LocalVector<StringName> get_default_texture_parameter_list() const;
 
 	virtual bool is_text_shader() const;
 
