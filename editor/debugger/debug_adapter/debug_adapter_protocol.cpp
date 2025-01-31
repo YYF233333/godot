@@ -161,7 +161,7 @@ Error DebugAdapterProtocol::on_client_connected() {
 
 void DebugAdapterProtocol::on_client_disconnected(const Ref<DAPeer> &p_peer) {
 	clients.erase(p_peer);
-	if (!clients.size()) {
+	if (clients.is_empty()) {
 		reset_ids();
 		EditorDebuggerNode::get_singleton()->get_default_debugger()->set_move_to_foreground(true);
 	}
@@ -906,66 +906,66 @@ void DebugAdapterProtocol::notify_process() {
 	String launch_mode = _current_peer->attached ? "attach" : "launch";
 
 	Dictionary event = parser->ev_process(launch_mode);
-	for (List<Ref<DAPeer>>::Element *E = clients.front(); E; E = E->next()) {
-		E->get()->res_queue.push_back(event);
+	for (const Ref<DAPeer> &peer : clients) {
+		peer->res_queue.push_back(event);
 	}
 }
 
 void DebugAdapterProtocol::notify_terminated() {
 	Dictionary event = parser->ev_terminated();
-	for (List<Ref<DAPeer>>::Element *E = clients.front(); E; E = E->next()) {
-		if ((_current_request == "launch" || _current_request == "restart") && _current_peer == E->get()) {
+	for (const Ref<DAPeer> &peer : clients) {
+		if ((_current_request == "launch" || _current_request == "restart") && _current_peer == peer) {
 			continue;
 		}
-		E->get()->res_queue.push_back(event);
+		peer->res_queue.push_back(event);
 	}
 }
 
 void DebugAdapterProtocol::notify_exited(const int &p_exitcode) {
 	Dictionary event = parser->ev_exited(p_exitcode);
-	for (List<Ref<DAPeer>>::Element *E = clients.front(); E; E = E->next()) {
-		if ((_current_request == "launch" || _current_request == "restart") && _current_peer == E->get()) {
+	for (const Ref<DAPeer> &peer : clients) {
+		if ((_current_request == "launch" || _current_request == "restart") && _current_peer == peer) {
 			continue;
 		}
-		E->get()->res_queue.push_back(event);
+		peer->res_queue.push_back(event);
 	}
 }
 
 void DebugAdapterProtocol::notify_stopped_paused() {
 	Dictionary event = parser->ev_stopped_paused();
-	for (List<Ref<DAPeer>>::Element *E = clients.front(); E; E = E->next()) {
-		E->get()->res_queue.push_back(event);
+	for (const Ref<DAPeer> &peer : clients) {
+		peer->res_queue.push_back(event);
 	}
 }
 
 void DebugAdapterProtocol::notify_stopped_exception(const String &p_error) {
 	Dictionary event = parser->ev_stopped_exception(p_error);
-	for (List<Ref<DAPeer>>::Element *E = clients.front(); E; E = E->next()) {
-		E->get()->res_queue.push_back(event);
+	for (const Ref<DAPeer> &peer : clients) {
+		peer->res_queue.push_back(event);
 	}
 }
 
 void DebugAdapterProtocol::notify_stopped_breakpoint(const int &p_id) {
 	Dictionary event = parser->ev_stopped_breakpoint(p_id);
-	for (List<Ref<DAPeer>>::Element *E = clients.front(); E; E = E->next()) {
-		E->get()->res_queue.push_back(event);
+	for (const Ref<DAPeer> &peer : clients) {
+		peer->res_queue.push_back(event);
 	}
 }
 
 void DebugAdapterProtocol::notify_stopped_step() {
 	Dictionary event = parser->ev_stopped_step();
-	for (List<Ref<DAPeer>>::Element *E = clients.front(); E; E = E->next()) {
-		E->get()->res_queue.push_back(event);
+	for (const Ref<DAPeer> &peer : clients) {
+		peer->res_queue.push_back(event);
 	}
 }
 
 void DebugAdapterProtocol::notify_continued() {
 	Dictionary event = parser->ev_continued();
-	for (List<Ref<DAPeer>>::Element *E = clients.front(); E; E = E->next()) {
-		if (_current_request == "continue" && E->get() == _current_peer) {
+	for (const Ref<DAPeer> &peer : clients) {
+		if (_current_request == "continue" && peer == _current_peer) {
 			continue;
 		}
-		E->get()->res_queue.push_back(event);
+		peer->res_queue.push_back(event);
 	}
 
 	reset_stack_info();
@@ -973,15 +973,14 @@ void DebugAdapterProtocol::notify_continued() {
 
 void DebugAdapterProtocol::notify_output(const String &p_message, RemoteDebugger::MessageType p_type) {
 	Dictionary event = parser->ev_output(p_message, p_type);
-	for (List<Ref<DAPeer>>::Element *E = clients.front(); E; E = E->next()) {
-		E->get()->res_queue.push_back(event);
+	for (const Ref<DAPeer> &peer : clients) {
+		peer->res_queue.push_back(event);
 	}
 }
 
 void DebugAdapterProtocol::notify_custom_data(const String &p_msg, const Array &p_data) {
 	Dictionary event = parser->ev_custom_data(p_msg, p_data);
-	for (List<Ref<DAPeer>>::Element *E = clients.front(); E; E = E->next()) {
-		Ref<DAPeer> peer = E->get();
+	for (const Ref<DAPeer> &peer : clients) {
 		if (peer->supportsCustomData) {
 			peer->res_queue.push_back(event);
 		}
@@ -990,11 +989,11 @@ void DebugAdapterProtocol::notify_custom_data(const String &p_msg, const Array &
 
 void DebugAdapterProtocol::notify_breakpoint(const DAP::Breakpoint &p_breakpoint, const bool &p_enabled) {
 	Dictionary event = parser->ev_breakpoint(p_breakpoint, p_enabled);
-	for (List<Ref<DAPeer>>::Element *E = clients.front(); E; E = E->next()) {
-		if (_current_request == "setBreakpoints" && E->get() == _current_peer) {
+	for (const Ref<DAPeer> &peer : clients) {
+		if (_current_request == "setBreakpoints" && peer == _current_peer) {
 			continue;
 		}
-		E->get()->res_queue.push_back(event);
+		peer->res_queue.push_back(event);
 	}
 }
 
@@ -1195,8 +1194,7 @@ void DebugAdapterProtocol::poll() {
 		on_client_connected();
 	}
 	List<Ref<DAPeer>> to_delete;
-	for (List<Ref<DAPeer>>::Element *E = clients.front(); E; E = E->next()) {
-		Ref<DAPeer> peer = E->get();
+	for (Ref<DAPeer> &peer : clients) {
 		peer->connection->poll();
 		StreamPeerTCP::Status status = peer->connection->get_status();
 		if (status == StreamPeerTCP::STATUS_NONE || status == StreamPeerTCP::STATUS_ERROR) {
@@ -1228,8 +1226,8 @@ Error DebugAdapterProtocol::start(int p_port, const IPAddress &p_bind_ip) {
 }
 
 void DebugAdapterProtocol::stop() {
-	for (List<Ref<DAPeer>>::Element *E = clients.front(); E; E = E->next()) {
-		E->get()->connection->disconnect_from_host();
+	for (const Ref<DAPeer> &peer : clients) {
+		peer->connection->disconnect_from_host();
 	}
 
 	clients.clear();
