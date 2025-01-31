@@ -1012,10 +1012,7 @@ void AnimationPlayerEditor::_update_player() {
 			}
 		}
 
-		List<StringName> animlist;
-		anim_library->get_animation_list(&animlist);
-
-		for (const StringName &E : animlist) {
+		for (const StringName &E : anim_library->get_animation_list()) {
 			String path = K;
 			if (path != "") {
 				path += "/";
@@ -1441,10 +1438,8 @@ void AnimationPlayerEditor::_current_animation_changed(const String &p_name) {
 				all_animation_libraries_are_readonly = false;
 			}
 
-			List<StringName> animlist;
-			anim_library->get_animation_list(&animlist);
 			bool animation_found = false;
-			for (const StringName &E : animlist) {
+			for (const StringName &E : anim_library->get_animation_list()) {
 				String path = K;
 				if (path != "") {
 					path += "/";
