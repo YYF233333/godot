@@ -34,7 +34,7 @@
 
 class EditorSceneExporterGLTFSettings : public RefCounted {
 	GDCLASS(EditorSceneExporterGLTFSettings, RefCounted);
-	List<PropertyInfo> _property_list;
+	LocalVector<PropertyInfo> _property_list;
 	Ref<GLTFDocument> _document;
 	HashMap<String, Ref<GLTFDocumentExtension>> _config_name_to_extension_map;
 
