@@ -4412,7 +4412,7 @@ LocalVector<Node *> SceneTreeDock::paste_nodes(bool p_paste_as_sibling) {
 	return pasted_nodes;
 }
 
-List<Node *> SceneTreeDock::get_node_clipboard() const {
+LocalVector<Node *> SceneTreeDock::get_node_clipboard() const {
 	return node_clipboard;
 }
 

@@ -142,7 +142,7 @@ class SceneTreeDock : public EditorDock {
 	LocalVector<ObjectID> node_previous_selection;
 	bool update_script_button_queued = false;
 
-	List<Node *> node_clipboard;
+	LocalVector<Node *> node_clipboard;
 	HashSet<Node *> node_clipboard_edited_scene_owned;
 	String clipboard_source_scene;
 	HashMap<String, HashMap<Node *, HashMap<Ref<Resource>, Ref<Resource>>>> clipboard_resource_remap;
@@ -354,7 +354,7 @@ public:
 	void open_instance_child_dialog();
 
 	LocalVector<Node *> paste_nodes(bool p_paste_as_sibling = false);
-	List<Node *> get_node_clipboard() const;
+	LocalVector<Node *> get_node_clipboard() const;
 
 	ScriptCreateDialog *get_script_create_dialog() {
 		return script_create_dialog;
