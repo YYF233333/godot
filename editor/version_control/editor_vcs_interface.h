@@ -68,7 +68,7 @@ public:
 		int old_start;
 		int new_lines;
 		int old_lines;
-		List<DiffLine> diff_lines;
+		LocalVector<DiffLine> diff_lines;
 	};
 
 	struct DiffFile {
