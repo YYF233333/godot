@@ -145,7 +145,7 @@ public:
 	void unstage_file(const String &p_file_path);
 	void discard_file(const String &p_file_path);
 	void commit(const String &p_msg);
-	List<DiffFile> get_diff(const String &p_identifier, TreeArea p_area);
+	LocalVector<DiffFile> get_diff(const String &p_identifier, TreeArea p_area);
 	bool shut_down();
 	String get_vcs_name();
 	List<Commit> get_previous_commits(int p_max_commits);
