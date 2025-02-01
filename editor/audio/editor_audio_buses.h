@@ -235,7 +235,7 @@ private:
 		_FORCE_INLINE_ AudioNotch() {}
 	};
 
-	List<AudioNotch> notches;
+	LocalVector<AudioNotch> notches;
 
 	struct ThemeCache {
 		Color notch_color;
