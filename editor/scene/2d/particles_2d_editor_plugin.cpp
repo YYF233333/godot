@@ -230,7 +230,7 @@ void Particles2DEditorPlugin::_set_show_gizmos(Node *p_node, bool p_show) {
 }
 
 void Particles2DEditorPlugin::_selection_changed() {
-	List<Node *> current_selection = EditorNode::get_singleton()->get_editor_selection()->get_top_selected_node_list();
+	LocalVector<Node *> current_selection = EditorNode::get_singleton()->get_editor_selection()->get_top_selected_node_list();
 	if (selected_particles.is_empty() && current_selection.is_empty()) {
 		return;
 	}
@@ -239,7 +239,7 @@ void Particles2DEditorPlugin::_selection_changed() {
 	for (List<Node *>::Element *E = selected_particles.front(); E;) {
 		Node *node = E->get();
 		List<Node *>::Element *N = E->next();
-		if (current_selection.find(node) == nullptr) {
+		if (!current_selection.has(node)) {
 			_set_show_gizmos(node, false);
 			selected_particles.erase(E);
 		}
