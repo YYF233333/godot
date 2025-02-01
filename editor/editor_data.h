@@ -286,7 +286,7 @@ class EditorSelection : public Object {
 
 	// Editor plugins which are related to selection.
 	List<Object *> editor_plugins;
-	List<Node *> selected_node_list;
+	LocalVector<Node *> selected_node_list;
 
 	void _update_node_list();
 	TypedArray<Node> _get_transformable_selected_nodes();
@@ -318,7 +318,7 @@ public:
 	TypedArray<Node> get_selected_nodes();
 	// Returns only the top level selected nodes.
 	// That is, if the selection includes some node and a child of that node, only the parent is returned.
-	const List<Node *> &get_selected_node_list();
+	const LocalVector<Node *> &get_selected_node_list();
 	// Returns all the selected nodes (list version of "get_selected_nodes").
 	LocalVector<Node *> get_full_selected_node_list();
 	// Returns the map of selected objects and their metadata.

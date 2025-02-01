@@ -777,7 +777,7 @@ bool CanvasItemEditor::_select_click_on_item(CanvasItem *item, Point2 p_click_po
 			still_selected = false;
 
 			if (editor_selection->get_selected_node_list().size() == 1) {
-				EditorNode::get_singleton()->push_item(editor_selection->get_selected_node_list().front()->get());
+				EditorNode::get_singleton()->push_item(editor_selection->get_selected_node_list()[0]);
 			}
 		} else {
 			// Add the item to the selection
@@ -960,8 +960,6 @@ void CanvasItemEditor::_selection_menu_hide() {
 }
 
 void CanvasItemEditor::_add_node_pressed(int p_result) {
-	List<Node *> nodes_to_move;
-
 	switch (p_result) {
 		case ADD_NODE: {
 			SceneTreeDock::get_singleton()->open_add_child_dialog();
@@ -974,7 +972,7 @@ void CanvasItemEditor::_add_node_pressed(int p_result) {
 			[[fallthrough]];
 		}
 		case ADD_MOVE: {
-			nodes_to_move = EditorNode::get_singleton()->get_editor_selection()->get_selected_node_list();
+			LocalVector<Node *> nodes_to_move = EditorNode::get_singleton()->get_editor_selection()->get_selected_node_list();
 			if (nodes_to_move.is_empty()) {
 				return;
 			}
@@ -2812,7 +2810,7 @@ void CanvasItemEditor::_update_lock_and_group_button() {
 	bool all_locked = true;
 	bool all_group = true;
 	bool has_canvas_item = false;
-	List<Node *> selection = editor_selection->get_selected_node_list();
+	LocalVector<Node *> selection = editor_selection->get_selected_node_list();
 	if (selection.is_empty()) {
 		all_locked = false;
 		all_group = false;
@@ -4585,14 +4583,14 @@ void CanvasItemEditor::_popup_callback(int p_op) {
 			snap_dialog->popup_centered(Size2(320, 160) * EDSCALE);
 		} break;
 		case SKELETON_SHOW_BONES: {
-			List<Node *> selection = editor_selection->get_selected_node_list();
-			for (Node *E : selection) {
+			LocalVector<Node *> selection = editor_selection->get_selected_node_list();
+			for (uint32_t idx = 0; idx < selection.size(); idx++) {
 				// Add children nodes so they are processed
-				for (int child = 0; child < E->get_child_count(); child++) {
-					selection.push_back(E->get_child(child));
+				for (int child = 0; child < selection[idx]->get_child_count(); child++) {
+					selection.push_back(selection[idx]->get_child(child));
 				}
 
-				Bone2D *bone_2d = Object::cast_to<Bone2D>(E);
+				Bone2D *bone_2d = Object::cast_to<Bone2D>(selection[idx]);
 				if (!bone_2d || !bone_2d->is_inside_tree()) {
 					continue;
 				}
@@ -4620,8 +4618,7 @@ void CanvasItemEditor::_popup_callback(int p_op) {
 		case LOCK_SELECTED: {
 			undo_redo->create_action(TTR("Lock Selected"));
 
-			List<Node *> selection = editor_selection->get_selected_node_list();
-			for (Node *E : selection) {
+			for (Node *E : editor_selection->get_selected_node_list()) {
 				CanvasItem *ci = Object::cast_to<CanvasItem>(E);
 				if (!ci || !ci->is_inside_tree()) {
 					continue;
@@ -4639,8 +4636,7 @@ void CanvasItemEditor::_popup_callback(int p_op) {
 		case UNLOCK_SELECTED: {
 			undo_redo->create_action(TTR("Unlock Selected"));
 
-			List<Node *> selection = editor_selection->get_selected_node_list();
-			for (Node *E : selection) {
+			for (Node *E : editor_selection->get_selected_node_list()) {
 				CanvasItem *ci = Object::cast_to<CanvasItem>(E);
 				if (!ci || !ci->is_inside_tree()) {
 					continue;
@@ -4658,8 +4654,7 @@ void CanvasItemEditor::_popup_callback(int p_op) {
 		case GROUP_SELECTED: {
 			undo_redo->create_action(TTR("Group Selected"));
 
-			List<Node *> selection = editor_selection->get_selected_node_list();
-			for (Node *E : selection) {
+			for (Node *E : editor_selection->get_selected_node_list()) {
 				CanvasItem *ci = Object::cast_to<CanvasItem>(E);
 				if (!ci || !ci->is_inside_tree()) {
 					continue;
@@ -4677,8 +4672,7 @@ void CanvasItemEditor::_popup_callback(int p_op) {
 		case UNGROUP_SELECTED: {
 			undo_redo->create_action(TTR("Ungroup Selected"));
 
-			List<Node *> selection = editor_selection->get_selected_node_list();
-			for (Node *E : selection) {
+			for (Node *E : editor_selection->get_selected_node_list()) {
 				CanvasItem *ci = Object::cast_to<CanvasItem>(E);
 				if (!ci || !ci->is_inside_tree()) {
 					continue;
@@ -6275,10 +6269,10 @@ void CanvasItemEditorViewport::drop_data(const Point2 &p_point, const Variant &p
 		return;
 	}
 
-	List<Node *> selected_nodes = EditorNode::get_singleton()->get_editor_selection()->get_selected_node_list();
+	LocalVector<Node *> selected_nodes = EditorNode::get_singleton()->get_editor_selection()->get_selected_node_list();
 	Node *root_node = EditorNode::get_singleton()->get_edited_scene();
 	if (selected_nodes.size() > 0) {
-		Node *selected_node = selected_nodes.front()->get();
+		Node *selected_node = selected_nodes[0];
 		if (is_alt) {
 			target_node = root_node;
 		} else if (is_shift) {

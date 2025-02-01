@@ -1328,7 +1328,7 @@ TypedArray<Node> EditorSelection::get_selected_nodes() {
 	return ret;
 }
 
-const List<Node *> &EditorSelection::get_selected_node_list() {
+const LocalVector<Node *> &EditorSelection::get_selected_node_list() {
 	if (changed) {
 		update();
 	} else {
