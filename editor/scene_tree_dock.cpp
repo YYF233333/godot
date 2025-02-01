@@ -1405,7 +1405,7 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 				}
 			}
 
-			List<Node *> full_selection = editor_selection->get_full_selected_node_list();
+			LocalVector<Node *> full_selection = editor_selection->get_full_selected_node_list();
 
 			// Check if all the nodes for this operation are invalid, and if they are, pop up a dialog and end here.
 			bool all_nodes_owner_invalid = true;
@@ -1747,7 +1747,7 @@ void SceneTreeDock::_notification(int p_what) {
 			if (!hovered_but_reparenting) {
 				InspectorDock *inspector_dock = InspectorDock::get_singleton();
 				if (!inspector_dock->get_rect().has_point(inspector_dock->get_local_mouse_position())) {
-					List<Node *> full_selection = editor_selection->get_full_selected_node_list();
+					LocalVector<Node *> full_selection = editor_selection->get_full_selected_node_list();
 					editor_selection->clear();
 					for (Node *E : full_selection) {
 						editor_selection->add_node(E);
@@ -2512,8 +2512,7 @@ void SceneTreeDock::_do_reparent(Node *p_new_parent, int p_position_in_parent, V
 
 	undo_redo->add_do_method(editor_selection, "clear");
 	undo_redo->add_undo_method(editor_selection, "clear");
-	List<Node *> full_selection = editor_selection->get_full_selected_node_list();
-	for (Node *E : full_selection) {
+	for (Node *E : editor_selection->get_full_selected_node_list()) {
 		undo_redo->add_do_method(editor_selection, "add_node", E);
 		undo_redo->add_undo_method(editor_selection, "add_node", E);
 	}
@@ -3304,7 +3303,7 @@ void SceneTreeDock::set_edited_scene(Node *p_scene) {
 	edited_scene = p_scene;
 }
 
-static bool _is_same_selection(const Vector<Node *> &p_first, const List<Node *> &p_second) {
+static bool _is_same_selection(const Vector<Node *> &p_first, const LocalVector<Node *> &p_second) {
 	if (p_first.size() != p_second.size()) {
 		return false;
 	}
@@ -3733,7 +3732,7 @@ void SceneTreeDock::_tree_rmb(const Vector2 &p_menu_pos) {
 	}
 
 	List<Node *> selection = editor_selection->get_selected_node_list();
-	List<Node *> full_selection = editor_selection->get_full_selected_node_list(); // Above method only returns nodes with common parent.
+	LocalVector<Node *> full_selection = editor_selection->get_full_selected_node_list(); // Above method only returns nodes with common parent.
 
 	if (selection.size() == 0) {
 		return;
@@ -3882,7 +3881,7 @@ void SceneTreeDock::_tree_rmb(const Vector2 &p_menu_pos) {
 			if (menu->get_item_index(TOOL_COPY_NODE_PATH) == -1) {
 				menu->add_separator();
 			}
-			Node *node = full_selection.front()->get();
+			Node *node = full_selection[0];
 			menu->add_icon_shortcut(get_editor_theme_icon(SNAME("SceneUniqueName")), ED_GET_SHORTCUT("scene_tree/toggle_unique_name"), TOOL_TOGGLE_SCENE_UNIQUE_NAME);
 			menu->set_item_text(menu->get_item_index(TOOL_TOGGLE_SCENE_UNIQUE_NAME), node->is_unique_name_in_owner() ? TTR("Revoke Unique Name") : TTR("Access as Unique Name"));
 		}
