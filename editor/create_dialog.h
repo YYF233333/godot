@@ -63,7 +63,7 @@ class CreateDialog : public ConfirmationDialog {
 	HashMap<String, TreeItem *> search_options_types;
 	HashMap<String, String> custom_type_parents;
 	HashMap<String, int> custom_type_indices;
-	List<StringName> type_list;
+	LocalVector<StringName> type_list;
 	HashSet<StringName> type_blacklist;
 	HashSet<StringName> custom_type_blocklist;
 
