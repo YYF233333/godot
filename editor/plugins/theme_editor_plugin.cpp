@@ -2419,9 +2419,7 @@ HashMap<StringName, bool> ThemeTypeEditor::_get_type_items(String p_type_name, T
 			default_type = p_type_name;
 		}
 
-		List<ThemeDB::ThemeItemBind> theme_binds;
-		ThemeDB::get_singleton()->get_class_items(default_type, &theme_binds, true, p_type);
-		for (const ThemeDB::ThemeItemBind &E : theme_binds) {
+		for (const ThemeDB::ThemeItemBind &E : ThemeDB::get_singleton()->get_class_items(default_type, true, p_type)) {
 			names.push_back(E.item_name);
 		}
 
