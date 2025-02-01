@@ -464,7 +464,7 @@ void EditorAutoloadSettings::update_autoload() {
 	updating_autoload = true;
 
 	HashMap<String, AutoloadInfo> to_remove;
-	List<AutoloadInfo *> to_add;
+	LocalVector<AutoloadInfo *> to_add;
 
 	for (const AutoloadInfo &info : autoload_cache) {
 		to_remove.insert(info.name, info);
@@ -564,7 +564,7 @@ void EditorAutoloadSettings::update_autoload() {
 	}
 
 	// Load new/changed autoloads
-	List<Node *> nodes_to_add;
+	LocalVector<Node *> nodes_to_add;
 	for (AutoloadInfo *info : to_add) {
 		info->node = _create_autoload(info->path);
 
