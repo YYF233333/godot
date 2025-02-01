@@ -114,7 +114,7 @@ public:
 		String path;
 		uint64_t file_modified_time = 0;
 		Dictionary editor_states;
-		List<Node *> selection;
+		LocalVector<Node *> selection;
 		Vector<EditorSelectionHistory::HistoryElement> history_stored;
 		int history_current = 0;
 		Dictionary custom_state;
@@ -320,7 +320,7 @@ public:
 	// That is, if the selection includes some node and a child of that node, only the parent is returned.
 	List<Node *> &get_selected_node_list();
 	// Returns all the selected nodes (list version of "get_selected_nodes").
-	List<Node *> get_full_selected_node_list();
+	LocalVector<Node *> get_full_selected_node_list();
 	// Returns the map of selected objects and their metadata.
 	HashMap<Node *, Object *> &get_selection() { return selection; }
 

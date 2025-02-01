@@ -1598,9 +1598,8 @@ void EditorNode::_save_editor_states(const String &p_file, int p_idx) {
 
 	// Save the currently selected nodes.
 
-	List<Node *> selection = editor_selection->get_full_selected_node_list();
 	TypedArray<NodePath> selection_paths;
-	for (Node *selected_node : selection) {
+	for (Node *selected_node : editor_selection->get_full_selected_node_list()) {
 		selection_paths.push_back(selected_node->get_path());
 	}
 	cf->set_value("editor_states", "selected_nodes", selection_paths);
