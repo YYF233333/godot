@@ -1804,7 +1804,7 @@ void SpriteFramesEditor::_fetch_sprite_node() {
 	Node *selected = nullptr;
 	EditorSelection *editor_selection = EditorNode::get_singleton()->get_editor_selection();
 	if (editor_selection->get_selected_node_list().size() == 1) {
-		selected = editor_selection->get_selected_node_list().front()->get();
+		selected = editor_selection->get_selected_node_list()[0];
 	}
 
 	bool show_node_edit = false;
