@@ -114,7 +114,7 @@ public:
 		String path;
 		uint64_t file_modified_time = 0;
 		Dictionary editor_states;
-		List<Node *> selection;
+		LocalVector<Node *> selection;
 		Vector<EditorSelectionHistory::HistoryElement> history_stored;
 		int history_current = 0;
 		Dictionary custom_state;
@@ -319,7 +319,7 @@ public:
 	// Same as get_top_selected_node_list but returns a copy in a TypedArray for binding to scripts.
 	TypedArray<Node> get_top_selected_nodes();
 	// Returns all the selected nodes (list version of "get_selected_nodes").
-	List<Node *> get_full_selected_node_list();
+	LocalVector<Node *> get_full_selected_node_list();
 	// Same as get_full_selected_node_list but returns a copy in a TypedArray for binding to scripts.
 	TypedArray<Node> get_selected_nodes();
 	// Returns the map of selected objects and their metadata.
