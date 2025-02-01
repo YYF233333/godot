@@ -223,11 +223,8 @@ void Control::get_argument_options(const StringName &p_function, int p_idx, Loca
 		}
 
 		if (type != Theme::DATA_TYPE_MAX) {
-			List<ThemeDB::ThemeItemBind> theme_items;
-			ThemeDB::get_singleton()->get_class_items(get_class_name(), &theme_items, true, type);
-
 			LocalVector<StringName> sn;
-			for (const ThemeDB::ThemeItemBind &E : theme_items) {
+			for (const ThemeDB::ThemeItemBind &E : ThemeDB::get_singleton()->get_class_items(get_class_name(), true, type)) {
 				if (E.data_type == type) {
 					sn.push_back(E.item_name);
 				}
@@ -383,12 +380,10 @@ bool Control::_get(const StringName &p_name, Variant &r_ret) const {
 
 void Control::_get_property_list(LocalVector<PropertyInfo> &p_list) const {
 	ERR_MAIN_THREAD_GUARD;
-	List<ThemeDB::ThemeItemBind> theme_items;
-	ThemeDB::get_singleton()->get_class_items(get_class_name(), &theme_items, true);
 
 	p_list.push_back(PropertyInfo(Variant::NIL, GNAME("Theme Overrides", "theme_override_"), PROPERTY_HINT_NONE, "theme_override_", PROPERTY_USAGE_GROUP));
 
-	for (const ThemeDB::ThemeItemBind &E : theme_items) {
+	for (const ThemeDB::ThemeItemBind &E : ThemeDB::get_singleton()->get_class_items(get_class_name(), true)) {
 		uint32_t usage = PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_CHECKABLE;
 
 		switch (E.data_type) {
