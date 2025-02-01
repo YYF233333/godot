@@ -49,7 +49,7 @@ class DependencyEditor : public AcceptDialog {
 
 	String replacing;
 	String editing;
-	List<String> missing;
+	LocalVector<String> missing;
 
 	void _fix_and_find(EditorFileSystemDirectory *efsd, HashMap<String, HashMap<String, String>> &candidates);
 
