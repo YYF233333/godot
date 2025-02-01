@@ -719,8 +719,8 @@ bool EditorData::check_and_update_scene(int p_idx) {
 		ERR_FAIL_NULL_V(new_scene, false);
 
 		// Transfer selection.
-		List<Node *> new_selection;
-		for (const Node *E : edited_scene.write[p_idx].selection) {
+		LocalVector<Node *> new_selection;
+		for (const Node *E : edited_scene[p_idx].selection) {
 			NodePath p = edited_scene[p_idx].root->get_path_to(E);
 			Node *new_node = new_scene->get_node(p);
 			if (new_node) {
@@ -1338,8 +1338,9 @@ List<Node *> &EditorSelection::get_selected_node_list() {
 	return selected_node_list;
 }
 
-List<Node *> EditorSelection::get_full_selected_node_list() {
-	List<Node *> node_list;
+LocalVector<Node *> EditorSelection::get_full_selected_node_list() {
+	LocalVector<Node *> node_list;
+	node_list.reserve(selection.size());
 	for (const KeyValue<Node *, Object *> &E : selection) {
 		node_list.push_back(E.key);
 	}
