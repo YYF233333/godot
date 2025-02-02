@@ -859,7 +859,7 @@ public:
 
 	static LocalVector<String> get_keyword_list();
 	static bool is_control_flow_keyword(String p_keyword);
-	static void get_builtin_funcs(List<String> *r_keywords);
+	static LocalVector<String> get_builtin_funcs();
 
 	static SafeNumeric<int> instance_counter;
 
