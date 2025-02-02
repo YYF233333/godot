@@ -5252,7 +5252,7 @@ bool ShaderLanguage::is_control_flow_keyword(String p_keyword) {
 			p_keyword == "while";
 }
 
-void ShaderLanguage::get_builtin_funcs(List<String> *r_keywords) {
+LocalVector<String> ShaderLanguage::get_builtin_funcs() {
 	HashSet<String> kws;
 
 	int idx = 0;
@@ -5263,9 +5263,12 @@ void ShaderLanguage::get_builtin_funcs(List<String> *r_keywords) {
 		idx++;
 	}
 
+	LocalVector<String> ret;
+	ret.reserve(kws.size());
 	for (const String &E : kws) {
-		r_keywords->push_back(E);
+		ret.push_back(E);
 	}
+	return ret;
 }
 
 ShaderLanguage::DataType ShaderLanguage::get_scalar_type(DataType p_type) {
