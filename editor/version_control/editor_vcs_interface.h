@@ -74,7 +74,7 @@ public:
 	struct DiffFile {
 		String new_file;
 		String old_file;
-		List<DiffHunk> diff_hunks;
+		LocalVector<DiffHunk> diff_hunks;
 	};
 
 	struct Commit {
