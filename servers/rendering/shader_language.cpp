@@ -5192,7 +5192,7 @@ uint32_t ShaderLanguage::get_datatype_component_count(ShaderLanguage::DataType p
 	return 0U;
 }
 
-void ShaderLanguage::get_keyword_list(List<String> *r_keywords) {
+LocalVector<String> ShaderLanguage::get_keyword_list() {
 	HashSet<String> kws;
 
 	int idx = 0;
@@ -5210,9 +5210,12 @@ void ShaderLanguage::get_keyword_list(List<String> *r_keywords) {
 		idx++;
 	}
 
+	LocalVector<String> ret;
+	ret.reserve(kws.size());
 	for (const String &E : kws) {
-		r_keywords->push_back(E);
+		ret.push_back(E);
 	}
+	return ret;
 }
 
 bool ShaderLanguage::is_control_flow_keyword(String p_keyword) {
