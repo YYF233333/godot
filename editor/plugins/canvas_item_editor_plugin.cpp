@@ -4721,7 +4721,7 @@ void CanvasItemEditor::_popup_callback(int p_op) {
 
 		} break;
 		case ANIM_PASTE_POSE: {
-			if (!pose_clipboard.size()) {
+			if (pose_clipboard.is_empty()) {
 				break;
 			}
 
