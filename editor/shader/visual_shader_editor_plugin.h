@@ -434,7 +434,7 @@ class VisualShaderEditor : public ShaderEditor {
 	int curve_node_option_idx;
 	int curve_xyz_node_option_idx;
 	int mesh_emitter_option_idx;
-	List<String> keyword_list;
+	LocalVector<String> keyword_list;
 
 	List<VisualShaderNodeParameterRef> uniform_refs;
 
