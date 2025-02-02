@@ -857,7 +857,7 @@ public:
 	static uint32_t get_datatype_size(DataType p_type);
 	static uint32_t get_datatype_component_count(DataType p_type);
 
-	static void get_keyword_list(List<String> *r_keywords);
+	static LocalVector<String> get_keyword_list();
 	static bool is_control_flow_keyword(String p_keyword);
 	static void get_builtin_funcs(List<String> *r_keywords);
 
