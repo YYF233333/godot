@@ -228,7 +228,7 @@ class ControlEditorToolbar : public HBoxContainer {
 
 	Vector2 _position_to_anchor(const Control *p_control, Vector2 position);
 	bool _is_node_locked(const Node *p_node);
-	List<Control *> _get_edited_controls();
+	LocalVector<Control *> _get_edited_controls();
 	void _selection_changed();
 
 protected:
