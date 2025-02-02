@@ -206,7 +206,8 @@ void GroupsEditor::_update_tree() {
 	local_root->set_custom_bg_color(0, get_theme_color(SNAME("prop_subsection"), EditorStringName(Editor)));
 	local_root->set_selectable(0, false);
 
-	List<StringName> scene_keys;
+	LocalVector<StringName> scene_keys;
+	scene_keys.reserve(scene_groups.size());
 	for (const KeyValue<StringName, bool> &E : scene_groups) {
 		scene_keys.push_back(E.key);
 	}
@@ -231,7 +232,8 @@ void GroupsEditor::_update_tree() {
 		item->add_button(0, get_editor_theme_icon(SNAME("ActionCopy")), COPY_GROUP, false, TTR("Copy group name to clipboard."));
 	}
 
-	List<StringName> keys;
+	LocalVector<StringName> keys;
+	keys.reserve(global_groups.size());
 	for (const KeyValue<StringName, String> &E : global_groups) {
 		keys.push_back(E.key);
 	}
