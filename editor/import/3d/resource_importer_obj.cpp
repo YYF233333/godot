@@ -217,7 +217,7 @@ static Error _parse_material_library(const String &p_path, HashMap<String, Ref<S
 	return OK;
 }
 
-static Error _parse_obj(const String &p_path, List<Ref<ImporterMesh>> &r_meshes, bool p_single_mesh, bool p_generate_tangents, bool p_generate_lods, bool p_generate_shadow_mesh, bool p_generate_lightmap_uv2, float p_generate_lightmap_uv2_texel_size, const PackedByteArray &p_src_lightmap_cache, Vector3 p_scale_mesh, Vector3 p_offset_mesh, bool p_disable_compression, Vector<Vector<uint8_t>> &r_lightmap_caches, LocalVector<String> *r_missing_deps) {
+static Error _parse_obj(const String &p_path, LocalVector<Ref<ImporterMesh>> &r_meshes, bool p_single_mesh, bool p_generate_tangents, bool p_generate_lods, bool p_generate_shadow_mesh, bool p_generate_lightmap_uv2, float p_generate_lightmap_uv2_texel_size, const PackedByteArray &p_src_lightmap_cache, Vector3 p_scale_mesh, Vector3 p_offset_mesh, bool p_disable_compression, Vector<Vector<uint8_t>> &r_lightmap_caches, LocalVector<String> *r_missing_deps) {
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ);
 	ERR_FAIL_COND_V_MSG(f.is_null(), ERR_CANT_OPEN, vformat("Couldn't open OBJ file '%s', it may not exist or not be readable.", p_path));
 
@@ -569,7 +569,7 @@ static Error _parse_obj(const String &p_path, List<Ref<ImporterMesh>> &r_meshes,
 }
 
 Node *EditorOBJImporter::import_scene(const String &p_path, uint32_t p_flags, const HashMap<StringName, Variant> &p_options, LocalVector<String> *r_missing_deps, Error *r_err) {
-	List<Ref<ImporterMesh>> meshes;
+	LocalVector<Ref<ImporterMesh>> meshes;
 
 	// LOD, shadow mesh and lightmap UV2 generation are handled by ResourceImporterScene in this case,
 	// so disable it within the OBJ mesh import.
@@ -659,7 +659,7 @@ bool ResourceImporterOBJ::get_option_visibility(const String &p_path, const Stri
 }
 
 Error ResourceImporterOBJ::import(ResourceUID::ID p_source_id, const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, LocalVector<String> &r_platform_variants, LocalVector<String> &r_gen_files, Variant *r_metadata) {
-	List<Ref<ImporterMesh>> meshes;
+	LocalVector<Ref<ImporterMesh>> meshes;
 
 	Vector<uint8_t> src_lightmap_cache;
 	Vector<Vector<uint8_t>> mesh_lightmap_caches;
@@ -691,7 +691,7 @@ Error ResourceImporterOBJ::import(ResourceUID::ID p_source_id, const String &p_s
 
 	String save_path = p_save_path + ".mesh";
 
-	err = ResourceSaver::save(meshes.front()->get()->get_mesh(), save_path);
+	err = ResourceSaver::save(meshes[0]->get_mesh(), save_path);
 
 	ERR_FAIL_COND_V_MSG(err != OK, err, "Cannot save Mesh to file '" + save_path + "'.");
 
