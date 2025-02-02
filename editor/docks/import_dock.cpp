@@ -46,7 +46,7 @@ class ImportDockParameters : public Object {
 
 public:
 	HashMap<StringName, Variant> values;
-	List<PropertyInfo> properties;
+	LocalVector<PropertyInfo> properties;
 	Ref<ResourceImporter> importer;
 	Vector<String> paths;
 	HashSet<StringName> checked;
