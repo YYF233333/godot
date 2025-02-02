@@ -2180,7 +2180,7 @@ bool Collada::_optimize_skeletons(VisualScene *p_vscene, Node *p_node) {
 	return false;
 }
 
-bool Collada::_move_geometry_to_skeletons(VisualScene *p_vscene, Node *p_node, List<Node *> *p_mgeom) {
+bool Collada::_move_geometry_to_skeletons(VisualScene *p_vscene, Node *p_node, LocalVector<Node *> &p_mgeom) {
 	// Bind Shape Matrix scales the bones and makes them gigantic, so the matrix then shrinks the model?
 	// Solution: apply the Bind Shape Matrix to the VERTICES, and if the object comes scaled, it seems to be left alone!
 
@@ -2232,7 +2232,7 @@ bool Collada::_move_geometry_to_skeletons(VisualScene *p_vscene, Node *p_node, L
 			p_node->ignore_anim = true; // collada may animate this later, if it does, then this is not supported (redo your original asset and don't animate the base mesh)
 			p_node->parent = sk;
 			//sk->children.push_back(0,p_node); //avoid INFINITE loop
-			p_mgeom->push_back(p_node);
+			p_mgeom.push_back(p_node);
 			return true;
 		}
 	}
@@ -2291,16 +2291,14 @@ void Collada::_optimize() {
 		}
 
 		for (int i = 0; i < vs.root_nodes.size(); i++) {
-			List<Node *> mgeom;
-			if (_move_geometry_to_skeletons(&vs, vs.root_nodes[i], &mgeom)) {
+			LocalVector<Node *> mgeom;
+			if (_move_geometry_to_skeletons(&vs, vs.root_nodes[i], mgeom)) {
 				vs.root_nodes.remove_at(i);
 				i--;
 			}
 
-			while (!mgeom.is_empty()) {
-				Node *n = mgeom.front()->get();
+			for (Node *n : mgeom) {
 				n->parent->children.push_back(n);
-				mgeom.pop_front();
 			}
 		}
 
