@@ -304,7 +304,7 @@ private:
 		real_t rot = 0;
 		ObjectID id;
 	};
-	List<PoseClipboard> pose_clipboard;
+	LocalVector<PoseClipboard> pose_clipboard;
 
 	Button *select_button = nullptr;
 
