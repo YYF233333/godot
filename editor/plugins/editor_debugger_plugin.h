@@ -71,7 +71,7 @@ class EditorDebuggerPlugin : public RefCounted {
 	GDCLASS(EditorDebuggerPlugin, RefCounted);
 
 private:
-	List<Ref<EditorDebuggerSession>> sessions;
+	LocalVector<Ref<EditorDebuggerSession>> sessions;
 
 protected:
 	static void _bind_methods();

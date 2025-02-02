@@ -162,8 +162,8 @@ void EditorDebuggerPlugin::setup_session(int p_idx) {
 }
 
 Ref<EditorDebuggerSession> EditorDebuggerPlugin::get_session(int p_idx) {
-	ERR_FAIL_INDEX_V(p_idx, sessions.size(), nullptr);
-	return sessions.get(p_idx);
+	ERR_FAIL_INDEX_V(p_idx, (int64_t)sessions.size(), nullptr);
+	return sessions[p_idx];
 }
 
 Array EditorDebuggerPlugin::get_sessions() {
