@@ -42,7 +42,7 @@
 class ImportDefaultsEditorSettings : public Object {
 	GDCLASS(ImportDefaultsEditorSettings, Object)
 	friend class ImportDefaultsEditor;
-	List<PropertyInfo> properties;
+	LocalVector<PropertyInfo> properties;
 	HashMap<StringName, Variant> values;
 	HashMap<StringName, Variant> default_values;
 
