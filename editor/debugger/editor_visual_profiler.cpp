@@ -342,13 +342,13 @@ void EditorVisualProfiler::_update_frame(bool p_focus_selected) {
 	TreeItem *root = variables->create_item();
 	const Metric &m = frame_metrics[cursor_metric];
 
-	List<TreeItem *> stack;
+	LocalVector<TreeItem *> stack;
 	LocalVector<TreeItem *> categories;
 
 	TreeItem *ensure_selected = nullptr;
 
 	for (int i = 1; i < m.areas.size() - 1; i++) {
-		TreeItem *parent = stack.size() ? stack.back()->get() : root;
+		TreeItem *parent = stack.size() ? stack.back() : root;
 
 		String name = m.areas[i].name;
 
