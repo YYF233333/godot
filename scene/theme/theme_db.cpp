@@ -373,7 +373,7 @@ void ThemeDB::update_class_instance_items(Node *p_instance) {
 	}
 }
 
-LocalVector<ThemeDB::ThemeItemBind> ThemeDB::get_class_items(const StringName &p_class_name, bool p_include_inherited, Theme::DataType p_filter_type) {
+void ThemeDB::get_class_items(const StringName &p_class_name, List<ThemeItemBind> *r_list, bool p_include_inherited, Theme::DataType p_filter_type) {
 	List<StringName> class_hierarchy;
 	StringName class_name = p_class_name;
 	while (class_name != StringName()) {
@@ -381,7 +381,6 @@ LocalVector<ThemeDB::ThemeItemBind> ThemeDB::get_class_items(const StringName &p
 		class_name = ClassDB::get_parent_class_nocheck(class_name);
 	}
 
-	LocalVector<ThemeItemBind> list;
 	HashSet<StringName> inherited_props;
 	for (const StringName &theme_type : class_hierarchy) {
 		HashMap<StringName, List<ThemeItemBind>>::Iterator E = theme_item_binds_list.find(theme_type);
@@ -401,11 +400,10 @@ LocalVector<ThemeDB::ThemeItemBind> ThemeDB::get_class_items(const StringName &p
 					}
 				}
 
-				list.push_back(F);
+				r_list->push_back(F);
 			}
 		}
 	}
-	return list;
 }
 
 void ThemeDB::_sort_theme_items() {
