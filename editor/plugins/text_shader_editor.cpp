@@ -238,10 +238,7 @@ void ShaderTextEditor::_load_theme_settings() {
 	const Color keyword_color = EDITOR_GET("text_editor/theme/highlighting/keyword_color");
 	const Color control_flow_keyword_color = EDITOR_GET("text_editor/theme/highlighting/control_flow_keyword_color");
 
-	List<String> keywords;
-	ShaderLanguage::get_keyword_list(&keywords);
-
-	for (const String &E : keywords) {
+	for (const String &E : ShaderLanguage::get_keyword_list()) {
 		if (ShaderLanguage::is_control_flow_keyword(E)) {
 			syntax_highlighter->add_keyword_color(E, control_flow_keyword_color);
 		} else {
