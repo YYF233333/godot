@@ -30,7 +30,6 @@
 
 #pragma once
 
-#include "core/templates/list.h"
 #include "scene/resources/texture.h"
 
 class ConfigFile;
@@ -133,7 +132,7 @@ private:
 	};
 	HashMap<String, Vector<CustomType>> custom_types;
 
-	List<PropertyData> clipboard;
+	LocalVector<PropertyData> clipboard;
 	EditorUndoRedoManager *undo_redo_manager;
 	Vector<Callable> undo_redo_callbacks;
 	HashMap<StringName, Callable> move_element_functions;
@@ -286,7 +285,7 @@ class EditorSelection : public Object {
 	void _node_removed(Node *p_node);
 
 	// Editor plugins which are related to selection.
-	List<Object *> editor_plugins;
+	LocalVector<Object *> editor_plugins;
 	List<Node *> top_selected_node_list;
 
 	void _update_node_list();
