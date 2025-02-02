@@ -194,7 +194,7 @@ void ShaderCreateDialog::_load_exist() {
 
 void ShaderCreateDialog::_type_changed(int p_language) {
 	current_type = p_language;
-	ShaderTypeData shader_type_data = type_data.get(p_language);
+	ShaderTypeData shader_type_data = type_data[p_language];
 
 	String selected_ext = "." + shader_type_data.default_extension;
 	String path = file_path->get_text();
@@ -264,9 +264,7 @@ void ShaderCreateDialog::_browse_path() {
 	file_browse->set_disable_overwrite_warning(true);
 	file_browse->clear_filters();
 
-	List<String> extensions = type_data.get(type_menu->get_selected()).extensions;
-
-	for (const String &E : extensions) {
+	for (const String &E : type_data[type_menu->get_selected()].extensions) {
 		file_browse->add_filter("*." + E);
 	}
 
@@ -355,7 +353,7 @@ void ShaderCreateDialog::config(const String &p_base_path, bool p_built_in_enabl
 
 	if (!p_base_path.is_empty()) {
 		initial_base_path = p_base_path.get_basename();
-		file_path->set_text(initial_base_path + "." + type_data.get(type_menu->get_selected()).default_extension);
+		file_path->set_text(initial_base_path + "." + type_data[type_menu->get_selected()].default_extension);
 		current_type = type_menu->get_selected();
 	} else {
 		initial_base_path = "";
@@ -380,7 +378,7 @@ void ShaderCreateDialog::config(const String &p_base_path, bool p_built_in_enabl
 }
 
 String ShaderCreateDialog::_validate_path(const String &p_path) {
-	ERR_FAIL_COND_V(current_type >= type_data.size(), TTR("Invalid shader type selected."));
+	ERR_FAIL_COND_V(current_type >= (int64_t)type_data.size(), TTR("Invalid shader type selected."));
 	String stripped_file_path = p_path.strip_edges();
 
 	if (stripped_file_path.is_empty()) {
@@ -405,7 +403,7 @@ String ShaderCreateDialog::_validate_path(const String &p_path) {
 		return TTR("A directory with the same name exists.");
 	}
 
-	const ShaderCreateDialog::ShaderTypeData &current_type_data = type_data.get(current_type);
+	const ShaderCreateDialog::ShaderTypeData &current_type_data = type_data[current_type];
 	const String file_extension = stripped_file_path.get_extension();
 
 	for (const String &type_ext : current_type_data.extensions) {

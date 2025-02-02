@@ -51,12 +51,12 @@ class ShaderCreateDialog : public ConfirmationDialog {
 	};
 
 	struct ShaderTypeData {
-		List<String> extensions;
+		LocalVector<String> extensions;
 		String default_extension;
 		bool use_templates = false;
 	};
 
-	List<ShaderTypeData> type_data;
+	LocalVector<ShaderTypeData> type_data;
 
 	GridContainer *gc = nullptr;
 	EditorValidationPanel *validation_panel = nullptr;
