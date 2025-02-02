@@ -58,8 +58,8 @@ public:
 		int id = INVALID_HISTORY;
 		UndoRedo *undo_redo = nullptr;
 		uint64_t saved_version = 1;
-		List<Action> undo_stack;
-		List<Action> redo_stack;
+		LocalVector<Action> undo_stack;
+		LocalVector<Action> redo_stack;
 	};
 
 private:
