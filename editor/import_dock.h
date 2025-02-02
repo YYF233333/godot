@@ -50,14 +50,14 @@ class ImportDock : public VBoxContainer {
 	MenuButton *preset = nullptr;
 	EditorInspector *import_opts = nullptr;
 
-	List<PropertyInfo> properties;
+	LocalVector<PropertyInfo> properties;
 	HashMap<StringName, Variant> property_values;
 
 	ConfirmationDialog *reimport_confirm = nullptr;
 	Label *cleanup_warning = nullptr;
 	Label *label_warning = nullptr;
 	Button *import = nullptr;
-	List<String> need_cleanup;
+	LocalVector<String> need_cleanup;
 
 	Control *advanced_spacer = nullptr;
 	Button *advanced = nullptr;
