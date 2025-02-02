@@ -3600,7 +3600,7 @@ void SceneTreeDock::_files_dropped(const Vector<String> &p_files, NodePath p_to,
 
 	// Dropping as property.
 	if (p_type == 0 && p_files.size() == 1 && !is_dropping_scene) {
-		List<String> valid_properties;
+		LocalVector<String> valid_properties;
 
 		List<PropertyInfo> pinfo;
 		node->get_property_list(&pinfo);
@@ -3636,7 +3636,7 @@ void SceneTreeDock::_files_dropped(const Vector<String> &p_files, NodePath p_to,
 			return;
 		}
 		if (!valid_properties.is_empty()) {
-			_perform_property_drop(node, valid_properties.front()->get(), ResourceLoader::load(res_path));
+			_perform_property_drop(node, valid_properties[0], ResourceLoader::load(res_path));
 			return;
 		}
 	}
@@ -4617,7 +4617,7 @@ void SceneTreeDock::_list_all_subresources(PopupMenu *p_menu) {
 		_gather_resources(edited_scene, all_resources);
 	}
 
-	HashMap<String, List<Pair<Ref<Resource>, Node *>>> resources_by_type;
+	HashMap<String, LocalVector<Pair<Ref<Resource>, Node *>>> resources_by_type;
 	HashMap<Ref<Resource>, int> unique_resources;
 
 	for (const Pair<Ref<Resource>, Node *> &pair : all_resources) {
@@ -4627,7 +4627,7 @@ void SceneTreeDock::_list_all_subresources(PopupMenu *p_menu) {
 		unique_resources[pair.first]++;
 	}
 
-	for (KeyValue<String, List<Pair<Ref<Resource>, Node *>>> kv : resources_by_type) {
+	for (KeyValue<String, LocalVector<Pair<Ref<Resource>, Node *>>> kv : resources_by_type) {
 		p_menu->add_icon_item(EditorNode::get_singleton()->get_class_icon(kv.key), kv.key);
 		p_menu->set_item_as_separator(-1, true);
 
