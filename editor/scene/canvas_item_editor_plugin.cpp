@@ -940,13 +940,6 @@ void CanvasItemEditor::_commit_canvas_item_state(const List<CanvasItem *> &p_can
 		if (se) {
 			undo_redo->add_do_method(ci, "_edit_set_state", ci->_edit_get_state());
 			undo_redo->add_undo_method(ci, "_edit_set_state", se->undo_state);
-			if (commit_bones) {
-				for (const Dictionary &F : se->pre_drag_bones_undo_state) {
-					ci = Object::cast_to<CanvasItem>(ci->get_parent());
-					undo_redo->add_do_method(ci, "_edit_set_state", ci->_edit_get_state());
-					undo_redo->add_undo_method(ci, "_edit_set_state", F);
-				}
-			}
 		}
 	}
 	undo_redo->add_do_method(viewport, "queue_redraw");
