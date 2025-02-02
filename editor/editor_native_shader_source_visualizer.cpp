@@ -45,12 +45,10 @@ void EditorNativeShaderSourceVisualizer::_load_theme_settings() {
 
 	syntax_highlighter->clear_keyword_colors();
 
-	List<String> keywords;
-	ShaderLanguage::get_keyword_list(&keywords);
 	const Color keyword_color = EDITOR_GET("text_editor/theme/highlighting/keyword_color");
 	const Color control_flow_keyword_color = EDITOR_GET("text_editor/theme/highlighting/control_flow_keyword_color");
 
-	for (const String &keyword : keywords) {
+	for (const String &keyword : ShaderLanguage::get_keyword_list()) {
 		if (ShaderLanguage::is_control_flow_keyword(keyword)) {
 			syntax_highlighter->add_keyword_color(keyword, control_flow_keyword_color);
 		} else {
