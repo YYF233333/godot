@@ -633,7 +633,7 @@ void _apply_permanent_scale_to_descendants(Node *p_root_node, Vector3 p_scale) {
 	_apply_scale_to_scalable_node_collection(scalable_node_collection, p_scale);
 }
 
-Node *ResourceImporterScene::_pre_fix_node(Node *p_node, Node *p_root, HashMap<Ref<ImporterMesh>, Vector<Ref<Shape3D>>> &r_collision_map, Pair<PackedVector3Array, PackedInt32Array> *r_occluder_arrays, List<Pair<NodePath, Node *>> &r_node_renames, const HashMap<StringName, Variant> &p_options) {
+Node *ResourceImporterScene::_pre_fix_node(Node *p_node, Node *p_root, HashMap<Ref<ImporterMesh>, Vector<Ref<Shape3D>>> &r_collision_map, Pair<PackedVector3Array, PackedInt32Array> *r_occluder_arrays, LocalVector<Pair<NodePath, Node *>> &r_node_renames, const HashMap<StringName, Variant> &p_options) {
 	bool use_name_suffixes = true;
 	if (p_options.has("nodes/use_name_suffixes")) {
 		use_name_suffixes = p_options["nodes/use_name_suffixes"];
@@ -2984,7 +2984,7 @@ Node *ResourceImporterScene::pre_import(const String &p_source_file, const HashM
 	_pre_fix_global(scene, p_options);
 
 	HashMap<Ref<ImporterMesh>, Vector<Ref<Shape3D>>> collision_map;
-	List<Pair<NodePath, Node *>> node_renames;
+	LocalVector<Pair<NodePath, Node *>> node_renames;
 	_pre_fix_node(scene, scene, collision_map, nullptr, node_renames, p_options);
 
 	return scene;
@@ -3155,7 +3155,7 @@ Error ResourceImporterScene::import(ResourceUID::ID p_source_id, const String &p
 	HashSet<Ref<ImporterMesh>> scanned_meshes;
 	HashMap<Ref<ImporterMesh>, Vector<Ref<Shape3D>>> collision_map;
 	Pair<PackedVector3Array, PackedInt32Array> occluder_arrays;
-	List<Pair<NodePath, Node *>> node_renames;
+	LocalVector<Pair<NodePath, Node *>> node_renames;
 
 	_pre_fix_node(scene, scene, collision_map, &occluder_arrays, node_renames, p_options);
 
