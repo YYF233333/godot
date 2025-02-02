@@ -53,7 +53,7 @@ struct ColladaImport {
 		//String path;
 		Node3D *node = nullptr;
 		int bone = -1;
-		List<int> anim_tracks;
+		LocalVector<int> anim_tracks;
 	};
 
 	bool found_ambient = false;
@@ -725,7 +725,7 @@ Error ColladaImport::_create_mesh_surfaces(bool p_optimize, Ref<ImporterMesh> &p
 		}
 
 		RBSet<Collada::Vertex> vertex_set; //vertex set will be the vertices
-		List<int> indices_list; //indices will be the indices
+		LocalVector<int> indices_list; //indices will be the indices
 
 		/**************************/
 		/* CREATE PRIMITIVE ARRAY */
@@ -1634,7 +1634,7 @@ void ColladaImport::create_animation(int p_clip, bool p_import_value_tracks) {
 
 		if (nm.anim_tracks.size() == 1) {
 			//use snapshot keys from anim track instead, because this was most likely exported baked
-			const Collada::AnimationTrack &at = collada.state.animation_tracks[nm.anim_tracks.front()->get()];
+			const Collada::AnimationTrack &at = collada.state.animation_tracks[nm.anim_tracks[0]];
 			snapshots.clear();
 			for (int i = 0; i < at.keys.size(); i++) {
 				snapshots.push_back(at.keys[i].time);
@@ -1642,22 +1642,22 @@ void ColladaImport::create_animation(int p_clip, bool p_import_value_tracks) {
 		}
 
 		for (int i = 0; i < snapshots.size(); i++) {
-			for (List<int>::Element *ET = nm.anim_tracks.front(); ET; ET = ET->next()) {
+			for (const int &ET : nm.anim_tracks) {
 				//apply tracks
 
 				if (p_clip == -1) {
-					if (track_filter.has(ET->get())) {
+					if (track_filter.has(ET)) {
 						continue;
 					}
 				} else {
-					if (!track_filter.has(ET->get())) {
+					if (!track_filter.has(ET)) {
 						continue;
 					}
 				}
 
 				found_anim = true;
 
-				const Collada::AnimationTrack &at = collada.state.animation_tracks[ET->get()];
+				const Collada::AnimationTrack &at = collada.state.animation_tracks[ET];
 
 				int xform_idx = -1;
 				for (int j = 0; j < cn->xform_list.size(); j++) {
