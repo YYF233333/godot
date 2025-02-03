@@ -611,9 +611,8 @@ Node *SceneState::instantiate(GenEditState p_edit_state) const {
 	//Node *s = ret_nodes[0];
 
 	//remove nodes that could not be added, likely as a result that
-	while (stray_instances.size()) {
-		memdelete(stray_instances.front()->get());
-		stray_instances.pop_front();
+	for (Node *node : stray_instances) {
+		memdelete(node);
 	}
 
 	for (int i = 0; i < editable_instances.size(); i++) {

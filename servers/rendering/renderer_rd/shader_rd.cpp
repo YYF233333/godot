@@ -897,9 +897,8 @@ ShaderRD::~ShaderRD() {
 	version_owner.get_owned_list(&remaining);
 	if (remaining.size()) {
 		ERR_PRINT(itos(remaining.size()) + " shaders of type " + name + " were never freed");
-		while (remaining.size()) {
-			version_free(remaining.front()->get());
-			remaining.pop_front();
+		for (const RID &E : remaining) {
+			version_free(E);
 		}
 	}
 }

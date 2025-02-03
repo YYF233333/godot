@@ -33,7 +33,6 @@
 
 #include "core/config/engine.h"
 #include "core/config/project_settings.h"
-#include "core/string/string_name.h"
 #include "scene/2d/audio_stream_player_2d.h"
 #include "scene/animation/animation_player.h"
 #include "scene/audio/audio_stream_player.h"
@@ -179,9 +178,8 @@ void AnimationMixer::_animation_set_cache_update() {
 		}
 	}
 
-	while (to_erase.size()) {
-		animation_set.erase(to_erase.front()->get());
-		to_erase.pop_front();
+	for (const StringName &key : to_erase) {
+		animation_set.erase(key);
 	}
 
 	if (clear_cache_needed) {

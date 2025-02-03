@@ -110,9 +110,8 @@ protected:
 		List<StringName> animations;
 		get_animation_list(&animations);
 		Vector<String> ret;
-		while (animations.size()) {
-			ret.push_back(animations.front()->get());
-			animations.pop_front();
+		for (const StringName &anim : animations) {
+			ret.push_back(anim);
 		}
 		return ret;
 	}

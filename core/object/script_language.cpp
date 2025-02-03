@@ -778,9 +778,8 @@ void PlaceHolderScriptInstance::update(const List<PropertyInfo> &p_properties, c
 		}
 	}
 
-	while (to_remove.size()) {
-		values.erase(to_remove.front()->get());
-		to_remove.pop_front();
+	for (const StringName &E : to_remove) {
+		values.erase(E);
 	}
 
 	if (owner && owner->get_script_instance() == this) {

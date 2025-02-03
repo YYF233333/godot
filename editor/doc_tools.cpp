@@ -417,11 +417,10 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 		bool skip_setter_getter_methods = true;
 
 		// Populate documentation data for each exposed class.
-		while (classes.size()) {
-			const String &name = classes.front()->get();
+		for (const StringName &E : classes) {
+			const String &name = E;
 			if (!ClassDB::is_class_exposed(name)) {
 				print_verbose(vformat("Class '%s' is not exposed, skipping.", name));
-				classes.pop_front();
 				continue;
 			}
 
@@ -727,8 +726,6 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 
 				c.theme_properties.sort();
 			}
-
-			classes.pop_front();
 		}
 	}
 
@@ -1269,9 +1266,8 @@ Error DocTools::erase_classes(const String &p_dir) {
 	}
 	da->list_dir_end();
 
-	while (to_erase.size()) {
-		da->remove(to_erase.front()->get());
-		to_erase.pop_front();
+	for (const String &E : to_erase) {
+		da->remove(E);
 	}
 
 	return OK;

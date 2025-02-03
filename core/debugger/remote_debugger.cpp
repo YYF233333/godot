@@ -242,10 +242,8 @@ void RemoteDebugger::flush_output() {
 		output_strings.clear();
 	}
 
-	while (errors.size()) {
-		ErrorMessage oe = errors.front()->get();
+	for (const ErrorMessage &oe : errors) {
 		_put_msg("error", oe.serialize());
-		errors.pop_front();
 	}
 
 	// Update limits

@@ -973,10 +973,9 @@ void EditorAssetLibrary::_update_image_queue() {
 		}
 	}
 
-	while (to_delete.size()) {
-		image_queue[to_delete.front()->get()].request->queue_free();
-		image_queue.erase(to_delete.front()->get());
-		to_delete.pop_front();
+	for (const int key : to_delete) {
+		image_queue[key].request->queue_free();
+		image_queue.erase(key);
 	}
 }
 

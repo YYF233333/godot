@@ -3762,66 +3762,61 @@ bool TileSet::_set(const StringName &p_name, const Variant &p_value) {
 				if (p_value.is_array()) {
 					Array p = p_value;
 					Vector2i last_coord;
-					while (p.size() > 0) {
-						if (p[0].get_type() == Variant::VECTOR2) {
-							last_coord = p[0];
-						} else if (p[0].get_type() == Variant::INT) {
-							ctd->autotile_bitmask_flags.insert(last_coord, p[0]);
+					for (const Variant &F : p) {
+						if (F.get_type() == Variant::VECTOR2) {
+							last_coord = F;
+						} else if (F.get_type() == Variant::INT) {
+							ctd->autotile_bitmask_flags.insert(last_coord, F);
 						}
-						p.pop_front();
 					}
 				}
 			} else if (what == "occluder_map") {
 				Array p = p_value;
 				Vector2 last_coord;
-				while (p.size() > 0) {
-					if (p[0].get_type() == Variant::VECTOR2) {
-						last_coord = p[0];
-					} else if (p[0].get_type() == Variant::OBJECT) {
-						ctd->autotile_occluder_map.insert(last_coord, p[0]);
+				for (const Variant &F : p) {
+					if (F.get_type() == Variant::VECTOR2) {
+						last_coord = F;
+					} else if (F.get_type() == Variant::OBJECT) {
+						ctd->autotile_occluder_map.insert(last_coord, F);
 					}
-					p.pop_front();
 				}
 			} else if (what == "navpoly_map") {
 				Array p = p_value;
 				Vector2 last_coord;
-				while (p.size() > 0) {
-					if (p[0].get_type() == Variant::VECTOR2) {
-						last_coord = p[0];
-					} else if (p[0].get_type() == Variant::OBJECT) {
-						ctd->autotile_navpoly_map.insert(last_coord, p[0]);
+				for (const Variant &F : p) {
+					if (F.get_type() == Variant::VECTOR2) {
+						last_coord = F;
+					} else if (F.get_type() == Variant::OBJECT) {
+						ctd->autotile_navpoly_map.insert(last_coord, F);
 					}
-					p.pop_front();
 				}
 			} else if (what == "priority_map") {
 				Array p = p_value;
 				Vector3 val;
 				Vector2 v;
 				int priority;
-				while (p.size() > 0) {
-					val = p[0];
+				for (const Variant &F : p) {
+					val = F;
 					if (val.z > 1) {
 						v.x = val.x;
 						v.y = val.y;
 						priority = (int)val.z;
 						ctd->autotile_priority_map.insert(v, priority);
 					}
-					p.pop_front();
 				}
 			} else if (what == "z_index_map") {
 				Array p = p_value;
 				Vector3 val;
 				Vector2 v;
 				int z_index;
-				while (p.size() > 0) {
-					val = p[0];
+				for (const Variant &F : p) {
+					val = F;
 					if (val.z != 0) {
 						v.x = val.x;
 						v.y = val.y;
 						z_index = (int)val.z;
 						ctd->autotile_z_index_map.insert(v, z_index);
 					}
-					p.pop_front();
 				}
 			}
 

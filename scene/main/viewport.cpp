@@ -4045,9 +4045,8 @@ void Viewport::_cleanup_mouseover_colliders(bool p_clean_all_frames, bool p_paus
 		to_erase.push_back(E.key);
 	}
 
-	while (to_erase.size()) {
-		physics_2d_mouseover.erase(to_erase.front()->get());
-		to_erase.pop_front();
+	for (const ObjectID &key : to_erase) {
+		physics_2d_mouseover.erase(key);
 	}
 
 	// Per-shape.
@@ -4072,24 +4071,20 @@ void Viewport::_cleanup_mouseover_colliders(bool p_clean_all_frames, bool p_paus
 		shapes_to_erase.push_back(E.key);
 	}
 
-	while (shapes_to_erase.size()) {
-		physics_2d_shape_mouseover.erase(shapes_to_erase.front()->get());
-		shapes_to_erase.pop_front();
+	for (const Pair<ObjectID, int> &key : shapes_to_erase) {
+		physics_2d_shape_mouseover.erase(key);
 	}
 
-	while (to_mouse_exit.size()) {
-		Object *o = ObjectDB::get_instance(to_mouse_exit.front()->get());
+	for (const ObjectID &key : to_mouse_exit) {
+		Object *o = ObjectDB::get_instance(key);
 		CollisionObject2D *co = Object::cast_to<CollisionObject2D>(o);
 		co->_mouse_exit();
-		to_mouse_exit.pop_front();
 	}
 
-	while (shapes_to_mouse_exit.size()) {
-		Pair<ObjectID, int> e = shapes_to_mouse_exit.front()->get();
-		Object *o = ObjectDB::get_instance(e.first);
+	for (const Pair<ObjectID, int> &E : shapes_to_mouse_exit) {
+		Object *o = ObjectDB::get_instance(E.first);
 		CollisionObject2D *co = Object::cast_to<CollisionObject2D>(o);
-		co->_mouse_shape_exit(e.second);
-		shapes_to_mouse_exit.pop_front();
+		co->_mouse_shape_exit(E.second);
 	}
 }
 

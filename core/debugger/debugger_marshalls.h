@@ -66,7 +66,7 @@ struct DebuggerMarshalls {
 		bool warning = false;
 		Vector<ScriptLanguage::StackInfo> callstack;
 
-		Array serialize();
+		Array serialize() const;
 		bool deserialize(const Array &p_arr);
 	};
 

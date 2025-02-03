@@ -904,9 +904,8 @@ void AnimationPlayer::_animation_removed(const StringName &p_name, const StringN
 		}
 	}
 
-	while (to_erase.size()) {
-		blend_times.erase(to_erase.front()->get());
-		to_erase.pop_front();
+	for (const BlendKey &bk : to_erase) {
+		blend_times.erase(bk);
 	}
 }
 
@@ -935,9 +934,8 @@ void AnimationPlayer::_rename_animation(const StringName &p_from_name, const Str
 		}
 	}
 
-	while (to_erase.size()) {
-		blend_times.erase(to_erase.front()->get());
-		to_erase.pop_front();
+	for (const BlendKey &bk : to_erase) {
+		blend_times.erase(bk);
 	}
 
 	while (to_insert.size()) {

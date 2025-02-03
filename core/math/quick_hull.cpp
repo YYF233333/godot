@@ -311,9 +311,8 @@ Error QuickHull::build(const Vector<Vector3> &p_points, Geometry3D::MeshData &r_
 
 		//erase lit faces
 
-		while (lit_faces.size()) {
-			faces.erase(lit_faces.front()->get());
-			lit_faces.pop_front();
+		for (List<Face>::Element *lf : lit_faces) {
+			faces.erase(lf);
 		}
 
 		//put faces that contain no points on the front

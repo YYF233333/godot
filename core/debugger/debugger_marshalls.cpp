@@ -98,7 +98,7 @@ bool DebuggerMarshalls::ScriptStackVariable::deserialize(const Array &p_arr) {
 	return true;
 }
 
-Array DebuggerMarshalls::OutputError::serialize() {
+Array DebuggerMarshalls::OutputError::serialize() const {
 	Array arr;
 	arr.push_back(hr);
 	arr.push_back(min);
