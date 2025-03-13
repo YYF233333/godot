@@ -122,24 +122,38 @@ String JSON::_stringify(const Variant &p_var, const String &p_indent, int p_cur_
 			ERR_FAIL_COND_V_MSG(p_markers.has(d.id()), "\"{...}\"", "Converting circular structure to JSON.");
 			p_markers.insert(d.id());
 
-			List<Variant> keys;
-			d.get_key_list(&keys);
+			if (!d.is_empty()) {
+				if (p_sort_keys) {
+					List<Variant> keys;
+					d.get_key_list(&keys);
+					keys.sort_custom<StringLikeVariantOrder>();
 
-			if (p_sort_keys) {
-				keys.sort_custom<StringLikeVariantOrder>();
-			}
-
-			bool first_key = true;
-			for (const Variant &E : keys) {
-				if (first_key) {
-					first_key = false;
+					bool first_key = true;
+					for (const Variant &E : keys) {
+						if (first_key) {
+							first_key = false;
+						} else {
+							s += ",";
+							s += end_statement;
+						}
+						s += _make_indent(p_indent, p_cur_indent + 1) + _stringify(String(E), p_indent, p_cur_indent + 1, p_sort_keys, p_markers);
+						s += colon;
+						s += _stringify(d[E], p_indent, p_cur_indent + 1, p_sort_keys, p_markers);
+					}
 				} else {
-					s += ",";
-					s += end_statement;
+					bool first_key = true;
+					for (const KeyValue<Variant, Variant> &kv : d) {
+						if (first_key) {
+							first_key = false;
+						} else {
+							s += ",";
+							s += end_statement;
+						}
+						s += _make_indent(p_indent, p_cur_indent + 1) + _stringify(String(kv.key), p_indent, p_cur_indent + 1, p_sort_keys, p_markers);
+						s += colon;
+						s += _stringify(kv.value, p_indent, p_cur_indent + 1, p_sort_keys, p_markers);
+					}
 				}
-				s += _make_indent(p_indent, p_cur_indent + 1) + _stringify(String(E), p_indent, p_cur_indent + 1, p_sort_keys, p_markers);
-				s += colon;
-				s += _stringify(d[E], p_indent, p_cur_indent + 1, p_sort_keys, p_markers);
 			}
 
 			s += end_statement + _make_indent(p_indent, p_cur_indent) + "}";
