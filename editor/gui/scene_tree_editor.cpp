@@ -113,7 +113,7 @@ void SceneTreeEditor::_cell_button_pressed(Object *p_item, int p_column, int p_i
 		undo_redo->create_action(TTR("Toggle Visible"));
 		_toggle_visible(n);
 		List<Node *> selection = editor_selection->get_selected_node_list();
-		if (selection.size() > 1 && selection.find(n) != nullptr) {
+		if (selection.size() > 1 && selection.has(n)) {
 			for (Node *nv : selection) {
 				ERR_FAIL_NULL(nv);
 				if (nv == n) {

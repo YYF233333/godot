@@ -220,7 +220,7 @@ void GroupsEditor::_update_tree() {
 		TreeItem *item = tree->create_item(local_root);
 		item->set_cell_mode(0, TreeItem::CELL_MODE_CHECK);
 		item->set_editable(0, can_edit(node, E));
-		item->set_checked(0, current_groups.find(E) != nullptr);
+		item->set_checked(0, current_groups.has(E));
 		item->set_text(0, E);
 		item->set_meta("__local", true);
 		item->set_meta("__name", E);
@@ -251,7 +251,7 @@ void GroupsEditor::_update_tree() {
 		TreeItem *item = tree->create_item(global_root);
 		item->set_cell_mode(0, TreeItem::CELL_MODE_CHECK);
 		item->set_editable(0, can_edit(node, E));
-		item->set_checked(0, current_groups.find(E) != nullptr);
+		item->set_checked(0, current_groups.has(E));
 		item->set_text(0, E);
 		item->set_meta("__local", false);
 		item->set_meta("__name", E);

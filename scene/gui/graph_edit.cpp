@@ -1809,7 +1809,7 @@ void GraphEdit::gui_input(const Ref<InputEvent> &p_ev) {
 			if (should_be_selected) {
 				graph_element->set_selected(box_selection_mode_additive);
 			} else {
-				graph_element->set_selected(prev_selected.find(graph_element) != nullptr);
+				graph_element->set_selected(prev_selected.has(graph_element));
 			}
 		}
 
@@ -1828,7 +1828,7 @@ void GraphEdit::gui_input(const Ref<InputEvent> &p_ev) {
 						continue;
 					}
 
-					graph_element->set_selected(prev_selected.find(graph_element) != nullptr);
+					graph_element->set_selected(prev_selected.has(graph_element));
 				}
 				top_layer->queue_redraw();
 				minimap->queue_redraw();

@@ -413,7 +413,7 @@ public:
 	}
 
 	/**
-	 * find an element in the list,
+	 * find an element in the list.
 	 */
 	template <typename T_v>
 	Element *find(const T_v &p_val) {
@@ -426,6 +426,30 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	/**
+	 * find an element in the list.
+	 */
+	template <typename T_v>
+	const Element *find(const T_v &p_val) const {
+		const Element *it = front();
+		while (it) {
+			if (it->value == p_val) {
+				return it;
+			}
+			it = it->next();
+		}
+
+		return nullptr;
+	}
+
+	/**
+	 * return whether an element is in the list.
+	 */
+	template <typename T_v>
+	_FORCE_INLINE_ bool has(const T_v &p_val) const {
+		return find(p_val) != nullptr;
 	}
 
 	/**

@@ -1213,7 +1213,7 @@ void AnimationNodeStateMachine::get_parameter_list(List<PropertyInfo> *r_list) c
 	List<StringName> advance_conditions;
 	for (int i = 0; i < transitions.size(); i++) {
 		StringName ac = transitions[i].transition->get_advance_condition_name();
-		if (ac != StringName() && advance_conditions.find(ac) == nullptr) {
+		if (ac != StringName() && !advance_conditions.has(ac)) {
 			advance_conditions.push_back(ac);
 		}
 	}

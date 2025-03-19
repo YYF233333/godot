@@ -1496,7 +1496,7 @@ void EditorNode::save_resource_as(const Ref<Resource> &p_resource, const String 
 		file->set_current_path(p_resource->get_path());
 		if (!extensions.is_empty()) {
 			const String ext = p_resource->get_path().get_extension().to_lower();
-			if (extensions.find(ext) == nullptr) {
+			if (!extensions.has(ext)) {
 				file->set_current_path(p_resource->get_path().replacen("." + ext, "." + extensions.front()->get()));
 			}
 		}
@@ -2909,7 +2909,7 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 
 				file->set_current_path(path);
 				if (extensions.size()) {
-					if (extensions.find(ext) == nullptr) {
+					if (!extensions.has(ext)) {
 						file->set_current_path(path.replacen("." + ext, "." + extensions.front()->get()));
 					}
 				}
