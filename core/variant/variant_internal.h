@@ -30,9 +30,13 @@
 
 #pragma once
 
+#include "core/object/object.h"
 #include "type_info.h"
 #include "variant.h"
 
+#include "core/io/ip_address.h"
+#include "core/math/color.h"
+#include "core/string/node_path.h"
 #include "core/templates/simple_type.h"
 
 // For use when you want to access the internal pointer of a Variant directly.

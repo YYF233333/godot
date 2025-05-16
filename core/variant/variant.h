@@ -32,10 +32,8 @@
 
 #include "core/core_string_names.h"
 #include "core/input/input_enums.h"
-#include "core/io/ip_address.h"
 #include "core/math/aabb.h"
 #include "core/math/basis.h"
-#include "core/math/color.h"
 #include "core/math/face3.h"
 #include "core/math/plane.h"
 #include "core/math/projection.h"
@@ -52,7 +50,6 @@
 #include "core/math/vector4i.h"
 #include "core/object/object_id.h"
 #include "core/os/keyboard.h"
-#include "core/string/node_path.h"
 #include "core/string/ustring.h"
 #include "core/templates/bit_field.h"
 #include "core/templates/list.h"
@@ -64,12 +61,15 @@
 
 class Object;
 class RefCounted;
+class NodePath;
 
 template <typename T>
 class Ref;
 template <typename T>
 class BitField;
 
+struct Color;
+struct IPAddress;
 struct PropertyInfo;
 struct MethodInfo;
 
