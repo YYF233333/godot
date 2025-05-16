@@ -37,9 +37,10 @@
 #include "core/templates/hashfuncs.h"
 #include "core/templates/vector.h"
 #include "core/typedefs.h"
-#include "core/variant/array.h"
 
+class Array;
 class String;
+class Variant;
 template <typename T>
 class CharStringT;
 

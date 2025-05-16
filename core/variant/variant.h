@@ -32,28 +32,12 @@
 
 #include "core/core_string_names.h"
 #include "core/input/input_enums.h"
-#include "core/math/aabb.h"
-#include "core/math/basis.h"
-#include "core/math/face3.h"
-#include "core/math/plane.h"
-#include "core/math/projection.h"
-#include "core/math/quaternion.h"
-#include "core/math/rect2.h"
 #include "core/math/rect2i.h"
-#include "core/math/transform_2d.h"
-#include "core/math/transform_3d.h"
-#include "core/math/vector2.h"
-#include "core/math/vector2i.h"
-#include "core/math/vector3.h"
-#include "core/math/vector3i.h"
-#include "core/math/vector4.h"
-#include "core/math/vector4i.h"
 #include "core/object/object_id.h"
 #include "core/os/keyboard.h"
 #include "core/string/ustring.h"
 #include "core/templates/bit_field.h"
 #include "core/templates/list.h"
-#include "core/templates/paged_allocator.h"
 #include "core/templates/rid.h"
 #include "core/variant/array.h"
 #include "core/variant/callable.h"
@@ -68,8 +52,24 @@ class Ref;
 template <typename T>
 class BitField;
 
+struct AABB;
+struct Basis;
+struct Vector2;
+struct Vector2i;
+struct Vector3;
+struct Vector3i;
+struct Vector4;
+struct Vector4i;
+struct Rect2;
+struct Rect2i;
+struct Transform2D;
+struct Plane;
+struct Quaternion;
+struct Transform3D;
 struct Color;
+struct Face3;
 struct IPAddress;
+struct Projection;
 struct PropertyInfo;
 struct MethodInfo;
 
@@ -146,29 +146,7 @@ public:
 	};
 
 private:
-	struct Pools {
-		union BucketSmall {
-			BucketSmall() {}
-			~BucketSmall() {}
-			Transform2D _transform2d;
-			::AABB _aabb;
-		};
-		union BucketMedium {
-			BucketMedium() {}
-			~BucketMedium() {}
-			Basis _basis;
-			Transform3D _transform3d;
-		};
-		union BucketLarge {
-			BucketLarge() {}
-			~BucketLarge() {}
-			Projection _projection;
-		};
-
-		static PagedAllocator<BucketSmall, true> _bucket_small;
-		static PagedAllocator<BucketMedium, true> _bucket_medium;
-		static PagedAllocator<BucketLarge, true> _bucket_large;
-	};
+	struct Pools;
 
 	friend struct _VariantCall;
 	friend class VariantInternal;

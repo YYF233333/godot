@@ -32,6 +32,12 @@
 
 #include "math_fieldwise.h"
 
+#include "core/math/projection.h"
+#include "core/math/transform_2d.h"
+#include "core/math/transform_3d.h"
+#include "core/math/vector3i.h"
+#include "core/math/vector4i.h"
+
 #define SETUP_TYPE(m_type)    \
 	m_type source = p_source; \
 	m_type target = p_target;

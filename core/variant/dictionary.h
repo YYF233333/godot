@@ -30,12 +30,12 @@
 
 #pragma once
 
-#include "core/string/ustring.h"
 #include "core/templates/hash_map.h"
 #include "core/templates/local_vector.h"
 #include "core/templates/pair.h"
-#include "core/variant/array.h"
 
+class Array;
+class StringName;
 class Variant;
 
 struct ContainerType;
