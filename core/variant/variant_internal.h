@@ -35,12 +35,7 @@
 #include "variant.h"
 
 #include "core/io/ip_address.h"
-#include "core/math/aabb.h"
-#include "core/math/basis.h"
 #include "core/math/color.h"
-#include "core/math/projection.h"
-#include "core/math/transform_2d.h"
-#include "core/math/transform_3d.h"
 #include "core/string/node_path.h"
 #include "core/templates/simple_type.h"
 
@@ -48,30 +43,6 @@
 // Use with caution. You need to be sure that the type is correct.
 
 class RefCounted;
-
-struct Variant::Pools {
-	union BucketSmall {
-		BucketSmall() {}
-		~BucketSmall() {}
-		Transform2D _transform2d;
-		::AABB _aabb;
-	};
-	union BucketMedium {
-		BucketMedium() {}
-		~BucketMedium() {}
-		Basis _basis;
-		Transform3D _transform3d;
-	};
-	union BucketLarge {
-		BucketLarge() {}
-		~BucketLarge() {}
-		Projection _projection;
-	};
-
-	static PagedAllocator<BucketSmall, true> _bucket_small;
-	static PagedAllocator<BucketMedium, true> _bucket_medium;
-	static PagedAllocator<BucketLarge, true> _bucket_large;
-};
 
 class VariantInternal {
 	friend class Variant;
@@ -264,31 +235,11 @@ public:
 		memnew_placement(v->_data._mem, String);
 		v->type = Variant::STRING;
 	}
-	_FORCE_INLINE_ static void init_transform2d(Variant *v) {
-		v->_data._transform2d = (Transform2D *)Variant::Pools::_bucket_small.alloc();
-		memnew_placement(v->_data._transform2d, Transform2D);
-		v->type = Variant::TRANSFORM2D;
-	}
-	_FORCE_INLINE_ static void init_aabb(Variant *v) {
-		v->_data._aabb = (AABB *)Variant::Pools::_bucket_small.alloc();
-		memnew_placement(v->_data._aabb, AABB);
-		v->type = Variant::AABB;
-	}
-	_FORCE_INLINE_ static void init_basis(Variant *v) {
-		v->_data._basis = (Basis *)Variant::Pools::_bucket_medium.alloc();
-		memnew_placement(v->_data._basis, Basis);
-		v->type = Variant::BASIS;
-	}
-	_FORCE_INLINE_ static void init_transform3d(Variant *v) {
-		v->_data._transform3d = (Transform3D *)Variant::Pools::_bucket_medium.alloc();
-		memnew_placement(v->_data._transform3d, Transform3D);
-		v->type = Variant::TRANSFORM3D;
-	}
-	_FORCE_INLINE_ static void init_projection(Variant *v) {
-		v->_data._projection = (Projection *)Variant::Pools::_bucket_large.alloc();
-		memnew_placement(v->_data._projection, Projection);
-		v->type = Variant::PROJECTION;
-	}
+	static void init_transform2d(Variant *v);
+	static void init_aabb(Variant *v);
+	static void init_basis(Variant *v);
+	static void init_transform3d(Variant *v);
+	static void init_projection(Variant *v);
 	_FORCE_INLINE_ static void init_color(Variant *v) {
 		memnew_placement(v->_data._mem, Color);
 		v->type = Variant::COLOR;

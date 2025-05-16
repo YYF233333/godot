@@ -33,6 +33,7 @@
 #include "core/io/image.h"
 #include "core/math/geometry_3d.h"
 #include "core/math/transform_2d.h"
+#include "core/math/transform_3d.h"
 #include "core/templates/rid.h"
 #include "core/variant/typed_array.h"
 #include "core/variant/variant.h"

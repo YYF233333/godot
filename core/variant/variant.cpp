@@ -39,9 +39,59 @@
 #include "core/math/rect2i.h"
 #include "core/variant/variant_parser.h"
 
+struct Variant::Pools {
+	union BucketSmall {
+		BucketSmall() {}
+		~BucketSmall() {}
+		Transform2D _transform2d;
+		::AABB _aabb;
+	};
+	union BucketMedium {
+		BucketMedium() {}
+		~BucketMedium() {}
+		Basis _basis;
+		Transform3D _transform3d;
+	};
+	union BucketLarge {
+		BucketLarge() {}
+		~BucketLarge() {}
+		Projection _projection;
+	};
+
+	static PagedAllocator<BucketSmall, true> _bucket_small;
+	static PagedAllocator<BucketMedium, true> _bucket_medium;
+	static PagedAllocator<BucketLarge, true> _bucket_large;
+};
+
 PagedAllocator<Variant::Pools::BucketSmall, true> Variant::Pools::_bucket_small;
 PagedAllocator<Variant::Pools::BucketMedium, true> Variant::Pools::_bucket_medium;
 PagedAllocator<Variant::Pools::BucketLarge, true> Variant::Pools::_bucket_large;
+
+void VariantInternal::init_transform2d(Variant *v) {
+	v->_data._transform2d = (Transform2D *)Variant::Pools::_bucket_small.alloc();
+	memnew_placement(v->_data._transform2d, Transform2D);
+	v->type = Variant::TRANSFORM2D;
+}
+void VariantInternal::init_aabb(Variant *v) {
+	v->_data._aabb = (AABB *)Variant::Pools::_bucket_small.alloc();
+	memnew_placement(v->_data._aabb, AABB);
+	v->type = Variant::AABB;
+}
+void VariantInternal::init_basis(Variant *v) {
+	v->_data._basis = (Basis *)Variant::Pools::_bucket_medium.alloc();
+	memnew_placement(v->_data._basis, Basis);
+	v->type = Variant::BASIS;
+}
+void VariantInternal::init_transform3d(Variant *v) {
+	v->_data._transform3d = (Transform3D *)Variant::Pools::_bucket_medium.alloc();
+	memnew_placement(v->_data._transform3d, Transform3D);
+	v->type = Variant::TRANSFORM3D;
+}
+void VariantInternal::init_projection(Variant *v) {
+	v->_data._projection = (Projection *)Variant::Pools::_bucket_large.alloc();
+	memnew_placement(v->_data._projection, Projection);
+	v->type = Variant::PROJECTION;
+}
 
 String Variant::get_type_name(Variant::Type p_type) {
 	switch (p_type) {

@@ -32,7 +32,9 @@
 
 #include "core/core_string_names.h"
 #include "core/input/input_enums.h"
+#include "core/math/rect2.h"
 #include "core/math/rect2i.h"
+#include "core/math/transform_2d.h"
 #include "core/object/object_id.h"
 #include "core/os/keyboard.h"
 #include "core/string/ustring.h"
@@ -60,9 +62,6 @@ struct Vector3;
 struct Vector3i;
 struct Vector4;
 struct Vector4i;
-struct Rect2;
-struct Rect2i;
-struct Transform2D;
 struct Plane;
 struct Quaternion;
 struct Transform3D;
@@ -73,17 +72,17 @@ struct Projection;
 struct PropertyInfo;
 struct MethodInfo;
 
-typedef Vector<uint8_t> PackedByteArray;
-typedef Vector<int32_t> PackedInt32Array;
-typedef Vector<int64_t> PackedInt64Array;
-typedef Vector<float> PackedFloat32Array;
-typedef Vector<double> PackedFloat64Array;
-typedef Vector<real_t> PackedRealArray;
-typedef Vector<String> PackedStringArray;
-typedef Vector<Vector2> PackedVector2Array;
-typedef Vector<Vector3> PackedVector3Array;
-typedef Vector<Color> PackedColorArray;
-typedef Vector<Vector4> PackedVector4Array;
+using PackedByteArray = Vector<uint8_t>;
+using PackedInt32Array = Vector<int32_t>;
+using PackedInt64Array = Vector<int64_t>;
+using PackedFloat32Array = Vector<float>;
+using PackedFloat64Array = Vector<double>;
+using PackedRealArray = Vector<real_t>;
+using PackedStringArray = Vector<String>;
+using PackedVector2Array = Vector<Vector2>;
+using PackedVector3Array = Vector<Vector3>;
+using PackedColorArray = Vector<Color>;
+using PackedVector4Array = Vector<Vector4>;
 
 class Variant {
 public:
