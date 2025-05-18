@@ -94,17 +94,17 @@ private:
 	bool y_sort_enabled = false;
 
 	Window *window = nullptr;
-	bool visible = true;
-	bool parent_visible_in_tree = false;
-	bool pending_update = false;
-	bool top_level = false;
-	bool drawing = false;
-	bool block_transform_notify = false;
-	bool behind = false;
-	bool use_parent_material = false;
-	bool notify_local_transform = false;
-	bool notify_transform = false;
-	bool hide_clip_children = false;
+	bool visible : 1;
+	bool parent_visible_in_tree : 1;
+	bool pending_update : 1;
+	bool top_level : 1;
+	bool drawing : 1;
+	bool block_transform_notify : 1;
+	bool behind : 1;
+	bool use_parent_material : 1;
+	bool notify_local_transform : 1;
+	bool notify_transform : 1;
+	bool hide_clip_children : 1;
 
 	ClipChildrenMode clip_children_mode = CLIP_CHILDREN_DISABLED;
 

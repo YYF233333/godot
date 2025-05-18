@@ -1727,6 +1727,17 @@ CanvasItem::TextureRepeat CanvasItem::get_texture_repeat_in_tree() const {
 
 CanvasItem::CanvasItem() :
 		xform_change(this) {
+	visible = true;
+	parent_visible_in_tree = false;
+	pending_update = false;
+	top_level = false;
+	drawing = false;
+	block_transform_notify = false;
+	behind = false;
+	use_parent_material = false;
+	notify_local_transform = false;
+	notify_transform = false;
+	hide_clip_children = false;
 	canvas_item = RenderingServer::get_singleton()->canvas_item_create();
 }
 

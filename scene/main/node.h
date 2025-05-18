@@ -201,10 +201,10 @@ private:
 		List<Node *> owned;
 
 		Node *process_owner = nullptr;
-		ProcessThreadGroup process_thread_group = PROCESS_THREAD_GROUP_INHERIT;
 		Node *process_thread_group_owner = nullptr;
-		int process_thread_group_order = 0;
 		BitField<ProcessThreadMessages> process_thread_messages = {};
+		ProcessThreadGroup process_thread_group = PROCESS_THREAD_GROUP_INHERIT;
+		int process_thread_group_order = 0;
 		void *process_group = nullptr; // to avoid cyclic dependency
 
 		int multiplayer_authority = 1; // Server by default.

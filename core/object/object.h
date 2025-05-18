@@ -617,7 +617,6 @@ private:
 #ifdef DEBUG_ENABLED
 	SafeRefCount _lock_index;
 #endif
-	bool _block_signals = false;
 	int _predelete_ok = 0;
 	ObjectID _instance_id;
 	bool _predelete();
@@ -625,6 +624,7 @@ private:
 	void _postinitialize();
 	bool _can_translate = true;
 	bool _emitting = false;
+	bool _block_signals = false;
 #ifdef TOOLS_ENABLED
 	bool _edited = false;
 	uint32_t _edited_version = 0;
@@ -651,9 +651,6 @@ private:
 
 	_FORCE_INLINE_ void _construct_object(bool p_reference);
 
-	friend class RefCounted;
-	bool type_is_reference = false;
-
 	BinaryMutex _instance_binding_mutex;
 	struct InstanceBinding {
 		void *binding = nullptr;
@@ -663,6 +660,9 @@ private:
 	};
 	InstanceBinding *_instance_bindings = nullptr;
 	uint32_t _instance_binding_count = 0;
+
+	friend class RefCounted;
+	bool type_is_reference = false;
 
 	Object(bool p_reference);
 
