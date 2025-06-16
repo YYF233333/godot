@@ -32,8 +32,8 @@
 
 #include "core/error/error_macros.h"
 #include "core/math/math_funcs.h"
-#include "core/string/ustring.h"
 
+class String;
 struct Basis;
 struct Vector2;
 struct Vector3i;
@@ -152,9 +152,9 @@ struct [[nodiscard]] Vector3 {
 	_FORCE_INLINE_ real_t signed_angle_to(const Vector3 &p_to, const Vector3 &p_axis) const;
 	_FORCE_INLINE_ Vector3 direction_to(const Vector3 &p_to) const;
 
-	_FORCE_INLINE_ Vector3 slide(const Vector3 &p_normal) const;
-	_FORCE_INLINE_ Vector3 bounce(const Vector3 &p_normal) const;
-	_FORCE_INLINE_ Vector3 reflect(const Vector3 &p_normal) const;
+	Vector3 slide(const Vector3 &p_normal) const;
+	Vector3 bounce(const Vector3 &p_normal) const;
+	Vector3 reflect(const Vector3 &p_normal) const;
 
 	bool is_equal_approx(const Vector3 &p_v) const;
 	bool is_same(const Vector3 &p_v) const;
@@ -529,25 +529,6 @@ Vector3 Vector3::inverse() const {
 
 void Vector3::zero() {
 	x = y = z = 0;
-}
-
-// slide returns the component of the vector along the given plane, specified by its normal vector.
-Vector3 Vector3::slide(const Vector3 &p_normal) const {
-#ifdef MATH_CHECKS
-	ERR_FAIL_COND_V_MSG(!p_normal.is_normalized(), Vector3(), "The normal Vector3 " + p_normal.operator String() + " must be normalized.");
-#endif
-	return *this - p_normal * dot(p_normal);
-}
-
-Vector3 Vector3::bounce(const Vector3 &p_normal) const {
-	return -reflect(p_normal);
-}
-
-Vector3 Vector3::reflect(const Vector3 &p_normal) const {
-#ifdef MATH_CHECKS
-	ERR_FAIL_COND_V_MSG(!p_normal.is_normalized(), Vector3(), "The normal Vector3 " + p_normal.operator String() + " must be normalized.");
-#endif
-	return 2.0f * p_normal * dot(p_normal) - *this;
 }
 
 template <>

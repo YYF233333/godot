@@ -152,6 +152,25 @@ Basis Vector3::outer(const Vector3 &p_with) const {
 	return basis;
 }
 
+// slide returns the component of the vector along the given plane, specified by its normal vector.
+Vector3 Vector3::slide(const Vector3 &p_normal) const {
+#ifdef MATH_CHECKS
+	ERR_FAIL_COND_V_MSG(!p_normal.is_normalized(), Vector3(), "The normal Vector3 " + p_normal.operator String() + " must be normalized.");
+#endif
+	return *this - p_normal * dot(p_normal);
+}
+
+Vector3 Vector3::bounce(const Vector3 &p_normal) const {
+	return -reflect(p_normal);
+}
+
+Vector3 Vector3::reflect(const Vector3 &p_normal) const {
+#ifdef MATH_CHECKS
+	ERR_FAIL_COND_V_MSG(!p_normal.is_normalized(), Vector3(), "The normal Vector3 " + p_normal.operator String() + " must be normalized.");
+#endif
+	return 2.0f * p_normal * dot(p_normal) - *this;
+}
+
 bool Vector3::is_equal_approx(const Vector3 &p_v) const {
 	return Math::is_equal_approx(x, p_v.x) && Math::is_equal_approx(y, p_v.y) && Math::is_equal_approx(z, p_v.z);
 }
