@@ -280,6 +280,15 @@ real_t Quaternion::get_angle() const {
 	return 2 * Math::acos(w);
 }
 
+Vector3 Quaternion::xform(const Vector3 &p_v) const {
+#ifdef MATH_CHECKS
+	ERR_FAIL_COND_V_MSG(!is_normalized(), p_v, "The quaternion " + operator String() + " must be normalized.");
+#endif
+	Vector3 u(x, y, z);
+	Vector3 uv = u.cross(p_v);
+	return p_v + ((uv * w) + u.cross(uv)) * ((real_t)2);
+}
+
 Quaternion::Quaternion(const Vector3 &p_axis, real_t p_angle) {
 #ifdef MATH_CHECKS
 	ERR_FAIL_COND_MSG(!p_axis.is_normalized(), "The axis Vector3 " + p_axis.operator String() + " must be normalized.");

@@ -32,7 +32,8 @@
 
 #include "core/math/math_funcs.h"
 #include "core/math/vector3.h"
-#include "core/string/ustring.h"
+
+class String;
 
 struct [[nodiscard]] Quaternion {
 	union {
@@ -89,14 +90,7 @@ struct [[nodiscard]] Quaternion {
 	constexpr void operator*=(const Quaternion &p_q);
 	constexpr Quaternion operator*(const Quaternion &p_q) const;
 
-	_FORCE_INLINE_ Vector3 xform(const Vector3 &p_v) const {
-#ifdef MATH_CHECKS
-		ERR_FAIL_COND_V_MSG(!is_normalized(), p_v, "The quaternion " + operator String() + " must be normalized.");
-#endif
-		Vector3 u(x, y, z);
-		Vector3 uv = u.cross(p_v);
-		return p_v + ((uv * w) + u.cross(uv)) * ((real_t)2);
-	}
+	Vector3 xform(const Vector3 &p_v) const;
 
 	_FORCE_INLINE_ Vector3 xform_inv(const Vector3 &p_v) const {
 		return inverse().xform(p_v);
