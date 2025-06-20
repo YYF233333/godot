@@ -14,7 +14,14 @@ mimalloc_sources = []
 
 if env["platform"] == "windows":
     override_type = "windows"
-elif env.get("mimalloc_custom_prims"):
+elif (
+    env.get("mimalloc_custom_prims")
+    or env.get("use_ubsan")
+    or env.get("use_asan")
+    or env.get("use_lsan")
+    or env.get("use_tsan")
+    or env.get("use_msan")
+):
     override_type = "none"
 else:
     override_type = "static"
