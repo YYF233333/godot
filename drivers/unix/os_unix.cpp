@@ -86,12 +86,6 @@
 #define RTLD_DEEPBIND 0
 #endif
 
-#ifndef SANITIZERS_ENABLED
-#define GODOT_DLOPEN_MODE RTLD_NOW | RTLD_DEEPBIND
-#else
-#define GODOT_DLOPEN_MODE RTLD_NOW
-#endif
-
 #if defined(MACOS_ENABLED) || (defined(__ANDROID_API__) && __ANDROID_API__ >= 28)
 // Random location for getentropy. Fitting.
 #include <sys/random.h>
@@ -1056,7 +1050,13 @@ Error OS_Unix::open_dynamic_library(const String &p_path, void *&p_library_handl
 
 	ERR_FAIL_COND_V(!FileAccess::exists(path), ERR_FILE_NOT_FOUND);
 
-	p_library_handle = dlopen(path.utf8().get_data(), GODOT_DLOPEN_MODE);
+#ifndef SANITIZERS_ENABLED
+	int dl_flags = (p_data == nullptr) ? RTLD_NOW : RTLD_NOW | RTLD_DEEPBIND;
+#else
+	int dl_flags = RTLD_NOW;
+#endif
+
+	p_library_handle = dlopen(path.utf8().get_data(), dl_flags);
 	ERR_FAIL_NULL_V_MSG(p_library_handle, ERR_CANT_OPEN, vformat("Can't open dynamic library: %s. Error: %s.", p_path, dlerror()));
 
 	if (p_data != nullptr && p_data->r_resolved_path != nullptr) {
