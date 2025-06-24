@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "core/io/xml_parser.h"
+#include "core/variant/dictionary.h"
 #include "core/variant/variant.h"
 
 class DocData {
