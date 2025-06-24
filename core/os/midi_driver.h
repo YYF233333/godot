@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/templates/vector.h"
 #include "core/typedefs.h"
 #include "core/variant/variant.h"
 

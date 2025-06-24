@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/math/color.h"
 #include "core/object/object.h"
 #include "core/variant/type_info.h"
 

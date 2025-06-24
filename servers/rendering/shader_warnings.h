@@ -34,6 +34,7 @@
 
 #include "core/string/string_name.h"
 #include "core/templates/hash_map.h"
+#include "core/templates/vector.h"
 #include "core/variant/variant.h"
 
 class ShaderWarning {

@@ -32,47 +32,42 @@
 
 #include "core/core_string_names.h"
 #include "core/input/input_enums.h"
-#include "core/io/ip_address.h"
-#include "core/math/aabb.h"
-#include "core/math/basis.h"
-#include "core/math/color.h"
-#include "core/math/face3.h"
-#include "core/math/plane.h"
-#include "core/math/projection.h"
-#include "core/math/quaternion.h"
-#include "core/math/rect2.h"
-#include "core/math/rect2i.h"
-#include "core/math/transform_2d.h"
-#include "core/math/transform_3d.h"
-#include "core/math/vector2.h"
-#include "core/math/vector2i.h"
-#include "core/math/vector3.h"
-#include "core/math/vector3i.h"
-#include "core/math/vector4.h"
-#include "core/math/vector4i.h"
 #include "core/object/object_id.h"
-#include "core/os/keyboard.h"
-#include "core/string/node_path.h"
-#include "core/string/ustring.h"
 #include "core/templates/bit_field.h"
 #include "core/templates/list.h"
-#include "core/templates/paged_allocator.h"
 #include "core/templates/rid.h"
 #include "core/variant/array.h"
 #include "core/variant/callable.h"
-#include "core/variant/dictionary.h"
 #include "core/variant/variant_deep_duplicate.h"
 
+class Dictionary;
+class NodePath;
 class Object;
 class RefCounted;
 
 template <typename T>
 class Ref;
-template <typename T>
-class BitField;
 
-struct PropertyInfo;
+struct AABB;
+struct Basis;
+struct Color;
+struct Face3;
+struct IPAddress;
 struct MethodInfo;
+struct Plane;
+struct PropertyInfo;
+struct Projection;
+struct Quaternion;
+struct Rect2;
+struct Rect2i;
+struct Transform2D;
+struct Transform3D;
+struct Vector2;
+struct Vector2i;
+struct Vector3;
+struct Vector3i;
+struct Vector4;
+struct Vector4i;
 
 typedef Vector<uint8_t> PackedByteArray;
 typedef Vector<int32_t> PackedInt32Array;
@@ -147,29 +142,7 @@ public:
 	};
 
 private:
-	struct Pools {
-		union BucketSmall {
-			BucketSmall() {}
-			~BucketSmall() {}
-			Transform2D _transform2d;
-			::AABB _aabb;
-		};
-		union BucketMedium {
-			BucketMedium() {}
-			~BucketMedium() {}
-			Basis _basis;
-			Transform3D _transform3d;
-		};
-		union BucketLarge {
-			BucketLarge() {}
-			~BucketLarge() {}
-			Projection _projection;
-		};
-
-		static PagedAllocator<BucketSmall, true> _bucket_small;
-		static PagedAllocator<BucketMedium, true> _bucket_medium;
-		static PagedAllocator<BucketLarge, true> _bucket_large;
-	};
+	struct Pools;
 
 	friend struct _VariantCall;
 	friend class VariantInternal;
@@ -879,26 +852,7 @@ public:
 	}
 };
 
-//typedef Dictionary Dictionary; no
-//typedef Array Array;
-
-template <typename... VarArgs>
-Vector<Variant> varray(VarArgs... p_args) {
-	Vector<Variant> v;
-
-	Variant args[sizeof...(p_args) + 1] = { p_args..., Variant() }; // +1 makes sure zero sized arrays are also supported.
-	uint32_t argc = sizeof...(p_args);
-
-	if (argc > 0) {
-		v.resize(argc);
-		Variant *vw = v.ptrw();
-
-		for (uint32_t i = 0; i < argc; i++) {
-			vw[i] = args[i];
-		}
-	}
-	return v;
-}
+#define varray(...) (Vector<Variant>{ __VA_ARGS__ })
 
 struct VariantHasher {
 	static _FORCE_INLINE_ uint32_t hash(const Variant &p_variant) { return p_variant.hash(); }

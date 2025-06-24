@@ -34,6 +34,8 @@
 #include "core/string/ustring.h"
 #include "core/templates/vector.h"
 
+#include <climits>
+
 class [[nodiscard]] NodePath {
 	struct Data {
 		SafeRefCount refcount;
