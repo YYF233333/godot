@@ -34,8 +34,8 @@
 #include "core/os/mutex.h"
 #include "core/string/print_string.h"
 #include "core/templates/local_vector.h"
+#include "core/templates/rid.h"
 #include "core/templates/safe_refcount.h"
-#include "core/variant/variant.h"
 
 #include <cstdio>
 #include <typeinfo> // IWYU pragma: keep // Used in macro.
@@ -127,7 +127,7 @@ class RID_Alloc : public RID_AllocBase {
 			if (THREAD_SAFE && chunk_count == chunk_limit) {
 				mutex.unlock();
 				if (description != nullptr) {
-					ERR_FAIL_V_MSG(RID(), vformat("Element limit for RID of type '%s' reached.", String(description)));
+					ERR_FAIL_V_MSG(RID(), "Element limit for RID of type '" + String(description) + "' reached.");
 				} else {
 					ERR_FAIL_V_MSG(RID(), "Element limit reached.");
 				}
@@ -437,8 +437,11 @@ public:
 		}
 
 		if (alloc_count) {
-			print_error(vformat("ERROR: %d RID allocations of type '%s' were leaked at exit.",
-					alloc_count, description ? description : typeid(T).name()));
+			print_error("ERROR: " +
+					itos(alloc_count) +
+					" RID allocations of type '" +
+					(description ? description : typeid(T).name()) +
+					"' were leaked at exit.");
 
 			for (size_t i = 0; i < max_alloc; i++) {
 				uint32_t validator = chunks[i / elements_in_chunk][i % elements_in_chunk].validator;
