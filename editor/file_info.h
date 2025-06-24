@@ -32,6 +32,7 @@
 
 #include "core/string/string_name.h"
 #include "core/templates/list.h"
+#include "core/templates/vector.h"
 
 enum class FileSortOption {
 	FILE_SORT_NAME = 0,

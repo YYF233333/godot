@@ -32,6 +32,7 @@
 
 #include "core/string/string_name.h"
 #include "core/string/ustring.h"
+#include "core/templates/vector.h"
 
 class [[nodiscard]] NodePath {
 	struct Data {

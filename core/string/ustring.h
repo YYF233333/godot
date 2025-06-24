@@ -35,13 +35,15 @@
 #include "core/string/char_utils.h" // IWYU pragma: export
 #include "core/templates/cowdata.h"
 #include "core/templates/hashfuncs.h"
-#include "core/templates/vector.h"
 #include "core/typedefs.h"
-#include "core/variant/array.h"
 
+class Array;
+class Variant;
 class String;
 template <typename T>
 class CharStringT;
+template <typename T>
+class Vector;
 
 /*************************************************************************/
 /*  Utility Functions                                                    */
@@ -790,7 +792,4 @@ _FORCE_INLINE_ String ETRN(const String &p_text, const String &p_text_plural, in
 	return p_text_plural;
 }
 
-template <typename... P>
-_FORCE_INLINE_ Vector<String> sarray(P... p_args) {
-	return Vector<String>({ String(p_args)... });
-}
+#define sarray(...) (Vector<String>{ __VA_ARGS__ })
