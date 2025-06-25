@@ -31,6 +31,8 @@
 #pragma once
 
 #include "core/io/resource.h"
+#include "core/math/rect2.h"
+#include "core/math/transform_2d.h"
 #include "core/os/rw_lock.h"
 
 class NavigationMeshSourceGeometryData2D : public Resource {

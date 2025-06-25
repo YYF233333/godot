@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/math/rect2.h"
 #include "core/object/ref_counted.h"
 
 class InputEvent;

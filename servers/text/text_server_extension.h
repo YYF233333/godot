@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/math/transform_2d.h"
 #include "core/object/gdvirtual.gen.inc"
 #include "core/os/thread_safe.h"
 #include "core/variant/native_ptr.h"

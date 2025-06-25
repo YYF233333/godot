@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/io/resource.h"
+#include "core/math/color.h"
 
 #include "thirdparty/misc/ok_color.h"
 

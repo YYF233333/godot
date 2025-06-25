@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/io/resource.h"
+#include "core/math/rect2.h"
 
 class PolygonPathFinder : public Resource {
 	GDCLASS(PolygonPathFinder, Resource);

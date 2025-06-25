@@ -33,6 +33,7 @@
 #include "core/input/input.h"
 #include "core/io/image.h"
 #include "core/io/resource.h"
+#include "core/math/rect2i.h"
 #include "core/os/os.h"
 #include "core/variant/callable.h"
 

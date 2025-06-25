@@ -31,6 +31,13 @@
 #pragma once
 
 #include "core/input/input_enums.h"
+#include "core/math/projection.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/math/vector3.h"
+#include "core/math/vector3i.h"
+#include "core/math/vector4.h"
+#include "core/math/vector4i.h"
 #include "core/object/object.h"
 #include "core/os/keyboard.h"
 #include "core/templates/simple_type.h"

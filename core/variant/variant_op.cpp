@@ -30,6 +30,9 @@
 
 #include "variant_op.h"
 
+#include "core/math/rect2i.h"
+#include "core/math/transform_2d.h"
+
 typedef void (*VariantEvaluatorFunction)(const Variant &p_left, const Variant &p_right, Variant *r_ret, bool &r_valid);
 
 static Variant::Type operator_return_type_table[Variant::OP_MAX][Variant::VARIANT_MAX][Variant::VARIANT_MAX];

@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/io/image.h"
+#include "core/math/rect2.h"
 #include "core/object/ref_counted.h"
 #include "core/templates/rid.h"
 #include "core/variant/native_ptr.h"

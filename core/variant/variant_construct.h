@@ -35,6 +35,7 @@
 #include "core/crypto/crypto_core.h"
 #include "core/debugger/engine_debugger.h"
 #include "core/io/compression.h"
+#include "core/math/rect2i.h"
 #include "core/object/class_db.h"
 #include "core/os/os.h"
 #include "core/templates/a_hash_map.h"

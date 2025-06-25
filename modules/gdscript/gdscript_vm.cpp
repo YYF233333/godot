@@ -32,6 +32,12 @@
 #include "gdscript_function.h"
 #include "gdscript_lambda_callable.h"
 
+#include "core/math/plane.h"
+#include "core/math/rect2i.h"
+#include "core/math/quaternion.h"
+#include "core/math/vector2i.h"
+#include "core/math/vector3i.h"
+#include "core/math/vector4i.h"
 #include "core/os/os.h"
 
 #ifdef DEBUG_ENABLED

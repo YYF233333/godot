@@ -31,6 +31,7 @@
 #include "json.h"
 
 #include "core/config/engine.h"
+#include "core/math/rect2i.h"
 #include "core/object/script_language.h"
 #include "core/variant/container_type_validate.h"
 

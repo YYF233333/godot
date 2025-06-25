@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/io/resource.h"
+#include "core/math/transform_2d.h"
 #include "core/object/class_db.h"
 #include "core/object/ref_counted.h"
 
