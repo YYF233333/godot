@@ -29,6 +29,9 @@
 /**************************************************************************/
 
 #include "variant_setget.h"
+#include "core/math/projection.h"
+#include "core/math/vector3i.h"
+#include "core/math/vector4i.h"
 #include "variant_callable.h"
 
 #include "core/io/resource.h"

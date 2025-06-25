@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/io/resource.h"
+#include "core/math/quaternion.h"
 #include "core/templates/local_vector.h"
 
 #define ANIM_MIN_LENGTH 0.001

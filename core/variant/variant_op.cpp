@@ -30,8 +30,10 @@
 
 #include "variant_op.h"
 
+#include "core/math/projection.h"
 #include "core/math/rect2i.h"
 #include "core/math/transform_2d.h"
+#include "core/math/transform_3d.h"
 
 typedef void (*VariantEvaluatorFunction)(const Variant &p_left, const Variant &p_right, Variant *r_ret, bool &r_valid);
 

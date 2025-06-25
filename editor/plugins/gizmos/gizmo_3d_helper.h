@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/math/transform_3d.h"
 #include "core/object/ref_counted.h"
 
 class Camera3D;

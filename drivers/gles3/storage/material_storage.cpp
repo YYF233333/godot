@@ -31,6 +31,7 @@
 #ifdef GLES3_ENABLED
 
 #include "core/config/project_settings.h"
+#include "core/math/vector4i.h"
 
 #include "config.h"
 #include "material_storage.h"

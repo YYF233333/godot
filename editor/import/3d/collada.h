@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/io/xml_parser.h"
+#include "core/math/transform_3d.h"
 
 class Collada {
 public:

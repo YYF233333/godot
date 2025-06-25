@@ -43,6 +43,7 @@
 #include "core/io/file_access_memory.h"
 #include "core/io/json.h"
 #include "core/io/stream_peer.h"
+#include "core/math/vector4i.h"
 #include "core/object/object_id.h"
 #include "core/version.h"
 #include "scene/2d/node_2d.h"

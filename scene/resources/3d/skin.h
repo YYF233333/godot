@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/io/resource.h"
+#include "core/math/transform_3d.h"
 
 class Skin : public Resource {
 	GDCLASS(Skin, Resource)

@@ -34,6 +34,7 @@
 #include "core/io/image.h"
 #include "core/io/resource.h"
 #include "core/math/rect2i.h"
+#include "core/math/vector3i.h"
 #include "core/os/os.h"
 #include "core/variant/callable.h"
 

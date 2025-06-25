@@ -31,6 +31,7 @@
 #include "audio_stream_interactive.h"
 
 #include "core/math/math_funcs.h"
+#include "core/math/vector2i.h"
 
 AudioStreamInteractive::AudioStreamInteractive() {
 }

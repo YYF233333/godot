@@ -30,8 +30,10 @@
 
 #include "curve.h"
 
+#include "core/math/basis.h"
 #include "core/math/math_funcs.h"
 #include "core/math/transform_2d.h"
+#include "core/math/transform_3d.h"
 
 const char *Curve::SIGNAL_RANGE_CHANGED = "range_changed";
 const char *Curve::SIGNAL_DOMAIN_CHANGED = "domain_changed";

@@ -32,6 +32,8 @@
 
 #include "macho.h"
 
+#include "core/math/vector2i.h"
+
 bool LipO::is_lipo(const String &p_path) {
 	Ref<FileAccess> fb = FileAccess::open(p_path, FileAccess::READ);
 	ERR_FAIL_COND_V_MSG(fb.is_null(), false, vformat("LipO: Can't open file: \"%s\".", p_path));

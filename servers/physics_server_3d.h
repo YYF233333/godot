@@ -33,6 +33,7 @@
 #ifndef _3D_DISABLED
 
 #include "core/io/resource.h"
+#include "core/math/transform_3d.h"
 #include "core/object/gdvirtual.gen.inc"
 
 constexpr int MAX_CONTACTS_REPORTED_3D_MAX = 4096;

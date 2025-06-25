@@ -70,11 +70,11 @@ struct [[nodiscard]] Vector2i {
 		return coord[p_axis];
 	}
 
-	_FORCE_INLINE_ Vector2i::Axis min_axis_index() const {
+	_FORCE_INLINE_ int min_axis_index() const {
 		return x < y ? Vector2i::AXIS_X : Vector2i::AXIS_Y;
 	}
 
-	_FORCE_INLINE_ Vector2i::Axis max_axis_index() const {
+	_FORCE_INLINE_ int max_axis_index() const {
 		return x < y ? Vector2i::AXIS_Y : Vector2i::AXIS_X;
 	}
 

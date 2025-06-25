@@ -68,8 +68,8 @@ struct [[nodiscard]] Vector3i {
 		return coord[p_axis];
 	}
 
-	Vector3i::Axis min_axis_index() const;
-	Vector3i::Axis max_axis_index() const;
+	int min_axis_index() const;
+	int max_axis_index() const;
 
 	Vector3i min(const Vector3i &p_vector3i) const {
 		return Vector3i(MIN(x, p_vector3i.x), MIN(y, p_vector3i.y), MIN(z, p_vector3i.z));

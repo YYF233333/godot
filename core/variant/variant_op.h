@@ -33,6 +33,9 @@
 #include "variant.h"
 
 #include "core/debugger/engine_debugger.h"
+#include "core/math/vector2i.h"
+#include "core/math/vector3i.h"
+#include "core/math/vector4i.h"
 #include "core/object/class_db.h"
 
 template <typename R, typename A, typename B>

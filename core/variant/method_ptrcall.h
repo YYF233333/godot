@@ -30,7 +30,6 @@
 
 #pragma once
 
-#include "core/math/face3.h"
 #include "core/object/object_id.h"
 #include "core/templates/simple_type.h"
 #include "core/typedefs.h"
@@ -304,35 +303,7 @@ struct PtrToArg<IPAddress> : Internal::PtrToArgStringConvertByReference<IPAddres
 
 template <>
 struct PtrToArg<Vector<Face3>> {
-	_FORCE_INLINE_ static Vector<Face3> convert(const void *p_ptr) {
-		const Vector<Vector3> *dvs = reinterpret_cast<const Vector<Vector3> *>(p_ptr);
-		Vector<Face3> ret;
-		int len = dvs->size() / 3;
-		ret.resize(len);
-		{
-			const Vector3 *r = dvs->ptr();
-			Face3 *w = ret.ptrw();
-			for (int i = 0; i < len; i++) {
-				w[i].vertex[0] = r[i * 3 + 0];
-				w[i].vertex[1] = r[i * 3 + 1];
-				w[i].vertex[2] = r[i * 3 + 2];
-			}
-		}
-		return ret;
-	}
+	static Vector<Face3> convert(const void *p_ptr);
 	// No EncodeT because direct pointer conversion not possible.
-	_FORCE_INLINE_ static void encode(const Vector<Face3> &p_vec, void *p_ptr) {
-		Vector<Vector3> *arr = reinterpret_cast<Vector<Vector3> *>(p_ptr);
-		int len = p_vec.size();
-		arr->resize(len * 3);
-		{
-			const Face3 *r = p_vec.ptr();
-			Vector3 *w = arr->ptrw();
-			for (int i = 0; i < len; i++) {
-				w[i * 3 + 0] = r[i].vertex[0];
-				w[i * 3 + 1] = r[i].vertex[1];
-				w[i * 3 + 2] = r[i].vertex[2];
-			}
-		}
-	}
+	static void encode(const Vector<Face3> &p_vec, void *p_ptr);
 };

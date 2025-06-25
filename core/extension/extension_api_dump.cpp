@@ -35,6 +35,7 @@
 #include "core/extension/gdextension_special_compat_hashes.h"
 #include "core/io/file_access.h"
 #include "core/io/json.h"
+#include "core/math/vector4i.h"
 #include "core/templates/pair.h"
 #include "core/version.h"
 

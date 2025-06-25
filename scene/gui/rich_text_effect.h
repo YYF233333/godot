@@ -32,6 +32,7 @@
 
 #include "core/io/resource.h"
 #include "core/math/transform_2d.h"
+#include "core/math/vector2i.h"
 #include "core/object/gdvirtual.gen.inc"
 
 class CharFXTransform : public RefCounted {

@@ -33,6 +33,7 @@
 #include "core/debugger/engine_profiler.h"
 #include "core/io/resource_loader.h"
 #include "core/io/resource_saver.h"
+#include "core/math/vector2i.h"
 #include "core/object/script_backtrace.h"
 #include "core/os/semaphore.h"
 #include "core/os/thread.h"

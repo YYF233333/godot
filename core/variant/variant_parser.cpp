@@ -33,7 +33,11 @@
 #include "core/crypto/crypto_core.h"
 #include "core/io/resource_loader.h"
 #include "core/io/resource_uid.h"
+#include "core/math/projection.h"
 #include "core/math/rect2i.h"
+#include "core/math/transform_3d.h"
+#include "core/math/vector3i.h"
+#include "core/math/vector4i.h"
 #include "core/object/script_language.h"
 #include "core/string/string_buffer.h"
 

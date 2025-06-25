@@ -33,9 +33,15 @@
 #include "variant.h"
 
 #include "core/debugger/engine_debugger.h"
+#include "core/math/aabb.h"
+#include "core/math/projection.h"
+#include "core/math/quaternion.h"
 #include "core/math/rect2.h"
 #include "core/math/rect2i.h"
 #include "core/math/transform_2d.h"
+#include "core/math/transform_3d.h"
+#include "core/math/vector3i.h"
+#include "core/math/vector4i.h"
 #include "core/object/class_db.h"
 #include "core/variant/variant_internal.h"
 

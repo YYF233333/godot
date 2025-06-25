@@ -33,7 +33,7 @@
 #include "core/math/vector4.h"
 #include "core/string/ustring.h"
 
-Vector4i::Axis Vector4i::min_axis_index() const {
+int Vector4i::min_axis_index() const {
 	uint32_t min_index = 0;
 	int32_t min_value = x;
 	for (uint32_t i = 1; i < 4; i++) {
@@ -45,7 +45,7 @@ Vector4i::Axis Vector4i::min_axis_index() const {
 	return Vector4i::Axis(min_index);
 }
 
-Vector4i::Axis Vector4i::max_axis_index() const {
+int Vector4i::max_axis_index() const {
 	uint32_t max_index = 0;
 	int32_t max_value = x;
 	for (uint32_t i = 1; i < 4; i++) {

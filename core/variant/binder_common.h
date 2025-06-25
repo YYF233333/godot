@@ -31,15 +31,10 @@
 #pragma once
 
 #include "core/input/input_enums.h"
-#include "core/math/projection.h"
 #include "core/math/vector2.h"
-#include "core/math/vector2i.h"
 #include "core/math/vector3.h"
-#include "core/math/vector3i.h"
 #include "core/math/vector4.h"
-#include "core/math/vector4i.h"
 #include "core/object/object.h"
-#include "core/os/keyboard.h"
 #include "core/templates/simple_type.h"
 #include "core/typedefs.h"
 #include "core/variant/method_ptrcall.h"
@@ -48,6 +43,10 @@
 #include "core/variant/variant_internal.h"
 
 #include <cstdio>
+
+enum class Key;
+enum class KeyModifierMask;
+enum class KeyLocation;
 
 // Variant cannot define an implicit cast operator for every Object subclass, so the
 // casting is done here, to allow binding methods with parameters more specific than Object *
@@ -95,13 +94,9 @@ struct VariantCaster<const T &> {
 VARIANT_ENUM_CAST(Object::ConnectFlags);
 
 VARIANT_ENUM_CAST(Vector2::Axis);
-VARIANT_ENUM_CAST(Vector2i::Axis);
 VARIANT_ENUM_CAST(Vector3::Axis);
-VARIANT_ENUM_CAST(Vector3i::Axis);
 VARIANT_ENUM_CAST(Vector4::Axis);
-VARIANT_ENUM_CAST(Vector4i::Axis);
 VARIANT_ENUM_CAST(EulerOrder);
-VARIANT_ENUM_CAST(Projection::Planes);
 
 VARIANT_ENUM_CAST(Error);
 VARIANT_ENUM_CAST(Side);

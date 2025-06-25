@@ -32,6 +32,7 @@
 
 #include "core/io/json.h"
 
+#include "core/math/vector4i.h"
 #include "core/variant/typed_array.h"
 #include "core/variant/typed_dictionary.h"
 #include "tests/test_macros.h"

@@ -33,11 +33,11 @@
 #include "core/math/vector3.h"
 #include "core/string/ustring.h"
 
-Vector3i::Axis Vector3i::min_axis_index() const {
+int Vector3i::min_axis_index() const {
 	return x < y ? (x < z ? Vector3i::AXIS_X : Vector3i::AXIS_Z) : (y < z ? Vector3i::AXIS_Y : Vector3i::AXIS_Z);
 }
 
-Vector3i::Axis Vector3i::max_axis_index() const {
+int Vector3i::max_axis_index() const {
 	return x < y ? (y < z ? Vector3i::AXIS_Z : Vector3i::AXIS_Y) : (x < z ? Vector3i::AXIS_Z : Vector3i::AXIS_X);
 }
 

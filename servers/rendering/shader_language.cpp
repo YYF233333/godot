@@ -30,6 +30,7 @@
 
 #include "shader_language.h"
 
+#include "core/math/vector4i.h"
 #include "core/os/os.h"
 #include "core/templates/local_vector.h"
 #include "servers/rendering/renderer_compositor.h"

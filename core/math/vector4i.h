@@ -70,8 +70,8 @@ struct [[nodiscard]] Vector4i {
 		return coord[p_axis];
 	}
 
-	Vector4i::Axis min_axis_index() const;
-	Vector4i::Axis max_axis_index() const;
+	int min_axis_index() const;
+	int max_axis_index() const;
 
 	Vector4i min(const Vector4i &p_vector4i) const {
 		return Vector4i(MIN(x, p_vector4i.x), MIN(y, p_vector4i.y), MIN(z, p_vector4i.z), MIN(w, p_vector4i.w));

@@ -30,9 +30,15 @@
 
 #pragma once
 
+#include "core/math/aabb.h"
+#include "core/math/basis.h"
+#include "core/math/plane.h"
+#include "core/math/quaternion.h"
 #include "core/math/rect2.h"
 #include "core/math/rect2i.h"
 #include "core/math/transform_2d.h"
+#include "core/math/transform_3d.h"
+#include "core/math/vector3.h"
 #include "core/math/vector3i.h"
 #include "core/object/object.h"
 #include "core/string/node_path.h"

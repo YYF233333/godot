@@ -32,8 +32,12 @@
 #include "animation.compat.inc"
 
 #include "core/io/marshalls.h"
+#include "core/math/aabb.h"
 #include "core/math/rect2i.h"
 #include "core/math/transform_2d.h"
+#include "core/math/transform_3d.h"
+#include "core/math/vector3i.h"
+#include "core/math/vector4i.h"
 
 bool Animation::_set(const StringName &p_name, const Variant &p_value) {
 	String prop_name = p_name;
