@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/templates/vector.h"
 #include "core/typedefs.h"
 #include "core/variant/variant_deep_duplicate.h"
 
@@ -49,30 +50,7 @@ class Array {
 	void _unref() const;
 
 public:
-	struct ConstIterator {
-		_FORCE_INLINE_ const Variant &operator*() const;
-		_FORCE_INLINE_ const Variant *operator->() const;
-
-		_FORCE_INLINE_ ConstIterator &operator++();
-		_FORCE_INLINE_ ConstIterator &operator--();
-
-		_FORCE_INLINE_ bool operator==(const ConstIterator &p_other) const { return element_ptr == p_other.element_ptr; }
-		_FORCE_INLINE_ bool operator!=(const ConstIterator &p_other) const { return element_ptr != p_other.element_ptr; }
-
-		_FORCE_INLINE_ ConstIterator(const Variant *p_element_ptr) :
-				element_ptr(p_element_ptr) {}
-		_FORCE_INLINE_ ConstIterator() {}
-		_FORCE_INLINE_ ConstIterator(const ConstIterator &p_other) :
-				element_ptr(p_other.element_ptr) {}
-
-		_FORCE_INLINE_ ConstIterator &operator=(const ConstIterator &p_other) {
-			element_ptr = p_other.element_ptr;
-			return *this;
-		}
-
-	private:
-		const Variant *element_ptr = nullptr;
-	};
+	using ConstIterator = Vector<Variant>::ConstIterator;
 
 	struct Iterator {
 		_FORCE_INLINE_ Variant &operator*() const;
