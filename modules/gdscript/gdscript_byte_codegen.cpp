@@ -1621,67 +1621,7 @@ void GDScriptByteCodeGenerator::write_for(const Address &p_variable, bool p_use_
 	} else if (container.type.has_type) {
 		if (container.type.kind == GDScriptDataType::BUILTIN) {
 			begin_opcode = GDScriptFunction::OPCODE_ITERATE_BEGIN_BUILTIN;
-			switch (container.type.builtin_type) {
-				case Variant::INT:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_INT;
-					break;
-				case Variant::FLOAT:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_FLOAT;
-					break;
-				case Variant::VECTOR2:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_VECTOR2;
-					break;
-				case Variant::VECTOR2I:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_VECTOR2I;
-					break;
-				case Variant::VECTOR3:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_VECTOR3;
-					break;
-				case Variant::VECTOR3I:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_VECTOR3I;
-					break;
-				case Variant::STRING:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_STRING;
-					break;
-				case Variant::DICTIONARY:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_DICTIONARY;
-					break;
-				case Variant::ARRAY:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_ARRAY;
-					break;
-				case Variant::PACKED_BYTE_ARRAY:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_PACKED_BYTE_ARRAY;
-					break;
-				case Variant::PACKED_INT32_ARRAY:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_PACKED_INT32_ARRAY;
-					break;
-				case Variant::PACKED_INT64_ARRAY:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_PACKED_INT64_ARRAY;
-					break;
-				case Variant::PACKED_FLOAT32_ARRAY:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_PACKED_FLOAT32_ARRAY;
-					break;
-				case Variant::PACKED_FLOAT64_ARRAY:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_PACKED_FLOAT64_ARRAY;
-					break;
-				case Variant::PACKED_STRING_ARRAY:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_PACKED_STRING_ARRAY;
-					break;
-				case Variant::PACKED_VECTOR2_ARRAY:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_PACKED_VECTOR2_ARRAY;
-					break;
-				case Variant::PACKED_VECTOR3_ARRAY:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_PACKED_VECTOR3_ARRAY;
-					break;
-				case Variant::PACKED_COLOR_ARRAY:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_PACKED_COLOR_ARRAY;
-					break;
-				case Variant::PACKED_VECTOR4_ARRAY:
-					iterate_opcode = GDScriptFunction::OPCODE_ITERATE_PACKED_VECTOR4_ARRAY;
-					break;
-				default:
-					break;
-			}
+			iterate_opcode = GDScriptFunction::OPCODE_ITERATE_BUILTIN;
 		} else {
 			begin_opcode = GDScriptFunction::OPCODE_ITERATE_BEGIN_OBJECT;
 			iterate_opcode = GDScriptFunction::OPCODE_ITERATE_OBJECT;
@@ -1710,12 +1650,15 @@ void GDScriptByteCodeGenerator::write_for(const Address &p_variable, bool p_use_
 	for_jmp_addrs.push_back(opcodes.size());
 	append(0); // End of loop address, will be patched.
 	append_opcode(GDScriptFunction::OPCODE_JUMP);
-	append(opcodes.size() + (p_is_range ? 7 : 6)); // Skip over 'continue' code.
+	append(opcodes.size() + ((p_is_range || (container.type.has_type && container.type.kind == GDScriptDataType::BUILTIN)) ? 7 : 6)); // Skip over 'continue' code.
 
 	// Next iteration.
 	int continue_addr = opcodes.size();
 	continue_addrs.push_back(continue_addr);
 	append_opcode(iterate_opcode);
+	if (container.type.has_type && container.type.kind == GDScriptDataType::BUILTIN) {
+		append(container.type.builtin_type);
+	}
 	append(counter);
 	if (p_is_range) {
 		append(range_to);

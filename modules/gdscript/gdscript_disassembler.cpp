@@ -1121,42 +1121,32 @@ void GDScriptFunction::disassemble(const Vector<String> &p_code_lines) const {
 		text += #m_v_type;         \
 	} break
 
-#define DISASSEMBLE_ITERATE(m_type)      \
-	case OPCODE_ITERATE_##m_type: {      \
-		text += "for-loop (typed ";      \
-		text += #m_type;                 \
-		text += ") ";                    \
-		text += DADDR(3);                \
-		text += " in ";                  \
-		text += DADDR(2);                \
-		text += " counter ";             \
-		text += DADDR(1);                \
-		text += " end ";                 \
-		text += itos(_code_ptr[ip + 4]); \
-		incr += 5;                       \
-	} break
-
-#define DISASSEMBLE_ITERATE_TYPES(m_macro) \
-	m_macro(INT);                          \
-	m_macro(FLOAT);                        \
-	m_macro(VECTOR2);                      \
-	m_macro(VECTOR2I);                     \
-	m_macro(VECTOR3);                      \
-	m_macro(VECTOR3I);                     \
-	m_macro(STRING);                       \
-	m_macro(DICTIONARY);                   \
-	m_macro(ARRAY);                        \
-	m_macro(PACKED_BYTE_ARRAY);            \
-	m_macro(PACKED_INT32_ARRAY);           \
-	m_macro(PACKED_INT64_ARRAY);           \
-	m_macro(PACKED_FLOAT32_ARRAY);         \
-	m_macro(PACKED_FLOAT64_ARRAY);         \
-	m_macro(PACKED_STRING_ARRAY);          \
-	m_macro(PACKED_VECTOR2_ARRAY);         \
-	m_macro(PACKED_VECTOR3_ARRAY);         \
-	m_macro(PACKED_COLOR_ARRAY);           \
-	m_macro(PACKED_VECTOR4_ARRAY);         \
-	m_macro(OBJECT)
+#define APPEND_CONTAINER_TYPE(m_text, m_v_type) \
+	switch (m_v_type) {                         \
+		TYPE_SWITCH_CASE(INT);                  \
+		TYPE_SWITCH_CASE(FLOAT);                \
+		TYPE_SWITCH_CASE(VECTOR2);              \
+		TYPE_SWITCH_CASE(VECTOR2I);             \
+		TYPE_SWITCH_CASE(VECTOR3);              \
+		TYPE_SWITCH_CASE(VECTOR3I);             \
+		TYPE_SWITCH_CASE(STRING);               \
+		TYPE_SWITCH_CASE(DICTIONARY);           \
+		TYPE_SWITCH_CASE(ARRAY);                \
+		TYPE_SWITCH_CASE(PACKED_BYTE_ARRAY);    \
+		TYPE_SWITCH_CASE(PACKED_INT32_ARRAY);   \
+		TYPE_SWITCH_CASE(PACKED_INT64_ARRAY);   \
+		TYPE_SWITCH_CASE(PACKED_FLOAT32_ARRAY); \
+		TYPE_SWITCH_CASE(PACKED_FLOAT64_ARRAY); \
+		TYPE_SWITCH_CASE(PACKED_STRING_ARRAY);  \
+		TYPE_SWITCH_CASE(PACKED_VECTOR2_ARRAY); \
+		TYPE_SWITCH_CASE(PACKED_VECTOR3_ARRAY); \
+		TYPE_SWITCH_CASE(PACKED_COLOR_ARRAY);   \
+		TYPE_SWITCH_CASE(PACKED_VECTOR4_ARRAY); \
+		default: {                              \
+			text += "UNKNOWN";                  \
+		} break;                                \
+	}                                           \
+	((void)0)
 
 			case OPCODE_ITERATE_BEGIN: {
 				text += "for-init ";
@@ -1172,30 +1162,7 @@ void GDScriptFunction::disassemble(const Vector<String> &p_code_lines) const {
 			} break;
 			case OPCODE_ITERATE_BEGIN_BUILTIN: {
 				text += "for-init (typed ";
-				switch ((Variant::Type)_code_ptr[ip + 1]) {
-					TYPE_SWITCH_CASE(INT);
-					TYPE_SWITCH_CASE(FLOAT);
-					TYPE_SWITCH_CASE(VECTOR2);
-					TYPE_SWITCH_CASE(VECTOR2I);
-					TYPE_SWITCH_CASE(VECTOR3);
-					TYPE_SWITCH_CASE(VECTOR3I);
-					TYPE_SWITCH_CASE(STRING);
-					TYPE_SWITCH_CASE(DICTIONARY);
-					TYPE_SWITCH_CASE(ARRAY);
-					TYPE_SWITCH_CASE(PACKED_BYTE_ARRAY);
-					TYPE_SWITCH_CASE(PACKED_INT32_ARRAY);
-					TYPE_SWITCH_CASE(PACKED_INT64_ARRAY);
-					TYPE_SWITCH_CASE(PACKED_FLOAT32_ARRAY);
-					TYPE_SWITCH_CASE(PACKED_FLOAT64_ARRAY);
-					TYPE_SWITCH_CASE(PACKED_STRING_ARRAY);
-					TYPE_SWITCH_CASE(PACKED_VECTOR2_ARRAY);
-					TYPE_SWITCH_CASE(PACKED_VECTOR3_ARRAY);
-					TYPE_SWITCH_CASE(PACKED_COLOR_ARRAY);
-					TYPE_SWITCH_CASE(PACKED_VECTOR4_ARRAY);
-					default: {
-						text += "UNKNOWN";
-					} break;
-				}
+				APPEND_CONTAINER_TYPE(text, (Variant::Type)_code_ptr[ip + 1]);
 				text += ") ";
 				text += DADDR(4);
 				text += " in ";
@@ -1247,7 +1214,32 @@ void GDScriptFunction::disassemble(const Vector<String> &p_code_lines) const {
 
 				incr += 5;
 			} break;
-				DISASSEMBLE_ITERATE_TYPES(DISASSEMBLE_ITERATE);
+			case OPCODE_ITERATE_BUILTIN: {
+				text += "for-loop (typed ";
+				APPEND_CONTAINER_TYPE(text, (Variant::Type)_code_ptr[ip + 1]);
+				text += ") ";
+				text += DADDR(4);
+				text += " in ";
+				text += DADDR(3);
+				text += " counter ";
+				text += DADDR(2);
+				text += " end ";
+				text += itos(_code_ptr[ip + 5]);
+				incr += 6;
+			} break;
+			case OPCODE_ITERATE_OBJECT: {
+				text += "for-loop (typed ";
+				text += "OBJECT";
+				text += ") ";
+				text += DADDR(3);
+				text += " in ";
+				text += DADDR(2);
+				text += " counter ";
+				text += DADDR(1);
+				text += " end ";
+				text += itos(_code_ptr[ip + 4]);
+				incr += 5;
+			} break;
 			case OPCODE_ITERATE_RANGE: {
 				text += "for-loop ";
 				text += DADDR(4);

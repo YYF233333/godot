@@ -327,25 +327,7 @@ void (*type_init_function_table[])(Variant *) = {
 		&&OPCODE_ITERATE_BEGIN_OBJECT,                   \
 		&&OPCODE_ITERATE_BEGIN_RANGE,                    \
 		&&OPCODE_ITERATE,                                \
-		&&OPCODE_ITERATE_INT,                            \
-		&&OPCODE_ITERATE_FLOAT,                          \
-		&&OPCODE_ITERATE_VECTOR2,                        \
-		&&OPCODE_ITERATE_VECTOR2I,                       \
-		&&OPCODE_ITERATE_VECTOR3,                        \
-		&&OPCODE_ITERATE_VECTOR3I,                       \
-		&&OPCODE_ITERATE_STRING,                         \
-		&&OPCODE_ITERATE_DICTIONARY,                     \
-		&&OPCODE_ITERATE_ARRAY,                          \
-		&&OPCODE_ITERATE_PACKED_BYTE_ARRAY,              \
-		&&OPCODE_ITERATE_PACKED_INT32_ARRAY,             \
-		&&OPCODE_ITERATE_PACKED_INT64_ARRAY,             \
-		&&OPCODE_ITERATE_PACKED_FLOAT32_ARRAY,           \
-		&&OPCODE_ITERATE_PACKED_FLOAT64_ARRAY,           \
-		&&OPCODE_ITERATE_PACKED_STRING_ARRAY,            \
-		&&OPCODE_ITERATE_PACKED_VECTOR2_ARRAY,           \
-		&&OPCODE_ITERATE_PACKED_VECTOR3_ARRAY,           \
-		&&OPCODE_ITERATE_PACKED_COLOR_ARRAY,             \
-		&&OPCODE_ITERATE_PACKED_VECTOR4_ARRAY,           \
+		&&OPCODE_ITERATE_BUILTIN,                        \
 		&&OPCODE_ITERATE_OBJECT,                         \
 		&&OPCODE_ITERATE_RANGE,                          \
 		&&OPCODE_STORE_GLOBAL,                           \
@@ -3339,249 +3321,183 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 			}
 			DISPATCH_OPCODE;
 
-			OPCODE(OPCODE_ITERATE_INT) {
-				CHECK_SPACE(4);
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				int64_t size = *VariantInternal::get_int(container);
-				int64_t *count = VariantInternal::get_int(counter);
-
-				(*count)++;
-
-				if (*count >= size) {
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				} else {
-					GET_VARIANT_PTR(iterator, 2);
-					*VariantInternal::get_int(iterator) = *count;
-
-					ip += 5; // Loop again.
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_FLOAT) {
-				CHECK_SPACE(4);
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				double size = *VariantInternal::get_float(container);
-				double *count = VariantInternal::get_float(counter);
-
-				(*count)++;
-
-				if (*count >= size) {
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				} else {
-					GET_VARIANT_PTR(iterator, 2);
-					*VariantInternal::get_float(iterator) = *count;
-
-					ip += 5; // Loop again.
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_VECTOR2) {
-				CHECK_SPACE(4);
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				const Vector2 *bounds = VariantInternal::get_vector2((const Variant *)container);
-				double *count = VariantInternal::get_float(counter);
-
-				(*count)++;
-
-				if (*count >= bounds->y) {
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				} else {
-					GET_VARIANT_PTR(iterator, 2);
-					*VariantInternal::get_float(iterator) = *count;
-
-					ip += 5; // Loop again.
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_VECTOR2I) {
-				CHECK_SPACE(4);
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				const Vector2i *bounds = VariantInternal::get_vector2i((const Variant *)container);
-				int64_t *count = VariantInternal::get_int(counter);
-
-				(*count)++;
-
-				if (*count >= bounds->y) {
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				} else {
-					GET_VARIANT_PTR(iterator, 2);
-					*VariantInternal::get_int(iterator) = *count;
-
-					ip += 5; // Loop again.
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_VECTOR3) {
-				CHECK_SPACE(4);
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				const Vector3 *bounds = VariantInternal::get_vector3((const Variant *)container);
-				double *count = VariantInternal::get_float(counter);
-
-				*count += bounds->z;
-
-				if ((bounds->z < 0 && *count <= bounds->y) || (bounds->z > 0 && *count >= bounds->y)) {
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				} else {
-					GET_VARIANT_PTR(iterator, 2);
-					*VariantInternal::get_float(iterator) = *count;
-
-					ip += 5; // Loop again.
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_VECTOR3I) {
-				CHECK_SPACE(4);
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				const Vector3i *bounds = VariantInternal::get_vector3i((const Variant *)container);
-				int64_t *count = VariantInternal::get_int(counter);
-
-				*count += bounds->z;
-
-				if ((bounds->z < 0 && *count <= bounds->y) || (bounds->z > 0 && *count >= bounds->y)) {
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				} else {
-					GET_VARIANT_PTR(iterator, 2);
-					*VariantInternal::get_int(iterator) = *count;
-
-					ip += 5; // Loop again.
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_STRING) {
-				CHECK_SPACE(4);
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				const String *str = VariantInternal::get_string((const Variant *)container);
-				int64_t *idx = VariantInternal::get_int(counter);
-				(*idx)++;
-
-				if (*idx >= str->length()) {
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				} else {
-					GET_VARIANT_PTR(iterator, 2);
-					*VariantInternal::get_string(iterator) = str->substr(*idx, 1);
-
-					ip += 5; // Loop again.
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_DICTIONARY) {
-				CHECK_SPACE(4);
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				const Dictionary *dict = VariantInternal::get_dictionary((const Variant *)container);
-				const Variant *next = dict->next(counter);
-
-				if (!next) {
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				} else {
-					GET_VARIANT_PTR(iterator, 2);
-					*counter = *next;
-					*iterator = *next;
-
-					ip += 5; // Loop again.
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_ARRAY) {
-				CHECK_SPACE(4);
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				const Array *array = VariantInternal::get_array((const Variant *)container);
-				int64_t *idx = VariantInternal::get_int(counter);
-				(*idx)++;
-
-				if (*idx >= array->size()) {
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				} else {
-					GET_VARIANT_PTR(iterator, 2);
-					*iterator = array->get(*idx);
-
-					ip += 5; // Loop again.
-				}
-			}
-			DISPATCH_OPCODE;
-
-#define OPCODE_ITERATE_PACKED_ARRAY(m_var_type, m_elem_type, m_get_func, m_ret_get_func)            \
-	OPCODE(OPCODE_ITERATE_PACKED_##m_var_type##_ARRAY) {                                            \
-		CHECK_SPACE(4);                                                                             \
-		GET_VARIANT_PTR(counter, 0);                                                                \
-		GET_VARIANT_PTR(container, 1);                                                              \
+#define OPCODE_ITERATE_PACKED_ARRAY_CASE(m_var_type, m_elem_type, m_get_func, m_ret_get_func)       \
+	case Variant::PACKED_##m_var_type##_ARRAY: {                                                    \
 		const Vector<m_elem_type> *array = VariantInternal::m_get_func((const Variant *)container); \
 		int64_t *idx = VariantInternal::get_int(counter);                                           \
 		(*idx)++;                                                                                   \
 		if (*idx >= array->size()) {                                                                \
-			int jumpto = _code_ptr[ip + 4];                                                         \
-			GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);                                        \
-			ip = jumpto;                                                                            \
+			jump_to_end = true;                                                                     \
 		} else {                                                                                    \
-			GET_VARIANT_PTR(iterator, 2);                                                           \
+			GET_VARIANT_PTR(iterator, 3);                                                           \
 			*VariantInternal::m_ret_get_func(iterator) = array->get(*idx);                          \
-			ip += 5;                                                                                \
+			ip += 6;                                                                                \
 		}                                                                                           \
-	}                                                                                               \
-	DISPATCH_OPCODE
+	} break
 
-			OPCODE_ITERATE_PACKED_ARRAY(BYTE, uint8_t, get_byte_array, get_int);
-			OPCODE_ITERATE_PACKED_ARRAY(INT32, int32_t, get_int32_array, get_int);
-			OPCODE_ITERATE_PACKED_ARRAY(INT64, int64_t, get_int64_array, get_int);
-			OPCODE_ITERATE_PACKED_ARRAY(FLOAT32, float, get_float32_array, get_float);
-			OPCODE_ITERATE_PACKED_ARRAY(FLOAT64, double, get_float64_array, get_float);
-			OPCODE_ITERATE_PACKED_ARRAY(STRING, String, get_string_array, get_string);
-			OPCODE_ITERATE_PACKED_ARRAY(VECTOR2, Vector2, get_vector2_array, get_vector2);
-			OPCODE_ITERATE_PACKED_ARRAY(VECTOR3, Vector3, get_vector3_array, get_vector3);
-			OPCODE_ITERATE_PACKED_ARRAY(COLOR, Color, get_color_array, get_color);
-			OPCODE_ITERATE_PACKED_ARRAY(VECTOR4, Vector4, get_vector4_array, get_vector4);
+			OPCODE(OPCODE_ITERATE_BUILTIN) {
+				CHECK_SPACE(5);
+
+				Variant::Type container_type = static_cast<Variant::Type>(_code_ptr[ip + 1]);
+				GET_VARIANT_PTR(counter, 1);
+				GET_VARIANT_PTR(container, 2);
+
+				bool jump_to_end = false;
+
+				switch (container_type) {
+					case Variant::INT: {
+						int64_t size = *VariantInternal::get_int(container);
+						int64_t *count = VariantInternal::get_int(counter);
+
+						(*count)++;
+
+						if (*count >= size) {
+							jump_to_end = true;
+						} else {
+							GET_VARIANT_PTR(iterator, 3);
+							*VariantInternal::get_int(iterator) = *count;
+
+							ip += 6; // Loop again.
+						}
+					} break;
+					case Variant::FLOAT: {
+						double size = *VariantInternal::get_float(container);
+						double *count = VariantInternal::get_float(counter);
+
+						(*count)++;
+
+						if (*count >= size) {
+							jump_to_end = true;
+						} else {
+							GET_VARIANT_PTR(iterator, 3);
+							*VariantInternal::get_float(iterator) = *count;
+
+							ip += 6; // Loop again.
+						}
+					} break;
+					case Variant::VECTOR2: {
+						const Vector2 *bounds = VariantInternal::get_vector2((const Variant *)container);
+						double *count = VariantInternal::get_float(counter);
+
+						(*count)++;
+
+						if (*count >= bounds->y) {
+							jump_to_end = true;
+						} else {
+							GET_VARIANT_PTR(iterator, 3);
+							*VariantInternal::get_float(iterator) = *count;
+
+							ip += 6; // Loop again.
+						}
+					} break;
+					case Variant::VECTOR2I: {
+						const Vector2i *bounds = VariantInternal::get_vector2i((const Variant *)container);
+						int64_t *count = VariantInternal::get_int(counter);
+
+						(*count)++;
+
+						if (*count >= bounds->y) {
+							jump_to_end = true;
+						} else {
+							GET_VARIANT_PTR(iterator, 3);
+							*VariantInternal::get_int(iterator) = *count;
+
+							ip += 6; // Loop again.
+						}
+					} break;
+					case Variant::VECTOR3: {
+						const Vector3 *bounds = VariantInternal::get_vector3((const Variant *)container);
+						double *count = VariantInternal::get_float(counter);
+
+						*count += bounds->z;
+
+						if ((bounds->z < 0 && *count <= bounds->y) || (bounds->z > 0 && *count >= bounds->y)) {
+							jump_to_end = true;
+						} else {
+							GET_VARIANT_PTR(iterator, 3);
+							*VariantInternal::get_float(iterator) = *count;
+
+							ip += 6; // Loop again.
+						}
+					} break;
+					case Variant::VECTOR3I: {
+						const Vector3i *bounds = VariantInternal::get_vector3i((const Variant *)container);
+						int64_t *count = VariantInternal::get_int(counter);
+
+						*count += bounds->z;
+
+						if ((bounds->z < 0 && *count <= bounds->y) || (bounds->z > 0 && *count >= bounds->y)) {
+							jump_to_end = true;
+						} else {
+							GET_VARIANT_PTR(iterator, 3);
+							*VariantInternal::get_int(iterator) = *count;
+
+							ip += 6; // Loop again.
+						}
+					} break;
+					case Variant::STRING: {
+						const String *str = VariantInternal::get_string((const Variant *)container);
+						int64_t *idx = VariantInternal::get_int(counter);
+						(*idx)++;
+
+						if (*idx >= str->length()) {
+							jump_to_end = true;
+						} else {
+							GET_VARIANT_PTR(iterator, 3);
+							*VariantInternal::get_string(iterator) = str->substr(*idx, 1);
+
+							ip += 6; // Loop again.
+						}
+					} break;
+					case Variant::DICTIONARY: {
+						const Dictionary *dict = VariantInternal::get_dictionary((const Variant *)container);
+						const Variant *next = dict->next(counter);
+
+						if (!next) {
+							jump_to_end = true;
+						} else {
+							GET_VARIANT_PTR(iterator, 3);
+							*counter = *next;
+							*iterator = *next;
+
+							ip += 6; // Loop again.
+						}
+					} break;
+					case Variant::ARRAY: {
+						const Array *array = VariantInternal::get_array((const Variant *)container);
+						int64_t *idx = VariantInternal::get_int(counter);
+						(*idx)++;
+
+						if (*idx >= array->size()) {
+							jump_to_end = true;
+						} else {
+							GET_VARIANT_PTR(iterator, 3);
+							*iterator = array->get(*idx);
+
+							ip += 6; // Loop again.
+						}
+					} break;
+						OPCODE_ITERATE_PACKED_ARRAY_CASE(BYTE, uint8_t, get_byte_array, get_int);
+						OPCODE_ITERATE_PACKED_ARRAY_CASE(INT32, int32_t, get_int32_array, get_int);
+						OPCODE_ITERATE_PACKED_ARRAY_CASE(INT64, int64_t, get_int64_array, get_int);
+						OPCODE_ITERATE_PACKED_ARRAY_CASE(FLOAT32, float, get_float32_array, get_float);
+						OPCODE_ITERATE_PACKED_ARRAY_CASE(FLOAT64, double, get_float64_array, get_float);
+						OPCODE_ITERATE_PACKED_ARRAY_CASE(STRING, String, get_string_array, get_string);
+						OPCODE_ITERATE_PACKED_ARRAY_CASE(VECTOR2, Vector2, get_vector2_array, get_vector2);
+						OPCODE_ITERATE_PACKED_ARRAY_CASE(VECTOR3, Vector3, get_vector3_array, get_vector3);
+						OPCODE_ITERATE_PACKED_ARRAY_CASE(COLOR, Color, get_color_array, get_color);
+						OPCODE_ITERATE_PACKED_ARRAY_CASE(VECTOR4, Vector4, get_vector4_array, get_vector4);
+					default:
+						break;
+				}
+
+				if (jump_to_end) {
+					int jumpto = _code_ptr[ip + 5];
+					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
+					ip = jumpto;
+				}
+			}
+			DISPATCH_OPCODE;
 
 			OPCODE(OPCODE_ITERATE_OBJECT) {
 				CHECK_SPACE(4);
