@@ -323,25 +323,7 @@ void (*type_init_function_table[])(Variant *) = {
 		&&OPCODE_RETURN_TYPED_NATIVE,                    \
 		&&OPCODE_RETURN_TYPED_SCRIPT,                    \
 		&&OPCODE_ITERATE_BEGIN,                          \
-		&&OPCODE_ITERATE_BEGIN_INT,                      \
-		&&OPCODE_ITERATE_BEGIN_FLOAT,                    \
-		&&OPCODE_ITERATE_BEGIN_VECTOR2,                  \
-		&&OPCODE_ITERATE_BEGIN_VECTOR2I,                 \
-		&&OPCODE_ITERATE_BEGIN_VECTOR3,                  \
-		&&OPCODE_ITERATE_BEGIN_VECTOR3I,                 \
-		&&OPCODE_ITERATE_BEGIN_STRING,                   \
-		&&OPCODE_ITERATE_BEGIN_DICTIONARY,               \
-		&&OPCODE_ITERATE_BEGIN_ARRAY,                    \
-		&&OPCODE_ITERATE_BEGIN_PACKED_BYTE_ARRAY,        \
-		&&OPCODE_ITERATE_BEGIN_PACKED_INT32_ARRAY,       \
-		&&OPCODE_ITERATE_BEGIN_PACKED_INT64_ARRAY,       \
-		&&OPCODE_ITERATE_BEGIN_PACKED_FLOAT32_ARRAY,     \
-		&&OPCODE_ITERATE_BEGIN_PACKED_FLOAT64_ARRAY,     \
-		&&OPCODE_ITERATE_BEGIN_PACKED_STRING_ARRAY,      \
-		&&OPCODE_ITERATE_BEGIN_PACKED_VECTOR2_ARRAY,     \
-		&&OPCODE_ITERATE_BEGIN_PACKED_VECTOR3_ARRAY,     \
-		&&OPCODE_ITERATE_BEGIN_PACKED_COLOR_ARRAY,       \
-		&&OPCODE_ITERATE_BEGIN_PACKED_VECTOR4_ARRAY,     \
+		&&OPCODE_ITERATE_BEGIN_BUILTIN,                  \
 		&&OPCODE_ITERATE_BEGIN_OBJECT,                   \
 		&&OPCODE_ITERATE_BEGIN_RANGE,                    \
 		&&OPCODE_ITERATE,                                \
@@ -3025,288 +3007,214 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 			}
 			DISPATCH_OPCODE;
 
-			OPCODE(OPCODE_ITERATE_BEGIN_INT) {
-				CHECK_SPACE(8); // Check space for iterate instruction too.
+#define OPCODE_ITERATE_BEGIN_PACKED_ARRAY_CASE(m_var_type, m_elem_type, m_get_func, m_var_ret_type, m_ret_type, m_ret_get_func) \
+	case Variant::PACKED_##m_var_type##_ARRAY: {                                                                                \
+		Vector<m_elem_type> *array = VariantInternal::m_get_func(container);                                                    \
+		VariantInternal::initialize(counter, Variant::INT);                                                                     \
+		*VariantInternal::get_int(counter) = 0;                                                                                 \
+		if (!array->is_empty()) {                                                                                               \
+			GET_VARIANT_PTR(iterator, 3);                                                                                       \
+			VariantInternal::initialize(iterator, Variant::m_var_ret_type);                                                     \
+			m_ret_type *it = VariantInternal::m_ret_get_func(iterator);                                                         \
+			*it = array->get(0);                                                                                                \
+			ip += 6;                                                                                                            \
+		} else {                                                                                                                \
+			jump_to_end = true;                                                                                                 \
+		}                                                                                                                       \
+	} break
 
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
+			OPCODE(OPCODE_ITERATE_BEGIN_BUILTIN) {
+				CHECK_SPACE(9); // Check space for iterate instruction too.
 
-				int64_t size = *VariantInternal::get_int(container);
+				Variant::Type container_type = static_cast<Variant::Type>(_code_ptr[ip + 1]);
+				GET_VARIANT_PTR(counter, 1);
+				GET_VARIANT_PTR(container, 2);
 
-				VariantInternal::initialize(counter, Variant::INT);
-				*VariantInternal::get_int(counter) = 0;
+				bool jump_to_end = false;
 
-				if (size > 0) {
-					GET_VARIANT_PTR(iterator, 2);
-					VariantInternal::initialize(iterator, Variant::INT);
-					*VariantInternal::get_int(iterator) = 0;
+				switch (container_type) {
+					case Variant::INT: {
+						int64_t size = *VariantInternal::get_int(container);
 
-					// Skip regular iterate.
-					ip += 5;
-				} else {
+						VariantInternal::initialize(counter, Variant::INT);
+						*VariantInternal::get_int(counter) = 0;
+
+						if (size > 0) {
+							GET_VARIANT_PTR(iterator, 3);
+							VariantInternal::initialize(iterator, Variant::INT);
+							*VariantInternal::get_int(iterator) = 0;
+
+							// Skip regular iterate.
+							ip += 6;
+						} else {
+							jump_to_end = true;
+						}
+					} break;
+					case Variant::FLOAT: {
+						double size = *VariantInternal::get_float(container);
+
+						VariantInternal::initialize(counter, Variant::FLOAT);
+						*VariantInternal::get_float(counter) = 0.0;
+
+						if (size > 0) {
+							GET_VARIANT_PTR(iterator, 3);
+							VariantInternal::initialize(iterator, Variant::FLOAT);
+							*VariantInternal::get_float(iterator) = 0;
+
+							// Skip regular iterate.
+							ip += 6;
+						} else {
+							jump_to_end = true;
+						}
+					} break;
+					case Variant::VECTOR2: {
+						Vector2 *bounds = VariantInternal::get_vector2(container);
+
+						VariantInternal::initialize(counter, Variant::FLOAT);
+						*VariantInternal::get_float(counter) = bounds->x;
+
+						if (bounds->x < bounds->y) {
+							GET_VARIANT_PTR(iterator, 3);
+							VariantInternal::initialize(iterator, Variant::FLOAT);
+							*VariantInternal::get_float(iterator) = bounds->x;
+
+							// Skip regular iterate.
+							ip += 6;
+						} else {
+							jump_to_end = true;
+						}
+					} break;
+					case Variant::VECTOR2I: {
+						Vector2i *bounds = VariantInternal::get_vector2i(container);
+
+						VariantInternal::initialize(counter, Variant::FLOAT);
+						*VariantInternal::get_int(counter) = bounds->x;
+
+						if (bounds->x < bounds->y) {
+							GET_VARIANT_PTR(iterator, 3);
+							VariantInternal::initialize(iterator, Variant::INT);
+							*VariantInternal::get_int(iterator) = bounds->x;
+
+							// Skip regular iterate.
+							ip += 6;
+						} else {
+							jump_to_end = true;
+						}
+					} break;
+					case Variant::VECTOR3: {
+						Vector3 *bounds = VariantInternal::get_vector3(container);
+						double from = bounds->x;
+						double to = bounds->y;
+						double step = bounds->z;
+
+						VariantInternal::initialize(counter, Variant::FLOAT);
+						*VariantInternal::get_float(counter) = from;
+
+						bool do_continue = from == to ? false : (from < to ? step > 0 : step < 0);
+
+						if (do_continue) {
+							GET_VARIANT_PTR(iterator, 3);
+							VariantInternal::initialize(iterator, Variant::FLOAT);
+							*VariantInternal::get_float(iterator) = from;
+
+							// Skip regular iterate.
+							ip += 6;
+						} else {
+							jump_to_end = true;
+						}
+					} break;
+					case Variant::VECTOR3I: {
+						Vector3i *bounds = VariantInternal::get_vector3i(container);
+						int64_t from = bounds->x;
+						int64_t to = bounds->y;
+						int64_t step = bounds->z;
+
+						VariantInternal::initialize(counter, Variant::INT);
+						*VariantInternal::get_int(counter) = from;
+
+						bool do_continue = from == to ? false : (from < to ? step > 0 : step < 0);
+
+						if (do_continue) {
+							GET_VARIANT_PTR(iterator, 3);
+							VariantInternal::initialize(iterator, Variant::INT);
+							*VariantInternal::get_int(iterator) = from;
+
+							// Skip regular iterate.
+							ip += 6;
+						} else {
+							jump_to_end = true;
+						}
+					} break;
+					case Variant::STRING: {
+						String *str = VariantInternal::get_string(container);
+
+						VariantInternal::initialize(counter, Variant::INT);
+						*VariantInternal::get_int(counter) = 0;
+
+						if (!str->is_empty()) {
+							GET_VARIANT_PTR(iterator, 3);
+							VariantInternal::initialize(iterator, Variant::STRING);
+							*VariantInternal::get_string(iterator) = str->substr(0, 1);
+
+							// Skip regular iterate.
+							ip += 6;
+						} else {
+							jump_to_end = true;
+						}
+					} break;
+					case Variant::DICTIONARY: {
+						Dictionary *dict = VariantInternal::get_dictionary(container);
+						const Variant *next = dict->next(nullptr);
+
+						if (!dict->is_empty()) {
+							GET_VARIANT_PTR(iterator, 3);
+							*counter = *next;
+							*iterator = *next;
+
+							// Skip regular iterate.
+							ip += 6;
+						} else {
+							jump_to_end = true;
+						}
+					} break;
+					case Variant::ARRAY: {
+						Array *array = VariantInternal::get_array(container);
+
+						VariantInternal::initialize(counter, Variant::INT);
+						*VariantInternal::get_int(counter) = 0;
+
+						if (!array->is_empty()) {
+							GET_VARIANT_PTR(iterator, 3);
+							*iterator = array->get(0);
+
+							// Skip regular iterate.
+							ip += 6;
+						} else {
+							jump_to_end = true;
+						}
+					} break;
+						OPCODE_ITERATE_BEGIN_PACKED_ARRAY_CASE(BYTE, uint8_t, get_byte_array, INT, int64_t, get_int);
+						OPCODE_ITERATE_BEGIN_PACKED_ARRAY_CASE(INT32, int32_t, get_int32_array, INT, int64_t, get_int);
+						OPCODE_ITERATE_BEGIN_PACKED_ARRAY_CASE(INT64, int64_t, get_int64_array, INT, int64_t, get_int);
+						OPCODE_ITERATE_BEGIN_PACKED_ARRAY_CASE(FLOAT32, float, get_float32_array, FLOAT, double, get_float);
+						OPCODE_ITERATE_BEGIN_PACKED_ARRAY_CASE(FLOAT64, double, get_float64_array, FLOAT, double, get_float);
+						OPCODE_ITERATE_BEGIN_PACKED_ARRAY_CASE(STRING, String, get_string_array, STRING, String, get_string);
+						OPCODE_ITERATE_BEGIN_PACKED_ARRAY_CASE(VECTOR2, Vector2, get_vector2_array, VECTOR2, Vector2, get_vector2);
+						OPCODE_ITERATE_BEGIN_PACKED_ARRAY_CASE(VECTOR3, Vector3, get_vector3_array, VECTOR3, Vector3, get_vector3);
+						OPCODE_ITERATE_BEGIN_PACKED_ARRAY_CASE(COLOR, Color, get_color_array, COLOR, Color, get_color);
+						OPCODE_ITERATE_BEGIN_PACKED_ARRAY_CASE(VECTOR4, Vector4, get_vector4_array, VECTOR4, Vector4, get_vector4);
+					default:
+						break;
+				}
+
+				if (jump_to_end) {
 					// Jump to end of loop.
-					int jumpto = _code_ptr[ip + 4];
+					int jumpto = _code_ptr[ip + 5];
 					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
 					ip = jumpto;
 				}
 			}
 			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_BEGIN_FLOAT) {
-				CHECK_SPACE(8); // Check space for iterate instruction too.
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				double size = *VariantInternal::get_float(container);
-
-				VariantInternal::initialize(counter, Variant::FLOAT);
-				*VariantInternal::get_float(counter) = 0.0;
-
-				if (size > 0) {
-					GET_VARIANT_PTR(iterator, 2);
-					VariantInternal::initialize(iterator, Variant::FLOAT);
-					*VariantInternal::get_float(iterator) = 0;
-
-					// Skip regular iterate.
-					ip += 5;
-				} else {
-					// Jump to end of loop.
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_BEGIN_VECTOR2) {
-				CHECK_SPACE(8); // Check space for iterate instruction too.
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				Vector2 *bounds = VariantInternal::get_vector2(container);
-
-				VariantInternal::initialize(counter, Variant::FLOAT);
-				*VariantInternal::get_float(counter) = bounds->x;
-
-				if (bounds->x < bounds->y) {
-					GET_VARIANT_PTR(iterator, 2);
-					VariantInternal::initialize(iterator, Variant::FLOAT);
-					*VariantInternal::get_float(iterator) = bounds->x;
-
-					// Skip regular iterate.
-					ip += 5;
-				} else {
-					// Jump to end of loop.
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_BEGIN_VECTOR2I) {
-				CHECK_SPACE(8); // Check space for iterate instruction too.
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				Vector2i *bounds = VariantInternal::get_vector2i(container);
-
-				VariantInternal::initialize(counter, Variant::FLOAT);
-				*VariantInternal::get_int(counter) = bounds->x;
-
-				if (bounds->x < bounds->y) {
-					GET_VARIANT_PTR(iterator, 2);
-					VariantInternal::initialize(iterator, Variant::INT);
-					*VariantInternal::get_int(iterator) = bounds->x;
-
-					// Skip regular iterate.
-					ip += 5;
-				} else {
-					// Jump to end of loop.
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_BEGIN_VECTOR3) {
-				CHECK_SPACE(8); // Check space for iterate instruction too.
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				Vector3 *bounds = VariantInternal::get_vector3(container);
-				double from = bounds->x;
-				double to = bounds->y;
-				double step = bounds->z;
-
-				VariantInternal::initialize(counter, Variant::FLOAT);
-				*VariantInternal::get_float(counter) = from;
-
-				bool do_continue = from == to ? false : (from < to ? step > 0 : step < 0);
-
-				if (do_continue) {
-					GET_VARIANT_PTR(iterator, 2);
-					VariantInternal::initialize(iterator, Variant::FLOAT);
-					*VariantInternal::get_float(iterator) = from;
-
-					// Skip regular iterate.
-					ip += 5;
-				} else {
-					// Jump to end of loop.
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_BEGIN_VECTOR3I) {
-				CHECK_SPACE(8); // Check space for iterate instruction too.
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				Vector3i *bounds = VariantInternal::get_vector3i(container);
-				int64_t from = bounds->x;
-				int64_t to = bounds->y;
-				int64_t step = bounds->z;
-
-				VariantInternal::initialize(counter, Variant::INT);
-				*VariantInternal::get_int(counter) = from;
-
-				bool do_continue = from == to ? false : (from < to ? step > 0 : step < 0);
-
-				if (do_continue) {
-					GET_VARIANT_PTR(iterator, 2);
-					VariantInternal::initialize(iterator, Variant::INT);
-					*VariantInternal::get_int(iterator) = from;
-
-					// Skip regular iterate.
-					ip += 5;
-				} else {
-					// Jump to end of loop.
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_BEGIN_STRING) {
-				CHECK_SPACE(8); // Check space for iterate instruction too.
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				String *str = VariantInternal::get_string(container);
-
-				VariantInternal::initialize(counter, Variant::INT);
-				*VariantInternal::get_int(counter) = 0;
-
-				if (!str->is_empty()) {
-					GET_VARIANT_PTR(iterator, 2);
-					VariantInternal::initialize(iterator, Variant::STRING);
-					*VariantInternal::get_string(iterator) = str->substr(0, 1);
-
-					// Skip regular iterate.
-					ip += 5;
-				} else {
-					// Jump to end of loop.
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_BEGIN_DICTIONARY) {
-				CHECK_SPACE(8); // Check space for iterate instruction too.
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				Dictionary *dict = VariantInternal::get_dictionary(container);
-				const Variant *next = dict->next(nullptr);
-
-				if (!dict->is_empty()) {
-					GET_VARIANT_PTR(iterator, 2);
-					*counter = *next;
-					*iterator = *next;
-
-					// Skip regular iterate.
-					ip += 5;
-				} else {
-					// Jump to end of loop.
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				}
-			}
-			DISPATCH_OPCODE;
-
-			OPCODE(OPCODE_ITERATE_BEGIN_ARRAY) {
-				CHECK_SPACE(8); // Check space for iterate instruction too.
-
-				GET_VARIANT_PTR(counter, 0);
-				GET_VARIANT_PTR(container, 1);
-
-				Array *array = VariantInternal::get_array(container);
-
-				VariantInternal::initialize(counter, Variant::INT);
-				*VariantInternal::get_int(counter) = 0;
-
-				if (!array->is_empty()) {
-					GET_VARIANT_PTR(iterator, 2);
-					*iterator = array->get(0);
-
-					// Skip regular iterate.
-					ip += 5;
-				} else {
-					// Jump to end of loop.
-					int jumpto = _code_ptr[ip + 4];
-					GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);
-					ip = jumpto;
-				}
-			}
-			DISPATCH_OPCODE;
-
-#define OPCODE_ITERATE_BEGIN_PACKED_ARRAY(m_var_type, m_elem_type, m_get_func, m_var_ret_type, m_ret_type, m_ret_get_func) \
-	OPCODE(OPCODE_ITERATE_BEGIN_PACKED_##m_var_type##_ARRAY) {                                                             \
-		CHECK_SPACE(8);                                                                                                    \
-		GET_VARIANT_PTR(counter, 0);                                                                                       \
-		GET_VARIANT_PTR(container, 1);                                                                                     \
-		Vector<m_elem_type> *array = VariantInternal::m_get_func(container);                                               \
-		VariantInternal::initialize(counter, Variant::INT);                                                                \
-		*VariantInternal::get_int(counter) = 0;                                                                            \
-		if (!array->is_empty()) {                                                                                          \
-			GET_VARIANT_PTR(iterator, 2);                                                                                  \
-			VariantInternal::initialize(iterator, Variant::m_var_ret_type);                                                \
-			m_ret_type *it = VariantInternal::m_ret_get_func(iterator);                                                    \
-			*it = array->get(0);                                                                                           \
-			ip += 5;                                                                                                       \
-		} else {                                                                                                           \
-			int jumpto = _code_ptr[ip + 4];                                                                                \
-			GD_ERR_BREAK(jumpto < 0 || jumpto > _code_size);                                                               \
-			ip = jumpto;                                                                                                   \
-		}                                                                                                                  \
-	}                                                                                                                      \
-	DISPATCH_OPCODE
-
-			OPCODE_ITERATE_BEGIN_PACKED_ARRAY(BYTE, uint8_t, get_byte_array, INT, int64_t, get_int);
-			OPCODE_ITERATE_BEGIN_PACKED_ARRAY(INT32, int32_t, get_int32_array, INT, int64_t, get_int);
-			OPCODE_ITERATE_BEGIN_PACKED_ARRAY(INT64, int64_t, get_int64_array, INT, int64_t, get_int);
-			OPCODE_ITERATE_BEGIN_PACKED_ARRAY(FLOAT32, float, get_float32_array, FLOAT, double, get_float);
-			OPCODE_ITERATE_BEGIN_PACKED_ARRAY(FLOAT64, double, get_float64_array, FLOAT, double, get_float);
-			OPCODE_ITERATE_BEGIN_PACKED_ARRAY(STRING, String, get_string_array, STRING, String, get_string);
-			OPCODE_ITERATE_BEGIN_PACKED_ARRAY(VECTOR2, Vector2, get_vector2_array, VECTOR2, Vector2, get_vector2);
-			OPCODE_ITERATE_BEGIN_PACKED_ARRAY(VECTOR3, Vector3, get_vector3_array, VECTOR3, Vector3, get_vector3);
-			OPCODE_ITERATE_BEGIN_PACKED_ARRAY(COLOR, Color, get_color_array, COLOR, Color, get_color);
-			OPCODE_ITERATE_BEGIN_PACKED_ARRAY(VECTOR4, Vector4, get_vector4_array, VECTOR4, Vector4, get_vector4);
 
 			OPCODE(OPCODE_ITERATE_BEGIN_OBJECT) {
 				CHECK_SPACE(4);
