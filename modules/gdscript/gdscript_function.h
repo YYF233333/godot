@@ -480,7 +480,7 @@ private:
 	HashMap<int, Variant::Type> temporary_slots;
 	List<StackDebug> stack_debug;
 
-	Vector<int> code;
+	Vector<int64_t> code;
 	Vector<int> default_arguments;
 	Vector<Variant> constants;
 	Vector<StringName> global_names;
@@ -516,7 +516,7 @@ private:
 	int _methods_count = 0;
 	int _lambdas_count = 0;
 
-	int *_code_ptr = nullptr;
+	int64_t *_code_ptr = nullptr;
 	const int *_default_arg_ptr = nullptr;
 	mutable Variant *_constants_ptr = nullptr;
 	const StringName *_global_names_ptr = nullptr;

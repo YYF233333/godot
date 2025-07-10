@@ -76,7 +76,7 @@ class GDScriptByteCodeGenerator : public GDScriptCodeGenerator {
 	bool ended = false;
 	GDScriptFunction *function = nullptr;
 
-	Vector<int> opcodes;
+	Vector<int64_t> opcodes;
 	List<RBMap<StringName, int>> stack_id_stack;
 	RBMap<StringName, int> stack_identifiers;
 	List<int> stack_identifiers_counts;
