@@ -37,6 +37,7 @@
 #include "safe_refcount.h"
 
 #include <bit>
+#include <concepts>
 #include <initializer_list>
 #include <type_traits>
 
@@ -68,7 +69,7 @@ private:
 	static constexpr size_t SIZE_OFFSET = ((REF_COUNT_OFFSET + sizeof(SafeNumeric<USize>)) % alignof(USize) == 0) ? (REF_COUNT_OFFSET + sizeof(SafeNumeric<USize>)) : ((REF_COUNT_OFFSET + sizeof(SafeNumeric<USize>)) + alignof(USize) - ((REF_COUNT_OFFSET + sizeof(SafeNumeric<USize>)) % alignof(USize)));
 	static constexpr size_t DATA_OFFSET = ((SIZE_OFFSET + sizeof(USize)) % alignof(max_align_t) == 0) ? (SIZE_OFFSET + sizeof(USize)) : ((SIZE_OFFSET + sizeof(USize)) + alignof(max_align_t) - ((SIZE_OFFSET + sizeof(USize)) % alignof(max_align_t)));
 
-	mutable T *_ptr = nullptr;
+	T *_ptr = nullptr;
 
 	// internal helpers
 
@@ -340,7 +341,7 @@ Error CowData<T>::_fork_allocate(USize p_size) {
 		// Create a temporary CowData to hold ownership over our _ptr.
 		// It will be used to copy elements from the old buffer over to our new buffer.
 		// At the end of the block, it will be automatically destructed by going out of scope.
-		const CowData prev_data;
+		CowData prev_data;
 		prev_data._ptr = _ptr;
 		_ptr = nullptr;
 
