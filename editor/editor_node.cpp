@@ -6943,13 +6943,13 @@ void EditorNode::reload_instances_with_path_in_edited_scenes() {
 			}
 
 			// Restore the scene's editable instance and folded states.
-			for (HashMap<NodePath, SceneEditorDataEntry>::Iterator I = scene_editor_data_table.begin(); I; ++I) {
-				Node *node = owner->get_node_or_null(I->key);
+			for (const KeyValue<NodePath, SceneEditorDataEntry> &kv : scene_editor_data_table) {
+				Node *node = owner->get_node_or_null(kv.key);
 				if (node) {
 					if (owner != node) {
-						owner->set_editable_instance(node, I->value.is_editable);
+						owner->set_editable_instance(node, kv.value.is_editable);
 					}
-					node->set_display_folded(I->value.is_display_folded);
+					node->set_display_folded(kv.value.is_display_folded);
 				}
 			}
 

@@ -2469,9 +2469,9 @@ Error FBXDocument::_parse_skins(Ref<FBXState> p_state) {
 
 	print_verbose("FBX: Total skins: " + itos(p_state->skins.size()));
 
-	for (HashMap<GLTFNodeIndex, bool>::Iterator it = joint_mapping.begin(); it != joint_mapping.end(); ++it) {
-		GLTFNodeIndex node_index = it->key;
-		bool is_joint = it->value;
+	for (const KeyValue<GLTFNodeIndex, bool> &kv : joint_mapping) {
+		const GLTFNodeIndex node_index = kv.key;
+		const bool is_joint = kv.value;
 		if (is_joint) {
 			if (p_state->nodes.size() > node_index) {
 				p_state->nodes.write[node_index]->joint = true;

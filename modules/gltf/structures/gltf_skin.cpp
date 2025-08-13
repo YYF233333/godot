@@ -261,14 +261,14 @@ Dictionary GLTFSkin::to_dictionary() {
 	dict["skeleton"] = skeleton;
 
 	Dictionary joint_i_to_bone_i_dict;
-	for (HashMap<int, int>::Iterator E = joint_i_to_bone_i.begin(); E; ++E) {
-		joint_i_to_bone_i_dict[E->key] = E->value;
+	for (const KeyValue<int, int> &kv : joint_i_to_bone_i) {
+		joint_i_to_bone_i_dict[kv.key] = kv.value;
 	}
 	dict["joint_i_to_bone_i"] = joint_i_to_bone_i_dict;
 
 	Dictionary joint_i_to_name_dict;
-	for (HashMap<int, StringName>::Iterator E = joint_i_to_name.begin(); E; ++E) {
-		joint_i_to_name_dict[E->key] = E->value;
+	for (const KeyValue<int, StringName> &kv : joint_i_to_name) {
+		joint_i_to_name_dict[kv.key] = kv.value;
 	}
 	dict["joint_i_to_name"] = joint_i_to_name_dict;
 

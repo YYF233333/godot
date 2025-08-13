@@ -105,8 +105,8 @@ Dictionary EditorHelpSearch::_native_search_cb(const String &p_search_string, in
 		terms.append(term);
 	}
 
-	for (HashMap<String, DocData::ClassDoc>::Iterator iterator_doc = EditorHelp::get_doc_data()->class_list.begin(); iterator_doc; ++iterator_doc) {
-		DocData::ClassDoc &class_doc = iterator_doc->value;
+	for (KeyValue<String, DocData::ClassDoc> &kv_doc : EditorHelp::get_doc_data()->class_list) {
+		DocData::ClassDoc &class_doc = kv_doc.value;
 		if (class_doc.name.is_empty()) {
 			continue;
 		}

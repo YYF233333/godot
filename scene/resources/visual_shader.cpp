@@ -2797,14 +2797,14 @@ void VisualShader::_update_shader() const {
 	}
 
 	int idx = 0;
-	for (List<VisualShaderNodeParameter *>::Iterator itr = parameters.begin(); itr != parameters.end(); ++itr, ++idx) {
-		VisualShaderNodeParameter *parameter = *itr;
+	for (VisualShaderNodeParameter *parameter : parameters) {
 		if (used_parameter_names.has(parameter->get_parameter_name())) {
 			global_code += parameter->generate_global(get_mode(), Type(idx), -1);
 			parameter->set_global_code_generated(true);
 		} else {
 			parameter->set_global_code_generated(false);
 		}
+		idx++;
 	}
 
 	if (!varyings.is_empty()) {

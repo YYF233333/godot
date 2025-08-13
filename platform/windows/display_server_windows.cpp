@@ -7359,12 +7359,12 @@ DisplayServerWindows::~DisplayServerWindows() {
 	cursors_cache.clear();
 
 	// Destroy all status indicators.
-	for (HashMap<IndicatorID, IndicatorData>::Iterator E = indicators.begin(); E; ++E) {
+	for (const KeyValue<IndicatorID, IndicatorData> &kv : indicators) {
 		NOTIFYICONDATAW ndat;
 		ZeroMemory(&ndat, sizeof(NOTIFYICONDATAW));
 		ndat.cbSize = sizeof(NOTIFYICONDATAW);
 		ndat.hWnd = windows[MAIN_WINDOW_ID].hWnd;
-		ndat.uID = E->key;
+		ndat.uID = kv.key;
 		ndat.uVersion = NOTIFYICON_VERSION;
 
 		Shell_NotifyIconW(NIM_DELETE, &ndat);
