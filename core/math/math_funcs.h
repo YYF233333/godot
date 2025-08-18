@@ -34,6 +34,7 @@
 #include "core/math/math_defs.h"
 #include "core/typedefs.h"
 
+#include <bit>
 #include <cfloat>
 #include <cmath>
 
@@ -732,13 +733,8 @@ _ALWAYS_INLINE_ uint32_t halfbits_to_floatbits(uint16_t p_half) {
 }
 
 _ALWAYS_INLINE_ float halfptr_to_float(const uint16_t *p_half) {
-	union {
-		uint32_t u32;
-		float f32;
-	} u;
-
-	u.u32 = halfbits_to_floatbits(*p_half);
-	return u.f32;
+	uint32_t u32 = halfbits_to_floatbits(*p_half);
+	return std::bit_cast<float>(u32);
 }
 
 _ALWAYS_INLINE_ float half_to_float(const uint16_t p_half) {
@@ -746,13 +742,7 @@ _ALWAYS_INLINE_ float half_to_float(const uint16_t p_half) {
 }
 
 _ALWAYS_INLINE_ uint16_t make_half_float(float p_value) {
-	union {
-		float fv;
-		uint32_t ui;
-	} ci;
-	ci.fv = p_value;
-
-	uint32_t x = ci.ui;
+	uint32_t x = std::bit_cast<uint32_t>(p_value);
 	uint32_t sign = (unsigned short)(x >> 31);
 	uint32_t mantissa;
 	uint32_t exponent;

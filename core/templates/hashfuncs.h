@@ -56,6 +56,8 @@
 #include "core/templates/rid.h"
 #include "core/typedefs.h"
 #include "core/variant/callable.h"
+#include <bit>
+#include <cstdint>
 
 #ifdef _MSC_VER
 #include <intrin.h> // Needed for `__umulh` below.
@@ -142,21 +144,18 @@ static _FORCE_INLINE_ uint32_t hash_murmur3_one_32(uint32_t p_in, uint32_t p_see
 }
 
 static _FORCE_INLINE_ uint32_t hash_murmur3_one_float(float p_in, uint32_t p_seed = HASH_MURMUR3_SEED) {
-	union {
-		float f;
-		uint32_t i;
-	} u;
+	float f;
 
 	// Normalize +/- 0.0 and NaN values so they hash the same.
 	if (p_in == 0.0f) {
-		u.f = 0.0;
+		f = 0.0;
 	} else if (Math::is_nan(p_in)) {
-		u.f = Math::NaN;
+		f = Math::NaN;
 	} else {
-		u.f = p_in;
+		f = p_in;
 	}
 
-	return hash_murmur3_one_32(u.i, p_seed);
+	return hash_murmur3_one_32(std::bit_cast<uint32_t>(f), p_seed);
 }
 
 static _FORCE_INLINE_ uint32_t hash_murmur3_one_64(uint64_t p_in, uint32_t p_seed = HASH_MURMUR3_SEED) {
@@ -165,21 +164,18 @@ static _FORCE_INLINE_ uint32_t hash_murmur3_one_64(uint64_t p_in, uint32_t p_see
 }
 
 static _FORCE_INLINE_ uint32_t hash_murmur3_one_double(double p_in, uint32_t p_seed = HASH_MURMUR3_SEED) {
-	union {
-		double d;
-		uint64_t i;
-	} u;
+	double d;
 
 	// Normalize +/- 0.0 and NaN values so they hash the same.
 	if (p_in == 0.0f) {
-		u.d = 0.0;
+		d = 0.0;
 	} else if (Math::is_nan(p_in)) {
-		u.d = Math::NaN;
+		d = Math::NaN;
 	} else {
-		u.d = p_in;
+		d = p_in;
 	}
 
-	return hash_murmur3_one_64(u.i, p_seed);
+	return hash_murmur3_one_64(std::bit_cast<uint64_t>(d), p_seed);
 }
 
 static _FORCE_INLINE_ uint32_t hash_murmur3_one_real(real_t p_in, uint32_t p_seed = HASH_MURMUR3_SEED) {
@@ -253,21 +249,18 @@ static _FORCE_INLINE_ uint32_t hash_murmur3_buffer(const void *key, int length, 
 }
 
 static _FORCE_INLINE_ uint32_t hash_djb2_one_float(double p_in, uint32_t p_prev = 5381) {
-	union {
-		double d;
-		uint64_t i;
-	} u;
+	double d;
 
 	// Normalize +/- 0.0 and NaN values so they hash the same.
 	if (p_in == 0.0f) {
-		u.d = 0.0;
+		d = 0.0;
 	} else if (Math::is_nan(p_in)) {
-		u.d = Math::NaN;
+		d = Math::NaN;
 	} else {
-		u.d = p_in;
+		d = p_in;
 	}
 
-	return ((p_prev << 5) + p_prev) + hash_one_uint64(u.i);
+	return ((p_prev << 5) + p_prev) + hash_one_uint64(std::bit_cast<uint64_t>(d));
 }
 
 template <typename T>
@@ -282,21 +275,18 @@ static _FORCE_INLINE_ uint32_t hash_make_uint32_t(T p_in) {
 }
 
 static _FORCE_INLINE_ uint64_t hash_djb2_one_float_64(double p_in, uint64_t p_prev = 5381) {
-	union {
-		double d;
-		uint64_t i;
-	} u;
+	double d;
 
 	// Normalize +/- 0.0 and NaN values so they hash the same.
 	if (p_in == 0.0f) {
-		u.d = 0.0;
+		d = 0.0;
 	} else if (Math::is_nan(p_in)) {
-		u.d = Math::NaN;
+		d = Math::NaN;
 	} else {
-		u.d = p_in;
+		d = p_in;
 	}
 
-	return ((p_prev << 5) + p_prev) + u.i;
+	return ((p_prev << 5) + p_prev) + std::bit_cast<uint64_t>(d);
 }
 
 static _FORCE_INLINE_ uint64_t hash_djb2_one_64(uint64_t p_in, uint64_t p_prev = 5381) {

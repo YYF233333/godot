@@ -32,18 +32,12 @@
 
 #include "core/math/vector2.h"
 #include "core/typedefs.h"
+#include <bit>
 
 static _FORCE_INLINE_ float undenormalize(float f) {
-	union {
-		uint32_t i;
-		float f;
-	} v;
-
-	v.f = f;
-
-	// original: return (v.i & 0x7f800000) == 0 ? 0.0f : f;
+	// original: return (std::bit_cast<uint32_t>(f) & 0x7f800000) == 0 ? 0.0f : f;
 	// version from Tim Blechmann:
-	return (v.i & 0x7f800000) < 0x08000000 ? 0.0f : f;
+	return (std::bit_cast<uint32_t>(f) & 0x7f800000) < 0x08000000 ? 0.0f : f;
 }
 
 static const float AUDIO_PEAK_OFFSET = 0.0000000001f;
