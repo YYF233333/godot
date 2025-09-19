@@ -1497,7 +1497,7 @@ bool ResourceLoader::is_cleaning_tasks() {
 }
 
 Vector<String> ResourceLoader::list_directory(const String &p_directory) {
-	RBSet<String> files_found;
+	Vector<String> files_found;
 	Ref<DirAccess> dir = DirAccess::open(p_directory);
 	if (dir.is_null()) {
 		return Vector<String>();
@@ -1537,17 +1537,14 @@ Vector<String> ResourceLoader::list_directory(const String &p_directory) {
 		}
 
 		if (recognized) {
-			files_found.insert(d);
+			files_found.push_back(d);
 		}
 		d = dir->get_next();
 	}
 
-	Vector<String> ret;
-	for (const String &f : files_found) {
-		ret.push_back(f);
-	}
+	files_found.sort();
 
-	return ret;
+	return files_found;
 }
 
 void ResourceLoader::initialize() {}

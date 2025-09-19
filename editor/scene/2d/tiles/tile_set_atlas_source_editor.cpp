@@ -1441,20 +1441,20 @@ void TileSetAtlasSourceEditor::_end_dragging() {
 			tile_set_atlas_source->get_property_list(&list);
 			HashMap<Vector2i, List<const PropertyInfo *>> per_tile = _group_properties_per_tiles(list, tile_set_atlas_source);
 
-			RBSet<Vector2i> to_delete;
+			LocalVector<Vector2i> to_delete;
 			for (int x = area.get_position().x; x < area.get_end().x; x++) {
 				for (int y = area.get_position().y; y < area.get_end().y; y++) {
 					Vector2i coords = tile_set_atlas_source->get_tile_at_coords(Vector2i(x, y));
 					if (coords != TileSetSource::INVALID_ATLAS_COORDS) {
-						to_delete.insert(coords);
+						to_delete.push_back(coords);
 					}
 				}
 			}
+			to_delete.sort();
 
 			undo_redo->create_action(TTR("Remove tiles"));
 			undo_redo->add_do_method(this, "_set_selection_from_array", Array());
-			for (const Vector2i &E : to_delete) {
-				Vector2i coords = E;
+			for (const Vector2i &coords : to_delete) {
 				undo_redo->add_do_method(tile_set_atlas_source, "remove_tile", coords);
 				undo_redo->add_undo_method(tile_set_atlas_source, "create_tile", coords);
 				if (per_tile.has(coords)) {
@@ -1802,18 +1802,18 @@ void TileSetAtlasSourceEditor::_tile_atlas_control_draw() {
 			color = Color(1.0, 1.0, 0.0);
 		}
 
-		RBSet<Vector2i> to_paint;
+		LocalVector<Vector2i> to_paint;
 		for (int x = area.get_position().x; x < area.get_end().x; x++) {
 			for (int y = area.get_position().y; y < area.get_end().y; y++) {
 				Vector2i coords = tile_set_atlas_source->get_tile_at_coords(Vector2i(x, y));
 				if (coords != TileSetSource::INVALID_ATLAS_COORDS) {
-					to_paint.insert(coords);
+					to_paint.push_back(coords);
 				}
 			}
 		}
+		to_paint.sort();
 
-		for (const Vector2i &E : to_paint) {
-			Vector2i coords = E;
+		for (const Vector2i &coords : to_paint) {
 			TilesEditorUtils::draw_selection_rect(tile_atlas_control, tile_set_atlas_source->get_tile_texture_region(coords), color);
 		}
 	} else if (drag_type == DRAG_TYPE_CREATE_TILES_USING_RECT) {

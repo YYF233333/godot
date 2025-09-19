@@ -1084,7 +1084,7 @@ void TileDataDefaultEditor::forward_draw_over_atlas(TileAtlasView *p_tile_atlas_
 		rect.set_end(p_tile_atlas_view->get_atlas_tile_coords_at_pos(p_transform.affine_inverse().xform(p_canvas_item->get_local_mouse_position()), true));
 		rect = rect.abs();
 
-		RBSet<TileMapCell> edited;
+		LocalVector<TileMapCell> edited;
 		for (int x = rect.get_position().x; x <= rect.get_end().x; x++) {
 			for (int y = rect.get_position().y; y <= rect.get_end().y; y++) {
 				Vector2i coords = Vector2i(x, y);
@@ -1094,10 +1094,12 @@ void TileDataDefaultEditor::forward_draw_over_atlas(TileAtlasView *p_tile_atlas_
 					cell.source_id = 0;
 					cell.set_atlas_coords(coords);
 					cell.alternative_tile = 0;
-					edited.insert(cell);
+					edited.push_back(cell);
 				}
 			}
 		}
+
+		edited.sort();
 
 		for (const TileMapCell &E : edited) {
 			Vector2i coords = E.get_atlas_coords();
@@ -2018,7 +2020,7 @@ void TileDataTerrainsEditor::forward_draw_over_atlas(TileAtlasView *p_tile_atlas
 		rect.set_end(p_tile_atlas_view->get_atlas_tile_coords_at_pos(p_transform.affine_inverse().xform(p_canvas_item->get_local_mouse_position()), true));
 		rect = rect.abs();
 
-		RBSet<TileMapCell> edited;
+		LocalVector<TileMapCell> edited;
 		for (int x = rect.get_position().x; x <= rect.get_end().x; x++) {
 			for (int y = rect.get_position().y; y <= rect.get_end().y; y++) {
 				Vector2i coords = Vector2i(x, y);
@@ -2028,10 +2030,12 @@ void TileDataTerrainsEditor::forward_draw_over_atlas(TileAtlasView *p_tile_atlas
 					cell.source_id = 0;
 					cell.set_atlas_coords(coords);
 					cell.alternative_tile = 0;
-					edited.insert(cell);
+					edited.push_back(cell);
 				}
 			}
 		}
+
+		edited.sort();
 
 		for (const TileMapCell &E : edited) {
 			Vector2i coords = E.get_atlas_coords();
@@ -2048,7 +2052,7 @@ void TileDataTerrainsEditor::forward_draw_over_atlas(TileAtlasView *p_tile_atlas
 		rect.set_end(p_tile_atlas_view->get_atlas_tile_coords_at_pos(p_transform.affine_inverse().xform(p_canvas_item->get_local_mouse_position()), true));
 		rect = rect.abs();
 
-		RBSet<TileMapCell> edited;
+		LocalVector<TileMapCell> edited;
 		for (int x = rect.get_position().x; x <= rect.get_end().x; x++) {
 			for (int y = rect.get_position().y; y <= rect.get_end().y; y++) {
 				Vector2i coords = Vector2i(x, y);
@@ -2060,11 +2064,12 @@ void TileDataTerrainsEditor::forward_draw_over_atlas(TileAtlasView *p_tile_atlas
 						cell.source_id = 0;
 						cell.set_atlas_coords(coords);
 						cell.alternative_tile = 0;
-						edited.insert(cell);
+						edited.push_back(cell);
 					}
 				}
 			}
 		}
+		edited.sort();
 
 		Vector2 end = p_transform.affine_inverse().xform(p_canvas_item->get_local_mouse_position());
 		Vector<Point2> mouse_pos_rect_polygon = {
@@ -2441,7 +2446,7 @@ void TileDataTerrainsEditor::forward_painting_atlas_gui_input(TileAtlasView *p_t
 					rect.set_end(p_tile_atlas_view->get_atlas_tile_coords_at_pos(mb->get_position(), true));
 					rect = rect.abs();
 
-					RBSet<TileMapCell> edited;
+					LocalVector<TileMapCell> edited;
 					for (int x = rect.get_position().x; x <= rect.get_end().x; x++) {
 						for (int y = rect.get_position().y; y <= rect.get_end().y; y++) {
 							Vector2i coords = Vector2i(x, y);
@@ -2451,10 +2456,11 @@ void TileDataTerrainsEditor::forward_painting_atlas_gui_input(TileAtlasView *p_t
 								cell.source_id = 0;
 								cell.set_atlas_coords(coords);
 								cell.alternative_tile = 0;
-								edited.insert(cell);
+								edited.push_back(cell);
 							}
 						}
 					}
+					edited.sort();
 					undo_redo->create_action(TTR("Painting Terrain Set"));
 					for (const TileMapCell &E : edited) {
 						Vector2i coords = E.get_atlas_coords();
@@ -2529,7 +2535,7 @@ void TileDataTerrainsEditor::forward_painting_atlas_gui_input(TileAtlasView *p_t
 					rect.set_end(p_tile_atlas_view->get_atlas_tile_coords_at_pos(mb->get_position(), true));
 					rect = rect.abs();
 
-					RBSet<TileMapCell> edited;
+					LocalVector<TileMapCell> edited;
 					for (int x = rect.get_position().x; x <= rect.get_end().x; x++) {
 						for (int y = rect.get_position().y; y <= rect.get_end().y; y++) {
 							Vector2i coords = Vector2i(x, y);
@@ -2541,11 +2547,12 @@ void TileDataTerrainsEditor::forward_painting_atlas_gui_input(TileAtlasView *p_t
 									cell.source_id = 0;
 									cell.set_atlas_coords(coords);
 									cell.alternative_tile = 0;
-									edited.insert(cell);
+									edited.push_back(cell);
 								}
 							}
 						}
 					}
+					edited.sort();
 
 					Vector<Point2> mouse_pos_rect_polygon = {
 						drag_start_pos, Vector2(mb->get_position().x, drag_start_pos.y),

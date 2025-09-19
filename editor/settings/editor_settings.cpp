@@ -265,7 +265,7 @@ struct _EVCSort {
 void EditorSettings::_get_property_list(List<PropertyInfo> *p_list) const {
 	_THREAD_SAFE_METHOD_
 
-	RBSet<_EVCSort> vclist;
+	LocalVector<_EVCSort> vclist;
 
 	for (const KeyValue<String, VariantContainer> &E : props) {
 		const VariantContainer *v = &E.value;
@@ -287,8 +287,10 @@ void EditorSettings::_get_property_list(List<PropertyInfo> *p_list) const {
 		}
 		vc.restart_if_changed = v->restart_if_changed;
 
-		vclist.insert(vc);
+		vclist.push_back(vc);
 	}
+
+	vclist.sort();
 
 	for (const _EVCSort &E : vclist) {
 		uint32_t pusage = PROPERTY_USAGE_NONE;
