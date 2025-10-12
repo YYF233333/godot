@@ -30,6 +30,8 @@
 
 #include "doc_tools.h"
 
+STATIC_ASSERT_INCOMPLETE_TYPE(class, XMLParser)
+
 #include "core/config/engine.h"
 #include "core/config/project_settings.h"
 #include "core/core_constants.h"
@@ -37,6 +39,7 @@
 #include "core/io/compression.h"
 #include "core/io/dir_access.h"
 #include "core/io/resource_importer.h"
+#include "core/io/xml_parser.h"
 #include "core/object/script_language.h"
 #include "core/string/translation_server.h"
 #include "editor/export/editor_export_platform.h"
