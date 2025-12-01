@@ -157,7 +157,7 @@ static Vector<Vector2> _decode_vertex_attrib_vec2(const ufbx_vertex_vec2 &p_attr
 	int num_indices = p_indices.size();
 	ret.resize(num_indices);
 	for (int i = 0; i < num_indices; i++) {
-		ret.write[i] = _as_vec2(p_attrib[p_indices[i]]);
+		ret.ptrw()[i] = _as_vec2(p_attrib[p_indices[i]]);
 	}
 	return ret;
 }
@@ -168,7 +168,7 @@ static Vector<Vector3> _decode_vertex_attrib_vec3(const ufbx_vertex_vec3 &p_attr
 	int num_indices = p_indices.size();
 	ret.resize(num_indices);
 	for (int i = 0; i < num_indices; i++) {
-		ret.write[i] = FBXDocument::_as_vec3(p_attrib[p_indices[i]]);
+		ret.ptrw()[i] = FBXDocument::_as_vec3(p_attrib[p_indices[i]]);
 	}
 	return ret;
 }
@@ -180,10 +180,10 @@ static Vector<float> _decode_vertex_attrib_vec3_as_tangent(const ufbx_vertex_vec
 	ret.resize(num_indices * 4);
 	for (int i = 0; i < num_indices; i++) {
 		Vector3 v = FBXDocument::_as_vec3(p_attrib[p_indices[i]]);
-		ret.write[i * 4 + 0] = v.x;
-		ret.write[i * 4 + 1] = v.y;
-		ret.write[i * 4 + 2] = v.z;
-		ret.write[i * 4 + 3] = 1.0f;
+		ret.ptrw()[i * 4 + 0] = v.x;
+		ret.ptrw()[i * 4 + 1] = v.y;
+		ret.ptrw()[i * 4 + 2] = v.z;
+		ret.ptrw()[i * 4 + 3] = 1.0f;
 	}
 	return ret;
 }
@@ -194,7 +194,7 @@ static Vector<Color> _decode_vertex_attrib_color(const ufbx_vertex_vec4 &p_attri
 	int num_indices = p_indices.size();
 	ret.resize(num_indices);
 	for (int i = 0; i < num_indices; i++) {
-		ret.write[i] = _as_color(p_attrib[p_indices[i]]);
+		ret.ptrw()[i] = _as_color(p_attrib[p_indices[i]]);
 	}
 	return ret;
 }
@@ -438,7 +438,7 @@ Error FBXDocument::_parse_nodes(Ref<FBXState> p_state) {
 			ERR_FAIL_INDEX_V(child_i, p_state->nodes.size(), ERR_FILE_CORRUPT);
 			ERR_CONTINUE(p_state->nodes[child_i]->parent != -1); //node already has a parent, wtf.
 
-			p_state->nodes.write[child_i]->parent = node_i;
+			p_state->nodes.ptrw()[child_i]->parent = node_i;
 		}
 	}
 
@@ -549,14 +549,14 @@ Error FBXDocument::_parse_meshes(Ref<FBXState> p_state) {
 					switch (primitive) {
 						case Mesh::PRIMITIVE_POINTS: {
 							if (face.num_indices == 1) {
-								indices.write[offset] = face.index_begin;
+								indices.ptrw()[offset] = face.index_begin;
 								offset += 1;
 							}
 						} break;
 						case Mesh::PRIMITIVE_LINES:
 							if (face.num_indices == 2) {
-								indices.write[offset] = face.index_begin;
-								indices.write[offset + 1] = face.index_begin + 1;
+								indices.ptrw()[offset] = face.index_begin;
+								indices.ptrw()[offset + 1] = face.index_begin + 1;
 								offset += 2;
 							}
 							break;
@@ -604,7 +604,7 @@ Error FBXDocument::_parse_meshes(Ref<FBXState> p_state) {
 					int num_blend_shape_indices = indices.size();
 					vertex_indices.resize(num_blend_shape_indices);
 					for (int i = 0; i < num_blend_shape_indices; i++) {
-						vertex_indices.write[i] = _encode_vertex_index(fbx_mesh->vertex_indices[indices[i]]);
+						vertex_indices.ptrw()[i] = _encode_vertex_index(fbx_mesh->vertex_indices[indices[i]]);
 					}
 					array[Mesh::ARRAY_VERTEX] = vertex_indices;
 				} else {
@@ -626,7 +626,7 @@ Error FBXDocument::_parse_meshes(Ref<FBXState> p_state) {
 							Vector3 bitangent = _as_vec3(fbx_mesh->vertex_bitangent[indices[i]]);
 							Vector3 generated_bitangent = normals[i].cross(tangent);
 							if (generated_bitangent.dot(bitangent) < 0.0f) {
-								tangents.write[i * 4 + 3] = -1.0f;
+								tangents.ptrw()[i * 4 + 3] = -1.0f;
 							}
 						}
 					}
@@ -670,14 +670,14 @@ Error FBXDocument::_parse_meshes(Ref<FBXState> p_state) {
 					cur_custom.resize(vertex_num * num_channels);
 					for (int32_t uv_first_i = 0; uv_first_i < texcoord_first.size() && uv_first_i < vertex_num; uv_first_i++) {
 						int index = uv_first_i * num_channels;
-						cur_custom.write[index] = texcoord_first[uv_first_i].x;
-						cur_custom.write[index + 1] = texcoord_first[uv_first_i].y;
+						cur_custom.ptrw()[index] = texcoord_first[uv_first_i].x;
+						cur_custom.ptrw()[index + 1] = texcoord_first[uv_first_i].y;
 					}
 					if (num_channels == 4) {
 						for (int32_t uv_second_i = 0; uv_second_i < texcoord_second.size() && uv_second_i < vertex_num; uv_second_i++) {
 							int index = uv_second_i * num_channels;
-							cur_custom.write[index + 2] = texcoord_second[uv_second_i].x;
-							cur_custom.write[index + 3] = texcoord_second[uv_second_i].y;
+							cur_custom.ptrw()[index + 2] = texcoord_second[uv_second_i].x;
+							cur_custom.ptrw()[index + 3] = texcoord_second[uv_second_i].y;
 						}
 						_zero_unused_elements(cur_custom, texcoord_second.size(), vertex_num, num_channels);
 					} else if (num_channels == 2) {
@@ -725,21 +725,21 @@ Error FBXDocument::_parse_meshes(Ref<FBXState> p_state) {
 							ufbx_skin_weight skin_weight = fbx_skin->weights[skin_vertex.weight_begin + i];
 							int index = vertex_i * num_skin_weights + i;
 							float weight = float(skin_weight.weight);
-							bones.write[index] = int(skin_weight.cluster_index);
-							weights.write[index] = weight;
+							bones.ptrw()[index] = int(skin_weight.cluster_index);
+							weights.ptrw()[index] = weight;
 							total_weight += weight;
 						}
 						if (total_weight > 0.0f) {
 							for (int32_t i = 0; i < num_weights; i++) {
 								int index = vertex_i * num_skin_weights + i;
-								weights.write[index] /= total_weight;
+								weights.ptrw()[index] /= total_weight;
 							}
 						}
 						// Pad the rest with empty weights
 						for (int32_t i = num_weights; i < num_skin_weights; i++) {
 							int index = vertex_i * num_skin_weights + i;
-							bones.write[index] = 0; // TODO: What should this be padded with?
-							weights.write[index] = 0.0f;
+							bones.ptrw()[index] = 0; // TODO: What should this be padded with?
+							weights.ptrw()[index] = 0.0f;
 						}
 					}
 					array[Mesh::ARRAY_BONES] = bones;
@@ -1125,8 +1125,8 @@ Ref<Texture2D> FBXDocument::_get_texture(Ref<FBXState> p_state, const GLTFTextur
 		} else {
 			portable_texture->create_from_image(new_img, PortableCompressedTexture2D::COMPRESSION_MODE_BASIS_UNIVERSAL, false);
 		}
-		p_state->images.write[image] = portable_texture;
-		p_state->source_images.write[image] = new_img;
+		p_state->images.ptrw()[image] = portable_texture;
+		p_state->source_images.ptrw()[image] = new_img;
 	}
 	return p_state->images[image];
 }
@@ -1492,7 +1492,7 @@ ImporterMeshInstance3D *FBXDocument::_generate_mesh_instance(Ref<FBXState> p_sta
 	print_verbose("FBX: Creating mesh for: " + fbx_node->get_name());
 
 	p_state->scene_mesh_instances.insert(p_node_index, mi);
-	Ref<GLTFMesh> mesh = p_state->meshes.write[fbx_node->mesh];
+	Ref<GLTFMesh> mesh = p_state->meshes.ptrw()[fbx_node->mesh];
 	if (mesh.is_null()) {
 		return mi;
 	}
@@ -1999,14 +1999,14 @@ void FBXDocument::_process_mesh_instances(Ref<FBXState> p_state, Node *p_scene_r
 
 		bool is_skin_valid = node->skin >= 0;
 		bool is_skin_accessible = is_skin_valid && node->skin < p_state->skins.size();
-		bool is_valid = is_skin_accessible && p_state->skins.write[node->skin]->skeleton >= 0;
+		bool is_valid = is_skin_accessible && p_state->skins.ptrw()[node->skin]->skeleton >= 0;
 
 		if (!is_valid) {
 			continue;
 		}
 
-		const GLTFSkeletonIndex skel_i = p_state->skins.write[node->skin]->skeleton;
-		Ref<GLTFSkeleton> fbx_skeleton = p_state->skeletons.write[skel_i];
+		const GLTFSkeletonIndex skel_i = p_state->skins.ptrw()[node->skin]->skeleton;
+		Ref<GLTFSkeleton> fbx_skeleton = p_state->skeletons.ptrw()[skel_i];
 		Skeleton3D *skeleton = fbx_skeleton->godot_skeleton;
 		ERR_CONTINUE_MSG(skeleton == nullptr, vformat("Unable to find Skeleton for node %d skin %d", node_i, skin_i));
 
@@ -2015,7 +2015,7 @@ void FBXDocument::_process_mesh_instances(Ref<FBXState> p_state, Node *p_scene_r
 		skeleton->add_child(mi, true);
 		mi->set_owner(skeleton->get_owner());
 
-		mi->set_skin(p_state->skins.write[skin_i]->godot_skin);
+		mi->set_skin(p_state->skins.ptrw()[skin_i]->godot_skin);
 		mi->set_skeleton_path(mi->get_path_to(skeleton));
 		mi->set_transform(Transform3D());
 	}
@@ -2123,7 +2123,7 @@ Node *FBXDocument::generate_scene(Ref<GLTFState> p_state, float p_bake_fps, bool
 	ERR_FAIL_COND_V(state.is_null(), nullptr);
 	ERR_FAIL_INDEX_V(0, state->root_nodes.size(), nullptr);
 	p_state->set_bake_fps(p_bake_fps);
-	GLTFNodeIndex fbx_root = state->root_nodes.write[0];
+	GLTFNodeIndex fbx_root = state->root_nodes.ptrw()[0];
 	Node *fbx_root_node = state->get_scene_node(fbx_root);
 	Node *root = fbx_root_node;
 	if (root && root->get_owner() && root->get_owner() != root) {
@@ -2291,7 +2291,7 @@ Error FBXDocument::append_from_file(const String &p_path, Ref<GLTFState> p_state
 void FBXDocument::_process_uv_set(PackedVector2Array &uv_array) {
 	int uv_size = uv_array.size();
 	for (int uv_i = 0; uv_i < uv_size; uv_i++) {
-		Vector2 &uv = uv_array.write[uv_i];
+		Vector2 &uv = uv_array.ptrw()[uv_i];
 		uv.y = 1.0 - uv.y;
 	}
 }
@@ -2300,7 +2300,7 @@ void FBXDocument::_zero_unused_elements(Vector<float> &cur_custom, int start, in
 	for (int32_t uv_i = start; uv_i < end; uv_i++) {
 		int index = uv_i * num_channels;
 		for (int channel = 0; channel < num_channels; channel++) {
-			cur_custom.write[index + channel] = 0;
+			cur_custom.ptrw()[index + channel] = 0;
 		}
 	}
 }
@@ -2413,12 +2413,12 @@ Error FBXDocument::_parse_skins(Ref<FBXState> p_state) {
 		skin->inverse_binds.resize(fbx_skin->clusters.count);
 		for (int skin_i = 0; skin_i < static_cast<int>(fbx_skin->clusters.count); skin_i++) {
 			const ufbx_skin_cluster *fbx_cluster = fbx_skin->clusters[skin_i];
-			skin->inverse_binds.write[skin_i] = FBXDocument::_as_xform(fbx_cluster->geometry_to_bone);
+			skin->inverse_binds.ptrw()[skin_i] = FBXDocument::_as_xform(fbx_cluster->geometry_to_bone);
 			const GLTFNodeIndex node = fbx_cluster->bone_node->typed_id;
 
 			skin->joints.push_back(node);
 			skin->joints_original.push_back(node);
-			p_state->nodes.write[node]->joint = true;
+			p_state->nodes.ptrw()[node]->joint = true;
 		}
 
 		if (fbx_skin->name.length > 0) {
@@ -2433,8 +2433,8 @@ Error FBXDocument::_parse_skins(Ref<FBXState> p_state) {
 	for (const ufbx_bone *fbx_bone : fbx_scene->bones) {
 		for (const ufbx_node *fbx_node : fbx_bone->instances) {
 			const GLTFNodeIndex node = fbx_node->typed_id;
-			if (!p_state->nodes.write[node]->joint) {
-				p_state->nodes.write[node]->joint = true;
+			if (!p_state->nodes.ptrw()[node]->joint) {
+				p_state->nodes.ptrw()[node]->joint = true;
 
 				if (!(fbx_node->parent && fbx_node->parent->attrib_type == UFBX_ELEMENT_BONE)) {
 					Ref<GLTFSkin> skin;
@@ -2460,7 +2460,7 @@ Error FBXDocument::_parse_skins(Ref<FBXState> p_state) {
 		return err;
 	}
 	for (int i = 0; i < p_state->skins.size(); ++i) {
-		Ref<GLTFSkin> skin = p_state->skins.write[i];
+		Ref<GLTFSkin> skin = p_state->skins.ptrw()[i];
 		ERR_FAIL_COND_V(skin.is_null(), ERR_PARSE_ERROR);
 		// Expand and verify the skin
 		ERR_FAIL_COND_V(SkinTool::_expand_skin(p_state->nodes, skin), ERR_PARSE_ERROR);
@@ -2474,7 +2474,7 @@ Error FBXDocument::_parse_skins(Ref<FBXState> p_state) {
 		bool is_joint = it->value;
 		if (is_joint) {
 			if (p_state->nodes.size() > node_index) {
-				p_state->nodes.write[node_index]->joint = true;
+				p_state->nodes.ptrw()[node_index]->joint = true;
 			}
 		}
 	}

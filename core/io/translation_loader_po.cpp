@@ -72,7 +72,7 @@ Ref<Resource> TranslationLoaderPO::load_translation(Ref<FileAccess> f, Error *r_
 				data.resize(str_len + 1);
 				f->seek(str_offset);
 				f->get_buffer(data.ptrw(), str_len);
-				data.write[str_len] = 0;
+				data.ptrw()[str_len] = 0;
 
 				bool is_plural = false;
 				for (uint32_t j = 0; j < str_len + 1; j++) {
@@ -105,7 +105,7 @@ Ref<Resource> TranslationLoaderPO::load_translation(Ref<FileAccess> f, Error *r_
 				data.resize(str_len + 1);
 				f->seek(str_offset);
 				f->get_buffer(data.ptrw(), str_len);
-				data.write[str_len] = 0;
+				data.ptrw()[str_len] = 0;
 
 				if (msg_id.is_empty()) {
 					config = String::utf8((const char *)data.ptr(), str_len);
@@ -300,7 +300,7 @@ Ref<Resource> TranslationLoaderPO::load_translation(Ref<FileAccess> f, Error *r_
 				msg_context += l;
 			} else if (status == STATUS_READING_PLURAL && plural_index >= 0) {
 				ERR_FAIL_COND_V_MSG(plural_index >= plural_forms, Ref<Resource>(), vformat("Unexpected plural form while parsing: %s:%d.", path, line));
-				msgs_plural.write[plural_index] = msgs_plural[plural_index] + l;
+				msgs_plural.ptrw()[plural_index] = msgs_plural[plural_index] + l;
 			}
 
 			line++;

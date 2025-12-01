@@ -566,12 +566,12 @@ RID RenderForwardMobile::_setup_render_pass_uniform_set(RenderListType p_render_
 
 				if (texture.is_valid()) {
 					RID rd_texture = texture_storage->texture_get_rd_texture(texture);
-					textures.write[i] = rd_texture;
+					textures.ptrw()[i] = rd_texture;
 					continue;
 				}
 			}
 
-			textures.write[i] = default_tex;
+			textures.ptrw()[i] = default_tex;
 		}
 		RD::Uniform u(RD::UNIFORM_TYPE_TEXTURE, 6, textures);
 		uniforms.push_back(u);
@@ -590,9 +590,9 @@ RID RenderForwardMobile::_setup_render_pass_uniform_set(RenderListType p_render_
 				if (!tex.is_valid()) {
 					tex = default_tex;
 				}
-				u.ids.write[i] = tex;
+				u.ids.ptrw()[i] = tex;
 			} else {
-				u.ids.write[i] = default_tex;
+				u.ids.ptrw()[i] = default_tex;
 			}
 		}
 

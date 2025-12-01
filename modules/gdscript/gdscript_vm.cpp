@@ -199,10 +199,10 @@ String GDScriptFunction::_get_callable_call_error(const String &p_where, const C
 		Vector<const Variant *> argptrs;
 		argptrs.resize(p_argcount - args_unbound + binds.size());
 		for (int i = 0; i < p_argcount - args_unbound; i++) {
-			argptrs.write[i] = p_argptrs[i];
+			argptrs.ptrw()[i] = p_argptrs[i];
 		}
 		for (int i = 0; i < binds.size(); i++) {
-			argptrs.write[i + p_argcount - args_unbound] = &binds[i];
+			argptrs.ptrw()[i + p_argcount - args_unbound] = &binds[i];
 		}
 		return _get_call_error(p_where, (const Variant **)argptrs.ptr(), argptrs.size(), p_ret, p_err);
 	}
@@ -1347,7 +1347,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 				int index = _code_ptr[ip + 3];
 				GD_ERR_BREAK(index < 0 || index >= gdscript->static_variables.size());
 
-				gdscript->static_variables.write[index] = *value;
+				gdscript->static_variables.ptrw()[index] = *value;
 
 				ip += 4;
 			}
@@ -2598,7 +2598,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 
 					// First `FIXED_ADDRESSES_MAX` stack addresses are special, so we just skip them here.
 					for (int i = FIXED_ADDRESSES_MAX; i < _stack_size; i++) {
-						memnew_placement(&gdfs->state.stack.write[sizeof(Variant) * i], Variant(stack[i]));
+						memnew_placement(&gdfs->state.stack.ptrw()[sizeof(Variant) * i], Variant(stack[i]));
 					}
 					gdfs->state.stack_size = _stack_size;
 					gdfs->state.ip = ip + 2;
@@ -2677,7 +2677,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 				captures.resize(captures_count);
 				for (int i = 0; i < captures_count; i++) {
 					GET_INSTRUCTION_ARG(arg, i);
-					captures.write[i] = *arg;
+					captures.ptrw()[i] = *arg;
 				}
 
 				GDScriptLambdaCallable *callable = memnew(GDScriptLambdaCallable(Ref<GDScript>(script), lambda, captures));
@@ -2708,7 +2708,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 				captures.resize(captures_count);
 				for (int i = 0; i < captures_count; i++) {
 					GET_INSTRUCTION_ARG(arg, i);
-					captures.write[i] = *arg;
+					captures.ptrw()[i] = *arg;
 				}
 
 				GDScriptLambdaSelfCallable *callable;

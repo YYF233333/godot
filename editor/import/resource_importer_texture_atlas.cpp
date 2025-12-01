@@ -202,7 +202,7 @@ Error ResourceImporterTextureAtlas::import_group_file(const String &p_group_file
 
 	int idx = 0;
 	for (const KeyValue<String, HashMap<StringName, Variant>> &E : p_source_file_options) {
-		PackData &pack_data = pack_data_files.write[idx];
+		PackData &pack_data = pack_data_files.ptrw()[idx];
 		const String &source = E.key;
 		const HashMap<StringName, Variant> &options = E.value;
 
@@ -291,7 +291,7 @@ Error ResourceImporterTextureAtlas::import_group_file(const String &p_group_file
 	Ref<Image> new_atlas = Image::create_empty(atlas_width, atlas_height, false, Image::FORMAT_RGBA8);
 
 	for (int i = 0; i < pack_data_files.size(); i++) {
-		PackData &pack_data = pack_data_files.write[i];
+		PackData &pack_data = pack_data_files.ptrw()[i];
 
 		for (int j = 0; j < pack_data.chart_pieces.size(); j++) {
 			const EditorAtlasPacker::Chart &chart = charts[pack_data.chart_pieces[j]];
@@ -323,7 +323,7 @@ Error ResourceImporterTextureAtlas::import_group_file(const String &p_group_file
 	//save the images
 	idx = 0;
 	for (const KeyValue<String, HashMap<StringName, Variant>> &E : p_source_file_options) {
-		PackData &pack_data = pack_data_files.write[idx];
+		PackData &pack_data = pack_data_files.ptrw()[idx];
 
 		Ref<Texture2D> texture;
 

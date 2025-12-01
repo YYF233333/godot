@@ -35,7 +35,7 @@
 #include "scene/theme/theme_db.h"
 
 void ItemList::_shape_text(int p_idx) {
-	Item &item = items.write[p_idx];
+	Item &item = items.ptrw()[p_idx];
 
 	item.text_buf->clear();
 	if (item.text_direction == Control::TEXT_DIRECTION_INHERITED) {
@@ -62,7 +62,7 @@ int ItemList::add_item(const String &p_item, const Ref<Texture2D> &p_texture, bo
 	items.push_back(item);
 	int item_id = items.size() - 1;
 
-	items.write[item_id].xl_text = _atr(item_id, p_item);
+	items.ptrw()[item_id].xl_text = _atr(item_id, p_item);
 	_shape_text(item_id);
 
 	queue_accessibility_update();
@@ -96,8 +96,8 @@ void ItemList::set_item_text(int p_idx, const String &p_text) {
 		return;
 	}
 
-	items.write[p_idx].text = p_text;
-	items.write[p_idx].xl_text = _atr(p_idx, p_text);
+	items.ptrw()[p_idx].text = p_text;
+	items.ptrw()[p_idx].xl_text = _atr(p_idx, p_text);
 	_shape_text(p_idx);
 	queue_accessibility_update();
 	queue_redraw();
@@ -116,7 +116,7 @@ void ItemList::set_item_text_direction(int p_idx, Control::TextDirection p_text_
 	ERR_FAIL_INDEX(p_idx, items.size());
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 	if (items[p_idx].text_direction != p_text_direction) {
-		items.write[p_idx].text_direction = p_text_direction;
+		items.ptrw()[p_idx].text_direction = p_text_direction;
 		_shape_text(p_idx);
 		queue_accessibility_update();
 		queue_redraw();
@@ -134,7 +134,7 @@ void ItemList::set_item_language(int p_idx, const String &p_language) {
 	}
 	ERR_FAIL_INDEX(p_idx, items.size());
 	if (items[p_idx].language != p_language) {
-		items.write[p_idx].language = p_language;
+		items.ptrw()[p_idx].language = p_language;
 		_shape_text(p_idx);
 		queue_accessibility_update();
 		queue_redraw();
@@ -152,8 +152,8 @@ void ItemList::set_item_auto_translate_mode(int p_idx, AutoTranslateMode p_mode)
 	}
 	ERR_FAIL_INDEX(p_idx, items.size());
 	if (items[p_idx].auto_translate_mode != p_mode) {
-		items.write[p_idx].auto_translate_mode = p_mode;
-		items.write[p_idx].xl_text = _atr(p_idx, items[p_idx].text);
+		items.ptrw()[p_idx].auto_translate_mode = p_mode;
+		items.ptrw()[p_idx].xl_text = _atr(p_idx, items[p_idx].text);
 		_shape_text(p_idx);
 		queue_accessibility_update();
 		queue_redraw();
@@ -171,8 +171,8 @@ void ItemList::set_item_tooltip_enabled(int p_idx, const bool p_enabled) {
 	}
 	ERR_FAIL_INDEX(p_idx, items.size());
 	if (items[p_idx].tooltip_enabled != p_enabled) {
-		items.write[p_idx].tooltip_enabled = p_enabled;
-		items.write[p_idx].accessibility_item_dirty = true;
+		items.ptrw()[p_idx].tooltip_enabled = p_enabled;
+		items.ptrw()[p_idx].accessibility_item_dirty = true;
 		queue_accessibility_update();
 	}
 }
@@ -192,7 +192,7 @@ void ItemList::set_item_tooltip(int p_idx, const String &p_tooltip) {
 		return;
 	}
 
-	items.write[p_idx].tooltip = p_tooltip;
+	items.ptrw()[p_idx].tooltip = p_tooltip;
 	queue_accessibility_update();
 	queue_redraw();
 	shape_changed = true;
@@ -209,7 +209,7 @@ void ItemList::set_item_icon(int p_idx, const Ref<Texture2D> &p_icon) {
 	}
 	ERR_FAIL_INDEX(p_idx, items.size());
 
-	Item &item = items.write[p_idx];
+	Item &item = items.ptrw()[p_idx];
 	if (item.icon == p_icon) {
 		return;
 	}
@@ -243,7 +243,7 @@ void ItemList::set_item_icon_transposed(int p_idx, const bool p_transposed) {
 		return;
 	}
 
-	items.write[p_idx].icon_transposed = p_transposed;
+	items.ptrw()[p_idx].icon_transposed = p_transposed;
 	queue_redraw();
 	shape_changed = true;
 }
@@ -264,7 +264,7 @@ void ItemList::set_item_icon_region(int p_idx, const Rect2 &p_region) {
 		return;
 	}
 
-	items.write[p_idx].icon_region = p_region;
+	items.ptrw()[p_idx].icon_region = p_region;
 	queue_redraw();
 	shape_changed = true;
 }
@@ -285,7 +285,7 @@ void ItemList::set_item_icon_modulate(int p_idx, const Color &p_modulate) {
 		return;
 	}
 
-	items.write[p_idx].icon_modulate = p_modulate;
+	items.ptrw()[p_idx].icon_modulate = p_modulate;
 	queue_redraw();
 }
 
@@ -305,7 +305,7 @@ void ItemList::set_item_custom_bg_color(int p_idx, const Color &p_custom_bg_colo
 		return;
 	}
 
-	items.write[p_idx].custom_bg = p_custom_bg_color;
+	items.ptrw()[p_idx].custom_bg = p_custom_bg_color;
 	queue_redraw();
 }
 
@@ -325,7 +325,7 @@ void ItemList::set_item_custom_fg_color(int p_idx, const Color &p_custom_fg_colo
 		return;
 	}
 
-	items.write[p_idx].custom_fg = p_custom_fg_color;
+	items.ptrw()[p_idx].custom_fg = p_custom_fg_color;
 	queue_redraw();
 }
 
@@ -360,7 +360,7 @@ void ItemList::set_item_tag_icon(int p_idx, const Ref<Texture2D> &p_tag_icon) {
 		return;
 	}
 
-	items.write[p_idx].tag_icon = p_tag_icon;
+	items.ptrw()[p_idx].tag_icon = p_tag_icon;
 	queue_redraw();
 	shape_changed = true;
 }
@@ -371,8 +371,8 @@ void ItemList::set_item_selectable(int p_idx, bool p_selectable) {
 	}
 	ERR_FAIL_INDEX(p_idx, items.size());
 
-	items.write[p_idx].selectable = p_selectable;
-	items.write[p_idx].accessibility_item_dirty = true;
+	items.ptrw()[p_idx].selectable = p_selectable;
+	items.ptrw()[p_idx].accessibility_item_dirty = true;
 	queue_accessibility_update();
 }
 
@@ -391,8 +391,8 @@ void ItemList::set_item_disabled(int p_idx, bool p_disabled) {
 		return;
 	}
 
-	items.write[p_idx].disabled = p_disabled;
-	items.write[p_idx].accessibility_item_dirty = true;
+	items.ptrw()[p_idx].disabled = p_disabled;
+	items.ptrw()[p_idx].accessibility_item_dirty = true;
 	queue_accessibility_update();
 	queue_redraw();
 }
@@ -412,7 +412,7 @@ void ItemList::set_item_metadata(int p_idx, const Variant &p_metadata) {
 		return;
 	}
 
-	items.write[p_idx].metadata = p_metadata;
+	items.ptrw()[p_idx].metadata = p_metadata;
 	queue_redraw();
 	shape_changed = true;
 }
@@ -431,9 +431,9 @@ void ItemList::select(int p_idx, bool p_single) {
 		}
 
 		for (int i = 0; i < items.size(); i++) {
-			if (items.write[i].selected != (p_idx == i)) {
-				items.write[i].selected = (p_idx == i);
-				items.write[i].accessibility_item_dirty = true;
+			if (items.ptrw()[i].selected != (p_idx == i)) {
+				items.ptrw()[i].selected = (p_idx == i);
+				items.ptrw()[i].accessibility_item_dirty = true;
 			}
 		}
 
@@ -441,8 +441,8 @@ void ItemList::select(int p_idx, bool p_single) {
 		ensure_selected_visible = false;
 	} else {
 		if (items[p_idx].selectable && !items[p_idx].disabled) {
-			items.write[p_idx].selected = true;
-			items.write[p_idx].accessibility_item_dirty = true;
+			items.ptrw()[p_idx].selected = true;
+			items.ptrw()[p_idx].accessibility_item_dirty = true;
 		}
 	}
 	queue_accessibility_update();
@@ -453,12 +453,12 @@ void ItemList::deselect(int p_idx) {
 	ERR_FAIL_INDEX(p_idx, items.size());
 
 	if (select_mode == SELECT_SINGLE) {
-		items.write[p_idx].selected = false;
+		items.ptrw()[p_idx].selected = false;
 		current = -1;
 	} else {
-		items.write[p_idx].selected = false;
+		items.ptrw()[p_idx].selected = false;
 	}
-	items.write[p_idx].accessibility_item_dirty = true;
+	items.ptrw()[p_idx].accessibility_item_dirty = true;
 	queue_accessibility_update();
 	queue_redraw();
 }
@@ -469,9 +469,9 @@ void ItemList::deselect_all() {
 	}
 
 	for (int i = 0; i < items.size(); i++) {
-		if (items.write[i].selected) {
-			items.write[i].selected = false;
-			items.write[i].accessibility_item_dirty = true;
+		if (items.ptrw()[i].selected) {
+			items.ptrw()[i].selected = false;
+			items.ptrw()[i].accessibility_item_dirty = true;
 		}
 	}
 	current = -1;
@@ -533,8 +533,8 @@ void ItemList::set_item_count(int p_count) {
 	if (items.size() > p_count) {
 		for (int i = p_count; i < items.size(); i++) {
 			if (items[i].accessibility_item_element.is_valid()) {
-				DisplayServer::get_singleton()->accessibility_free_element(items.write[i].accessibility_item_element);
-				items.write[i].accessibility_item_element = RID();
+				DisplayServer::get_singleton()->accessibility_free_element(items.ptrw()[i].accessibility_item_element);
+				items.ptrw()[i].accessibility_item_element = RID();
 			}
 		}
 	}
@@ -554,8 +554,8 @@ void ItemList::remove_item(int p_idx) {
 	ERR_FAIL_INDEX(p_idx, items.size());
 
 	if (items[p_idx].accessibility_item_element.is_valid()) {
-		DisplayServer::get_singleton()->accessibility_free_element(items.write[p_idx].accessibility_item_element);
-		items.write[p_idx].accessibility_item_element = RID();
+		DisplayServer::get_singleton()->accessibility_free_element(items.ptrw()[p_idx].accessibility_item_element);
+		items.ptrw()[p_idx].accessibility_item_element = RID();
 	}
 	items.remove_at(p_idx);
 	if (current == p_idx) {
@@ -571,8 +571,8 @@ void ItemList::remove_item(int p_idx) {
 void ItemList::clear() {
 	for (int i = 0; i < items.size(); i++) {
 		if (items[i].accessibility_item_element.is_valid()) {
-			DisplayServer::get_singleton()->accessibility_free_element(items.write[i].accessibility_item_element);
-			items.write[i].accessibility_item_element = RID();
+			DisplayServer::get_singleton()->accessibility_free_element(items.ptrw()[i].accessibility_item_element);
+			items.ptrw()[i].accessibility_item_element = RID();
 		}
 	}
 	items.clear();
@@ -621,10 +621,10 @@ void ItemList::set_max_text_lines(int p_lines) {
 		max_text_lines = p_lines;
 		for (int i = 0; i < items.size(); i++) {
 			if (icon_mode == ICON_MODE_TOP && max_text_lines > 0) {
-				items.write[i].text_buf->set_break_flags(TextServer::BREAK_MANDATORY | TextServer::BREAK_WORD_BOUND | TextServer::BREAK_GRAPHEME_BOUND | TextServer::BREAK_TRIM_START_EDGE_SPACES | TextServer::BREAK_TRIM_END_EDGE_SPACES);
-				items.write[i].text_buf->set_max_lines_visible(p_lines);
+				items.ptrw()[i].text_buf->set_break_flags(TextServer::BREAK_MANDATORY | TextServer::BREAK_WORD_BOUND | TextServer::BREAK_GRAPHEME_BOUND | TextServer::BREAK_TRIM_START_EDGE_SPACES | TextServer::BREAK_TRIM_END_EDGE_SPACES);
+				items.ptrw()[i].text_buf->set_max_lines_visible(p_lines);
 			} else {
-				items.write[i].text_buf->set_break_flags(TextServer::BREAK_NONE);
+				items.ptrw()[i].text_buf->set_break_flags(TextServer::BREAK_NONE);
 			}
 		}
 		shape_changed = true;
@@ -674,9 +674,9 @@ void ItemList::set_icon_mode(IconMode p_mode) {
 		icon_mode = p_mode;
 		for (int i = 0; i < items.size(); i++) {
 			if (icon_mode == ICON_MODE_TOP && max_text_lines > 0) {
-				items.write[i].text_buf->set_break_flags(TextServer::BREAK_MANDATORY | TextServer::BREAK_WORD_BOUND | TextServer::BREAK_GRAPHEME_BOUND | TextServer::BREAK_TRIM_START_EDGE_SPACES | TextServer::BREAK_TRIM_END_EDGE_SPACES);
+				items.ptrw()[i].text_buf->set_break_flags(TextServer::BREAK_MANDATORY | TextServer::BREAK_WORD_BOUND | TextServer::BREAK_GRAPHEME_BOUND | TextServer::BREAK_TRIM_START_EDGE_SPACES | TextServer::BREAK_TRIM_END_EDGE_SPACES);
 			} else {
-				items.write[i].text_buf->set_break_flags(TextServer::BREAK_NONE);
+				items.ptrw()[i].text_buf->set_break_flags(TextServer::BREAK_NONE);
 			}
 		}
 		shape_changed = true;
@@ -1279,7 +1279,7 @@ void ItemList::_notification(int p_what) {
 		case NOTIFICATION_EXIT_TREE:
 		case NOTIFICATION_ACCESSIBILITY_INVALIDATE: {
 			for (int i = 0; i < items.size(); i++) {
-				items.write[i].accessibility_item_element = RID();
+				items.ptrw()[i].accessibility_item_element = RID();
 			}
 			accessibility_scroll_element = RID();
 		} break;
@@ -1309,7 +1309,7 @@ void ItemList::_notification(int p_what) {
 			DisplayServer::get_singleton()->accessibility_update_set_bounds(accessibility_scroll_element, Rect2(0, 0, scroll_bar_h->get_max(), scroll_bar_v->get_max()));
 
 			for (int i = 0; i < items.size(); i++) {
-				const Item &item = items.write[i];
+				const Item &item = items.ptrw()[i];
 
 				if (item.accessibility_item_element.is_null()) {
 					item.accessibility_item_element = DisplayServer::get_singleton()->accessibility_create_sub_element(accessibility_scroll_element, DisplayServer::AccessibilityRole::ROLE_LIST_BOX_OPTION);
@@ -1355,7 +1355,7 @@ void ItemList::_notification(int p_what) {
 		} break;
 		case NOTIFICATION_TRANSLATION_CHANGED: {
 			for (int i = 0; i < items.size(); i++) {
-				items.write[i].xl_text = _atr(i, items[i].text);
+				items.ptrw()[i].xl_text = _atr(i, items[i].text);
 				_shape_text(i);
 			}
 			shape_changed = true;
@@ -1625,13 +1625,13 @@ void ItemList::_notification(int p_what) {
 						text_ofs.y += MAX(theme_cache.v_separation, 0) / 2;
 						text_ofs.x += MAX(theme_cache.h_separation, 0) / 2;
 
-						items.write[i].text_buf->set_alignment(HORIZONTAL_ALIGNMENT_CENTER);
+						items.ptrw()[i].text_buf->set_alignment(HORIZONTAL_ALIGNMENT_CENTER);
 
 						float text_w = items[i].rect_cache.size.width - text_ofs.x * 2;
 						if (wraparound_items && text_w + text_ofs.x > width) {
 							text_w = width - text_ofs.x;
 						}
-						items.write[i].text_buf->set_width(text_w);
+						items.ptrw()[i].text_buf->set_width(text_w);
 
 						text_ofs += base_ofs;
 						text_ofs += items[i].rect_cache.position;
@@ -1658,16 +1658,16 @@ void ItemList::_notification(int p_what) {
 						if (wraparound_items && items[i].rect_cache.size.width > width) {
 							text_w -= items[i].rect_cache.size.width - width;
 						}
-						items.write[i].text_buf->set_width(text_w);
+						items.ptrw()[i].text_buf->set_width(text_w);
 
 						if (rtl) {
 							text_ofs.x = size.width - items[i].rect_cache.size.width + icon_size.x - text_ofs.x + MAX(theme_cache.h_separation, 0);
 							if (wraparound_items) {
 								text_ofs.x += MAX(items[i].rect_cache.size.width - width, 0);
 							}
-							items.write[i].text_buf->set_alignment(HORIZONTAL_ALIGNMENT_RIGHT);
+							items.ptrw()[i].text_buf->set_alignment(HORIZONTAL_ALIGNMENT_RIGHT);
 						} else {
-							items.write[i].text_buf->set_alignment(HORIZONTAL_ALIGNMENT_LEFT);
+							items.ptrw()[i].text_buf->set_alignment(HORIZONTAL_ALIGNMENT_LEFT);
 						}
 
 						if (theme_cache.font_outline_size > 0 && theme_cache.font_outline_color.a > 0) {
@@ -1763,7 +1763,7 @@ void ItemList::force_update_list_size() {
 			if (fixed_column_width) {
 				max_width = fixed_column_width;
 			}
-			items.write[i].text_buf->set_width(max_width);
+			items.ptrw()[i].text_buf->set_width(max_width);
 			Size2 s = items[i].text_buf->get_size();
 
 			if (icon_mode == ICON_MODE_TOP) {
@@ -1789,10 +1789,10 @@ void ItemList::force_update_list_size() {
 		minsize.y += MAX(theme_cache.v_separation, 0);
 		minsize.x += MAX(theme_cache.h_separation, 0);
 
-		items.write[i].rect_cache.size = minsize;
-		items.write[i].min_rect_cache.size = minsize;
+		items.ptrw()[i].rect_cache.size = minsize;
+		items.ptrw()[i].min_rect_cache.size = minsize;
 
-		items.write[i].accessibility_item_dirty = true;
+		items.ptrw()[i].accessibility_item_dirty = true;
 	}
 
 	int fit_size = size.x - theme_cache.panel_style->get_minimum_size().width;
@@ -1825,15 +1825,15 @@ void ItemList::force_update_list_size() {
 			}
 
 			if (same_column_width) {
-				items.write[i].rect_cache.size.x = max_column_width + MAX(theme_cache.h_separation, 0);
+				items.ptrw()[i].rect_cache.size.x = max_column_width + MAX(theme_cache.h_separation, 0);
 			}
-			items.write[i].rect_cache.position = ofs;
+			items.ptrw()[i].rect_cache.position = ofs;
 
 			max_h = MAX(max_h, items[i].rect_cache.size.y);
 			ofs.x += items[i].rect_cache.size.x;
 			max_w = MAX(max_w, ofs.x);
 
-			items.write[i].column = col;
+			items.ptrw()[i].column = col;
 			col++;
 			if (col == current_columns) {
 				if (i < items.size() - 1) {
@@ -1841,7 +1841,7 @@ void ItemList::force_update_list_size() {
 				}
 
 				for (int j = i; j >= 0 && col > 0; j--, col--) {
-					items.write[j].rect_cache.size.y = max_h;
+					items.ptrw()[j].rect_cache.size.y = max_h;
 				}
 
 				ofs.x = 0;
@@ -1865,7 +1865,7 @@ void ItemList::force_update_list_size() {
 
 		if (all_fit) {
 			for (int j = items.size() - 1; j >= 0 && col > 0; j--, col--) {
-				items.write[j].rect_cache.size.y = max_h;
+				items.ptrw()[j].rect_cache.size.y = max_h;
 			}
 
 			if (auto_height) {
@@ -2183,7 +2183,7 @@ void ItemList::set_text_overrun_behavior(TextServer::OverrunBehavior p_behavior)
 	if (text_overrun_behavior != p_behavior) {
 		text_overrun_behavior = p_behavior;
 		for (int i = 0; i < items.size(); i++) {
-			items.write[i].text_buf->set_text_overrun_behavior(p_behavior);
+			items.ptrw()[i].text_buf->set_text_overrun_behavior(p_behavior);
 		}
 		shape_changed = true;
 		queue_redraw();

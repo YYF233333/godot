@@ -126,10 +126,10 @@ Ref<ArrayMesh> ChainIK3DGizmoPlugin::get_joints_mesh(Skeleton3D *p_skeleton, Cha
 	bones.resize(4);
 	weights.resize(4);
 	for (int i = 0; i < 4; i++) {
-		bones.write[i] = 0;
-		weights.write[i] = 0;
+		bones.ptrw()[i] = 0;
+		weights.ptrw()[i] = 0;
 	}
-	weights.write[0] = 1;
+	weights.ptrw()[0] = 1;
 
 	for (int i = 0; i < p_ik->get_setting_count(); i++) {
 		int current_bone = -1;
@@ -169,7 +169,7 @@ Ref<ArrayMesh> ChainIK3DGizmoPlugin::get_joints_mesh(Skeleton3D *p_skeleton, Cha
 						if (prev_bone >= 0) {
 							int parent = p_skeleton->get_bone_parent(prev_bone);
 							if (parent >= 0) {
-								bones.write[0] = parent;
+								bones.ptrw()[0] = parent;
 								surface_tool->set_bones(bones);
 								surface_tool->set_weights(weights);
 							}
@@ -198,7 +198,7 @@ Ref<ArrayMesh> ChainIK3DGizmoPlugin::get_joints_mesh(Skeleton3D *p_skeleton, Cha
 					continue;
 				}
 				float current_length = bone_vector.length();
-				bones.write[0] = current_bone;
+				bones.ptrw()[0] = current_bone;
 				surface_tool->set_bones(bones);
 				surface_tool->set_weights(weights);
 				Vector3 center = current_global_pose.translated_local(bone_vector).origin;
@@ -212,7 +212,7 @@ Ref<ArrayMesh> ChainIK3DGizmoPlugin::get_joints_mesh(Skeleton3D *p_skeleton, Cha
 						if (current_bone >= 0) {
 							int parent = p_skeleton->get_bone_parent(current_bone);
 							if (parent >= 0) {
-								bones.write[0] = parent;
+								bones.ptrw()[0] = parent;
 								surface_tool->set_bones(bones);
 								surface_tool->set_weights(weights);
 							}
@@ -229,7 +229,7 @@ Ref<ArrayMesh> ChainIK3DGizmoPlugin::get_joints_mesh(Skeleton3D *p_skeleton, Cha
 					}
 				}
 			} else {
-				bones.write[0] = current_bone;
+				bones.ptrw()[0] = current_bone;
 				surface_tool->set_bones(bones);
 				surface_tool->set_weights(weights);
 				if (j == 0) {

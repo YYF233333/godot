@@ -237,14 +237,14 @@ void GLTFAccessor::_calculate_min_and_max(const PackedFloat64Array &p_numbers) {
 	max.resize(vector_size);
 	// Initialize min and max with the first vector element values.
 	for (int64_t in_vec = 0; in_vec < vector_size; in_vec++) {
-		min.write[in_vec] = p_numbers[in_vec];
-		max.write[in_vec] = p_numbers[in_vec];
+		min.ptrw()[in_vec] = p_numbers[in_vec];
+		max.ptrw()[in_vec] = p_numbers[in_vec];
 	}
 	// Iterate over the rest of the vectors.
 	for (int64_t which_vec = vector_size; which_vec < p_numbers.size(); which_vec += vector_size) {
 		for (int64_t in_vec = 0; in_vec < vector_size; in_vec++) {
-			min.write[in_vec] = MIN(p_numbers[which_vec + in_vec], min[in_vec]);
-			max.write[in_vec] = MAX(p_numbers[which_vec + in_vec], max[in_vec]);
+			min.ptrw()[in_vec] = MIN(p_numbers[which_vec + in_vec], min[in_vec]);
+			max.ptrw()[in_vec] = MAX(p_numbers[which_vec + in_vec], max[in_vec]);
 		}
 	}
 	// 3.6.2.5: For floating-point components, JSON-stored minimum and maximum values represent single precision
@@ -252,8 +252,8 @@ void GLTFAccessor::_calculate_min_and_max(const PackedFloat64Array &p_numbers) {
 	// https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#accessors-bounds
 	if (component_type == GLTFAccessor::COMPONENT_TYPE_SINGLE_FLOAT) {
 		for (int64_t i = 0; i < min.size(); i++) {
-			min.write[i] = (double)(float)min[i];
-			max.write[i] = (double)(float)max[i];
+			min.ptrw()[i] = (double)(float)min[i];
+			max.ptrw()[i] = (double)(float)max[i];
 		}
 	}
 }

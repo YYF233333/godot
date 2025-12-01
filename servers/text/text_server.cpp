@@ -1446,7 +1446,7 @@ TextServer::Direction TextServer::shaped_text_get_dominant_direction_in_range(co
 
 _FORCE_INLINE_ void _push_range(Vector<Vector2> &r_vector, real_t p_start, real_t p_end) {
 	if (!r_vector.is_empty() && Math::is_equal_approx(r_vector[r_vector.size() - 1].y, p_start, (real_t)UNIT_EPSILON)) {
-		r_vector.write[r_vector.size() - 1].y = p_end;
+		r_vector.ptrw()[r_vector.size() - 1].y = p_end;
 	} else {
 		r_vector.push_back(Vector2(p_start, p_end));
 	}
@@ -1729,7 +1729,7 @@ PackedInt32Array TextServer::string_get_character_breaks(const String &p_string,
 	if (!p_string.is_empty()) {
 		ret.resize(p_string.size() - 1);
 		for (int i = 0; i < p_string.size() - 1; i++) {
-			ret.write[i] = i + 1;
+			ret.ptrw()[i] = i + 1;
 		}
 	}
 	return ret;

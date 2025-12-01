@@ -1107,8 +1107,8 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 
 		for (int i = 0; i < precision; i++) {
 			float h = i / float(precision - 1);
-			offsets.write[i] = h;
-			colors.write[i] = Color::from_hsv(h, 1, 1);
+			offsets.ptrw()[i] = h;
+			colors.ptrw()[i] = Color::from_hsv(h, 1, 1);
 		}
 		hue_gradient->set_offsets(offsets);
 		hue_gradient->set_colors(colors);

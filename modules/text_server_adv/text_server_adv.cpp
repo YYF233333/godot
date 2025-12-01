@@ -907,7 +907,7 @@ _FORCE_INLINE_ TextServerAdvanced::FontTexturePosition TextServerAdvanced::find_
 		p_data->textures.push_back(tex);
 
 		int32_t idx = p_data->textures.size() - 1;
-		ret = p_data->textures.write[idx].pack_rect(idx, mh, mw);
+		ret = p_data->textures.ptrw()[idx].pack_rect(idx, mh, mw);
 	}
 
 	return ret;
@@ -1048,7 +1048,7 @@ _FORCE_INLINE_ TextServerAdvanced::FontGlyph TextServerAdvanced::rasterize_msdf(
 
 		FontTexturePosition tex_pos = find_texture_pos_for_glyph(p_data, 4, Image::FORMAT_RGBA8, mw, mh, true);
 		ERR_FAIL_COND_V(tex_pos.index < 0, FontGlyph());
-		ShelfPackTexture &tex = p_data->textures.write[tex_pos.index];
+		ShelfPackTexture &tex = p_data->textures.ptrw()[tex_pos.index];
 
 		edgeColoringSimple(shape, 3.0); // Max. angle.
 		msdfgen::Bitmap<float, 4> image(w, h); // Texture size.
@@ -1144,7 +1144,7 @@ _FORCE_INLINE_ TextServerAdvanced::FontGlyph TextServerAdvanced::rasterize_bitma
 	ERR_FAIL_COND_V(tex_pos.index < 0, FontGlyph());
 
 	// Fit character in char texture.
-	ShelfPackTexture &tex = p_data->textures.write[tex_pos.index];
+	ShelfPackTexture &tex = p_data->textures.ptrw()[tex_pos.index];
 
 	{
 		uint8_t *wr = tex.image->ptrw();
@@ -1907,16 +1907,16 @@ bool TextServerAdvanced::_ensure_cache_for_size(FontAdvanced *p_font_data, const
 				// Reset to default.
 				var.tag = amaster->axis[i].tag;
 				var.value = (double)amaster->axis[i].def / 65536.0;
-				coords.write[i] = amaster->axis[i].def;
+				coords.ptrw()[i] = amaster->axis[i].def;
 
 				if (p_font_data->variation_coordinates.has(var.tag)) {
 					var.value = p_font_data->variation_coordinates[var.tag];
-					coords.write[i] = CLAMP(var.value * 65536.0, amaster->axis[i].minimum, amaster->axis[i].maximum);
+					coords.ptrw()[i] = CLAMP(var.value * 65536.0, amaster->axis[i].minimum, amaster->axis[i].maximum);
 				}
 
 				if (p_font_data->variation_coordinates.has(_tag_to_name(var.tag))) {
 					var.value = p_font_data->variation_coordinates[_tag_to_name(var.tag)];
-					coords.write[i] = CLAMP(var.value * 65536.0, amaster->axis[i].minimum, amaster->axis[i].maximum);
+					coords.ptrw()[i] = CLAMP(var.value * 65536.0, amaster->axis[i].minimum, amaster->axis[i].maximum);
 				}
 
 				hb_vars.push_back(var);
@@ -2417,8 +2417,8 @@ void TextServerAdvanced::_font_set_generate_mipmaps(const RID &p_font_rid, bool 
 	if (fd->mipmaps != p_generate_mipmaps) {
 		for (KeyValue<Vector2i, FontForSizeAdvanced *> &E : fd->cache) {
 			for (int i = 0; i < E.value->textures.size(); i++) {
-				E.value->textures.write[i].dirty = true;
-				E.value->textures.write[i].texture = Ref<ImageTexture>();
+				E.value->textures.ptrw()[i].dirty = true;
+				E.value->textures.ptrw()[i].texture = Ref<ImageTexture>();
 			}
 		}
 		fd->mipmaps = p_generate_mipmaps;
@@ -3072,7 +3072,7 @@ void TextServerAdvanced::_font_set_texture_image(const RID &p_font_rid, const Ve
 		ffsd->textures.resize(p_texture_index + 1);
 	}
 
-	ShelfPackTexture &tex = ffsd->textures.write[p_texture_index];
+	ShelfPackTexture &tex = ffsd->textures.ptrw()[p_texture_index];
 
 	tex.image = p_image;
 	tex.texture_w = p_image->get_width();
@@ -3115,7 +3115,7 @@ void TextServerAdvanced::_font_set_texture_offsets(const RID &p_font_rid, const 
 		ffsd->textures.resize(p_texture_index + 1);
 	}
 
-	ShelfPackTexture &tex = ffsd->textures.write[p_texture_index];
+	ShelfPackTexture &tex = ffsd->textures.ptrw()[p_texture_index];
 	tex.shelves.clear();
 	for (int32_t i = 0; i < p_offsets.size(); i += 4) {
 		tex.shelves.push_back(Shelf(p_offsets[i], p_offsets[i + 1], p_offsets[i + 2], p_offsets[i + 3]));
@@ -3479,7 +3479,7 @@ RID TextServerAdvanced::_font_get_glyph_texture_rid(const RID &p_font_rid, const
 	if (RenderingServer::get_singleton() != nullptr) {
 		if (fgl.texture_idx != -1) {
 			if (ffsd->textures[fgl.texture_idx].dirty) {
-				ShelfPackTexture &tex = ffsd->textures.write[fgl.texture_idx];
+				ShelfPackTexture &tex = ffsd->textures.ptrw()[fgl.texture_idx];
 				Ref<Image> img = tex.image;
 				if (fgl.from_svg) {
 					// Same as the "fix alpha border" process option when importing SVGs
@@ -3531,7 +3531,7 @@ Size2 TextServerAdvanced::_font_get_glyph_texture_size(const RID &p_font_rid, co
 	if (RenderingServer::get_singleton() != nullptr) {
 		if (fgl.texture_idx != -1) {
 			if (ffsd->textures[fgl.texture_idx].dirty) {
-				ShelfPackTexture &tex = ffsd->textures.write[fgl.texture_idx];
+				ShelfPackTexture &tex = ffsd->textures.ptrw()[fgl.texture_idx];
 				Ref<Image> img = tex.image;
 				if (fgl.from_svg) {
 					// Same as the "fix alpha border" process option when importing SVGs
@@ -4009,7 +4009,7 @@ void TextServerAdvanced::_font_draw_glyph(const RID &p_font_rid, const RID &p_ca
 #endif
 			if (RenderingServer::get_singleton() != nullptr) {
 				if (ffsd->textures[fgl.texture_idx].dirty) {
-					ShelfPackTexture &tex = ffsd->textures.write[fgl.texture_idx];
+					ShelfPackTexture &tex = ffsd->textures.ptrw()[fgl.texture_idx];
 					Ref<Image> img = tex.image;
 					if (fgl.from_svg) {
 						// Same as the "fix alpha border" process option when importing SVGs
@@ -4155,7 +4155,7 @@ void TextServerAdvanced::_font_draw_glyph_outline(const RID &p_font_rid, const R
 #endif
 			if (RenderingServer::get_singleton() != nullptr) {
 				if (ffsd->textures[fgl.texture_idx].dirty) {
-					ShelfPackTexture &tex = ffsd->textures.write[fgl.texture_idx];
+					ShelfPackTexture &tex = ffsd->textures.ptrw()[fgl.texture_idx];
 					Ref<Image> img = tex.image;
 					if (fd->mipmaps && !img->has_mipmaps()) {
 						img = tex.image->duplicate();
@@ -7534,9 +7534,9 @@ int64_t TextServerAdvanced::_is_confusable(const String &p_string, const PackedS
 	for (int i = 0; i < p_dict.size(); i++) {
 		Char16String word = p_dict[i].utf16();
 		int32_t len = uspoof_getSkeleton(sc_conf, 0, word.get_data(), -1, nullptr, 0, &status);
-		skeletons.write[i] = (UChar *)memalloc(++len * sizeof(UChar));
+		skeletons.ptrw()[i] = (UChar *)memalloc(++len * sizeof(UChar));
 		status = U_ZERO_ERROR;
-		uspoof_getSkeleton(sc_conf, 0, word.get_data(), -1, skeletons.write[i], len, &status);
+		uspoof_getSkeleton(sc_conf, 0, word.get_data(), -1, skeletons.ptrw()[i], len, &status);
 	}
 
 	int32_t len = uspoof_getSkeleton(sc_conf, 0, utf16.get_data(), -1, nullptr, 0, &status);
@@ -7552,7 +7552,7 @@ int64_t TextServerAdvanced::_is_confusable(const String &p_string, const PackedS
 	memfree(skel);
 
 	for (int i = 0; i < skeletons.size(); i++) {
-		memfree(skeletons.write[i]);
+		memfree(skeletons.ptrw()[i]);
 	}
 
 	ERR_FAIL_COND_V_MSG(U_FAILURE(status), -1, u_errorName(status));

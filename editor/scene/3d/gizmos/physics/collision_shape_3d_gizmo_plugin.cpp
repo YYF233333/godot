@@ -630,8 +630,8 @@ void CollisionShape3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 				Vector<Vector3> lines;
 				lines.resize(md.edges.size() * 2);
 				for (uint32_t i = 0; i < md.edges.size(); i++) {
-					lines.write[i * 2 + 0] = md.vertices[md.edges[i].vertex_a];
-					lines.write[i * 2 + 1] = md.vertices[md.edges[i].vertex_b];
+					lines.ptrw()[i * 2 + 0] = md.vertices[md.edges[i].vertex_a];
+					lines.ptrw()[i * 2 + 1] = md.vertices[md.edges[i].vertex_b];
 				}
 				p_gizmo->add_lines(lines, material, false, collision_color);
 				p_gizmo->add_collision_segments(lines);

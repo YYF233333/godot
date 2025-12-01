@@ -2227,7 +2227,7 @@ Variant::operator Vector<::RID>() const {
 	Vector<::RID> rids;
 	rids.resize(va.size());
 	for (int i = 0; i < rids.size(); i++) {
-		rids.write[i] = va[i];
+		rids.ptrw()[i] = va[i];
 	}
 	return rids;
 }
@@ -2292,7 +2292,7 @@ Variant::operator Vector<StringName>() const {
 	int len = from.size();
 	to.resize(len);
 	for (int i = 0; i < len; i++) {
-		to.write[i] = from[i];
+		to.ptrw()[i] = from[i];
 	}
 	return to;
 }
@@ -3541,10 +3541,10 @@ String Variant::get_callable_error_text(const Callable &p_callable, const Varian
 		Vector<const Variant *> argptrs;
 		argptrs.resize(p_argcount - args_unbound + binds.size());
 		for (int i = 0; i < p_argcount - args_unbound; i++) {
-			argptrs.write[i] = p_argptrs[i];
+			argptrs.ptrw()[i] = p_argptrs[i];
 		}
 		for (int i = 0; i < binds.size(); i++) {
-			argptrs.write[i + p_argcount - args_unbound] = &binds[i];
+			argptrs.ptrw()[i + p_argcount - args_unbound] = &binds[i];
 		}
 		return get_call_error_text(p_callable.get_object(), p_callable.get_method(), (const Variant **)argptrs.ptr(), argptrs.size(), ce);
 	}

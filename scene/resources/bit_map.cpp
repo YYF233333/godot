@@ -131,7 +131,7 @@ void BitMap::set_bit(int p_x, int p_y, bool p_value) {
 		b &= ~(1 << bbit);
 	}
 
-	bitmask.write[bbyte] = b;
+	bitmask.ptrw()[bbyte] = b;
 }
 
 bool BitMap::get_bitv(const Point2i &p_pos) const {
@@ -400,11 +400,11 @@ static Vector<Vector2> rdp(const Vector<Vector2> &v, float optimization) {
 		Vector<Vector2> left, right;
 		left.resize(index);
 		for (int i = 0; i < index; i++) {
-			left.write[i] = v[i];
+			left.ptrw()[i] = v[i];
 		}
 		right.resize(v.size() - index);
 		for (int i = 0; i < right.size(); i++) {
-			right.write[i] = v[index + i];
+			right.ptrw()[i] = v[index + i];
 		}
 		Vector<Vector2> r1 = rdp(left, optimization);
 		Vector<Vector2> r2 = rdp(right, optimization);
@@ -412,7 +412,7 @@ static Vector<Vector2> rdp(const Vector<Vector2> &v, float optimization) {
 		int middle = r1.size();
 		r1.resize(r1.size() + r2.size());
 		for (int i = 0; i < r2.size(); i++) {
-			r1.write[middle + i] = r2[i];
+			r1.ptrw()[middle + i] = r2[i];
 		}
 		return r1;
 	} else {
@@ -439,7 +439,7 @@ static Vector<Vector2> reduce(const Vector<Vector2> &points, const Rect2i &rect,
 	Vector2 last = result[result.size() - 1];
 
 	if (last.y > result[0].y && last.distance_to(result[0]) < ep * 0.5f) {
-		result.write[0].y = last.y;
+		result.ptrw()[0].y = last.y;
 		result.resize(result.size() - 1);
 	}
 	return result;

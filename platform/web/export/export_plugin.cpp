@@ -125,7 +125,7 @@ void EditorExportPlatformWeb::_replace_strings(const HashMap<String, String> &p_
 	CharString cs = out.utf8();
 	r_template.resize(cs.length());
 	for (int i = 0; i < cs.length(); i++) {
-		r_template.write[i] = cs[i];
+		r_template.ptrw()[i] = cs[i];
 	}
 }
 

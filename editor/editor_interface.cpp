@@ -498,7 +498,7 @@ void EditorInterface::popup_node_selector(const Callable &p_callback, const Type
 	int length = p_valid_types.size();
 	valid_types.resize(length);
 	for (int i = 0; i < length; i++) {
-		valid_types.write[i] = p_valid_types[i];
+		valid_types.ptrw()[i] = p_valid_types[i];
 	}
 	node_selector->set_valid_types(valid_types);
 	node_selector->popup_scenetree_dialog(p_current_value);
@@ -518,7 +518,7 @@ void EditorInterface::popup_property_selector(Object *p_object, const Callable &
 	int length = p_type_filter.size();
 	type_filter.resize(length);
 	for (int i = 0; i < length; i++) {
-		type_filter.write[i] = (Variant::Type)p_type_filter[i];
+		type_filter.ptrw()[i] = (Variant::Type)p_type_filter[i];
 	}
 	property_selector->set_type_filter(type_filter);
 	property_selector->select_property_from_instance(p_object, p_current_value);

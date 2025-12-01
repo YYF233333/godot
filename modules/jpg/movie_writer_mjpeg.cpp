@@ -214,7 +214,7 @@ Error MovieWriterMJPEG::write_frame(const Ref<Image> &p_image, const int32_t *p_
 		int num_samples = audio_block_size / 2;
 		audio_buffer_16.resize(num_samples);
 		for (int i = 0; i < num_samples; ++i) {
-			audio_buffer_16.write[i] = (int16_t)(p_audio_data[i] >> 16);
+			audio_buffer_16.ptrw()[i] = (int16_t)(p_audio_data[i] >> 16);
 		}
 		f->store_buffer((const uint8_t *)audio_buffer_16.ptr(), audio_block_size);
 	} else {

@@ -58,9 +58,9 @@ Error QuickHull::build(const Vector<Vector3> &p_points, Geometry3D::MeshData &r_
 	for (int i = 0; i < p_points.size(); i++) {
 		Vector3 sp = p_points[i].snappedf(0.0001);
 		if (valid_cache.has(sp)) {
-			valid_points.write[i] = false;
+			valid_points.ptrw()[i] = false;
 		} else {
-			valid_points.write[i] = true;
+			valid_points.ptrw()[i] = true;
 			valid_cache.insert(sp);
 		}
 	}

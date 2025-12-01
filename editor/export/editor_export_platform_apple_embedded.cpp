@@ -880,7 +880,7 @@ private:
 		ret.resize(sizeof(p_num) * 2);
 		for (uint64_t i = 0; i < sizeof(p_num) * 2; ++i) {
 			uint8_t four_bits = (p_num >> (sizeof(p_num) * 8 - (i + 1) * 4)) & 0xF;
-			ret.write[i] = _hex_char(four_bits);
+			ret.ptrw()[i] = _hex_char(four_bits);
 		}
 		return String::utf8(ret.ptr(), ret.size());
 	}
@@ -1188,7 +1188,7 @@ void EditorExportPlatformAppleEmbedded::_add_assets_to_project(const String &p_o
 	CharString cs = str.utf8();
 	p_project_data.resize(cs.size() - 1);
 	for (int i = 0; i < cs.size() - 1; i++) {
-		p_project_data.write[i] = cs[i];
+		p_project_data.ptrw()[i] = cs[i];
 	}
 }
 
@@ -1377,7 +1377,7 @@ Error EditorExportPlatformAppleEmbedded::_export_additional_assets(const Ref<Edi
 
 		Vector<String> project_static_libs = export_plugins[i]->get_apple_embedded_platform_project_static_libs();
 		for (int j = 0; j < project_static_libs.size(); j++) {
-			project_static_libs.write[j] = project_static_libs[j].get_file(); // Only the file name as it's copied to the project
+			project_static_libs.ptrw()[j] = project_static_libs[j].get_file(); // Only the file name as it's copied to the project
 		}
 		err = _export_additional_assets(p_preset, p_out_dir, project_static_libs, true, false, r_exported_assets);
 		ERR_FAIL_COND_V(err, err);

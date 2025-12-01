@@ -80,7 +80,7 @@ Error PCKPacker::pck_start(const String &p_pck_path, int p_alignment, const Stri
 			}
 			v |= ct;
 		}
-		key.write[i] = v;
+		key.ptrw()[i] = v;
 	}
 	enc_dir = p_encrypt_directory;
 
@@ -167,7 +167,7 @@ Error PCKPacker::add_file(const String &p_target_path, const String &p_source_pa
 		CryptoCore::md5(data.ptr(), data.size(), hash);
 		pf.md5.resize(16);
 		for (int i = 0; i < 16; i++) {
-			pf.md5.write[i] = hash[i];
+			pf.md5.ptrw()[i] = hash[i];
 		}
 	}
 	pf.encrypted = p_encrypt;

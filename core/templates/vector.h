@@ -48,21 +48,8 @@ template <typename T>
 class Vector;
 
 template <typename T>
-class VectorWriteProxy {
-public:
-	_FORCE_INLINE_ T &operator[](typename CowData<T>::Size p_index) {
-		CRASH_BAD_INDEX(p_index, ((Vector<T> *)(this))->_cowdata.size());
-
-		return ((Vector<T> *)(this))->_cowdata.ptrw()[p_index];
-	}
-};
-
-template <typename T>
 class Vector {
-	friend class VectorWriteProxy<T>;
-
 public:
-	VectorWriteProxy<T> write;
 	typedef typename CowData<T>::Size Size;
 	typedef typename CowData<T>::USize USize;
 
@@ -98,7 +85,6 @@ public:
 	_FORCE_INLINE_ void clear() { _cowdata.clear(); }
 	_FORCE_INLINE_ bool is_empty() const { return _cowdata.is_empty(); }
 
-	_FORCE_INLINE_ T get(Size p_index) { return _cowdata.get(p_index); }
 	_FORCE_INLINE_ const T &get(Size p_index) const { return _cowdata.get(p_index); }
 	_FORCE_INLINE_ void set(Size p_index, const T &p_elem) { _cowdata.set(p_index, p_elem); }
 

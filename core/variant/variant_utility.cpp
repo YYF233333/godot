@@ -806,8 +806,8 @@ PackedInt64Array VariantUtilityFunctions::rand_from_seed(int64_t seed) {
 	uint64_t s = seed;
 	PackedInt64Array arr;
 	arr.resize(2);
-	arr.write[0] = Math::rand_from_seed(&s);
-	arr.write[1] = s;
+	arr.ptrw()[0] = Math::rand_from_seed(&s);
+	arr.ptrw()[1] = s;
 	return arr;
 }
 

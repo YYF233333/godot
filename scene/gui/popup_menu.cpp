@@ -111,7 +111,7 @@ RID PopupMenu::bind_global_menu() {
 	nmenu->set_popup_open_callback(global_menu, callable_mp(this, &PopupMenu::_about_to_popup));
 	nmenu->set_popup_close_callback(global_menu, callable_mp(this, &PopupMenu::_about_to_close));
 	for (int i = 0; i < items.size(); i++) {
-		Item &item = items.write[i];
+		Item &item = items.ptrw()[i];
 		if (item.separator) {
 			nmenu->add_separator(global_menu);
 		} else {
@@ -162,7 +162,7 @@ void PopupMenu::unbind_global_menu() {
 	}
 
 	for (int i = 0; i < items.size(); i++) {
-		Item &item = items.write[i];
+		Item &item = items.ptrw()[i];
 		if (item.submenu) {
 			item.submenu->unbind_global_menu();
 			item.submenu_bound = false;
@@ -1040,8 +1040,8 @@ void PopupMenu::_draw_items() {
 		}
 
 		// Cache the item vertical offset from the first item and the height.
-		items.write[i]._ofs_cache = ofs.y;
-		items.write[i]._height_cache = h;
+		items.ptrw()[i]._ofs_cache = ofs.y;
+		items.ptrw()[i]._height_cache = h;
 
 		ofs.y += h;
 	}
@@ -1097,24 +1097,24 @@ void PopupMenu::_close_or_suspend() {
 }
 
 void PopupMenu::_shape_item(int p_idx) const {
-	if (items.write[p_idx].dirty) {
-		items.write[p_idx].text_buf->clear();
+	if (items.ptrw()[p_idx].dirty) {
+		items.ptrw()[p_idx].text_buf->clear();
 
 		Ref<Font> font = items[p_idx].separator ? theme_cache.font_separator : theme_cache.font;
 		int font_size = items[p_idx].separator ? theme_cache.font_separator_size : theme_cache.font_size;
 
 		if (items[p_idx].text_direction == Control::TEXT_DIRECTION_INHERITED) {
-			items.write[p_idx].text_buf->set_direction(is_layout_rtl() ? TextServer::DIRECTION_RTL : TextServer::DIRECTION_LTR);
+			items.ptrw()[p_idx].text_buf->set_direction(is_layout_rtl() ? TextServer::DIRECTION_RTL : TextServer::DIRECTION_LTR);
 		} else {
-			items.write[p_idx].text_buf->set_direction((TextServer::Direction)items[p_idx].text_direction);
+			items.ptrw()[p_idx].text_buf->set_direction((TextServer::Direction)items[p_idx].text_direction);
 		}
 		const String &lang = items[p_idx].language.is_empty() ? _get_locale() : items[p_idx].language;
-		items.write[p_idx].text_buf->add_string(items.write[p_idx].xl_text, font, font_size, lang);
+		items.ptrw()[p_idx].text_buf->add_string(items.ptrw()[p_idx].xl_text, font, font_size, lang);
 
-		items.write[p_idx].accel_text_buf->clear();
-		items.write[p_idx].accel_text_buf->set_direction(is_layout_rtl() ? TextServer::DIRECTION_RTL : TextServer::DIRECTION_LTR);
-		items.write[p_idx].accel_text_buf->add_string(_get_accel_text(items.write[p_idx]), font, font_size, lang);
-		items.write[p_idx].dirty = false;
+		items.ptrw()[p_idx].accel_text_buf->clear();
+		items.ptrw()[p_idx].accel_text_buf->set_direction(is_layout_rtl() ? TextServer::DIRECTION_RTL : TextServer::DIRECTION_LTR);
+		items.ptrw()[p_idx].accel_text_buf->add_string(_get_accel_text(items.ptrw()[p_idx]), font, font_size, lang);
+		items.ptrw()[p_idx].dirty = false;
 	}
 }
 
@@ -1182,7 +1182,7 @@ void PopupMenu::add_child_notify(Node *p_child) {
 			if (items[i].submenu == p_child) {
 				RID submenu_rid = pm->bind_global_menu();
 				NativeMenu::get_singleton()->set_item_submenu(global_menu, i, submenu_rid);
-				items.write[i].submenu_bound = true;
+				items.ptrw()[i].submenu_bound = true;
 			}
 		}
 	}
@@ -1200,7 +1200,7 @@ void PopupMenu::remove_child_notify(Node *p_child) {
 		for (int i = 0; i < items.size(); i++) {
 			if (items[i].submenu == p_child) {
 				NativeMenu::get_singleton()->set_item_submenu(global_menu, i, RID());
-				items.write[i].submenu_bound = false;
+				items.ptrw()[i].submenu_bound = false;
 			}
 		}
 		pm->unbind_global_menu();
@@ -1232,7 +1232,7 @@ void PopupMenu::_notification(int p_what) {
 
 		case NOTIFICATION_ACCESSIBILITY_INVALIDATE: {
 			for (int i = 0; i < items.size(); i++) {
-				items.write[i].accessibility_item_element = RID();
+				items.ptrw()[i].accessibility_item_element = RID();
 			}
 			accessibility_scroll_element = RID();
 		} break;
@@ -1261,7 +1261,7 @@ void PopupMenu::_notification(int p_what) {
 			Point2 ofs;
 
 			for (int i = 0; i < items.size(); i++) {
-				const Item &item = items.write[i];
+				const Item &item = items.ptrw()[i];
 
 				// Avoid discrepancy between min size and drawn items due to rounding.
 				ofs.y += i > 0 ? theme_cache.v_separation : theme_cache.v_separation - (theme_cache.v_separation / 2);
@@ -1341,7 +1341,7 @@ void PopupMenu::_notification(int p_what) {
 				nmenu->set_interface_direction(global_menu, control->is_layout_rtl());
 			}
 			for (int i = 0; i < items.size(); i++) {
-				Item &item = items.write[i];
+				Item &item = items.ptrw()[i];
 				item.xl_text = _atr(i, item.text);
 				item.dirty = true;
 				if (is_global) {
@@ -1924,7 +1924,7 @@ void PopupMenu::add_submenu_node_item(const String &p_label, PopupMenu *p_submen
 		int index = nmenu->add_item(global_menu, item.xl_text, callable_mp(this, &PopupMenu::activate_item), Callable(), items.size() - 1);
 		RID submenu_rid = p_submenu->bind_global_menu();
 		nmenu->set_item_submenu(global_menu, index, submenu_rid);
-		items.write[index].submenu_bound = true;
+		items.ptrw()[index].submenu_bound = true;
 	} else if (!p_submenu->is_connected("popup_hide", callable_mp(this, &PopupMenu::_submenu_hidden))) {
 		p_submenu->connect("popup_hide", callable_mp(this, &PopupMenu::_submenu_hidden));
 	}
@@ -1951,10 +1951,10 @@ void PopupMenu::set_item_text(int p_idx, const String &p_text) {
 	if (items[p_idx].text == p_text) {
 		return;
 	}
-	items.write[p_idx].text = p_text;
-	items.write[p_idx].xl_text = _atr(p_idx, p_text);
-	items.write[p_idx].dirty = true;
-	items.write[p_idx].accessibility_item_dirty = true;
+	items.ptrw()[p_idx].text = p_text;
+	items.ptrw()[p_idx].xl_text = _atr(p_idx, p_text);
+	items.ptrw()[p_idx].dirty = true;
+	items.ptrw()[p_idx].accessibility_item_dirty = true;
 
 	if (global_menu.is_valid()) {
 		NativeMenu::get_singleton()->set_item_text(global_menu, p_idx, items[p_idx].xl_text);
@@ -1976,9 +1976,9 @@ void PopupMenu::set_item_text_direction(int p_idx, Control::TextDirection p_text
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 
 	if (items[p_idx].text_direction != p_text_direction) {
-		items.write[p_idx].text_direction = p_text_direction;
-		items.write[p_idx].dirty = true;
-		items.write[p_idx].accessibility_item_dirty = true;
+		items.ptrw()[p_idx].text_direction = p_text_direction;
+		items.ptrw()[p_idx].dirty = true;
+		items.ptrw()[p_idx].accessibility_item_dirty = true;
 
 		_shape_item(p_idx);
 		queue_accessibility_update();
@@ -1992,9 +1992,9 @@ void PopupMenu::set_item_language(int p_idx, const String &p_language) {
 	}
 	ERR_FAIL_INDEX(p_idx, items.size());
 	if (items[p_idx].language != p_language) {
-		items.write[p_idx].language = p_language;
-		items.write[p_idx].dirty = true;
-		items.write[p_idx].accessibility_item_dirty = true;
+		items.ptrw()[p_idx].language = p_language;
+		items.ptrw()[p_idx].dirty = true;
+		items.ptrw()[p_idx].accessibility_item_dirty = true;
 
 		_shape_item(p_idx);
 		queue_accessibility_update();
@@ -2010,9 +2010,9 @@ void PopupMenu::set_item_auto_translate_mode(int p_idx, AutoTranslateMode p_mode
 	if (items[p_idx].auto_translate_mode == p_mode) {
 		return;
 	}
-	items.write[p_idx].auto_translate_mode = p_mode;
-	items.write[p_idx].xl_text = _atr(p_idx, items[p_idx].text);
-	items.write[p_idx].dirty = true;
+	items.ptrw()[p_idx].auto_translate_mode = p_mode;
+	items.ptrw()[p_idx].xl_text = _atr(p_idx, items[p_idx].text);
+	items.ptrw()[p_idx].dirty = true;
 	control->queue_redraw();
 }
 
@@ -2026,7 +2026,7 @@ void PopupMenu::set_item_icon(int p_idx, const Ref<Texture2D> &p_icon) {
 		return;
 	}
 
-	items.write[p_idx].icon = p_icon;
+	items.ptrw()[p_idx].icon = p_icon;
 
 	if (global_menu.is_valid()) {
 		NativeMenu::get_singleton()->set_item_icon(global_menu, p_idx, items[p_idx].icon);
@@ -2047,7 +2047,7 @@ void PopupMenu::set_item_icon_max_width(int p_idx, int p_width) {
 		return;
 	}
 
-	items.write[p_idx].icon_max_width = p_width;
+	items.ptrw()[p_idx].icon_max_width = p_width;
 
 	control->queue_redraw();
 	child_controls_changed();
@@ -2064,7 +2064,7 @@ void PopupMenu::set_item_icon_modulate(int p_idx, const Color &p_modulate) {
 		return;
 	}
 
-	items.write[p_idx].icon_modulate = p_modulate;
+	items.ptrw()[p_idx].icon_modulate = p_modulate;
 	control->queue_redraw();
 }
 
@@ -2078,8 +2078,8 @@ void PopupMenu::set_item_checked(int p_idx, bool p_checked) {
 		return;
 	}
 
-	items.write[p_idx].checked = p_checked;
-	items.write[p_idx].accessibility_item_dirty = true;
+	items.ptrw()[p_idx].checked = p_checked;
+	items.ptrw()[p_idx].accessibility_item_dirty = true;
 
 	if (global_menu.is_valid()) {
 		NativeMenu::get_singleton()->set_item_checked(global_menu, p_idx, p_checked);
@@ -2101,7 +2101,7 @@ void PopupMenu::set_item_id(int p_idx, int p_id) {
 		return;
 	}
 
-	items.write[p_idx].id = p_id;
+	items.ptrw()[p_idx].id = p_id;
 
 	if (global_menu.is_valid()) {
 		NativeMenu::get_singleton()->set_item_tag(global_menu, p_idx, p_id);
@@ -2122,9 +2122,9 @@ void PopupMenu::set_item_accelerator(int p_idx, Key p_accel) {
 		return;
 	}
 
-	items.write[p_idx].accel = p_accel;
-	items.write[p_idx].dirty = true;
-	items.write[p_idx].accessibility_item_dirty = true;
+	items.ptrw()[p_idx].accel = p_accel;
+	items.ptrw()[p_idx].dirty = true;
+	items.ptrw()[p_idx].accessibility_item_dirty = true;
 
 	if (global_menu.is_valid()) {
 		NativeMenu::get_singleton()->set_item_accelerator(global_menu, p_idx, p_accel);
@@ -2146,7 +2146,7 @@ void PopupMenu::set_item_metadata(int p_idx, const Variant &p_meta) {
 		return;
 	}
 
-	items.write[p_idx].metadata = p_meta;
+	items.ptrw()[p_idx].metadata = p_meta;
 	child_controls_changed();
 	_menu_changed();
 }
@@ -2161,8 +2161,8 @@ void PopupMenu::set_item_disabled(int p_idx, bool p_disabled) {
 		return;
 	}
 
-	items.write[p_idx].disabled = p_disabled;
-	items.write[p_idx].accessibility_item_dirty = true;
+	items.ptrw()[p_idx].disabled = p_disabled;
+	items.ptrw()[p_idx].accessibility_item_dirty = true;
 
 	if (global_menu.is_valid()) {
 		NativeMenu::get_singleton()->set_item_disabled(global_menu, p_idx, p_disabled);
@@ -2209,18 +2209,18 @@ void PopupMenu::set_item_submenu_node(int p_idx, PopupMenu *p_submenu) {
 				NativeMenu::get_singleton()->set_item_submenu(global_menu, p_idx, RID());
 				pm->unbind_global_menu();
 			}
-			items.write[p_idx].submenu_bound = false;
+			items.ptrw()[p_idx].submenu_bound = false;
 		}
 	}
 
-	items.write[p_idx].submenu = p_submenu;
+	items.ptrw()[p_idx].submenu = p_submenu;
 
 	if (global_menu.is_valid()) {
 		PopupMenu *pm = items[p_idx].submenu;
 		if (pm) {
 			RID submenu_rid = pm->bind_global_menu();
 			NativeMenu::get_singleton()->set_item_submenu(global_menu, p_idx, submenu_rid);
-			items.write[p_idx].submenu_bound = true;
+			items.ptrw()[p_idx].submenu_bound = true;
 		}
 	} else if (!p_submenu->is_connected("popup_hide", callable_mp(this, &PopupMenu::_submenu_hidden))) {
 		p_submenu->connect("popup_hide", callable_mp(this, &PopupMenu::_submenu_hidden));
@@ -2269,8 +2269,8 @@ void PopupMenu::_submenu_hidden() {
 
 void PopupMenu::toggle_item_checked(int p_idx) {
 	ERR_FAIL_INDEX(p_idx, items.size());
-	items.write[p_idx].checked = !items[p_idx].checked;
-	items.write[p_idx].accessibility_item_dirty = true;
+	items.ptrw()[p_idx].checked = !items[p_idx].checked;
+	items.ptrw()[p_idx].accessibility_item_dirty = true;
 
 	if (global_menu.is_valid()) {
 		NativeMenu::get_singleton()->set_item_checked(global_menu, p_idx, items[p_idx].checked);
@@ -2412,8 +2412,8 @@ void PopupMenu::set_item_as_separator(int p_idx, bool p_separator) {
 		return;
 	}
 
-	items.write[p_idx].separator = p_separator;
-	items.write[p_idx].accessibility_item_dirty = true;
+	items.ptrw()[p_idx].separator = p_separator;
+	items.ptrw()[p_idx].accessibility_item_dirty = true;
 
 	queue_accessibility_update();
 	control->queue_redraw();
@@ -2435,8 +2435,8 @@ void PopupMenu::set_item_as_checkable(int p_idx, bool p_checkable) {
 		return;
 	}
 
-	items.write[p_idx].checkable_type = p_checkable ? Item::CHECKABLE_TYPE_CHECK_BOX : Item::CHECKABLE_TYPE_NONE;
-	items.write[p_idx].accessibility_item_dirty = true;
+	items.ptrw()[p_idx].checkable_type = p_checkable ? Item::CHECKABLE_TYPE_CHECK_BOX : Item::CHECKABLE_TYPE_NONE;
+	items.ptrw()[p_idx].accessibility_item_dirty = true;
 
 	if (global_menu.is_valid()) {
 		NativeMenu::get_singleton()->set_item_checkable(global_menu, p_idx, p_checkable);
@@ -2458,8 +2458,8 @@ void PopupMenu::set_item_as_radio_checkable(int p_idx, bool p_radio_checkable) {
 		return;
 	}
 
-	items.write[p_idx].checkable_type = p_radio_checkable ? Item::CHECKABLE_TYPE_RADIO_BUTTON : Item::CHECKABLE_TYPE_NONE;
-	items.write[p_idx].accessibility_item_dirty = true;
+	items.ptrw()[p_idx].checkable_type = p_radio_checkable ? Item::CHECKABLE_TYPE_RADIO_BUTTON : Item::CHECKABLE_TYPE_NONE;
+	items.ptrw()[p_idx].accessibility_item_dirty = true;
 
 	if (global_menu.is_valid()) {
 		NativeMenu::get_singleton()->set_item_radio_checkable(global_menu, p_idx, p_radio_checkable);
@@ -2480,8 +2480,8 @@ void PopupMenu::set_item_tooltip(int p_idx, const String &p_tooltip) {
 		return;
 	}
 
-	items.write[p_idx].tooltip = p_tooltip;
-	items.write[p_idx].accessibility_item_dirty = true;
+	items.ptrw()[p_idx].tooltip = p_tooltip;
+	items.ptrw()[p_idx].accessibility_item_dirty = true;
 
 	if (global_menu.is_valid()) {
 		NativeMenu::get_singleton()->set_item_tooltip(global_menu, p_idx, p_tooltip);
@@ -2505,9 +2505,9 @@ void PopupMenu::set_item_shortcut(int p_idx, const Ref<Shortcut> &p_shortcut, bo
 	if (items[p_idx].shortcut.is_valid()) {
 		_unref_shortcut(items[p_idx].shortcut);
 	}
-	items.write[p_idx].shortcut = p_shortcut;
-	items.write[p_idx].shortcut_is_global = p_global;
-	items.write[p_idx].dirty = true;
+	items.ptrw()[p_idx].shortcut = p_shortcut;
+	items.ptrw()[p_idx].shortcut_is_global = p_global;
+	items.ptrw()[p_idx].dirty = true;
 
 	if (items[p_idx].shortcut.is_valid()) {
 		_ref_shortcut(items[p_idx].shortcut);
@@ -2542,10 +2542,10 @@ void PopupMenu::set_item_indent(int p_idx, int p_indent) {
 	}
 	ERR_FAIL_INDEX(p_idx, items.size());
 
-	if (items.write[p_idx].indent == p_indent) {
+	if (items.ptrw()[p_idx].indent == p_indent) {
 		return;
 	}
-	items.write[p_idx].indent = p_indent;
+	items.ptrw()[p_idx].indent = p_indent;
 
 	if (global_menu.is_valid()) {
 		NativeMenu::get_singleton()->set_item_indentation_level(global_menu, p_idx, p_indent);
@@ -2566,7 +2566,7 @@ void PopupMenu::set_item_max_states(int p_idx, int p_max_states) {
 		return;
 	}
 
-	items.write[p_idx].max_states = p_max_states;
+	items.ptrw()[p_idx].max_states = p_max_states;
 
 	if (global_menu.is_valid()) {
 		NativeMenu::get_singleton()->set_item_max_states(global_menu, p_idx, p_max_states);
@@ -2586,8 +2586,8 @@ void PopupMenu::set_item_multistate(int p_idx, int p_state) {
 		return;
 	}
 
-	items.write[p_idx].state = p_state;
-	items.write[p_idx].accessibility_item_dirty = true;
+	items.ptrw()[p_idx].state = p_state;
+	items.ptrw()[p_idx].accessibility_item_dirty = true;
 
 	if (global_menu.is_valid()) {
 		NativeMenu::get_singleton()->set_item_state(global_menu, p_idx, p_state);
@@ -2608,7 +2608,7 @@ void PopupMenu::set_item_shortcut_disabled(int p_idx, bool p_disabled) {
 		return;
 	}
 
-	items.write[p_idx].shortcut_is_disabled = p_disabled;
+	items.ptrw()[p_idx].shortcut_is_disabled = p_disabled;
 
 	if (global_menu.is_valid()) {
 		NativeMenu *nmenu = NativeMenu::get_singleton();
@@ -2634,11 +2634,11 @@ void PopupMenu::toggle_item_multistate(int p_idx) {
 		return;
 	}
 
-	++items.write[p_idx].state;
-	if (items.write[p_idx].max_states <= items[p_idx].state) {
-		items.write[p_idx].state = 0;
+	++items.ptrw()[p_idx].state;
+	if (items.ptrw()[p_idx].max_states <= items[p_idx].state) {
+		items.ptrw()[p_idx].state = 0;
 	}
-	items.write[p_idx].accessibility_item_dirty = true;
+	items.ptrw()[p_idx].accessibility_item_dirty = true;
 
 	if (global_menu.is_valid()) {
 		NativeMenu::get_singleton()->set_item_state(global_menu, p_idx, items[p_idx].state);
@@ -2706,8 +2706,8 @@ void PopupMenu::set_item_count(int p_count) {
 		for (int i = prev_size - 1; i >= p_count; i--) {
 			nmenu->remove_item(global_menu, i);
 			if (items[i].accessibility_item_element.is_valid()) {
-				DisplayServer::get_singleton()->accessibility_free_element(items.write[i].accessibility_item_element);
-				items.write[i].accessibility_item_element = RID();
+				DisplayServer::get_singleton()->accessibility_free_element(items.ptrw()[i].accessibility_item_element);
+				items.ptrw()[i].accessibility_item_element = RID();
 			}
 		}
 	}
@@ -2716,7 +2716,7 @@ void PopupMenu::set_item_count(int p_count) {
 
 	if (prev_size < p_count) {
 		for (int i = prev_size; i < p_count; i++) {
-			items.write[i].id = i;
+			items.ptrw()[i].id = i;
 			if (is_global) {
 				nmenu->add_item(global_menu, String(), callable_mp(this, &PopupMenu::activate_item), Callable(), i);
 			}
@@ -2890,8 +2890,8 @@ void PopupMenu::remove_item(int p_idx) {
 	ERR_FAIL_INDEX(p_idx, items.size());
 
 	if (items[p_idx].accessibility_item_element.is_valid()) {
-		DisplayServer::get_singleton()->accessibility_free_element(items.write[p_idx].accessibility_item_element);
-		items.write[p_idx].accessibility_item_element = RID();
+		DisplayServer::get_singleton()->accessibility_free_element(items.ptrw()[p_idx].accessibility_item_element);
+		items.ptrw()[p_idx].accessibility_item_element = RID();
 	}
 	if (items[p_idx].shortcut.is_valid()) {
 		_unref_shortcut(items[p_idx].shortcut);
@@ -2946,7 +2946,7 @@ void PopupMenu::clear(bool p_free_submenus) {
 	if (global_menu.is_valid()) {
 		NativeMenu *nmenu = NativeMenu::get_singleton();
 		for (int i = items.size() - 1; i >= 0; i--) {
-			Item &item = items.write[i];
+			Item &item = items.ptrw()[i];
 			if (item.submenu) {
 				item.submenu->unbind_global_menu();
 				item.submenu_bound = false;
@@ -2985,7 +2985,7 @@ void PopupMenu::_unref_shortcut(Ref<Shortcut> p_sc) {
 
 void PopupMenu::_shortcut_changed() {
 	for (int i = 0; i < items.size(); i++) {
-		Item &item = items.write[i];
+		Item &item = items.ptrw()[i];
 		item.dirty = true;
 		if (global_menu.is_valid() && !item.separator) {
 			NativeMenu *nmenu = NativeMenu::get_singleton();

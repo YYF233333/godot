@@ -134,7 +134,7 @@ void Particles2DEditorPlugin::_process_emission_masks(PackedVector2Array &r_vali
 				}
 
 				if (emission_mode == MASK_MODE_SOLID) {
-					r_valid_positions.write[valid_point_count++] = Point2(mask_img_x, mask_img_y);
+					r_valid_positions.ptrw()[valid_point_count++] = Point2(mask_img_x, mask_img_y);
 				} else {
 					bool pixel_is_on_border = false;
 					for (int x = mask_img_x - 1; x <= mask_img_x + 1; x++) {
@@ -154,7 +154,7 @@ void Particles2DEditorPlugin::_process_emission_masks(PackedVector2Array &r_vali
 						continue;
 					}
 
-					r_valid_positions.write[valid_point_count] = Point2(mask_img_x, mask_img_y);
+					r_valid_positions.ptrw()[valid_point_count] = Point2(mask_img_x, mask_img_y);
 
 					if (direction_mode == DIRECTION_MODE_GENERATE) {
 						Vector2 normal;
@@ -171,7 +171,7 @@ void Particles2DEditorPlugin::_process_emission_masks(PackedVector2Array &r_vali
 						}
 
 						normal.normalize();
-						r_valid_normals.write[valid_point_count] = normal;
+						r_valid_normals.ptrw()[valid_point_count] = normal;
 					}
 
 					valid_point_count++;
@@ -182,10 +182,10 @@ void Particles2DEditorPlugin::_process_emission_masks(PackedVector2Array &r_vali
 		if (capture_colors) {
 			for (int i = 0; i < valid_point_count; ++i) {
 				const Point2i point = r_valid_positions.get(i);
-				r_valid_colors.write[i * 4 + 0] = mask_img_ptr[(point.y * mask_img_size.width + point.x) * 4 + 0];
-				r_valid_colors.write[i * 4 + 1] = mask_img_ptr[(point.y * mask_img_size.width + point.x) * 4 + 1];
-				r_valid_colors.write[i * 4 + 2] = mask_img_ptr[(point.y * mask_img_size.width + point.x) * 4 + 2];
-				r_valid_colors.write[i * 4 + 3] = mask_img_ptr[(point.y * mask_img_size.width + point.x) * 4 + 3];
+				r_valid_colors.ptrw()[i * 4 + 0] = mask_img_ptr[(point.y * mask_img_size.width + point.x) * 4 + 0];
+				r_valid_colors.ptrw()[i * 4 + 1] = mask_img_ptr[(point.y * mask_img_size.width + point.x) * 4 + 1];
+				r_valid_colors.ptrw()[i * 4 + 2] = mask_img_ptr[(point.y * mask_img_size.width + point.x) * 4 + 2];
+				r_valid_colors.ptrw()[i * 4 + 3] = mask_img_ptr[(point.y * mask_img_size.width + point.x) * 4 + 3];
 			}
 		}
 	}
@@ -219,7 +219,7 @@ void Particles2DEditorPlugin::_process_emission_masks(PackedVector2Array &r_vali
 
 			normal.normalize();
 
-			r_valid_normals.write[i] = normal;
+			r_valid_normals.ptrw()[i] = normal;
 		}
 	}
 

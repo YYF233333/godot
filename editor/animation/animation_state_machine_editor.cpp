@@ -1375,7 +1375,7 @@ void AnimationNodeStateMachineEditor::_state_machine_draw() {
 		for (int j = 0; j < transition_lines.size(); j++) {
 			if (transition_lines[j].from_node == tl.from_node && transition_lines[j].to_node == tl.to_node) {
 				tl.hidden = true;
-				transition_lines.write[j].disabled = transition_lines[j].disabled && tl.disabled;
+				transition_lines.ptrw()[j].disabled = transition_lines[j].disabled && tl.disabled;
 			}
 		}
 		transition_lines.push_back(tl);
@@ -1458,7 +1458,7 @@ void AnimationNodeStateMachineEditor::_state_machine_draw() {
 		bool needs_editor = AnimationTreeEditor::get_singleton()->can_edit(anode);
 		bool is_selected = selected_nodes.has(name);
 
-		NodeRect &nr = node_rects.write[i];
+		NodeRect &nr = node_rects.ptrw()[i];
 		Vector2 offset = nr.node.position;
 		int h = nr.node.size.height;
 
@@ -2222,7 +2222,7 @@ bool EditorAnimationMultiTransitionEdit::_set(const StringName &p_name, const Va
 	StringName prop = String(p_name).get_slicec('/', 1);
 
 	bool found;
-	transitions.write[index].transition->set(prop, p_property, &found);
+	transitions.ptrw()[index].transition->set(prop, p_property, &found);
 	if (found) {
 		return true;
 	}

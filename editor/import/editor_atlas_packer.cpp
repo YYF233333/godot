@@ -110,8 +110,8 @@ void EditorAtlasPacker::chart_pack(Vector<Chart> &charts, int &r_width, int &r_h
 		bottom_heights.resize(heights_size);
 
 		for (int x = 0; x < heights_size; x++) {
-			top_heights.write[x] = -1;
-			bottom_heights.write[x] = 0x7FFFFFFF;
+			top_heights.ptrw()[x] = -1;
+			bottom_heights.ptrw()[x] = 0x7FFFFFFF;
 		}
 
 		for (int x = 0; x < bmw; x++) {
@@ -136,17 +136,17 @@ void EditorAtlasPacker::chart_pack(Vector<Chart> &charts, int &r_width, int &r_h
 				if (found_pixel) {
 					if (transpose) {
 						if (x > top_heights[y]) {
-							top_heights.write[y] = x;
+							top_heights.ptrw()[y] = x;
 						}
 						if (x < bottom_heights[y]) {
-							bottom_heights.write[y] = x;
+							bottom_heights.ptrw()[y] = x;
 						}
 					} else {
 						if (y > top_heights[x]) {
-							top_heights.write[x] = y;
+							top_heights.ptrw()[x] = y;
 						}
 						if (y < bottom_heights[x]) {
-							bottom_heights.write[x] = y;
+							bottom_heights.ptrw()[x] = y;
 						}
 					}
 				}
@@ -181,7 +181,7 @@ void EditorAtlasPacker::chart_pack(Vector<Chart> &charts, int &r_width, int &r_h
 		Vector<int> heights;
 		heights.resize(atlas_w);
 		for (int i = 0; i < atlas_w; i++) {
-			heights.write[i] = 0;
+			heights.ptrw()[i] = 0;
 		}
 
 		int *atlas_ptr = heights.ptrw();
@@ -231,8 +231,8 @@ void EditorAtlasPacker::chart_pack(Vector<Chart> &charts, int &r_width, int &r_h
 			}
 
 			Vector2 final_pos = Vector2(best_height_offset * divide_by, best_height * divide_by) + Vector2(divide_by, divide_by) - offset;
-			charts.write[bitmaps[i].chart_index].final_offset = final_pos;
-			charts.write[bitmaps[i].chart_index].transposed = bitmaps[i].transposed;
+			charts.ptrw()[bitmaps[i].chart_index].final_offset = final_pos;
+			charts.ptrw()[bitmaps[i].chart_index].transposed = bitmaps[i].transposed;
 		}
 
 		if (atlas_h <= atlas_w * 2 || atlas_w >= atlas_max_width) {

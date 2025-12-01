@@ -619,16 +619,16 @@ String ShaderCompiler::_dump_node_code(const SL::Node *p_node, int p_level, Gene
 						r_gen_code.uses_global_textures = true;
 					}
 
-					r_gen_code.texture_uniforms.write[uniform.texture_order] = texture;
+					r_gen_code.texture_uniforms.ptrw()[uniform.texture_order] = texture;
 				} else {
 					if (!uses_uniforms) {
 						uses_uniforms = true;
 					}
-					uniform_defines.write[uniform.order] = ucode;
+					uniform_defines.ptrw()[uniform.order] = ucode;
 					if (is_buffer_global) {
 						//globals are indices into the global table
-						uniform_sizes.write[uniform.order] = ShaderLanguage::get_datatype_size(ShaderLanguage::TYPE_UINT);
-						uniform_alignments.write[uniform.order] = _get_datatype_alignment(ShaderLanguage::TYPE_UINT);
+						uniform_sizes.ptrw()[uniform.order] = ShaderLanguage::get_datatype_size(ShaderLanguage::TYPE_UINT);
+						uniform_alignments.ptrw()[uniform.order] = _get_datatype_alignment(ShaderLanguage::TYPE_UINT);
 					} else {
 						// The following code enforces a 16-byte alignment of uniform arrays.
 						if (uniform.array_size > 0) {
@@ -637,11 +637,11 @@ String ShaderCompiler::_dump_node_code(const SL::Node *p_node, int p_level, Gene
 							if ((size % m) != 0) {
 								size += m - (size % m);
 							}
-							uniform_sizes.write[uniform.order] = size;
-							uniform_alignments.write[uniform.order] = 16;
+							uniform_sizes.ptrw()[uniform.order] = size;
+							uniform_alignments.ptrw()[uniform.order] = 16;
 						} else {
-							uniform_sizes.write[uniform.order] = ShaderLanguage::get_datatype_size(uniform.type);
-							uniform_alignments.write[uniform.order] = _get_datatype_alignment(uniform.type);
+							uniform_sizes.ptrw()[uniform.order] = ShaderLanguage::get_datatype_size(uniform.type);
+							uniform_alignments.ptrw()[uniform.order] = _get_datatype_alignment(uniform.type);
 						}
 					}
 				}

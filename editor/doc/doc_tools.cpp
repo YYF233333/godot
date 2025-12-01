@@ -147,7 +147,7 @@ static void merge_constructors(Vector<DocData::MethodDoc> &p_to, const Vector<Do
 				for (int64_t arg_i = 0; arg_i < arg_count; ++arg_i) {
 					for (int64_t arg_j = 0; arg_j < arg_count; ++arg_j) {
 						if (from.arguments[arg_i].type == to.arguments[arg_j].type && !arg_used[arg_j]) {
-							arg_used.write[arg_j] = true;
+							arg_used.ptrw()[arg_j] = true;
 							break;
 						}
 					}

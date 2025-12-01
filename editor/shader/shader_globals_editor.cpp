@@ -318,10 +318,10 @@ static Variant create_var(RS::GlobalShaderParameterType p_type) {
 		case RS::GLOBAL_VAR_TYPE_MAT2: {
 			Vector<float> xform;
 			xform.resize(4);
-			xform.write[0] = 1;
-			xform.write[1] = 0;
-			xform.write[2] = 0;
-			xform.write[3] = 1;
+			xform.ptrw()[0] = 1;
+			xform.ptrw()[1] = 0;
+			xform.ptrw()[2] = 0;
+			xform.ptrw()[3] = 1;
 			return xform;
 		}
 		case RS::GLOBAL_VAR_TYPE_MAT3: {

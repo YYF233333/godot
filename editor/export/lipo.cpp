@@ -81,7 +81,7 @@ bool LipO::create_file(const String &p_output_path, const Vector<String> &p_file
 	fa->store_32(BSWAP32(archs.size()));
 	uint64_t offset = archs.size() * (is_64 ? 32 : 20) + 8;
 	for (int i = 0; i < archs.size(); i++) {
-		archs.write[i].offset = offset + PAD(offset, uint64_t(1) << archs[i].align);
+		archs.ptrw()[i].offset = offset + PAD(offset, uint64_t(1) << archs[i].align);
 		if (is_64) {
 			fa->store_32(BSWAP32(archs[i].cputype));
 			fa->store_32(BSWAP32(archs[i].cpusubtype));
@@ -175,7 +175,7 @@ bool LipO::create_file(const String &p_output_path, const Vector<String> &p_file
 	fa->store_32(BSWAP32(archs.size()));
 	uint64_t offset = archs.size() * (is_64 ? 32 : 20) + 8;
 	for (int i = 0; i < archs.size(); i++) {
-		archs.write[i].offset = offset + PAD(offset, uint64_t(1) << archs[i].align);
+		archs.ptrw()[i].offset = offset + PAD(offset, uint64_t(1) << archs[i].align);
 		if (is_64) {
 			fa->store_32(BSWAP32(archs[i].cputype));
 			fa->store_32(BSWAP32(archs[i].cpusubtype));

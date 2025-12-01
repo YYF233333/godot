@@ -270,7 +270,7 @@ void PropertySelector::_update_search() {
 			desc += vformat(" %s(", mi.name);
 
 			for (int64_t i = 0; i < mi.arguments.size(); ++i) {
-				PropertyInfo &arg = mi.arguments.write[i];
+				PropertyInfo &arg = mi.arguments.ptrw()[i];
 				if (i > 0) {
 					desc += ", ";
 				}

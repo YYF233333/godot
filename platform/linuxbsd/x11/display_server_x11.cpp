@@ -5487,7 +5487,7 @@ void DisplayServerX11::process_events() {
 					Vector<String> files = String((char *)p.data).split("\r\n", false);
 					XFree(p.data);
 					for (int i = 0; i < files.size(); i++) {
-						files.write[i] = files[i].replace("file://", "").uri_file_decode();
+						files.ptrw()[i] = files[i].replace("file://", "").uri_file_decode();
 					}
 
 					if (windows[window_id].drop_files_callback.is_valid()) {
@@ -5758,12 +5758,12 @@ void DisplayServerX11::set_icon(const Ref<Image> &p_icon) {
 
 			pd.resize(2 + w * h);
 
-			pd.write[0] = w;
-			pd.write[1] = h;
+			pd.ptrw()[0] = w;
+			pd.ptrw()[1] = h;
 
 			const uint8_t *r = img->get_data().ptr();
 
-			long *wr = &pd.write[2];
+			long *wr = &pd.ptrw()[2];
 			uint8_t const *pr = r;
 
 			for (int i = 0; i < w * h; i++) {

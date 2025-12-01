@@ -1985,9 +1985,9 @@ void FileSystemDock::_move_operation_confirm(const String &p_to_path, bool p_cop
 	new_paths.resize(to_move.size());
 	for (int i = 0; i < to_move.size(); i++) {
 		if (p_overwrite == OVERWRITE_RENAME) {
-			new_paths.write[i] = _get_unique_name(to_move[i], p_to_path);
+			new_paths.ptrw()[i] = _get_unique_name(to_move[i], p_to_path);
 		} else {
-			new_paths.write[i] = p_to_path.path_join(to_move[i].path.trim_suffix("/").get_file());
+			new_paths.ptrw()[i] = p_to_path.path_join(to_move[i].path.trim_suffix("/").get_file());
 		}
 	}
 
@@ -3831,7 +3831,7 @@ void FileSystemDock::_tree_gui_input(Ref<InputEvent> p_event) {
 					if (selected.is_empty()) {
 						selected.append("res://");
 					} else if (selected.size() == 1) {
-						selected.write[0] = selected[0].get_base_dir();
+						selected.ptrw()[0] = selected[0].get_base_dir();
 					} else {
 						return;
 					}

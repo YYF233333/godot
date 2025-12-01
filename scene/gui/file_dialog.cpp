@@ -1936,7 +1936,7 @@ void FileDialog::set_option_name(int p_option, const String &p_name) {
 		p_option += get_option_count();
 	}
 	ERR_FAIL_INDEX(p_option, options.size());
-	options.write[p_option].name = p_name;
+	options.ptrw()[p_option].name = p_name;
 	options_dirty = true;
 	if (is_visible()) {
 		_update_option_controls();
@@ -1948,11 +1948,11 @@ void FileDialog::set_option_values(int p_option, const Vector<String> &p_values)
 		p_option += get_option_count();
 	}
 	ERR_FAIL_INDEX(p_option, options.size());
-	options.write[p_option].values = p_values;
+	options.ptrw()[p_option].values = p_values;
 	if (p_values.is_empty()) {
-		options.write[p_option].default_idx = CLAMP(options[p_option].default_idx, 0, 1);
+		options.ptrw()[p_option].default_idx = CLAMP(options[p_option].default_idx, 0, 1);
 	} else {
-		options.write[p_option].default_idx = CLAMP(options[p_option].default_idx, 0, options[p_option].values.size() - 1);
+		options.ptrw()[p_option].default_idx = CLAMP(options[p_option].default_idx, 0, options[p_option].values.size() - 1);
 	}
 	options_dirty = true;
 	if (is_visible()) {
@@ -1966,9 +1966,9 @@ void FileDialog::set_option_default(int p_option, int p_index) {
 	}
 	ERR_FAIL_INDEX(p_option, options.size());
 	if (options[p_option].values.is_empty()) {
-		options.write[p_option].default_idx = CLAMP(p_index, 0, 1);
+		options.ptrw()[p_option].default_idx = CLAMP(p_index, 0, 1);
 	} else {
-		options.write[p_option].default_idx = CLAMP(p_index, 0, options[p_option].values.size() - 1);
+		options.ptrw()[p_option].default_idx = CLAMP(p_index, 0, options[p_option].values.size() - 1);
 	}
 	options_dirty = true;
 	if (is_visible()) {

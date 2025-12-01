@@ -1144,7 +1144,7 @@ Variant GodotConvexPolygonShape3D::get_data() const {
 	Vector<Vector3> vertices;
 	vertices.resize(mesh.vertices.size());
 	for (uint32_t i = 0; i < mesh.vertices.size(); i++) {
-		vertices.write[i] = mesh.vertices[i];
+		vertices.ptrw()[i] = mesh.vertices[i];
 	}
 	return vertices;
 }

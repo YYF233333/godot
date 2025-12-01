@@ -290,7 +290,7 @@ void LabelSettings::remove_stacked_outline(int p_index) {
 void LabelSettings::set_stacked_outline_size(int p_index, int p_size) {
 	ERR_FAIL_INDEX(p_index, stacked_outline_data.size());
 	if (stacked_outline_data[p_index].size != p_size) {
-		stacked_outline_data.write[p_index].size = p_size;
+		stacked_outline_data.ptrw()[p_index].size = p_size;
 		emit_changed();
 	}
 }
@@ -303,7 +303,7 @@ int LabelSettings::get_stacked_outline_size(int p_index) const {
 void LabelSettings::set_stacked_outline_color(int p_index, const Color &p_color) {
 	ERR_FAIL_INDEX(p_index, stacked_outline_data.size());
 	if (stacked_outline_data[p_index].color != p_color) {
-		stacked_outline_data.write[p_index].color = p_color;
+		stacked_outline_data.ptrw()[p_index].color = p_color;
 		emit_changed();
 	}
 }
@@ -359,7 +359,7 @@ void LabelSettings::remove_stacked_shadow(int p_index) {
 void LabelSettings::set_stacked_shadow_offset(int p_index, const Vector2 &p_offset) {
 	ERR_FAIL_INDEX(p_index, stacked_shadow_data.size());
 	if (stacked_shadow_data[p_index].offset != p_offset) {
-		stacked_shadow_data.write[p_index].offset = p_offset;
+		stacked_shadow_data.ptrw()[p_index].offset = p_offset;
 		emit_changed();
 	}
 }
@@ -372,7 +372,7 @@ Vector2 LabelSettings::get_stacked_shadow_offset(int p_index) const {
 void LabelSettings::set_stacked_shadow_color(int p_index, const Color &p_color) {
 	ERR_FAIL_INDEX(p_index, stacked_shadow_data.size());
 	if (stacked_shadow_data[p_index].color != p_color) {
-		stacked_shadow_data.write[p_index].color = p_color;
+		stacked_shadow_data.ptrw()[p_index].color = p_color;
 		emit_changed();
 	}
 }
@@ -385,7 +385,7 @@ Color LabelSettings::get_stacked_shadow_color(int p_index) const {
 void LabelSettings::set_stacked_shadow_outline_size(int p_index, int p_size) {
 	ERR_FAIL_INDEX(p_index, stacked_shadow_data.size());
 	if (stacked_shadow_data[p_index].outline_size != p_size) {
-		stacked_shadow_data.write[p_index].outline_size = p_size;
+		stacked_shadow_data.ptrw()[p_index].outline_size = p_size;
 		emit_changed();
 	}
 }

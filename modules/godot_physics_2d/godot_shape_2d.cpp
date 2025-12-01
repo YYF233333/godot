@@ -804,8 +804,8 @@ int GodotConcavePolygonShape2D::_generate_bvh(BVH *p_bvh, int p_len, int p_depth
 
 	int l = _generate_bvh(p_bvh, median, p_depth + 1);
 	int r = _generate_bvh(&p_bvh[median], p_len - median, p_depth + 1);
-	bvh.write[node_idx].left = l;
-	bvh.write[node_idx].right = r;
+	bvh.ptrw()[node_idx].left = l;
+	bvh.ptrw()[node_idx].right = r;
 
 	return node_idx;
 }
@@ -866,16 +866,16 @@ void GodotConcavePolygonShape2D::set_data(const Variant &p_data) {
 		aabb_new.position = pointmap.begin()->key;
 		for (const KeyValue<Point2, int> &E : pointmap) {
 			aabb_new.expand_to(E.key);
-			points.write[E.value] = E.key;
+			points.ptrw()[E.value] = E.key;
 		}
 
 		Vector<BVH> main_vbh;
 		main_vbh.resize(segments.size());
 		for (int i = 0; i < main_vbh.size(); i++) {
-			main_vbh.write[i].aabb.position = points[segments[i].points[0]];
-			main_vbh.write[i].aabb.expand_to(points[segments[i].points[1]]);
-			main_vbh.write[i].left = -1;
-			main_vbh.write[i].right = i;
+			main_vbh.ptrw()[i].aabb.position = points[segments[i].points[0]];
+			main_vbh.ptrw()[i].aabb.expand_to(points[segments[i].points[1]]);
+			main_vbh.ptrw()[i].left = -1;
+			main_vbh.ptrw()[i].right = i;
 		}
 
 		_generate_bvh(main_vbh.ptrw(), main_vbh.size(), 1);

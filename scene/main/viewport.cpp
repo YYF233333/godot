@@ -349,7 +349,7 @@ void Viewport::_sub_window_update(Window *p_window) {
 		return;
 	}
 
-	SubWindow &sw = gui.sub_windows.write[index];
+	SubWindow &sw = gui.sub_windows.ptrw()[index];
 	sw.pending_window_update = false;
 
 	RS::get_singleton()->canvas_item_clear(sw.canvas_item);
@@ -3034,7 +3034,7 @@ bool Viewport::_sub_windows_forward_input(const Ref<InputEvent> &p_event) {
 	if (mb.is_valid() && mb->is_pressed() && mb->get_button_index() == MouseButton::LEFT) {
 		Window *click_on_window = nullptr;
 		for (int i = gui.sub_windows.size() - 1; i >= 0; i--) {
-			SubWindow sw = gui.sub_windows.write[i];
+			SubWindow sw = gui.sub_windows.ptrw()[i];
 
 			// Clicked inside window?
 
@@ -3180,7 +3180,7 @@ void Viewport::_window_start_drag(Window *p_window) {
 	int index = _sub_window_find(p_window);
 	ERR_FAIL_COND(index == -1);
 
-	SubWindow sw = gui.sub_windows.write[index];
+	SubWindow sw = gui.sub_windows.ptrw()[index];
 
 	if (gui.subwindow_focused != sw.window) {
 		// Refocus.
@@ -3199,7 +3199,7 @@ void Viewport::_window_start_resize(SubWindowResize p_edge, Window *p_window) {
 	int index = _sub_window_find(p_window);
 	ERR_FAIL_COND(index == -1);
 
-	SubWindow sw = gui.sub_windows.write[index];
+	SubWindow sw = gui.sub_windows.ptrw()[index];
 	Rect2i r = Rect2i(sw.window->get_position(), sw.window->get_size());
 
 	if (gui.subwindow_focused != sw.window) {
@@ -4176,7 +4176,7 @@ void Viewport::subwindow_set_popup_safe_rect(Window *p_window, const Rect2i &p_r
 	int index = _sub_window_find(p_window);
 	ERR_FAIL_COND(index == -1);
 
-	gui.sub_windows.write[index].parent_safe_rect = p_rect;
+	gui.sub_windows.ptrw()[index].parent_safe_rect = p_rect;
 }
 
 Rect2i Viewport::subwindow_get_popup_safe_rect(Window *p_window) const {

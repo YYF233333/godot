@@ -251,7 +251,7 @@ void EditorNode::disambiguate_filenames(const Vector<String> p_full_paths, Vecto
 			index_sets.append(RBSet<int>());
 			scene_name_to_set_index.insert(r_filenames[i], index_sets.size() - 1);
 		}
-		index_sets.write[scene_name_to_set_index[scene_name]].insert(i);
+		index_sets.ptrw()[scene_name_to_set_index[scene_name]].insert(i);
 	}
 
 	// For each index set with a size > 1, we need to disambiguate.
@@ -288,7 +288,7 @@ void EditorNode::disambiguate_filenames(const Vector<String> p_full_paths, Vecto
 					int slash_idx = parent.rfind_char('/');
 					slash_idx = parent.rfind_char('/', slash_idx - 1);
 					parent = (slash_idx >= 0 && parent.length() > 1) ? parent.substr(slash_idx + 1) : parent;
-					r_filenames.write[set_idx] = parent + r_filenames[set_idx];
+					r_filenames.ptrw()[set_idx] = parent + r_filenames[set_idx];
 				}
 			}
 

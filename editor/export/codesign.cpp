@@ -986,7 +986,7 @@ bool CodeSignCodeDirectory::set_hash_in_slot(const PackedByteArray &p_hash, int 
 	ERR_FAIL_COND_V_MSG((p_slot < -special_slots) || (p_slot >= code_slots), false, vformat("CodeSign/CodeDirectory: Invalid hash slot index: %d.", p_slot));
 	CodeDirectoryHeader *cd = reinterpret_cast<CodeDirectoryHeader *>(blob.ptrw() + 8);
 	for (int i = 0; i < cd->hash_size; i++) {
-		blob.write[BSWAP32(cd->hash_offset) + p_slot * cd->hash_size + i] = p_hash[i];
+		blob.ptrw()[BSWAP32(cd->hash_offset) + p_slot * cd->hash_size + i] = p_hash[i];
 	}
 	return true;
 }

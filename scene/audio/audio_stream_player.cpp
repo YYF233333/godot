@@ -193,22 +193,22 @@ Vector<AudioFrame> AudioStreamPlayer::_get_volume_vector() {
 	// Set the volume vector up according to the speaker mode and mix target.
 	// TODO do we need to scale the volume down when we output to more channels?
 	if (AudioServer::get_singleton()->get_speaker_mode() == AudioServer::SPEAKER_MODE_STEREO) {
-		volume_vector.write[0] = AudioFrame(volume_linear, volume_linear);
+		volume_vector.ptrw()[0] = AudioFrame(volume_linear, volume_linear);
 	} else {
 		switch (mix_target) {
 			case MIX_TARGET_STEREO: {
-				volume_vector.write[0] = AudioFrame(volume_linear, volume_linear);
+				volume_vector.ptrw()[0] = AudioFrame(volume_linear, volume_linear);
 			} break;
 			case MIX_TARGET_SURROUND: {
 				// TODO Make sure this is right.
-				volume_vector.write[0] = AudioFrame(volume_linear, volume_linear);
-				volume_vector.write[1] = AudioFrame(volume_linear, /* LFE= */ 1.0f);
-				volume_vector.write[2] = AudioFrame(volume_linear, volume_linear);
-				volume_vector.write[3] = AudioFrame(volume_linear, volume_linear);
+				volume_vector.ptrw()[0] = AudioFrame(volume_linear, volume_linear);
+				volume_vector.ptrw()[1] = AudioFrame(volume_linear, /* LFE= */ 1.0f);
+				volume_vector.ptrw()[2] = AudioFrame(volume_linear, volume_linear);
+				volume_vector.ptrw()[3] = AudioFrame(volume_linear, volume_linear);
 			} break;
 			case MIX_TARGET_CENTER: {
 				// TODO Make sure this is right.
-				volume_vector.write[1] = AudioFrame(volume_linear, /* LFE= */ 1.0f);
+				volume_vector.ptrw()[1] = AudioFrame(volume_linear, /* LFE= */ 1.0f);
 			} break;
 		}
 	}

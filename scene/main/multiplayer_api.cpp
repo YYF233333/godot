@@ -254,7 +254,7 @@ Error MultiplayerAPI::decode_and_decompress_variants(Vector<Variant> &r_variants
 		PackedByteArray pba;
 		pba.resize(p_len);
 		memcpy(pba.ptrw(), p_buffer, p_len);
-		r_variants.write[0] = pba;
+		r_variants.ptrw()[0] = pba;
 		return OK;
 	}
 
@@ -262,7 +262,7 @@ Error MultiplayerAPI::decode_and_decompress_variants(Vector<Variant> &r_variants
 		ERR_FAIL_COND_V_MSG(r_len >= p_len, ERR_INVALID_DATA, "Invalid packet received. Size too small.");
 
 		int vlen;
-		Error err = MultiplayerAPI::decode_and_decompress_variant(r_variants.write[i], &p_buffer[r_len], p_len - r_len, &vlen, p_allow_object_decoding);
+		Error err = MultiplayerAPI::decode_and_decompress_variant(r_variants.ptrw()[i], &p_buffer[r_len], p_len - r_len, &vlen, p_allow_object_decoding);
 		ERR_FAIL_COND_V_MSG(err != OK, err, "Invalid packet received. Unable to decode state variable.");
 		r_len += vlen;
 	}

@@ -88,7 +88,7 @@ void OptimizedTranslation::generate(const Ref<Translation> &p_from) {
 		Pair<int, CharString> p;
 		p.first = idx;
 		p.second = cs;
-		buckets.write[h % size].push_back(p);
+		buckets.ptrw()[h % size].push_back(p);
 
 		//compress string
 		CharString src_s = p_from->get_message(E).operator String().utf8();
@@ -115,7 +115,7 @@ void OptimizedTranslation::generate(const Ref<Translation> &p_from) {
 			ps.compressed[0] = 0;
 		}
 
-		compressed.write[idx] = ps;
+		compressed.ptrw()[idx] = ps;
 		total_compression_size += ps.compressed.size();
 		idx++;
 	}
@@ -124,7 +124,7 @@ void OptimizedTranslation::generate(const Ref<Translation> &p_from) {
 
 	for (int i = 0; i < size; i++) {
 		const Vector<Pair<int, CharString>> &b = buckets[i];
-		HashMap<uint32_t, int> &t = table.write[i];
+		HashMap<uint32_t, int> &t = table.ptrw()[i];
 
 		if (b.is_empty()) {
 			continue;
@@ -145,7 +145,7 @@ void OptimizedTranslation::generate(const Ref<Translation> &p_from) {
 			}
 		}
 
-		hfunc_table.write[i] = d;
+		hfunc_table.ptrw()[i] = d;
 		bucket_table_size += 2 + b.size() * 4;
 	}
 

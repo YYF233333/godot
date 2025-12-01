@@ -424,7 +424,7 @@ Error _store_temp_file(const String &p_simplified_path, const Vector<uint8_t> &p
 		CryptoCore::md5(p_data.ptr(), p_data.size(), hash);
 		r_sd.md5.resize(16);
 		for (int i = 0; i < 16; i++) {
-			r_sd.md5.write[i] = hash[i];
+			r_sd.md5.ptrw()[i] = hash[i];
 		}
 	}
 	return OK;

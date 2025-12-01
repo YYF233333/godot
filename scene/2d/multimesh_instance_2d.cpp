@@ -222,7 +222,7 @@ void MultiMeshInstance2D::navmesh_parse_source_geometry(const Ref<NavigationPoly
 			}
 
 			for (int j = 0; j < shape_outline.size(); j++) {
-				shape_outline.write[j] = multimesh_instance_mesh_instance_xform.xform(shape_outline[j]);
+				shape_outline.ptrw()[j] = multimesh_instance_mesh_instance_xform.xform(shape_outline[j]);
 			}
 			p_source_geometry_data->add_obstruction_outline(shape_outline);
 		}

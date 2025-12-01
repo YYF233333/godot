@@ -279,14 +279,14 @@ int GPUParticles3D::get_draw_passes() const {
 void GPUParticles3D::set_draw_pass_mesh(int p_pass, const Ref<Mesh> &p_mesh) {
 	ERR_FAIL_INDEX(p_pass, draw_passes.size());
 
-	if (Engine::get_singleton()->is_editor_hint() && draw_passes.write[p_pass].is_valid()) {
-		draw_passes.write[p_pass]->disconnect_changed(callable_mp((Node *)this, &Node::update_configuration_warnings));
+	if (Engine::get_singleton()->is_editor_hint() && draw_passes.ptrw()[p_pass].is_valid()) {
+		draw_passes.ptrw()[p_pass]->disconnect_changed(callable_mp((Node *)this, &Node::update_configuration_warnings));
 	}
 
-	draw_passes.write[p_pass] = p_mesh;
+	draw_passes.ptrw()[p_pass] = p_mesh;
 
-	if (Engine::get_singleton()->is_editor_hint() && draw_passes.write[p_pass].is_valid()) {
-		draw_passes.write[p_pass]->connect_changed(callable_mp((Node *)this, &Node::update_configuration_warnings), CONNECT_DEFERRED);
+	if (Engine::get_singleton()->is_editor_hint() && draw_passes.ptrw()[p_pass].is_valid()) {
+		draw_passes.ptrw()[p_pass]->connect_changed(callable_mp((Node *)this, &Node::update_configuration_warnings), CONNECT_DEFERRED);
 	}
 
 	RID mesh_rid;
@@ -598,7 +598,7 @@ void GPUParticles3D::_skinning_changed() {
 	if (skin.is_valid()) {
 		xforms.resize(skin->get_bind_count());
 		for (int i = 0; i < skin->get_bind_count(); i++) {
-			xforms.write[i] = skin->get_bind_pose(i);
+			xforms.ptrw()[i] = skin->get_bind_pose(i);
 		}
 	} else {
 		for (int i = 0; i < draw_passes.size(); i++) {
@@ -606,7 +606,7 @@ void GPUParticles3D::_skinning_changed() {
 			if (draw_pass.is_valid() && draw_pass->get_builtin_bind_pose_count() > 0) {
 				xforms.resize(draw_pass->get_builtin_bind_pose_count());
 				for (int j = 0; j < draw_pass->get_builtin_bind_pose_count(); j++) {
-					xforms.write[j] = draw_pass->get_builtin_bind_pose(j);
+					xforms.ptrw()[j] = draw_pass->get_builtin_bind_pose(j);
 				}
 				break;
 			}

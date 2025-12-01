@@ -119,7 +119,7 @@ void SkinTool::_capture_nodes_for_multirooted_skin(Vector<Ref<GLTFNode>> &r_node
 		}
 
 		// replace the roots
-		roots.write[i] = current_node;
+		roots.ptrw()[i] = current_node;
 	}
 
 	// Climb up the tree until they all have the same parent
@@ -144,7 +144,7 @@ void SkinTool::_capture_nodes_for_multirooted_skin(Vector<Ref<GLTFNode>> &r_node
 					p_skin->non_joints.push_back(parent);
 				}
 
-				roots.write[i] = parent;
+				roots.ptrw()[i] = parent;
 			}
 		}
 
@@ -400,7 +400,7 @@ Error SkinTool::_determine_skeletons(
 		skeleton_sets.get_members(skeleton_nodes, skeleton_owner);
 
 		for (GLTFSkinIndex skin_i = 0; skin_i < skins.size(); ++skin_i) {
-			Ref<GLTFSkin> skin = skins.write[skin_i];
+			Ref<GLTFSkin> skin = skins.ptrw()[skin_i];
 
 			// If any of the skeletons nodes exist in a skin, that skin now maps to the skeleton
 			for (int i = 0; i < skeleton_nodes.size(); ++i) {
@@ -433,11 +433,11 @@ Error SkinTool::_determine_skeletons(
 
 		skeletons.push_back(skeleton);
 
-		SkinTool::_reparent_non_joint_skeleton_subtrees(nodes, skeletons.write[skel_i], non_joints);
+		SkinTool::_reparent_non_joint_skeleton_subtrees(nodes, skeletons.ptrw()[skel_i], non_joints);
 	}
 
 	for (SkinSkeletonIndex skel_i = 0; skel_i < skeletons.size(); ++skel_i) {
-		Ref<GLTFSkeleton> skeleton = skeletons.write[skel_i];
+		Ref<GLTFSkeleton> skeleton = skeletons.ptrw()[skel_i];
 
 		for (int i = 0; i < skeleton->joints.size(); ++i) {
 			const SkinNodeIndex node_i = skeleton->joints[i];
@@ -521,7 +521,7 @@ Error SkinTool::_determine_skeleton_roots(
 		}
 	}
 
-	Ref<GLTFSkeleton> skeleton = skeletons.write[p_skel_i];
+	Ref<GLTFSkeleton> skeleton = skeletons.ptrw()[p_skel_i];
 
 	Vector<SkinNodeIndex> representatives;
 	disjoint_set.get_representatives(representatives);
@@ -568,7 +568,7 @@ Error SkinTool::_create_skeletons(
 	// This is the syntax to duplicate a Godot HashSet.
 	HashSet<String> unique_node_names(unique_names);
 	for (SkinSkeletonIndex skel_i = 0; skel_i < skeletons.size(); ++skel_i) {
-		Ref<GLTFSkeleton> gltf_skeleton = skeletons.write[skel_i];
+		Ref<GLTFSkeleton> gltf_skeleton = skeletons.ptrw()[skel_i];
 		HashSet<String> skel_unique_names(unique_node_names);
 
 		Skeleton3D *skeleton = memnew(Skeleton3D);
@@ -660,7 +660,7 @@ Error SkinTool::_map_skin_joints_indices_to_skeleton_bone_indices(
 		Vector<Ref<GLTFSkeleton>> &skeletons,
 		Vector<Ref<GLTFNode>> &nodes) {
 	for (GLTFSkinIndex skin_i = 0; skin_i < skins.size(); ++skin_i) {
-		Ref<GLTFSkin> skin = skins.write[skin_i];
+		Ref<GLTFSkin> skin = skins.ptrw()[skin_i];
 		ERR_CONTINUE(skin.is_null());
 
 		Ref<GLTFSkeleton> skeleton = skeletons[skin->skeleton];
@@ -681,7 +681,7 @@ Error SkinTool::_map_skin_joints_indices_to_skeleton_bone_indices(
 
 Error SkinTool::_create_skins(Vector<Ref<GLTFSkin>> &skins, Vector<Ref<GLTFNode>> &nodes, bool use_named_skin_binds, HashSet<String> &unique_names) {
 	for (GLTFSkinIndex skin_i = 0; skin_i < skins.size(); ++skin_i) {
-		Ref<GLTFSkin> gltf_skin = skins.write[skin_i];
+		Ref<GLTFSkin> gltf_skin = skins.ptrw()[skin_i];
 		ERR_CONTINUE(gltf_skin.is_null());
 
 		Ref<Skin> skin;
@@ -716,7 +716,7 @@ Error SkinTool::_create_skins(Vector<Ref<GLTFSkin>> &skins, Vector<Ref<GLTFNode>
 	// Create unique names now, after removing duplicates
 	for (GLTFSkinIndex skin_i = 0; skin_i < skins.size(); ++skin_i) {
 		ERR_CONTINUE(skins.get(skin_i).is_null());
-		Ref<Skin> skin = skins.write[skin_i]->godot_skin;
+		Ref<Skin> skin = skins.ptrw()[skin_i]->godot_skin;
 		ERR_CONTINUE(skin.is_null());
 		if (skin->get_name().is_empty()) {
 			// Make a unique name, no node represents this skin
@@ -783,7 +783,7 @@ void SkinTool::_remove_duplicate_skins(Vector<Ref<GLTFSkin>> &r_skins) {
 
 			if (_skins_are_same(skin_i, skin_j)) {
 				// replace it and delete the old
-				r_skins.write[j]->godot_skin = skin_i;
+				r_skins.ptrw()[j]->godot_skin = skin_i;
 			}
 		}
 	}

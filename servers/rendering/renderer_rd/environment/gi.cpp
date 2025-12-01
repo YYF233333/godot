@@ -886,10 +886,10 @@ void GI::SDFGI::create(RID p_env, const Vector3 &p_world_position, uint32_t p_re
 		}
 
 		jump_flood_uniform_set[0] = RD::get_singleton()->uniform_set_create(uniforms, gi->sdfgi_shader.preprocess.version_get_shader(gi->sdfgi_shader.preprocess_shader, SDFGIShader::PRE_PROCESS_JUMP_FLOOD), 0);
-		RID aux0 = uniforms.write[0].get_id(0);
-		RID aux1 = uniforms.write[1].get_id(0);
-		uniforms.write[0].set_id(0, aux1);
-		uniforms.write[1].set_id(0, aux0);
+		RID aux0 = uniforms.ptrw()[0].get_id(0);
+		RID aux1 = uniforms.ptrw()[1].get_id(0);
+		uniforms.ptrw()[0].set_id(0, aux1);
+		uniforms.ptrw()[1].set_id(0, aux0);
 		jump_flood_uniform_set[1] = RD::get_singleton()->uniform_set_create(uniforms, gi->sdfgi_shader.preprocess.version_get_shader(gi->sdfgi_shader.preprocess_shader, SDFGIShader::PRE_PROCESS_JUMP_FLOOD), 0);
 	}
 	//jump flood half uniform set
@@ -911,10 +911,10 @@ void GI::SDFGI::create(RID p_env, const Vector3 &p_world_position, uint32_t p_re
 		}
 
 		jump_flood_half_uniform_set[0] = RD::get_singleton()->uniform_set_create(uniforms, gi->sdfgi_shader.preprocess.version_get_shader(gi->sdfgi_shader.preprocess_shader, SDFGIShader::PRE_PROCESS_JUMP_FLOOD), 0);
-		RID aux0 = uniforms.write[0].get_id(0);
-		RID aux1 = uniforms.write[1].get_id(0);
-		uniforms.write[0].set_id(0, aux1);
-		uniforms.write[1].set_id(0, aux0);
+		RID aux0 = uniforms.ptrw()[0].get_id(0);
+		RID aux1 = uniforms.ptrw()[1].get_id(0);
+		uniforms.ptrw()[0].set_id(0, aux1);
+		uniforms.ptrw()[1].set_id(0, aux0);
 		jump_flood_half_uniform_set[1] = RD::get_singleton()->uniform_set_create(uniforms, gi->sdfgi_shader.preprocess.version_get_shader(gi->sdfgi_shader.preprocess_shader, SDFGIShader::PRE_PROCESS_JUMP_FLOOD), 0);
 	}
 

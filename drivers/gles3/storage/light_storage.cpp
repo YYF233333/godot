@@ -398,7 +398,7 @@ void LightStorage::light_instance_free(RID p_light_instance) {
 		uint32_t q = (key >> QUADRANT_SHIFT) & 0x3;
 		uint32_t s = key & SHADOW_INDEX_MASK;
 
-		shadow_atlas->quadrants[q].shadows.write[s].owner = RID();
+		shadow_atlas->quadrants[q].shadows.ptrw()[s].owner = RID();
 
 		shadow_atlas->shadow_owners.erase(p_light_instance);
 	}
@@ -694,15 +694,15 @@ void LightStorage::reflection_atlas_set_size(RID p_ref_atlas, int p_reflection_s
 			for (int j = 0; j < 7; j++) {
 				if (ra->reflections[i].fbos[j] != 0) {
 					glDeleteFramebuffers(1, &ra->reflections[i].fbos[j]);
-					ra->reflections.write[i].fbos[j] = 0;
+					ra->reflections.ptrw()[i].fbos[j] = 0;
 				}
 			}
 
 			GLES3::Utilities::get_singleton()->texture_free_data(ra->reflections[i].color);
-			ra->reflections.write[i].color = 0;
+			ra->reflections.ptrw()[i].color = 0;
 
 			GLES3::Utilities::get_singleton()->texture_free_data(ra->reflections[i].radiance);
-			ra->reflections.write[i].radiance = 0;
+			ra->reflections.ptrw()[i].radiance = 0;
 
 			if (ra->reflections[i].owner.is_null()) {
 				continue;
@@ -766,7 +766,7 @@ void LightStorage::reflection_probe_release_atlas_index(RID p_instance) {
 	ERR_FAIL_NULL(atlas);
 
 	ERR_FAIL_INDEX(rpi->atlas_index, atlas->reflections.size());
-	atlas->reflections.write[rpi->atlas_index].owner = RID();
+	atlas->reflections.ptrw()[rpi->atlas_index].owner = RID();
 
 	if (rpi->rendering) {
 		// We were cancelled mid rendering, trigger refresh.
@@ -852,7 +852,7 @@ bool LightStorage::reflection_probe_instance_begin_render(RID p_instance, RID p_
 			GLuint color = 0;
 			glGenTextures(1, &color);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, color);
-			atlas->reflections.write[i].color = color;
+			atlas->reflections.ptrw()[i].color = color;
 
 #ifdef GL_API_ENABLED
 			if (RasterizerGLES3::is_gles_over_gl()) {
@@ -890,7 +890,7 @@ bool LightStorage::reflection_probe_instance_begin_render(RID p_instance, RID p_
 			GLuint radiance = 0;
 			glGenTextures(1, &radiance);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, radiance);
-			atlas->reflections.write[i].radiance = radiance;
+			atlas->reflections.ptrw()[i].radiance = radiance;
 
 #ifdef GL_API_ENABLED
 			if (RasterizerGLES3::is_gles_over_gl()) {
@@ -932,7 +932,7 @@ bool LightStorage::reflection_probe_instance_begin_render(RID p_instance, RID p_
 					WARN_PRINT("Could not create reflections framebuffer, status: " + texture_storage->get_framebuffer_error(status));
 				}
 
-				atlas->reflections.write[i].fbos[side] = fbo;
+				atlas->reflections.ptrw()[i].fbos[side] = fbo;
 			}
 
 			// Create an extra framebuffer for building our radiance
@@ -941,7 +941,7 @@ bool LightStorage::reflection_probe_instance_begin_render(RID p_instance, RID p_
 				glGenFramebuffers(1, &fbo);
 				glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-				atlas->reflections.write[i].fbos[6] = fbo;
+				atlas->reflections.ptrw()[i].fbos[6] = fbo;
 			}
 		}
 
@@ -975,7 +975,7 @@ bool LightStorage::reflection_probe_instance_begin_render(RID p_instance, RID p_
 	}
 
 	if (rpi->atlas_index != -1) { // should we fail if this is still -1 ?
-		atlas->reflections.write[rpi->atlas_index].owner = p_instance;
+		atlas->reflections.ptrw()[rpi->atlas_index].owner = p_instance;
 	}
 
 	rpi->atlas = p_reflection_atlas;
@@ -1456,7 +1456,7 @@ bool LightStorage::shadow_atlas_update_light(RID p_atlas, RID p_light_instance, 
 		should_redraw = shadow_atlas->quadrants[old_quadrant].shadows[old_shadow].version != p_light_version;
 
 		if (!should_realloc) {
-			shadow_atlas->quadrants[old_quadrant].shadows.write[old_shadow].version = p_light_version;
+			shadow_atlas->quadrants[old_quadrant].shadows.ptrw()[old_shadow].version = p_light_version;
 			// Already existing, see if it should redraw or it's just OK.
 			return should_redraw;
 		}
@@ -1475,14 +1475,14 @@ bool LightStorage::shadow_atlas_update_light(RID p_atlas, RID p_light_instance, 
 	// Or for existing shadows that found a better atlas.
 	if (found_shadow) {
 		if (old_quadrant != SHADOW_INVALID) {
-			shadow_atlas->quadrants[old_quadrant].shadows.write[old_shadow].version = 0;
-			shadow_atlas->quadrants[old_quadrant].shadows.write[old_shadow].owner = RID();
+			shadow_atlas->quadrants[old_quadrant].shadows.ptrw()[old_shadow].version = 0;
+			shadow_atlas->quadrants[old_quadrant].shadows.ptrw()[old_shadow].owner = RID();
 		}
 
 		uint32_t new_key = new_quadrant << QUADRANT_SHIFT;
 		new_key |= new_shadow;
 
-		ShadowAtlas::Quadrant::Shadow *sh = &shadow_atlas->quadrants[new_quadrant].shadows.write[new_shadow];
+		ShadowAtlas::Quadrant::Shadow *sh = &shadow_atlas->quadrants[new_quadrant].shadows.ptrw()[new_shadow];
 		_shadow_atlas_invalidate_shadow(sh, p_atlas, shadow_atlas, new_quadrant, new_shadow);
 
 		sh->owner = p_light_instance;

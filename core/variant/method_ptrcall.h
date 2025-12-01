@@ -80,7 +80,7 @@ struct PtrToArgVectorConvert {
 		{
 			const T *r = dvs->ptr();
 			for (int i = 0; i < len; i++) {
-				ret.write[i] = r[i];
+				ret.ptrw()[i] = r[i];
 			}
 		}
 		return ret;
@@ -107,7 +107,7 @@ struct PtrToArgVectorFromArray {
 		int len = arr->size();
 		ret.resize(len);
 		for (int i = 0; i < len; i++) {
-			ret.write[i] = (*arr)[i];
+			ret.ptrw()[i] = (*arr)[i];
 		}
 		return ret;
 	}

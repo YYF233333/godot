@@ -128,20 +128,20 @@ void AudioStreamPlayer3D::_calc_output_vol(const Vector3 &source_dir, real_t tig
 
 	switch (AudioServer::get_singleton()->get_speaker_mode()) {
 		case AudioServer::SPEAKER_SURROUND_71:
-			output.write[3].left = volumes[5]; // side-left
-			output.write[3].right = volumes[6]; // side-right
+			output.ptrw()[3].left = volumes[5]; // side-left
+			output.ptrw()[3].right = volumes[6]; // side-right
 			[[fallthrough]];
 		case AudioServer::SPEAKER_SURROUND_51:
-			output.write[2].left = volumes[3]; // rear-left
-			output.write[2].right = volumes[4]; // rear-right
+			output.ptrw()[2].left = volumes[3]; // rear-left
+			output.ptrw()[2].right = volumes[4]; // rear-right
 			[[fallthrough]];
 		case AudioServer::SPEAKER_SURROUND_31:
-			output.write[1].right = 1.0; // LFE - always full power
-			output.write[1].left = volumes[2]; // center
+			output.ptrw()[1].right = 1.0; // LFE - always full power
+			output.ptrw()[1].left = volumes[2]; // center
 			[[fallthrough]];
 		case AudioServer::SPEAKER_MODE_STEREO:
-			output.write[0].right = volumes[1]; // front-right
-			output.write[0].left = volumes[0]; // front-left
+			output.ptrw()[0].right = volumes[1]; // front-right
+			output.ptrw()[0].left = volumes[0]; // front-left
 			break;
 	}
 }
@@ -161,10 +161,10 @@ AudioFrame AudioStreamPlayer3D::_calc_output_vol_stereo(const Vector3 &source_di
 #ifndef PHYSICS_3D_DISABLED
 void AudioStreamPlayer3D::_calc_reverb_vol(Area3D *area, Vector3 listener_area_pos, Vector<AudioFrame> direct_path_vol, Vector<AudioFrame> &reverb_vol) {
 	reverb_vol.resize(4);
-	reverb_vol.write[0] = AudioFrame(0, 0);
-	reverb_vol.write[1] = AudioFrame(0, 0);
-	reverb_vol.write[2] = AudioFrame(0, 0);
-	reverb_vol.write[3] = AudioFrame(0, 0);
+	reverb_vol.ptrw()[0] = AudioFrame(0, 0);
+	reverb_vol.ptrw()[1] = AudioFrame(0, 0);
+	reverb_vol.ptrw()[2] = AudioFrame(0, 0);
+	reverb_vol.ptrw()[3] = AudioFrame(0, 0);
 
 	float uniformity = area->get_reverb_uniformity();
 	float area_send = area->get_reverb_amount();
@@ -186,44 +186,44 @@ void AudioStreamPlayer3D::_calc_reverb_vol(Area3D *area, Vector3 listener_area_p
 
 			// Stereo pair.
 			float c = rev_pos.x * 0.5 + 0.5;
-			reverb_vol.write[0].left = 1.0 - c;
-			reverb_vol.write[0].right = c;
+			reverb_vol.ptrw()[0].left = 1.0 - c;
+			reverb_vol.ptrw()[0].right = c;
 
 			if (channel_count >= 3) {
 				// Center pair + Side pair
 				float xl = Vector3(-1, 0, -1).normalized().dot(rev_pos) * 0.5 + 0.5;
 				float xr = Vector3(1, 0, -1).normalized().dot(rev_pos) * 0.5 + 0.5;
 
-				reverb_vol.write[1].left = xl;
-				reverb_vol.write[1].right = xr;
-				reverb_vol.write[2].left = 1.0 - xr;
-				reverb_vol.write[2].right = 1.0 - xl;
+				reverb_vol.ptrw()[1].left = xl;
+				reverb_vol.ptrw()[1].right = xr;
+				reverb_vol.ptrw()[2].left = 1.0 - xr;
+				reverb_vol.ptrw()[2].right = 1.0 - xl;
 			}
 
 			if (channel_count >= 4) {
 				// Rear pair
 				// FIXME: Not sure what math should be done here
-				reverb_vol.write[3].left = 1.0 - c;
-				reverb_vol.write[3].right = c;
+				reverb_vol.ptrw()[3].left = 1.0 - c;
+				reverb_vol.ptrw()[3].right = c;
 			}
 
 			for (int i = 0; i < channel_count; i++) {
-				reverb_vol.write[i] = reverb_vol[i].lerp(center_frame, attenuation);
+				reverb_vol.ptrw()[i] = reverb_vol[i].lerp(center_frame, attenuation);
 			}
 		} else {
 			for (int i = 0; i < channel_count; i++) {
-				reverb_vol.write[i] = center_frame;
+				reverb_vol.ptrw()[i] = center_frame;
 			}
 		}
 
 		for (int i = 0; i < channel_count; i++) {
-			reverb_vol.write[i] = direct_path_vol[i].lerp(reverb_vol[i] * attenuation, uniformity);
-			reverb_vol.write[i] *= area_send;
+			reverb_vol.ptrw()[i] = direct_path_vol[i].lerp(reverb_vol[i] * attenuation, uniformity);
+			reverb_vol.ptrw()[i] *= area_send;
 		}
 
 	} else {
 		for (int i = 0; i < 4; i++) {
-			reverb_vol.write[i] = direct_path_vol[i] * area_send;
+			reverb_vol.ptrw()[i] = direct_path_vol[i] * area_send;
 		}
 	}
 }
@@ -463,10 +463,10 @@ Vector<AudioFrame> AudioStreamPlayer3D::_update_panning() {
 		}
 
 		if (AudioServer::get_singleton()->get_speaker_mode() == AudioServer::SPEAKER_MODE_STEREO) {
-			output_volume_vector.write[0] = _calc_output_vol_stereo(local_pos, cached_global_panning_strength * panning_strength);
-			output_volume_vector.write[1] = AudioFrame(0, 0);
-			output_volume_vector.write[2] = AudioFrame(0, 0);
-			output_volume_vector.write[3] = AudioFrame(0, 0);
+			output_volume_vector.ptrw()[0] = _calc_output_vol_stereo(local_pos, cached_global_panning_strength * panning_strength);
+			output_volume_vector.ptrw()[1] = AudioFrame(0, 0);
+			output_volume_vector.ptrw()[2] = AudioFrame(0, 0);
+			output_volume_vector.ptrw()[3] = AudioFrame(0, 0);
 		} else {
 			// Bake in a constant factor here to allow the project setting defaults for 2d and 3d to be normalized to 1.0.
 			float tightness = cached_global_panning_strength * 2.0f;
@@ -475,7 +475,7 @@ Vector<AudioFrame> AudioStreamPlayer3D::_update_panning() {
 		}
 
 		for (unsigned int k = 0; k < 4; k++) {
-			output_volume_vector.write[k] = multiplier * output_volume_vector[k];
+			output_volume_vector.ptrw()[k] = multiplier * output_volume_vector[k];
 		}
 
 		HashMap<StringName, Vector<AudioFrame>> bus_volumes;

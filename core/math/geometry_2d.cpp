@@ -106,10 +106,10 @@ Vector<Vector<Vector2>> Geometry2D::decompose_many_polygons_in_convex(const Vect
 	decomp.resize(out_poly.size());
 	int idx = 0;
 	for (TPPLPoly &tp : out_poly) {
-		decomp.write[idx].resize(tp.GetNumPoints());
+		decomp.ptrw()[idx].resize(tp.GetNumPoints());
 
 		for (int64_t i = 0; i < tp.GetNumPoints(); i++) {
-			decomp.write[idx].write[i] = tp.GetPoint(i);
+			decomp.ptrw()[idx].ptrw()[i] = tp.GetPoint(i);
 		}
 
 		idx++;
@@ -153,8 +153,8 @@ void Geometry2D::make_atlas(const Vector<Size2i> &p_rects, Vector<Point2i> &r_re
 	Vector<_AtlasWorkRect> wrects;
 	wrects.resize(p_rects.size());
 	for (int i = 0; i < p_rects.size(); i++) {
-		wrects.write[i].s = p_rects[i];
-		wrects.write[i].idx = i;
+		wrects.ptrw()[i].s = p_rects[i];
+		wrects.ptrw()[i].idx = i;
 	}
 	wrects.sort();
 	int widest = wrects[0].s.width;
@@ -172,7 +172,7 @@ void Geometry2D::make_atlas(const Vector<Size2i> &p_rects, Vector<Point2i> &r_re
 		Vector<int> hmax;
 		hmax.resize(w);
 		for (int j = 0; j < w; j++) {
-			hmax.write[j] = 0;
+			hmax.ptrw()[j] = 0;
 		}
 
 		// Place them.
@@ -190,8 +190,8 @@ void Geometry2D::make_atlas(const Vector<Size2i> &p_rects, Vector<Point2i> &r_re
 				}
 			}
 
-			wrects.write[j].p.x = ofs;
-			wrects.write[j].p.y = from_y;
+			wrects.ptrw()[j].p.x = ofs;
+			wrects.ptrw()[j].p.y = from_y;
 			int end_h = from_y + wrects[j].s.height;
 			int end_w = ofs + wrects[j].s.width;
 			if (ofs == 0) {
@@ -199,7 +199,7 @@ void Geometry2D::make_atlas(const Vector<Size2i> &p_rects, Vector<Point2i> &r_re
 			}
 
 			for (int k = 0; k < wrects[j].s.width; k++) {
-				hmax.write[ofs + k] = end_h;
+				hmax.ptrw()[ofs + k] = end_h;
 			}
 
 			if (end_h > max_h) {
@@ -240,7 +240,7 @@ void Geometry2D::make_atlas(const Vector<Size2i> &p_rects, Vector<Point2i> &r_re
 	r_result.resize(p_rects.size());
 
 	for (int i = 0; i < p_rects.size(); i++) {
-		r_result.write[results[best].result[i].idx] = results[best].result[i].p;
+		r_result.ptrw()[results[best].result[i].idx] = results[best].result[i].p;
 	}
 
 	r_size = Size2(results[best].max_w, results[best].max_h);
@@ -383,12 +383,12 @@ Vector<Vector3i> Geometry2D::partial_pack_rects(const Vector<Vector2i> &p_sizes,
 	rects.resize(p_sizes.size());
 
 	for (int i = 0; i < p_sizes.size(); i++) {
-		rects.write[i].id = i;
-		rects.write[i].w = p_sizes[i].width;
-		rects.write[i].h = p_sizes[i].height;
-		rects.write[i].x = 0;
-		rects.write[i].y = 0;
-		rects.write[i].was_packed = 0;
+		rects.ptrw()[i].id = i;
+		rects.ptrw()[i].w = p_sizes[i].width;
+		rects.ptrw()[i].h = p_sizes[i].height;
+		rects.ptrw()[i].x = 0;
+		rects.ptrw()[i].y = 0;
+		rects.ptrw()[i].was_packed = 0;
 	}
 
 	stbrp_pack_rects(&context, rects.ptrw(), rects.size());
@@ -397,7 +397,7 @@ Vector<Vector3i> Geometry2D::partial_pack_rects(const Vector<Vector2i> &p_sizes,
 	ret.resize(p_sizes.size());
 
 	for (int i = 0; i < p_sizes.size(); i++) {
-		ret.write[rects[i].id] = Vector3i(rects[i].x, rects[i].y, rects[i].was_packed != 0 ? 1 : 0);
+		ret.ptrw()[rects[i].id] = Vector3i(rects[i].x, rects[i].y, rects[i].was_packed != 0 ? 1 : 0);
 	}
 
 	return ret;
