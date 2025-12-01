@@ -704,7 +704,7 @@ void Polygon2DEditor::_canvas_input(const Ref<InputEvent> &p_input) {
 							if (idx < 0 || idx >= editing_points.size()) {
 								continue;
 							}
-							polys.write[j] = mtx.xform(editing_points[idx]);
+							polys.ptrw()[j] = mtx.xform(editing_points[idx]);
 						}
 
 						if (Geometry2D::is_point_in_polygon(mb->get_position(), polys)) {

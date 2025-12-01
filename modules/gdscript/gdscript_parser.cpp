@@ -1640,7 +1640,7 @@ GDScriptParser::EnumNode *GDScriptParser::parse_enum(bool p_is_static) {
 		}
 
 		if (named) {
-			enum_node->values.write[i].doc_data = doc_data;
+			enum_node->values.ptrw()[i].doc_data = doc_data;
 		} else {
 			current_class->set_enum_value_doc_data(enum_node->values[i].identifier->name, doc_data);
 		}

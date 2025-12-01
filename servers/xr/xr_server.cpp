@@ -436,7 +436,7 @@ void XRServer::_process() {
 		if (interfaces[i].is_null()) {
 			// ignore, not a valid reference
 		} else if (interfaces[i]->is_initialized()) {
-			interfaces.write[i]->process();
+			interfaces.ptrw()[i]->process();
 		}
 	}
 }
@@ -450,7 +450,7 @@ void XRServer::pre_render() {
 		if (interfaces[i].is_null()) {
 			// ignore, not a valid reference
 		} else if (interfaces[i]->is_initialized()) {
-			interfaces.write[i]->pre_render();
+			interfaces.ptrw()[i]->pre_render();
 		}
 	}
 }
@@ -463,7 +463,7 @@ void XRServer::end_frame() {
 		if (interfaces[i].is_null()) {
 			// ignore, not a valid reference
 		} else if (interfaces[i]->is_initialized()) {
-			interfaces.write[i]->end_frame();
+			interfaces.ptrw()[i]->end_frame();
 		}
 	}
 }

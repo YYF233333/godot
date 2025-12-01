@@ -3869,7 +3869,7 @@ RDD::ShaderID RenderingDeviceDriverVulkan::shader_create_from_container(const Re
 				}
 			}
 
-			vk_set_bindings.write[i].push_back(layout_binding);
+			vk_set_bindings.ptrw()[i].push_back(layout_binding);
 		}
 	}
 

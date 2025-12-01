@@ -432,7 +432,7 @@ class CharBuffer {
 		if (buffer == stack_buffer) { // first chunk?
 
 			for (int64_t i = 0; i < written; i++) {
-				vector.write[i] = stack_buffer[i];
+				vector.ptrw()[i] = stack_buffer[i];
 			}
 		}
 

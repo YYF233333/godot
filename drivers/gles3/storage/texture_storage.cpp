@@ -1855,7 +1855,7 @@ void TextureStorage::_texture_set_3d_data(RID p_texture, const Vector<Ref<Image>
 			image = image->duplicate();
 			image->convert(texture->format);
 		}
-		images.write[i] = image;
+		images.ptrw()[i] = image;
 	}
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -2074,7 +2074,7 @@ void TextureStorage::update_texture_atlas() {
 		int idx = 0;
 
 		for (const KeyValue<RID, TextureAtlas::Texture> &E : texture_atlas.textures) {
-			TextureAtlas::SortItem &si = itemsv.write[idx];
+			TextureAtlas::SortItem &si = itemsv.ptrw()[idx];
 
 			Texture *src_tex = get_texture(E.key);
 

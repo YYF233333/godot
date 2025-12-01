@@ -118,12 +118,12 @@ void MultiplayerDebugger::BandwidthProfiler::toggle(bool p_enable, const Array &
 		bandwidth_in_ptr = 0;
 		bandwidth_in.resize(16384); // ~128kB
 		for (int i = 0; i < bandwidth_in.size(); ++i) {
-			bandwidth_in.write[i].packet_size = -1;
+			bandwidth_in.ptrw()[i].packet_size = -1;
 		}
 		bandwidth_out_ptr = 0;
 		bandwidth_out.resize(16384); // ~128kB
 		for (int i = 0; i < bandwidth_out.size(); ++i) {
-			bandwidth_out.write[i].packet_size = -1;
+			bandwidth_out.ptrw()[i].packet_size = -1;
 		}
 	}
 }
@@ -134,12 +134,12 @@ void MultiplayerDebugger::BandwidthProfiler::add(const Array &p_data) {
 	int time = p_data[1];
 	int size = p_data[2];
 	if (inout == "in") {
-		bandwidth_in.write[bandwidth_in_ptr].timestamp = time;
-		bandwidth_in.write[bandwidth_in_ptr].packet_size = size;
+		bandwidth_in.ptrw()[bandwidth_in_ptr].timestamp = time;
+		bandwidth_in.ptrw()[bandwidth_in_ptr].packet_size = size;
 		bandwidth_in_ptr = (bandwidth_in_ptr + 1) % bandwidth_in.size();
 	} else if (inout == "out") {
-		bandwidth_out.write[bandwidth_out_ptr].timestamp = time;
-		bandwidth_out.write[bandwidth_out_ptr].packet_size = size;
+		bandwidth_out.ptrw()[bandwidth_out_ptr].timestamp = time;
+		bandwidth_out.ptrw()[bandwidth_out_ptr].packet_size = size;
 		bandwidth_out_ptr = (bandwidth_out_ptr + 1) % bandwidth_out.size();
 	}
 }
@@ -179,12 +179,12 @@ bool MultiplayerDebugger::RPCFrame::deserialize(const Array &p_arr) {
 	infos.resize(size / 6);
 	int idx = 1;
 	for (uint32_t i = 0; i < size / 6; i++) {
-		infos.write[i].node = uint64_t(p_arr[idx]);
-		infos.write[i].node_path = p_arr[idx + 1];
-		infos.write[i].incoming_rpc = p_arr[idx + 2];
-		infos.write[i].incoming_size = p_arr[idx + 3];
-		infos.write[i].outgoing_rpc = p_arr[idx + 4];
-		infos.write[i].outgoing_size = p_arr[idx + 5];
+		infos.ptrw()[i].node = uint64_t(p_arr[idx]);
+		infos.ptrw()[i].node_path = p_arr[idx + 1];
+		infos.ptrw()[i].incoming_rpc = p_arr[idx + 2];
+		infos.ptrw()[i].incoming_size = p_arr[idx + 3];
+		infos.ptrw()[i].outgoing_rpc = p_arr[idx + 4];
+		infos.ptrw()[i].outgoing_size = p_arr[idx + 5];
 		idx += 6;
 	}
 	return true;

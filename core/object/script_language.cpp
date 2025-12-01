@@ -565,7 +565,7 @@ Vector<Ref<ScriptBacktrace>> ScriptServer::capture_script_backtraces(bool p_incl
 	Vector<Ref<ScriptBacktrace>> result;
 	result.resize(_language_count);
 	for (int i = 0; i < _language_count; i++) {
-		result.write[i].instantiate(_languages[i], p_include_variables);
+		result.ptrw()[i].instantiate(_languages[i], p_include_variables);
 	}
 
 	return result;

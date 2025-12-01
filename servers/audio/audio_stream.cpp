@@ -524,7 +524,7 @@ void AudioStreamRandomizer::remove_stream(int p_index) {
 
 void AudioStreamRandomizer::set_stream(int p_index, Ref<AudioStream> p_stream) {
 	ERR_FAIL_INDEX(p_index, audio_stream_pool.size());
-	audio_stream_pool.write[p_index].stream = p_stream;
+	audio_stream_pool.ptrw()[p_index].stream = p_stream;
 	emit_signal(CoreStringName(changed));
 }
 
@@ -535,7 +535,7 @@ Ref<AudioStream> AudioStreamRandomizer::get_stream(int p_index) const {
 
 void AudioStreamRandomizer::set_stream_probability_weight(int p_index, float p_weight) {
 	ERR_FAIL_INDEX(p_index, audio_stream_pool.size());
-	audio_stream_pool.write[p_index].weight = p_weight;
+	audio_stream_pool.ptrw()[p_index].weight = p_weight;
 	emit_signal(CoreStringName(changed));
 }
 
@@ -620,7 +620,7 @@ Ref<AudioStreamPlayback> AudioStreamRandomizer::instance_playback_random() {
 	if (playback->playback.is_null()) {
 		// This indicates a floating point error. Take the last element.
 		last_playback = local_pool[local_pool.size() - 1].stream;
-		playback->playback = local_pool.write[local_pool.size() - 1].stream->instantiate_playback();
+		playback->playback = local_pool.ptrw()[local_pool.size() - 1].stream->instantiate_playback();
 	}
 	return playback;
 }
@@ -662,7 +662,7 @@ Ref<AudioStreamPlayback> AudioStreamRandomizer::instance_playback_no_repeats() {
 	if (playback->playback.is_null()) {
 		// This indicates a floating point error. Take the last element.
 		last_playback = local_pool[local_pool.size() - 1].stream;
-		playback->playback = local_pool.write[local_pool.size() - 1].stream->instantiate_playback();
+		playback->playback = local_pool.ptrw()[local_pool.size() - 1].stream->instantiate_playback();
 	}
 	return playback;
 }
@@ -701,7 +701,7 @@ Ref<AudioStreamPlayback> AudioStreamRandomizer::instance_playback_sequential() {
 	if (playback->playback.is_null()) {
 		// Wrap around
 		last_playback = local_pool[0];
-		playback->playback = local_pool.write[0]->instantiate_playback();
+		playback->playback = local_pool.ptrw()[0]->instantiate_playback();
 	}
 	return playback;
 }

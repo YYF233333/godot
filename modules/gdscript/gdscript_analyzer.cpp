@@ -965,7 +965,7 @@ void GDScriptAnalyzer::resolve_class_member(GDScriptParser::ClassNode *p_class, 
 void GDScriptAnalyzer::resolve_class_member(GDScriptParser::ClassNode *p_class, int p_index, const GDScriptParser::Node *p_source) {
 	ERR_FAIL_INDEX(p_index, p_class->members.size());
 
-	GDScriptParser::ClassNode::Member &member = p_class->members.write[p_index];
+	GDScriptParser::ClassNode::Member &member = p_class->members.ptrw()[p_index];
 	if (p_source == nullptr && parser->has_class(p_class)) {
 		p_source = member.get_source_node();
 	}
@@ -1156,7 +1156,7 @@ void GDScriptAnalyzer::resolve_class_member(GDScriptParser::ClassNode *p_class, 
 
 				Dictionary dictionary;
 				for (int j = 0; j < member.m_enum->values.size(); j++) {
-					GDScriptParser::EnumNode::Value &element = member.m_enum->values.write[j];
+					GDScriptParser::EnumNode::Value &element = member.m_enum->values.ptrw()[j];
 
 					if (element.custom_value) {
 						reduce_expression(element.custom_value);
@@ -5399,7 +5399,7 @@ Variant GDScriptAnalyzer::make_call_reduced_value(GDScriptParser::CallNode *p_ca
 			if (!is_arg_value_reduced) {
 				return Variant();
 			}
-			args.write[i] = arg_value;
+			args.ptrw()[i] = arg_value;
 			argptrs[i] = &args[i];
 		}
 
@@ -6393,7 +6393,7 @@ void GDScriptAnalyzer::resolve_pending_lambda_bodies() {
 			int param_count = lambda->function->parameters.size();
 			lambda->function->parameters.resize(param_count + captures_amount);
 			for (int i = param_count - 1; i >= 0; i--) {
-				lambda->function->parameters.write[i + captures_amount] = lambda->function->parameters[i];
+				lambda->function->parameters.ptrw()[i + captures_amount] = lambda->function->parameters[i];
 				lambda->function->parameters_indices[lambda->function->parameters[i]->identifier->name] = i + captures_amount;
 			}
 
@@ -6405,7 +6405,7 @@ void GDScriptAnalyzer::resolve_pending_lambda_bodies() {
 				capture_param->usages = capture->usages;
 				capture_param->set_datatype(capture->get_datatype());
 
-				lambda->function->parameters.write[i] = capture_param;
+				lambda->function->parameters.ptrw()[i] = capture_param;
 				lambda->function->parameters_indices[capture->name] = i;
 			}
 		}

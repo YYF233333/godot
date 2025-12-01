@@ -353,16 +353,16 @@ String TabBar::get_tooltip(const Point2 &p_pos) const {
 }
 
 void TabBar::_shape(int p_tab) {
-	tabs.write[p_tab].text_buf->clear();
-	tabs.write[p_tab].text_buf->set_width(-1);
+	tabs.ptrw()[p_tab].text_buf->clear();
+	tabs.ptrw()[p_tab].text_buf->set_width(-1);
 	if (tabs[p_tab].text_direction == Control::TEXT_DIRECTION_INHERITED) {
-		tabs.write[p_tab].text_buf->set_direction(is_layout_rtl() ? TextServer::DIRECTION_RTL : TextServer::DIRECTION_LTR);
+		tabs.ptrw()[p_tab].text_buf->set_direction(is_layout_rtl() ? TextServer::DIRECTION_RTL : TextServer::DIRECTION_LTR);
 	} else {
-		tabs.write[p_tab].text_buf->set_direction((TextServer::Direction)tabs[p_tab].text_direction);
+		tabs.ptrw()[p_tab].text_buf->set_direction((TextServer::Direction)tabs[p_tab].text_direction);
 	}
 
 	const String &lang = tabs[p_tab].language.is_empty() ? _get_locale() : tabs[p_tab].language;
-	tabs.write[p_tab].text_buf->add_string(atr(tabs[p_tab].text), theme_cache.font, theme_cache.font_size, lang);
+	tabs.ptrw()[p_tab].text_buf->add_string(atr(tabs[p_tab].text), theme_cache.font, theme_cache.font_size, lang);
 }
 
 RID TabBar::get_tab_accessibility_element(int p_tab) const {
@@ -429,7 +429,7 @@ void TabBar::_notification(int p_what) {
 		case NOTIFICATION_EXIT_TREE:
 		case NOTIFICATION_ACCESSIBILITY_INVALIDATE: {
 			for (int i = 0; i < tabs.size(); i++) {
-				tabs.write[i].accessibility_item_element = RID();
+				tabs.ptrw()[i].accessibility_item_element = RID();
 			}
 		} break;
 
@@ -694,7 +694,7 @@ void TabBar::_draw_tab(Ref<StyleBox> &p_tab_style, const Color &p_font_color, co
 		rb_rect.position.x = rtl ? p_x - rb_rect.size.width : p_x;
 		rb_rect.position.y = p_tab_style->get_margin(SIDE_TOP) + ((sb_rect.size.y - sb_ms.y) - (rb_rect.size.y)) / 2;
 
-		tabs.write[p_index].rb_rect = rb_rect;
+		tabs.ptrw()[p_index].rb_rect = rb_rect;
 
 		if (rb_hover == p_index) {
 			if (rb_pressing) {
@@ -708,7 +708,7 @@ void TabBar::_draw_tab(Ref<StyleBox> &p_tab_style, const Color &p_font_color, co
 
 		p_x = rtl ? rb_rect.position.x : rb_rect.position.x + rb_rect.size.width;
 	} else {
-		tabs.write[p_index].rb_rect = Rect2();
+		tabs.ptrw()[p_index].rb_rect = Rect2();
 	}
 
 	// Draw and calculate rect of the close button.
@@ -721,7 +721,7 @@ void TabBar::_draw_tab(Ref<StyleBox> &p_tab_style, const Color &p_font_color, co
 		cb_rect.position.x = rtl ? p_x - cb_rect.size.width : p_x;
 		cb_rect.position.y = p_tab_style->get_margin(SIDE_TOP) + ((sb_rect.size.y - sb_ms.y) - (cb_rect.size.y)) / 2;
 
-		tabs.write[p_index].cb_rect = cb_rect;
+		tabs.ptrw()[p_index].cb_rect = cb_rect;
 
 		if (!tabs[p_index].disabled && cb_hover == p_index) {
 			if (cb_pressing) {
@@ -733,7 +733,7 @@ void TabBar::_draw_tab(Ref<StyleBox> &p_tab_style, const Color &p_font_color, co
 
 		cb->draw(ci, Point2i(cb_rect.position.x + style->get_margin(SIDE_LEFT), cb_rect.position.y + style->get_margin(SIDE_TOP)));
 	} else {
-		tabs.write[p_index].cb_rect = Rect2();
+		tabs.ptrw()[p_index].cb_rect = Rect2();
 	}
 }
 
@@ -747,8 +747,8 @@ void TabBar::set_tab_count(int p_count) {
 	if (tabs.size() > p_count) {
 		for (int i = p_count; i < tabs.size(); i++) {
 			if (tabs[i].accessibility_item_element.is_valid()) {
-				DisplayServer::get_singleton()->accessibility_free_element(tabs.write[i].accessibility_item_element);
-				tabs.write[i].accessibility_item_element = RID();
+				DisplayServer::get_singleton()->accessibility_free_element(tabs.ptrw()[i].accessibility_item_element);
+				tabs.ptrw()[i].accessibility_item_element = RID();
 			}
 		}
 	}
@@ -904,7 +904,7 @@ void TabBar::set_tab_title(int p_tab, const String &p_title) {
 		return;
 	}
 
-	tabs.write[p_tab].text = p_title;
+	tabs.ptrw()[p_tab].text = p_title;
 
 	_shape(p_tab);
 	_update_cache();
@@ -924,7 +924,7 @@ String TabBar::get_tab_title(int p_tab) const {
 
 void TabBar::set_tab_tooltip(int p_tab, const String &p_tooltip) {
 	ERR_FAIL_INDEX(p_tab, tabs.size());
-	tabs.write[p_tab].tooltip = p_tooltip;
+	tabs.ptrw()[p_tab].tooltip = p_tooltip;
 	queue_accessibility_update();
 }
 
@@ -938,7 +938,7 @@ void TabBar::set_tab_text_direction(int p_tab, Control::TextDirection p_text_dir
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 
 	if (tabs[p_tab].text_direction != p_text_direction) {
-		tabs.write[p_tab].text_direction = p_text_direction;
+		tabs.ptrw()[p_tab].text_direction = p_text_direction;
 
 		_shape(p_tab);
 		queue_accessibility_update();
@@ -955,7 +955,7 @@ void TabBar::set_tab_language(int p_tab, const String &p_language) {
 	ERR_FAIL_INDEX(p_tab, tabs.size());
 
 	if (tabs[p_tab].language != p_language) {
-		tabs.write[p_tab].language = p_language;
+		tabs.ptrw()[p_tab].language = p_language;
 
 		_shape(p_tab);
 		_update_cache();
@@ -981,7 +981,7 @@ void TabBar::set_tab_icon(int p_tab, const Ref<Texture2D> &p_icon) {
 		return;
 	}
 
-	tabs.write[p_tab].icon = p_icon;
+	tabs.ptrw()[p_tab].icon = p_icon;
 
 	_update_cache();
 	_ensure_no_over_offset();
@@ -1004,7 +1004,7 @@ void TabBar::set_tab_icon_max_width(int p_tab, int p_width) {
 		return;
 	}
 
-	tabs.write[p_tab].icon_max_width = p_width;
+	tabs.ptrw()[p_tab].icon_max_width = p_width;
 
 	_update_cache();
 	_ensure_no_over_offset();
@@ -1023,7 +1023,7 @@ int TabBar::get_tab_icon_max_width(int p_tab) const {
 void TabBar::set_font_color_override_all(int p_tab, const Color &p_color) {
 	ERR_FAIL_INDEX(p_tab, tabs.size());
 
-	Tab &tab = tabs.write[p_tab];
+	Tab &tab = tabs.ptrw()[p_tab];
 	for (int i = 0; i < DrawMode::DRAW_MAX; i++) {
 		tab.font_color_overrides[i] = p_color;
 	}
@@ -1039,7 +1039,7 @@ void TabBar::set_font_color_override(int p_tab, DrawMode p_draw_mode, const Colo
 		return;
 	}
 
-	tabs.write[p_tab].font_color_overrides[p_draw_mode] = p_color;
+	tabs.ptrw()[p_tab].font_color_overrides[p_draw_mode] = p_color;
 
 	queue_redraw();
 }
@@ -1058,7 +1058,7 @@ void TabBar::set_tab_disabled(int p_tab, bool p_disabled) {
 		return;
 	}
 
-	tabs.write[p_tab].disabled = p_disabled;
+	tabs.ptrw()[p_tab].disabled = p_disabled;
 
 	_update_cache();
 	_ensure_no_over_offset();
@@ -1082,7 +1082,7 @@ void TabBar::set_tab_hidden(int p_tab, bool p_hidden) {
 		return;
 	}
 
-	tabs.write[p_tab].hidden = p_hidden;
+	tabs.ptrw()[p_tab].hidden = p_hidden;
 
 	_update_cache();
 	_ensure_no_over_offset();
@@ -1101,7 +1101,7 @@ bool TabBar::is_tab_hidden(int p_tab) const {
 
 void TabBar::set_tab_metadata(int p_tab, const Variant &p_metadata) {
 	ERR_FAIL_INDEX(p_tab, tabs.size());
-	tabs.write[p_tab].metadata = p_metadata;
+	tabs.ptrw()[p_tab].metadata = p_metadata;
 }
 
 Variant TabBar::get_tab_metadata(int p_tab) const {
@@ -1116,7 +1116,7 @@ void TabBar::set_tab_button_icon(int p_tab, const Ref<Texture2D> &p_icon) {
 		return;
 	}
 
-	tabs.write[p_tab].right_button = p_icon;
+	tabs.ptrw()[p_tab].right_button = p_icon;
 
 	_update_cache();
 	_ensure_no_over_offset();
@@ -1207,27 +1207,27 @@ void TabBar::_update_cache(bool p_update_hover) {
 	max_drawn_tab = tabs.size() - 1;
 
 	for (int i = 0; i < tabs.size(); i++) {
-		tabs.write[i].text_buf->set_width(-1);
-		tabs.write[i].size_text = Math::ceil(tabs[i].text_buf->get_size().x);
-		tabs.write[i].size_cache = get_tab_width(i);
-		tabs.write[i].accessibility_item_dirty = true;
+		tabs.ptrw()[i].text_buf->set_width(-1);
+		tabs.ptrw()[i].size_text = Math::ceil(tabs[i].text_buf->get_size().x);
+		tabs.ptrw()[i].size_cache = get_tab_width(i);
+		tabs.ptrw()[i].accessibility_item_dirty = true;
 
-		tabs.write[i].truncated = max_width > 0 && tabs[i].size_cache > max_width;
+		tabs.ptrw()[i].truncated = max_width > 0 && tabs[i].size_cache > max_width;
 		if (tabs[i].truncated) {
 			int size_textless = tabs[i].size_cache - tabs[i].size_text;
 			int mw = MAX(size_textless, max_width);
 
-			tabs.write[i].size_text = MAX(mw - size_textless, 1);
-			tabs.write[i].text_buf->set_width(tabs[i].size_text);
-			tabs.write[i].size_cache = size_textless + tabs[i].size_text;
+			tabs.ptrw()[i].size_text = MAX(mw - size_textless, 1);
+			tabs.ptrw()[i].text_buf->set_width(tabs[i].size_text);
+			tabs.ptrw()[i].size_cache = size_textless + tabs[i].size_text;
 		}
 
 		if (i < offset || i > max_drawn_tab) {
-			tabs.write[i].ofs_cache = 0;
+			tabs.ptrw()[i].ofs_cache = 0;
 			continue;
 		}
 
-		tabs.write[i].ofs_cache = w;
+		tabs.ptrw()[i].ofs_cache = w;
 
 		if (tabs[i].hidden) {
 			continue;
@@ -1237,7 +1237,7 @@ void TabBar::_update_cache(bool p_update_hover) {
 
 		// Check if all tabs would fit inside the area.
 		if (clip_tabs && i > offset && (w > limit || (offset > 0 && w > limit_minus_buttons))) {
-			tabs.write[i].ofs_cache = 0;
+			tabs.ptrw()[i].ofs_cache = 0;
 
 			w -= tabs[i].size_cache;
 			w -= theme_cache.tab_separation;
@@ -1245,7 +1245,7 @@ void TabBar::_update_cache(bool p_update_hover) {
 			max_drawn_tab = i - 1;
 
 			while (w > limit_minus_buttons && max_drawn_tab > offset) {
-				tabs.write[max_drawn_tab].ofs_cache = 0;
+				tabs.ptrw()[max_drawn_tab].ofs_cache = 0;
 
 				if (!tabs[max_drawn_tab].hidden) {
 					w -= tabs[max_drawn_tab].size_cache;
@@ -1278,7 +1278,7 @@ void TabBar::_update_cache(bool p_update_hover) {
 
 	for (int i = offset; i <= max_drawn_tab; i++) {
 		if (!tabs[i].hidden) {
-			tabs.write[i].ofs_cache = w;
+			tabs.ptrw()[i].ofs_cache = w;
 
 			w += tabs[i].size_cache;
 			w += theme_cache.tab_separation;
@@ -1338,8 +1338,8 @@ void TabBar::clear_tabs() {
 
 	for (int i = 0; i < tabs.size(); i++) {
 		if (tabs[i].accessibility_item_element.is_valid()) {
-			DisplayServer::get_singleton()->accessibility_free_element(tabs.write[i].accessibility_item_element);
-			tabs.write[i].accessibility_item_element = RID();
+			DisplayServer::get_singleton()->accessibility_free_element(tabs.ptrw()[i].accessibility_item_element);
+			tabs.ptrw()[i].accessibility_item_element = RID();
 		}
 	}
 	tabs.clear();
@@ -1358,8 +1358,8 @@ void TabBar::remove_tab(int p_idx) {
 	ERR_FAIL_INDEX(p_idx, tabs.size());
 
 	if (tabs[p_idx].accessibility_item_element.is_valid()) {
-		DisplayServer::get_singleton()->accessibility_free_element(tabs.write[p_idx].accessibility_item_element);
-		tabs.write[p_idx].accessibility_item_element = RID();
+		DisplayServer::get_singleton()->accessibility_free_element(tabs.ptrw()[p_idx].accessibility_item_element);
+		tabs.ptrw()[p_idx].accessibility_item_element = RID();
 	}
 	tabs.remove_at(p_idx);
 

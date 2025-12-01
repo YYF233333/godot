@@ -446,7 +446,7 @@ public:
 			while (k >= 2 && vec2_cross(H[k - 2], H[k - 1], P[i]) <= 0) {
 				k--;
 			}
-			H.write[k++] = P[i];
+			H.ptrw()[k++] = P[i];
 		}
 
 		// Build upper hull.
@@ -454,7 +454,7 @@ public:
 			while (k >= t && vec2_cross(H[k - 2], H[k - 1], P[i]) <= 0) {
 				k--;
 			}
-			H.write[k++] = P[i];
+			H.ptrw()[k++] = P[i];
 		}
 
 		H.resize(k);

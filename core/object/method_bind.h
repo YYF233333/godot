@@ -194,7 +194,7 @@ public:
 			for (int64_t i = 0; i < method_info.arguments.size(); ++i) {
 				at[i + 1] = method_info.arguments[i].type;
 #ifdef DEBUG_ENABLED
-				names.write[i] = method_info.arguments[i].name;
+				names.ptrw()[i] = method_info.arguments[i].name;
 #endif // DEBUG_ENABLED
 			}
 

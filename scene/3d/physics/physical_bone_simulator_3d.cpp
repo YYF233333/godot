@@ -309,7 +309,7 @@ void PhysicalBoneSimulator3D::physical_bones_start_simulation_on(const TypedArra
 		for (int i = sim_bones.size() - 1; i >= 0; --i) {
 			int bone_id = find_bone(p_bones[i]);
 			if (bone_id != -1) {
-				sim_bones.write[c++] = bone_id;
+				sim_bones.ptrw()[c++] = bone_id;
 			}
 		}
 		sim_bones.resize(c);

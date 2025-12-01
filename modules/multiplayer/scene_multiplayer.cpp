@@ -444,8 +444,8 @@ Error SceneMultiplayer::send_bytes(Vector<uint8_t> p_data, int p_to, Multiplayer
 	}
 
 	const uint8_t *r = p_data.ptr();
-	packet_cache.write[0] = NETWORK_COMMAND_RAW;
-	memcpy(&packet_cache.write[1], &r[0], p_data.size());
+	packet_cache.ptrw()[0] = NETWORK_COMMAND_RAW;
+	memcpy(&packet_cache.ptrw()[1], &r[0], p_data.size());
 
 	multiplayer_peer->set_transfer_channel(p_channel);
 	multiplayer_peer->set_transfer_mode(p_mode);
@@ -463,9 +463,9 @@ Error SceneMultiplayer::send_auth(int p_to, Vector<uint8_t> p_data) {
 		packet_cache.resize(p_data.size() + 2);
 	}
 
-	packet_cache.write[0] = NETWORK_COMMAND_SYS;
-	packet_cache.write[1] = SYS_COMMAND_AUTH;
-	memcpy(&packet_cache.write[2], p_data.ptr(), p_data.size());
+	packet_cache.ptrw()[0] = NETWORK_COMMAND_SYS;
+	packet_cache.ptrw()[1] = SYS_COMMAND_AUTH;
+	memcpy(&packet_cache.ptrw()[2], p_data.ptr(), p_data.size());
 
 	multiplayer_peer->set_target_peer(p_to);
 	multiplayer_peer->set_transfer_channel(0);
@@ -556,7 +556,7 @@ Vector<int> SceneMultiplayer::get_authenticating_peer_ids() {
 	out.resize(pending_peers.size());
 	int idx = 0;
 	for (const KeyValue<int, PendingPeer> &E : pending_peers) {
-		out.write[idx++] = E.key;
+		out.ptrw()[idx++] = E.key;
 	}
 	return out;
 }

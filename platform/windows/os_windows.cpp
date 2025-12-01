@@ -1941,11 +1941,11 @@ Vector<String> OS_Windows::get_system_font_path_for_text(const String &p_font_na
 		UINT32 reference_key_size = 0;
 		ComAutoreleaseRef<IDWriteLocalFontFileLoader> loader;
 
-		hr = files.write[i]->GetLoader((IDWriteFontFileLoader **)&loader.reference);
+		hr = files.ptrw()[i]->GetLoader((IDWriteFontFileLoader **)&loader.reference);
 		if (FAILED(hr) || loader.is_null()) {
 			continue;
 		}
-		hr = files.write[i]->GetReferenceKey(&reference_key, &reference_key_size);
+		hr = files.ptrw()[i]->GetReferenceKey(&reference_key, &reference_key_size);
 		if (FAILED(hr)) {
 			continue;
 		}
@@ -2020,11 +2020,11 @@ String OS_Windows::get_system_font_path(const String &p_font_name, int p_weight,
 		UINT32 reference_key_size = 0;
 		ComAutoreleaseRef<IDWriteLocalFontFileLoader> loader;
 
-		hr = files.write[i]->GetLoader((IDWriteFontFileLoader **)&loader.reference);
+		hr = files.ptrw()[i]->GetLoader((IDWriteFontFileLoader **)&loader.reference);
 		if (FAILED(hr) || loader.is_null()) {
 			continue;
 		}
-		hr = files.write[i]->GetReferenceKey(&reference_key, &reference_key_size);
+		hr = files.ptrw()[i]->GetReferenceKey(&reference_key, &reference_key_size);
 		if (FAILED(hr)) {
 			continue;
 		}
@@ -2580,7 +2580,7 @@ String OS_Windows::get_system_ca_certificates() {
 		PackedByteArray pba;
 		pba.resize(size + 1);
 		CryptBinaryToStringA(curr->pbCertEncoded, curr->cbCertEncoded, CRYPT_STRING_BASE64HEADER | CRYPT_STRING_NOCR, (char *)pba.ptrw(), &size);
-		pba.write[size] = 0;
+		pba.ptrw()[size] = 0;
 		certs += String::ascii(Span((const char *)pba.ptr(), strlen((const char *)pba.ptr())));
 		curr = CertEnumCertificatesInStore(cert_store, curr);
 	}

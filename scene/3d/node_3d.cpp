@@ -277,7 +277,7 @@ void Node3D::_notification(int p_what) {
 
 #ifdef TOOLS_ENABLED
 			for (int i = 0; i < data.gizmos.size(); i++) {
-				data.gizmos.write[i]->transform();
+				data.gizmos.ptrw()[i]->transform();
 			}
 #endif
 		} break;
@@ -940,7 +940,7 @@ void Node3D::clear_gizmos() {
 	ERR_THREAD_GUARD;
 #ifdef TOOLS_ENABLED
 	for (int i = 0; i < data.gizmos.size(); i++) {
-		data.gizmos.write[i]->free();
+		data.gizmos.ptrw()[i]->free();
 	}
 	data.gizmos.clear();
 	data.gizmos_requested = false;
@@ -1002,9 +1002,9 @@ void Node3D::_update_gizmos() {
 	data.gizmos_dirty = false;
 	for (int i = 0; i < data.gizmos.size(); i++) {
 		if (is_visible_in_tree()) {
-			data.gizmos.write[i]->redraw();
+			data.gizmos.ptrw()[i]->redraw();
 		} else {
-			data.gizmos.write[i]->clear();
+			data.gizmos.ptrw()[i]->clear();
 		}
 	}
 #endif

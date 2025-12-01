@@ -1164,8 +1164,8 @@ Expression::ENode *Expression::_parse_expression() {
 				op->op = expression_nodes[i].op;
 				op->nodes[0] = expression_nodes[i + 1].node;
 				op->nodes[1] = nullptr;
-				expression_nodes.write[i].is_op = false;
-				expression_nodes.write[i].node = op;
+				expression_nodes.ptrw()[i].is_op = false;
+				expression_nodes.ptrw()[i].node = op;
 				expression_nodes.remove_at(i + 1);
 			}
 
@@ -1197,7 +1197,7 @@ Expression::ENode *Expression::_parse_expression() {
 			op->nodes[1] = expression_nodes[next_op + 1].node; //next expression goes as right
 
 			//replace all 3 nodes by this operator and make it an expression
-			expression_nodes.write[next_op - 1].node = op;
+			expression_nodes.ptrw()[next_op - 1].node = op;
 			expression_nodes.remove_at(next_op);
 			expression_nodes.remove_at(next_op);
 		}
@@ -1381,8 +1381,8 @@ bool Expression::_execute(const Array &p_inputs, Object *p_instance, Expression:
 				if (ret) {
 					return true;
 				}
-				arr.write[i] = value;
-				argp.write[i] = &arr[i];
+				arr.ptrw()[i] = value;
+				argp.ptrw()[i] = &arr[i];
 			}
 
 			Callable::CallError ce;
@@ -1408,8 +1408,8 @@ bool Expression::_execute(const Array &p_inputs, Object *p_instance, Expression:
 				if (ret) {
 					return true;
 				}
-				arr.write[i] = value;
-				argp.write[i] = &arr[i];
+				arr.ptrw()[i] = value;
+				argp.ptrw()[i] = &arr[i];
 			}
 
 			r_ret = Variant(); //may not return anything
@@ -1443,8 +1443,8 @@ bool Expression::_execute(const Array &p_inputs, Object *p_instance, Expression:
 				if (ret) {
 					return true;
 				}
-				arr.write[i] = value;
-				argp.write[i] = &arr[i];
+				arr.ptrw()[i] = value;
+				argp.ptrw()[i] = &arr[i];
 			}
 
 			Callable::CallError ce;

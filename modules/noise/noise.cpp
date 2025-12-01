@@ -132,7 +132,7 @@ Vector<Ref<Image>> Noise::_get_image(int p_width, int p_height, int p_depth, boo
 				}
 			}
 			Ref<Image> img = memnew(Image(p_width, p_height, false, Image::FORMAT_L8, data));
-			images.write[d] = img;
+			images.ptrw()[d] = img;
 		}
 	} else {
 		// Without normalization, the expected range of the noise function is [-1, 1].
@@ -155,7 +155,7 @@ Vector<Ref<Image>> Noise::_get_image(int p_width, int p_height, int p_depth, boo
 			}
 
 			Ref<Image> img = memnew(Image(p_width, p_height, false, Image::FORMAT_L8, data));
-			images.write[d] = img;
+			images.ptrw()[d] = img;
 		}
 	}
 

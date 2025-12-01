@@ -938,7 +938,7 @@ LightmapGI::BakeError LightmapGI::bake(Node *p_from_node, String p_image_data_pa
 				p_bake_step(p * 0.1, vformat(RTR("Preparing geometry %d/%d"), m_i, meshes_found.size()), p_bake_userdata, false);
 			}
 
-			MeshesFound &mf = meshes_found.write[m_i];
+			MeshesFound &mf = meshes_found.ptrw()[m_i];
 
 			Size2i mesh_lightmap_size = mf.mesh->get_lightmap_size_hint();
 			if (mesh_lightmap_size == Size2i(0, 0)) {

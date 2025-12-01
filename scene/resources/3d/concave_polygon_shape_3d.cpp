@@ -52,8 +52,8 @@ Vector<Vector3> ConcavePolygonShape3D::get_debug_mesh_lines() const {
 	points.resize(edges.size() * 2);
 	int idx = 0;
 	for (const DrawEdge &E : edges) {
-		points.write[idx + 0] = E.a;
-		points.write[idx + 1] = E.b;
+		points.ptrw()[idx + 0] = E.a;
+		points.ptrw()[idx + 1] = E.b;
 		idx += 2;
 	}
 

@@ -792,13 +792,13 @@ Ref<AudioStreamWAV> AudioStreamWAV::load_from_buffer(const Vector<uint8_t> &p_st
 					for (int64_t i = 0; i < frames * format_channels; i++) {
 						// 8 bit samples are UNSIGNED
 
-						data.write[i] = int8_t(file->get_8() - 128) / 128.f;
+						data.ptrw()[i] = int8_t(file->get_8() - 128) / 128.f;
 					}
 				} else if (format_bits == 16) {
 					for (int64_t i = 0; i < frames * format_channels; i++) {
 						//16 bit SIGNED
 
-						data.write[i] = int16_t(file->get_16()) / 32768.f;
+						data.ptrw()[i] = int16_t(file->get_16()) / 32768.f;
 					}
 				} else {
 					for (int64_t i = 0; i < frames * format_channels; i++) {
@@ -811,7 +811,7 @@ Ref<AudioStreamWAV> AudioStreamWAV::load_from_buffer(const Vector<uint8_t> &p_st
 						}
 						s <<= (32 - format_bits);
 
-						data.write[i] = (int32_t(s) >> 16) / 32768.f;
+						data.ptrw()[i] = (int32_t(s) >> 16) / 32768.f;
 					}
 				}
 			} else if (compression_code == 3) {
@@ -819,13 +819,13 @@ Ref<AudioStreamWAV> AudioStreamWAV::load_from_buffer(const Vector<uint8_t> &p_st
 					for (int64_t i = 0; i < frames * format_channels; i++) {
 						//32 bit IEEE Float
 
-						data.write[i] = file->get_float();
+						data.ptrw()[i] = file->get_float();
 					}
 				} else if (format_bits == 64) {
 					for (int64_t i = 0; i < frames * format_channels; i++) {
 						//64 bit IEEE Float
 
-						data.write[i] = file->get_double();
+						data.ptrw()[i] = file->get_double();
 					}
 				}
 			}
@@ -953,7 +953,7 @@ Ref<AudioStreamWAV> AudioStreamWAV::load_from_buffer(const Vector<uint8_t> &p_st
 				float y2 = data[MIN(frames - 1, ipos + 1) * format_channels + c];
 				float y3 = data[MIN(frames - 1, ipos + 2) * format_channels + c];
 
-				new_data.write[i * format_channels + c] = Math::cubic_interpolate(y1, y2, y0, y3, frac);
+				new_data.ptrw()[i * format_channels + c] = Math::cubic_interpolate(y1, y2, y0, y3, frac);
 
 				// update position and always keep fractional part within ]0...1]
 				// in order to avoid 32bit floating point precision errors
@@ -989,7 +989,7 @@ Ref<AudioStreamWAV> AudioStreamWAV::load_from_buffer(const Vector<uint8_t> &p_st
 		if (max > 0) {
 			float mult = 1.0 / max;
 			for (int i = 0; i < data.size(); i++) {
-				data.write[i] *= mult;
+				data.ptrw()[i] *= mult;
 			}
 		}
 	}
@@ -1031,7 +1031,7 @@ Ref<AudioStreamWAV> AudioStreamWAV::load_from_buffer(const Vector<uint8_t> &p_st
 				}
 
 				for (uint16_t j = 0; j < format_channels; j++) {
-					new_data.write[((i - first) * format_channels) + j] = data[(i * format_channels) + j] * fade_out_mult;
+					new_data.ptrw()[((i - first) * format_channels) + j] = data[(i * format_channels) + j] * fade_out_mult;
 				}
 			}
 
@@ -1060,7 +1060,7 @@ Ref<AudioStreamWAV> AudioStreamWAV::load_from_buffer(const Vector<uint8_t> &p_st
 		Vector<float> new_data;
 		ERR_FAIL_COND_V(new_data.resize(data.size() / 2) != OK, Ref<AudioStreamWAV>());
 		for (int64_t i = 0; i < frames; i++) {
-			new_data.write[i] = (data[i * 2 + 0] + data[i * 2 + 1]) / 2.0;
+			new_data.ptrw()[i] = (data[i * 2 + 0] + data[i * 2 + 1]) / 2.0;
 		}
 
 		data = new_data;
@@ -1089,8 +1089,8 @@ Ref<AudioStreamWAV> AudioStreamWAV::load_from_buffer(const Vector<uint8_t> &p_st
 			ERR_FAIL_COND_V(right.resize(tframes) != OK, Ref<AudioStreamWAV>());
 
 			for (int64_t i = 0; i < tframes; i++) {
-				left.write[i] = data[i * 2 + 0];
-				right.write[i] = data[i * 2 + 1];
+				left.ptrw()[i] = data[i * 2 + 0];
+				right.ptrw()[i] = data[i * 2 + 1];
 			}
 
 			Vector<uint8_t> bleft;

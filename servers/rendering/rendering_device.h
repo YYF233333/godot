@@ -1071,7 +1071,7 @@ public:
 				ERR_FAIL_COND(p_idx != 0);
 				id = p_id;
 			} else {
-				ids.write[p_idx] = p_id;
+				ids.ptrw()[p_idx] = p_id;
 			}
 		}
 

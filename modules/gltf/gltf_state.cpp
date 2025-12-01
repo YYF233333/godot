@@ -465,7 +465,7 @@ GLTFBufferViewIndex GLTFState::append_data_to_buffers(const Vector<uint8_t> &p_d
 	if (unlikely(buffers.is_empty())) {
 		buffers.push_back(Vector<uint8_t>());
 	}
-	Vector<uint8_t> &destination_buffer = buffers.write[0];
+	Vector<uint8_t> &destination_buffer = buffers.ptrw()[0];
 	Ref<GLTFBufferView> buffer_view;
 	buffer_view.instantiate();
 	buffer_view->set_buffer(0);
@@ -485,7 +485,7 @@ GLTFNodeIndex GLTFState::append_gltf_node(Ref<GLTFNode> p_gltf_node, Node *p_god
 	if (p_parent_node_index == -1) {
 		root_nodes.append(new_index);
 	} else if (p_parent_node_index < new_index) {
-		nodes.write[p_parent_node_index]->append_child_index(new_index);
+		nodes.ptrw()[p_parent_node_index]->append_child_index(new_index);
 	}
 	return new_index;
 }

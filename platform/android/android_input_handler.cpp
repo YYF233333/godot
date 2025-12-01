@@ -174,10 +174,10 @@ void AndroidInputHandler::process_touch_event(int p_event, int p_pointer, const 
 
 			touch.resize(p_points.size());
 			for (int i = 0; i < p_points.size(); i++) {
-				touch.write[i].id = p_points[i].id;
-				touch.write[i].pos = p_points[i].pos;
-				touch.write[i].pressure = p_points[i].pressure;
-				touch.write[i].tilt = p_points[i].tilt;
+				touch.ptrw()[i].id = p_points[i].id;
+				touch.ptrw()[i].pos = p_points[i].pos;
+				touch.ptrw()[i].pressure = p_points[i].pressure;
+				touch.ptrw()[i].tilt = p_points[i].tilt;
 			}
 
 			//send touch
@@ -213,7 +213,7 @@ void AndroidInputHandler::process_touch_event(int p_event, int p_pointer, const 
 				ev->set_pressure(p_points[idx].pressure);
 				ev->set_tilt(p_points[idx].tilt);
 				Input::get_singleton()->parse_input_event(ev);
-				touch.write[i].pos = p_points[idx].pos;
+				touch.ptrw()[i].pos = p_points[idx].pos;
 			}
 
 		} break;

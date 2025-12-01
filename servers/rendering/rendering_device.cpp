@@ -335,7 +335,7 @@ Error RenderingDevice::_staging_buffer_allocate(StagingBuffers &p_staging_buffer
 							return err;
 						}
 						// Claim for this frame.
-						p_staging_buffers.blocks.write[p_staging_buffers.current].frame_used = frames_drawn;
+						p_staging_buffers.blocks.ptrw()[p_staging_buffers.current].frame_used = frames_drawn;
 					} else {
 						// Ok, worst case scenario, all the staging buffers belong to this frame
 						// and this frame is not even done.
@@ -352,8 +352,8 @@ Error RenderingDevice::_staging_buffer_allocate(StagingBuffers &p_staging_buffer
 
 		} else if (p_staging_buffers.blocks[p_staging_buffers.current].frame_used <= frames_drawn - frames.size()) {
 			// This is an old block, which was already processed, let's reuse.
-			p_staging_buffers.blocks.write[p_staging_buffers.current].frame_used = frames_drawn;
-			p_staging_buffers.blocks.write[p_staging_buffers.current].fill_amount = 0;
+			p_staging_buffers.blocks.ptrw()[p_staging_buffers.current].frame_used = frames_drawn;
+			p_staging_buffers.blocks.ptrw()[p_staging_buffers.current].fill_amount = 0;
 		} else {
 			// This block may still be in use, let's not touch it unless we have to, so.. can we create a new one?
 			if ((uint64_t)p_staging_buffers.blocks.size() * p_staging_buffers.block_size < p_staging_buffers.max_size) {
@@ -363,7 +363,7 @@ Error RenderingDevice::_staging_buffer_allocate(StagingBuffers &p_staging_buffer
 					return err;
 				}
 				// Claim for this frame.
-				p_staging_buffers.blocks.write[p_staging_buffers.current].frame_used = frames_drawn;
+				p_staging_buffers.blocks.ptrw()[p_staging_buffers.current].frame_used = frames_drawn;
 			} else {
 				// Oops, we are out of room and we can't create more.
 				// Let's flush older frames.
@@ -392,12 +392,12 @@ void RenderingDevice::_staging_buffer_execute_required_action(StagingBuffers &p_
 
 			// Clear the whole staging buffer.
 			for (int i = 0; i < p_staging_buffers.blocks.size(); i++) {
-				p_staging_buffers.blocks.write[i].frame_used = 0;
-				p_staging_buffers.blocks.write[i].fill_amount = 0;
+				p_staging_buffers.blocks.ptrw()[i].frame_used = 0;
+				p_staging_buffers.blocks.ptrw()[i].fill_amount = 0;
 			}
 
 			// Claim for current frame.
-			p_staging_buffers.blocks.write[p_staging_buffers.current].frame_used = frames_drawn;
+			p_staging_buffers.blocks.ptrw()[p_staging_buffers.current].frame_used = frames_drawn;
 		} break;
 		case STAGING_REQUIRED_ACTION_STALL_PREVIOUS: {
 			_stall_for_previous_frames();
@@ -409,12 +409,12 @@ void RenderingDevice::_staging_buffer_execute_required_action(StagingBuffers &p_
 					break; // Ok, we reached something from this frame, abort.
 				}
 
-				p_staging_buffers.blocks.write[block_idx].frame_used = 0;
-				p_staging_buffers.blocks.write[block_idx].fill_amount = 0;
+				p_staging_buffers.blocks.ptrw()[block_idx].frame_used = 0;
+				p_staging_buffers.blocks.ptrw()[block_idx].fill_amount = 0;
 			}
 
 			// Claim for current frame.
-			p_staging_buffers.blocks.write[p_staging_buffers.current].frame_used = frames_drawn;
+			p_staging_buffers.blocks.ptrw()[p_staging_buffers.current].frame_used = frames_drawn;
 		} break;
 		default: {
 			DEV_ASSERT(false && "Unknown required action.");
@@ -533,7 +533,7 @@ Error RenderingDevice::buffer_update(RID p_buffer, uint32_t p_offset, uint32_t p
 		buffer_copy.region = region;
 		command_buffer_copies_vector.push_back(buffer_copy);
 
-		upload_staging_buffers.blocks.write[upload_staging_buffers.current].fill_amount = block_write_offset + block_write_amount;
+		upload_staging_buffers.blocks.ptrw()[upload_staging_buffers.current].fill_amount = block_write_offset + block_write_amount;
 
 		to_submit -= block_write_amount;
 		submit_from += block_write_amount;
@@ -764,7 +764,7 @@ Error RenderingDevice::buffer_get_data_async(RID p_buffer, const Callable &p_cal
 		frames[frame].download_buffer_copy_regions.push_back(region);
 		get_data_request.frame_local_count++;
 
-		download_staging_buffers.blocks.write[download_staging_buffers.current].fill_amount = block_write_offset + block_write_amount;
+		download_staging_buffers.blocks.ptrw()[download_staging_buffers.current].fill_amount = block_write_offset + block_write_amount;
 
 		to_submit -= block_write_amount;
 		submit_from += block_write_amount;
@@ -1728,7 +1728,7 @@ Error RenderingDevice::texture_update(RID p_texture, uint32_t p_layer, const Vec
 					buffer_to_texture_copy.region = copy_region;
 					command_buffer_to_texture_copies_vector.push_back(buffer_to_texture_copy);
 
-					upload_staging_buffers.blocks.write[upload_staging_buffers.current].fill_amount = alloc_offset + alloc_size;
+					upload_staging_buffers.blocks.ptrw()[upload_staging_buffers.current].fill_amount = alloc_offset + alloc_size;
 				}
 			}
 		}
@@ -2202,7 +2202,7 @@ Error RenderingDevice::texture_get_data_async(RID p_texture, uint32_t p_layer, c
 					frames[frame].download_texture_mipmap_offsets.push_back(mipmap_offset + (tight_mip_size / d) * z);
 					get_data_request.frame_local_count++;
 
-					download_staging_buffers.blocks.write[download_staging_buffers.current].fill_amount = block_write_offset + block_write_amount;
+					download_staging_buffers.blocks.ptrw()[download_staging_buffers.current].fill_amount = block_write_offset + block_write_amount;
 				}
 			}
 		}
@@ -3027,7 +3027,7 @@ RID RenderingDevice::framebuffer_create_multipass(const Vector<RID> &p_texture_a
 			textures.push_back(texture->driver_id);
 			trackers.push_back(texture->draw_tracker);
 		}
-		attachments.write[i] = af;
+		attachments.ptrw()[i] = af;
 	}
 
 	ERR_FAIL_COND_V_MSG(!size_set, RID(), "All attachments unused.");
@@ -3199,7 +3199,7 @@ RenderingDevice::VertexFormatID RenderingDevice::vertex_format_create(const Vect
 	Vector<VertexAttribute> vertex_descriptions = p_vertex_descriptions;
 	HashSet<int> used_locations;
 	for (int i = 0; i < vertex_descriptions.size(); i++) {
-		VertexAttribute &attr = vertex_descriptions.write[i];
+		VertexAttribute &attr = vertex_descriptions.ptrw()[i];
 		ERR_CONTINUE(attr.format >= DATA_FORMAT_MAX);
 		ERR_FAIL_COND_V(used_locations.has(attr.location), INVALID_ID);
 
@@ -3291,7 +3291,7 @@ RID RenderingDevice::vertex_array_create(uint32_t p_vertex_count, VertexFormatID
 			}
 		}
 
-		vertex_array.buffers.write[atf.binding] = buffer->driver_id;
+		vertex_array.buffers.ptrw()[atf.binding] = buffer->driver_id;
 
 		if (unique_buffers.has(buf)) {
 			// No need to add dependencies multiple times.
@@ -3521,7 +3521,7 @@ RID RenderingDevice::shader_create_from_bytecode_with_samplers(const Vector<uint
 		if (shader->uniform_sets[i].size()) {
 			// Sort and hash.
 
-			shader->uniform_sets.write[i].sort();
+			shader->uniform_sets.ptrw()[i].sort();
 
 			UniformSetFormat usformat;
 			usformat.uniforms = shader->uniform_sets[i];
@@ -6818,7 +6818,7 @@ void RenderingDevice::_stall_for_frame(uint32_t p_frame) {
 					uint32_t local_index = request.frame_local_index + j;
 					const RDD::BufferCopyRegion &region = frames[p_frame].download_buffer_copy_regions[local_index];
 					uint8_t *buffer_data = driver->buffer_map(frames[p_frame].download_buffer_staging_buffers[local_index]);
-					memcpy(&packed_byte_array.write[array_offset], &buffer_data[region.dst_offset], region.size);
+					memcpy(&packed_byte_array.ptrw()[array_offset], &buffer_data[region.dst_offset], region.size);
 					driver->buffer_unmap(frames[p_frame].download_buffer_staging_buffers[local_index]);
 					array_offset += region.size;
 				}
@@ -8446,7 +8446,7 @@ RenderingDevice::FramebufferFormatID RenderingDevice::_framebuffer_format_create
 	for (int i = 0; i < p_attachments.size(); i++) {
 		Ref<RDAttachmentFormat> af = p_attachments[i];
 		ERR_FAIL_COND_V(af.is_null(), INVALID_FORMAT_ID);
-		attachments.write[i] = af->base;
+		attachments.ptrw()[i] = af->base;
 	}
 	return framebuffer_format_create(attachments, p_view_count);
 }
@@ -8458,7 +8458,7 @@ RenderingDevice::FramebufferFormatID RenderingDevice::_framebuffer_format_create
 	for (int i = 0; i < p_attachments.size(); i++) {
 		Ref<RDAttachmentFormat> af = p_attachments[i];
 		ERR_FAIL_COND_V(af.is_null(), INVALID_FORMAT_ID);
-		attachments.write[i] = af->base;
+		attachments.ptrw()[i] = af->base;
 	}
 
 	Vector<FramebufferPass> passes;
@@ -8500,7 +8500,7 @@ RenderingDevice::VertexFormatID RenderingDevice::_vertex_format_create(const Typ
 	for (int i = 0; i < p_vertex_formats.size(); i++) {
 		Ref<RDVertexAttribute> af = p_vertex_formats[i];
 		ERR_FAIL_COND_V(af.is_null(), INVALID_FORMAT_ID);
-		descriptions.write[i] = af->base;
+		descriptions.ptrw()[i] = af->base;
 	}
 	return vertex_format_create(descriptions);
 }
@@ -8511,7 +8511,7 @@ RID RenderingDevice::_vertex_array_create(uint32_t p_vertex_count, VertexFormatI
 	Vector<uint64_t> offsets;
 	offsets.resize(p_offsets.size());
 	for (int i = 0; i < p_offsets.size(); i++) {
-		offsets.write[i] = p_offsets[i];
+		offsets.ptrw()[i] = p_offsets[i];
 	}
 
 	return vertex_array_create(p_vertex_count, p_vertex_format, buffers, offsets);
@@ -8523,7 +8523,7 @@ void RenderingDevice::_draw_list_bind_vertex_buffers_format(DrawListID p_list, V
 	Vector<uint64_t> offsets;
 	offsets.resize(p_offsets.size());
 	for (int i = 0; i < p_offsets.size(); i++) {
-		offsets.write[i] = p_offsets[i];
+		offsets.ptrw()[i] = p_offsets[i];
 	}
 
 	draw_list_bind_vertex_buffers_format(p_list, p_vertex_format, p_vertex_count, buffers, offsets);
@@ -8609,7 +8609,7 @@ static Vector<RenderingDevice::PipelineSpecializationConstant> _get_spec_constan
 	for (int i = 0; i < p_constants.size(); i++) {
 		Ref<RDPipelineSpecializationConstant> c = p_constants[i];
 		ERR_CONTINUE(c.is_null());
-		RenderingDevice::PipelineSpecializationConstant &sc = ret.write[i];
+		RenderingDevice::PipelineSpecializationConstant &sc = ret.ptrw()[i];
 		Variant value = c->get_value();
 		switch (value.get_type()) {
 			case Variant::BOOL: {

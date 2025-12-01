@@ -666,7 +666,7 @@ ShaderLanguage::Token ShaderLanguage::_get_token() {
 					}
 					incp.push_back(0); // Zero end it.
 					String include_path(incp.ptr());
-					include_positions.write[include_positions.size() - 1].line = tk_line;
+					include_positions.ptrw()[include_positions.size() - 1].line = tk_line;
 
 					String marker = ">>" + include_path;
 					if (!include_markers_handled.has(marker)) {
@@ -3813,7 +3813,7 @@ bool ShaderLanguage::_validate_function_call(BlockNode *p_block, const FunctionI
 						conversion->values.resize(1);
 
 						convert_constant(constant, builtin_func_defs[idx].args[i], conversion->values.ptrw());
-						p_func->arguments.write[i + 1] = conversion;
+						p_func->arguments.ptrw()[i + 1] = conversion;
 					}
 
 					if (r_ret_type) {
@@ -3990,7 +3990,7 @@ bool ShaderLanguage::_validate_function_call(BlockNode *p_block, const FunctionI
 				conversion->values.resize(1);
 
 				convert_constant(constant, pfunc->arguments[k].type, conversion->values.ptrw());
-				p_func->arguments.write[k + 1] = conversion;
+				p_func->arguments.ptrw()[k + 1] = conversion;
 			}
 
 			if (r_ret_type) {
@@ -5614,7 +5614,7 @@ bool ShaderLanguage::_propagate_function_call_sampler_uniform_settings(const Str
 	for (int i = 0; i < shader->vfunctions.size(); i++) {
 		if (shader->vfunctions[i].name == p_name) {
 			ERR_FAIL_INDEX_V(p_argument, shader->vfunctions[i].function->arguments.size(), false);
-			FunctionNode::Argument *arg = &shader->vfunctions[i].function->arguments.write[p_argument];
+			FunctionNode::Argument *arg = &shader->vfunctions[i].function->arguments.ptrw()[p_argument];
 			if (arg->tex_builtin_check) {
 				_set_error(vformat(RTR("Sampler argument %d of function '%s' called more than once using both built-ins and uniform textures, this is not supported (use either one or the other)."), p_argument, String(p_name)));
 				return false;
@@ -5649,7 +5649,7 @@ bool ShaderLanguage::_propagate_function_call_sampler_builtin_reference(const St
 	for (int i = 0; i < shader->vfunctions.size(); i++) {
 		if (shader->vfunctions[i].name == p_name) {
 			ERR_FAIL_INDEX_V(p_argument, shader->vfunctions[i].function->arguments.size(), false);
-			FunctionNode::Argument *arg = &shader->vfunctions[i].function->arguments.write[p_argument];
+			FunctionNode::Argument *arg = &shader->vfunctions[i].function->arguments.ptrw()[p_argument];
 			if (arg->tex_argument_check) {
 				_set_error(vformat(RTR("Sampler argument %d of function '%s' called more than once using both built-ins and uniform textures, this is not supported (use either one or the other)."), p_argument, String(p_name)));
 				return false;
@@ -6256,7 +6256,7 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 						// Add to current function as dependency.
 						for (int j = 0; j < shader->vfunctions.size(); j++) {
 							if (shader->vfunctions[j].name == current_function) {
-								shader->vfunctions.write[j].uses_function.insert(name);
+								shader->vfunctions.ptrw()[j].uses_function.insert(name);
 								break;
 							}
 						}
@@ -6493,9 +6493,9 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 											for (int j = 0; j < base_function->arguments.size(); j++) {
 												if (base_function->arguments[j].name == varname) {
 													if (!base_function->arguments[j].tex_argument_connect.has(call_function->name)) {
-														base_function->arguments.write[j].tex_argument_connect[call_function->name] = HashSet<int>();
+														base_function->arguments.ptrw()[j].tex_argument_connect[call_function->name] = HashSet<int>();
 													}
-													base_function->arguments.write[j].tex_argument_connect[call_function->name].insert(i);
+													base_function->arguments.ptrw()[j].tex_argument_connect[call_function->name].insert(i);
 													found = true;
 													break;
 												}
@@ -7674,8 +7674,8 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 				}
 				op->arguments.push_back(expression[i + 1].node);
 
-				expression.write[i].is_op = false;
-				expression.write[i].node = op;
+				expression.ptrw()[i].is_op = false;
+				expression.ptrw()[i].node = op;
 
 				if (!_validate_operator(p_block, p_function_info, op, &op->return_cache, &op->return_array_size)) {
 					if (error_set) {
@@ -7717,8 +7717,8 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 			op->arguments.push_back(expression[next_op + 1].node);
 			op->arguments.push_back(expression[next_op + 3].node);
 
-			expression.write[next_op - 1].is_op = false;
-			expression.write[next_op - 1].node = op;
+			expression.ptrw()[next_op - 1].is_op = false;
+			expression.ptrw()[next_op - 1].node = op;
 			if (!_validate_operator(p_block, p_function_info, op, &op->return_cache, &op->return_array_size, &op->struct_name)) {
 				if (error_set) {
 					return nullptr;
@@ -7787,7 +7787,7 @@ ShaderLanguage::Node *ShaderLanguage::_parse_expression(BlockNode *p_block, cons
 
 			op->arguments.push_back(expression[next_op - 1].node); //expression goes as left
 			op->arguments.push_back(expression[next_op + 1].node); //next expression goes as right
-			expression.write[next_op - 1].node = op;
+			expression.ptrw()[next_op - 1].node = op;
 
 			//replace all 3 nodes by this operator and make it an expression
 
@@ -7850,7 +7850,7 @@ ShaderLanguage::Node *ShaderLanguage::_reduce_expression(BlockNode *p_block, Sha
 		Vector<Scalar> values;
 
 		for (int i = 1; i < op->arguments.size(); i++) {
-			op->arguments.write[i] = _reduce_expression(p_block, op->arguments[i]);
+			op->arguments.ptrw()[i] = _reduce_expression(p_block, op->arguments[i]);
 			if (op->arguments[i]->type == Node::NODE_TYPE_CONSTANT) {
 				ConstantNode *cn = static_cast<ConstantNode *>(op->arguments[i]);
 
@@ -7902,7 +7902,7 @@ ShaderLanguage::Node *ShaderLanguage::_reduce_expression(BlockNode *p_block, Sha
 		cn->values = values;
 		return cn;
 	} else if (op->op == OP_NEGATE) {
-		op->arguments.write[0] = _reduce_expression(p_block, op->arguments[0]);
+		op->arguments.ptrw()[0] = _reduce_expression(p_block, op->arguments[0]);
 		if (op->arguments[0]->type == Node::NODE_TYPE_CONSTANT) {
 			ConstantNode *cn = static_cast<ConstantNode *>(op->arguments[0]);
 

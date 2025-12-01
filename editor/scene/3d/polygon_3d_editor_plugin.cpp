@@ -260,7 +260,7 @@ EditorPlugin::AfterGUIInput Polygon3DEditor::forward_3d_gui_input(Camera3D *p_ca
 							//apply
 
 							ERR_FAIL_INDEX_V(edited_point, poly.size(), EditorPlugin::AFTER_GUI_INPUT_PASS);
-							poly.write[edited_point] = edited_point_pos;
+							poly.ptrw()[edited_point] = edited_point_pos;
 							EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 							undo_redo->create_action(TTR("Edit Poly"));
 							undo_redo->add_do_method(obj, "set_polygon", poly);

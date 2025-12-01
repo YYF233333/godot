@@ -422,7 +422,7 @@ void QuickOpenResultContainer::_ensure_result_vector_capacity() {
 	for (int i = initial_size; i < target_size; i++) {
 		QuickOpenResultItem *item = memnew(QuickOpenResultItem);
 		item->connect(SceneStringName(gui_input), callable_mp(this, &QuickOpenResultContainer::_item_input).bind(i));
-		result_items.write[i] = item;
+		result_items.ptrw()[i] = item;
 		if (!never_opened) {
 			_layout_result_item(item);
 		}
@@ -955,7 +955,7 @@ void QuickOpenResultContainer::save_selected_item() {
 	}
 
 	const StringName &base_type = base_types[0];
-	QuickOpenResultCandidate &selected = candidates.write[selection_index];
+	QuickOpenResultCandidate &selected = candidates.ptrw()[selection_index];
 	Vector<QuickOpenResultCandidate> *type_history = selected_history.getptr(base_type);
 
 	if (!type_history) {

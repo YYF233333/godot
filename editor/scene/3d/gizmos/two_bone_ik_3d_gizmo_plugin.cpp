@@ -122,10 +122,10 @@ Ref<ArrayMesh> TwoBoneIK3DGizmoPlugin::get_joints_mesh(Skeleton3D *p_skeleton, T
 	bones.resize(4);
 	weights.resize(4);
 	for (int i = 0; i < 4; i++) {
-		bones.write[i] = 0;
-		weights.write[i] = 0;
+		bones.ptrw()[i] = 0;
+		weights.ptrw()[i] = 0;
 	}
-	weights.write[0] = 1;
+	weights.ptrw()[0] = 1;
 
 	for (int i = 0; i < p_ik->get_setting_count(); i++) {
 		if (!p_ik->is_valid(i)) {
@@ -140,12 +140,12 @@ Ref<ArrayMesh> TwoBoneIK3DGizmoPlugin::get_joints_mesh(Skeleton3D *p_skeleton, T
 		Vector3 root_vec = p_ik->get_root_bone_vector(i);
 		Vector3 mid_vec = p_ik->get_middle_bone_vector(i);
 
-		bones.write[0] = root_bone;
+		bones.ptrw()[0] = root_bone;
 		surface_tool->set_bones(bones);
 		surface_tool->set_weights(weights);
 		draw_line(surface_tool, root_gp.origin, root_gp.translated_local(root_vec).origin, bone_color);
 
-		bones.write[0] = middle_bone;
+		bones.ptrw()[0] = middle_bone;
 		surface_tool->set_bones(bones);
 		surface_tool->set_weights(weights);
 		draw_line(surface_tool, mid_gp.origin, mid_gp.translated_local(mid_vec).origin, bone_color);

@@ -1438,13 +1438,13 @@ RD::VertexFormatID MeshStorage::_mesh_surface_generate_vertex_format(uint64_t p_
 
 		int loc = attributes[i].location;
 		if (loc == RS::ARRAY_VERTEX || loc == ATTRIBUTE_LOCATION_PREV_VERTEX) {
-			attributes.write[i].stride = r_position_stride;
+			attributes.ptrw()[i].stride = r_position_stride;
 		} else if ((loc < RS::ARRAY_COLOR) || ((loc >= ATTRIBUTE_LOCATION_PREV_NORMAL) && (loc <= ATTRIBUTE_LOCATION_PREV_TANGENT))) {
-			attributes.write[i].stride = normal_tangent_stride;
+			attributes.ptrw()[i].stride = normal_tangent_stride;
 		} else if (loc < RS::ARRAY_BONES) {
-			attributes.write[i].stride = attribute_stride;
+			attributes.ptrw()[i].stride = attribute_stride;
 		} else {
-			attributes.write[i].stride = skin_stride;
+			attributes.ptrw()[i].stride = skin_stride;
 		}
 	}
 

@@ -495,16 +495,16 @@ bool AnimationNodeStateMachinePlayback::_travel_children(AnimationTree *p_tree, 
 
 	if (found_route) {
 		for (int i = 0; i < children.size(); i++) {
-			children.write[i].playback->clear_path();
+			children.ptrw()[i].playback->clear_path();
 			for (int j = 0; j < children[i].path.size(); j++) {
-				children.write[i].playback->push_path(children[i].path[j]);
+				children.ptrw()[i].playback->push_path(children[i].path[j]);
 			}
 		}
 	} else {
 		for (int i = 0; i < children.size(); i++) {
-			children.write[i].playback->_travel_main(StringName(), children[i].is_reset); // Clear travel.
+			children.ptrw()[i].playback->_travel_main(StringName(), children[i].is_reset); // Clear travel.
 			if (children[i].path.size()) {
-				children.write[i].playback->_start_main(children[i].path[children[i].path.size() - 1], children[i].is_reset);
+				children.ptrw()[i].playback->_start_main(children[i].path[children[i].path.size() - 1], children[i].is_reset);
 			}
 		}
 	}
@@ -1447,10 +1447,10 @@ void AnimationNodeStateMachine::_rename_transitions(const StringName &p_name, co
 	updating_transitions = true;
 	for (int i = 0; i < transitions.size(); i++) {
 		if (transitions[i].from == p_name) {
-			transitions.write[i].from = p_new_name;
+			transitions.ptrw()[i].from = p_new_name;
 		}
 		if (transitions[i].to == p_name) {
-			transitions.write[i].to = p_new_name;
+			transitions.ptrw()[i].to = p_new_name;
 		}
 	}
 	updating_transitions = false;
@@ -1614,7 +1614,7 @@ void AnimationNodeStateMachine::remove_transition(const StringName &p_from, cons
 
 void AnimationNodeStateMachine::remove_transition_by_index(const int p_transition) {
 	ERR_FAIL_INDEX(p_transition, transitions.size());
-	transitions.write[p_transition].transition->disconnect("advance_condition_changed", callable_mp(this, &AnimationNodeStateMachine::_tree_changed));
+	transitions.ptrw()[p_transition].transition->disconnect("advance_condition_changed", callable_mp(this, &AnimationNodeStateMachine::_tree_changed));
 	transitions.remove_at(p_transition);
 }
 

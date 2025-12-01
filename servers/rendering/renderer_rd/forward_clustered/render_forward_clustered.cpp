@@ -3373,12 +3373,12 @@ RID RenderForwardClustered::_setup_render_pass_uniform_set(RenderListType p_rend
 
 				if (texture.is_valid()) {
 					RID rd_texture = texture_storage->texture_get_rd_texture(texture);
-					textures.write[i] = rd_texture;
+					textures.ptrw()[i] = rd_texture;
 					continue;
 				}
 			}
 
-			textures.write[i] = default_tex;
+			textures.ptrw()[i] = default_tex;
 		}
 		RD::Uniform u(RD::UNIFORM_TYPE_TEXTURE, 7, textures);
 		uniforms.push_back(u);

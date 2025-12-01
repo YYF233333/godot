@@ -3240,11 +3240,11 @@ void CodeEdit::_update_delimiter_cache(int p_from_line, int p_to_line) {
 
 		const String &str = get_line(i);
 		const int line_length = str.length();
-		delimiter_cache.write[i].clear();
+		delimiter_cache.ptrw()[i].clear();
 
 		if (str.length() == 0) {
 			if (in_region != -1) {
-				delimiter_cache.write[i][0] = in_region;
+				delimiter_cache.ptrw()[i][0] = in_region;
 			}
 			if (i == end_line && current_end_region != in_region) {
 				end_line++;
@@ -3290,14 +3290,14 @@ void CodeEdit::_update_delimiter_cache(int p_from_line, int p_to_line) {
 					}
 					same_line = true;
 					in_region = d;
-					delimiter_cache.write[i][from + 1] = d;
+					delimiter_cache.ptrw()[i][from + 1] = d;
 					from += start_key_length;
 
 					/* check if it's the whole line */
 					if (end_key_length == 0 || delimiters[d].line_only || from + end_key_length > line_length) {
 						j = line_length;
 						if (delimiters[d].line_only) {
-							delimiter_cache.write[i][line_length + 1] = -1;
+							delimiter_cache.ptrw()[i][line_length + 1] = -1;
 						} else {
 							end_region = in_region;
 						}
@@ -3345,7 +3345,7 @@ void CodeEdit::_update_delimiter_cache(int p_from_line, int p_to_line) {
 			j = from + (end_key_length - 1);
 			end_region = (region_end_index == -1) ? in_region : -1;
 			if (!same_line || region_end_index != -1) {
-				delimiter_cache.write[i][j + 1] = end_region;
+				delimiter_cache.ptrw()[i][j + 1] = end_region;
 			}
 			in_region = -1;
 		}
@@ -3762,7 +3762,7 @@ void CodeEdit::_filter_code_completion_candidates_impl() {
 				// and look for next char starting from that index
 				if (target_lower[next_index] == *string_to_complete_char_lower) {
 					Vector<Pair<int, int>> new_match = subsequence_match;
-					new_match.write[new_match.size() - 1].second++;
+					new_match.ptrw()[new_match.size() - 1].second++;
 					next_subsequence_matches.push_back(new_match);
 					if (long_option) {
 						continue;

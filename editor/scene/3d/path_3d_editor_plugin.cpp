@@ -426,7 +426,7 @@ void Path3DGizmo::redraw() {
 				info.type = HandleType::HANDLE_TYPE_IN;
 				const int handle_idx = idx * 3 + 0;
 				collected_secondary_handle_ids.append(handle_idx);
-				_secondary_handles_info.write[handle_idx] = info;
+				_secondary_handles_info.ptrw()[handle_idx] = info;
 
 				secondary_handle_points.append(pos + in);
 				handle_lines.append(pos);
@@ -440,7 +440,7 @@ void Path3DGizmo::redraw() {
 				info.type = HandleType::HANDLE_TYPE_OUT;
 				const int handle_idx = idx * 3 + 1;
 				collected_secondary_handle_ids.append(handle_idx);
-				_secondary_handles_info.write[handle_idx] = info;
+				_secondary_handles_info.ptrw()[handle_idx] = info;
 
 				secondary_handle_points.append(pos + out);
 				handle_lines.append(pos);
@@ -454,7 +454,7 @@ void Path3DGizmo::redraw() {
 					info.type = HandleType::HANDLE_TYPE_TILT;
 					const int handle_idx = idx * 3 + 2;
 					collected_secondary_handle_ids.append(handle_idx);
-					_secondary_handles_info.write[handle_idx] = info;
+					_secondary_handles_info.ptrw()[handle_idx] = info;
 
 					const Basis posture = c->get_point_baked_posture(idx, true);
 					const Vector3 up = posture.get_column(1);

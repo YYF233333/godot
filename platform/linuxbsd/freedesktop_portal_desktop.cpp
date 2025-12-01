@@ -927,7 +927,7 @@ void FreeDesktopPortalDesktop::_thread_monitor(void *p_ud) {
 					{
 						MutexLock lock(portal->file_dialog_mutex);
 						for (int i = 0; i < portal->file_dialogs.size(); i++) {
-							FreeDesktopPortalDesktop::FileDialogData &fd = portal->file_dialogs.write[i];
+							FreeDesktopPortalDesktop::FileDialogData &fd = portal->file_dialogs.ptrw()[i];
 							if (fd.path == path) {
 								DBusMessageIter iter;
 								if (dbus_message_iter_init(msg, &iter)) {
@@ -965,7 +965,7 @@ void FreeDesktopPortalDesktop::_thread_monitor(void *p_ud) {
 					{
 						MutexLock lock(portal->color_picker_mutex);
 						for (int i = 0; i < portal->color_pickers.size(); i++) {
-							FreeDesktopPortalDesktop::ColorPickerData &cd = portal->color_pickers.write[i];
+							FreeDesktopPortalDesktop::ColorPickerData &cd = portal->color_pickers.ptrw()[i];
 							if (cd.path == path) {
 								DBusMessageIter iter;
 								if (dbus_message_iter_init(msg, &iter)) {

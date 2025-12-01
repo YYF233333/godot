@@ -127,8 +127,8 @@ public:
 				for (int k = j + 1; k < polygon.size(); k++) {
 					// Compare the edges.
 					if (polygon[k].points[0] == polygon[j].points[0] && polygon[k].points[1] == polygon[j].points[1]) {
-						polygon.write[j].bad = true;
-						polygon.write[k].bad = true;
+						polygon.ptrw()[j].bad = true;
+						polygon.ptrw()[k].bad = true;
 
 						break; // Since no more than two triangles can share an edge, no more than two edges can share vertices.
 					}

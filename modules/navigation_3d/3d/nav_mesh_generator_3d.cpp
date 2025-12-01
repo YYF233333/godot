@@ -566,9 +566,9 @@ void NavMeshGenerator3D::generator_bake_from_source_geometry_data(NavMeshGenerat
 			int index2 = ((int)(detail_mesh_bverts + detail_mesh_tris[j * 4 + 2]));
 			int index3 = ((int)(detail_mesh_bverts + detail_mesh_tris[j * 4 + 1]));
 
-			nav_indices.write[0] = recast_index_to_native_index[index1];
-			nav_indices.write[1] = recast_index_to_native_index[index2];
-			nav_indices.write[2] = recast_index_to_native_index[index3];
+			nav_indices.ptrw()[0] = recast_index_to_native_index[index1];
+			nav_indices.ptrw()[1] = recast_index_to_native_index[index2];
+			nav_indices.ptrw()[2] = recast_index_to_native_index[index3];
 
 			nav_polygons.push_back(nav_indices);
 		}

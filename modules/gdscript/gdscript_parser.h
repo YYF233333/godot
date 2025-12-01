@@ -160,7 +160,7 @@ public:
 			while (p_index >= container_element_types.size()) {
 				container_element_types.push_back(get_variant_type());
 			}
-			container_element_types.write[p_index] = DataType(p_type);
+			container_element_types.ptrw()[p_index] = DataType(p_type);
 		}
 
 		_FORCE_INLINE_ int get_container_element_type_count() const {
@@ -760,7 +760,7 @@ public:
 		// EnumValue docs are parsed after itself, so we need a method to add/modify the doc property later.
 		void set_enum_value_doc_data(const StringName &p_name, const MemberDocData &p_doc_data) {
 			ERR_FAIL_INDEX(members_indices[p_name], members.size());
-			members.write[members_indices[p_name]].enum_value.doc_data = p_doc_data;
+			members.ptrw()[members_indices[p_name]].enum_value.doc_data = p_doc_data;
 		}
 #endif // TOOLS_ENABLED
 

@@ -64,9 +64,9 @@ void NavigationMesh::create_from_mesh(const Ref<Mesh> &p_mesh) {
 		Vector<int> polygon;
 		for (int j = 0; j < rlen; j += 3) {
 			polygon.resize(3);
-			polygon.write[0] = r[j + 0] + from;
-			polygon.write[1] = r[j + 1] + from;
-			polygon.write[2] = r[j + 2] + from;
+			polygon.ptrw()[0] = r[j + 0] + from;
+			polygon.ptrw()[1] = r[j + 1] + from;
+			polygon.ptrw()[2] = r[j + 2] + from;
 			polygons.push_back(polygon);
 		}
 	}
@@ -318,7 +318,7 @@ void NavigationMesh::_set_polygons(const Array &p_array) {
 	RWLockWrite write_lock(rwlock);
 	polygons.resize(p_array.size());
 	for (int i = 0; i < p_array.size(); i++) {
-		polygons.write[i] = p_array[i];
+		polygons.ptrw()[i] = p_array[i];
 	}
 	notify_property_list_changed();
 }

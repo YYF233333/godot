@@ -535,7 +535,7 @@ void AnimationNodeBlendSpace2DEditor::_blend_space_draw() {
 			point = (point - blend_space->get_min_space()) / (blend_space->get_max_space() - blend_space->get_min_space());
 			point *= s;
 			point.y = s.height - point.y;
-			bl_points.write[j] = point;
+			bl_points.ptrw()[j] = point;
 		}
 
 		for (int j = 0; j < 3; j++) {

@@ -512,7 +512,7 @@ void ProjectList::_notification(int p_what) {
 		case NOTIFICATION_PROCESS: {
 			// Load icons as a coroutine to speed up launch when you have hundreds of projects.
 			if (_icon_load_index < _projects.size()) {
-				Item &item = _projects.write[_icon_load_index];
+				Item &item = _projects.ptrw()[_icon_load_index];
 				if (item.control->should_load_project_icon()) {
 					_load_project_icon(_icon_load_index);
 				}
@@ -742,7 +742,7 @@ void ProjectList::_update_icons_async() {
 }
 
 void ProjectList::_load_project_icon(int p_index) {
-	Item &item = _projects.write[p_index];
+	Item &item = _projects.ptrw()[p_index];
 
 	Ref<Texture2D> default_icon = get_editor_theme_icon(SNAME("DefaultProjectIcon"));
 	Ref<Texture2D> icon;
@@ -772,7 +772,7 @@ void ProjectList::update_project_list() {
 	if (ProjectManager::get_singleton()->is_initialized()) {
 		// Clear whole list
 		for (int i = 0; i < _projects.size(); ++i) {
-			Item &project = _projects.write[i];
+			Item &project = _projects.ptrw()[i];
 			CRASH_COND(project.control == nullptr);
 			memdelete(project.control); // Why not queue_free()?
 		}
@@ -824,7 +824,7 @@ void ProjectList::sort_projects() {
 	}
 
 	for (int i = 0; i < _projects.size(); ++i) {
-		Item &item = _projects.write[i];
+		Item &item = _projects.ptrw()[i];
 
 		bool item_visible = true;
 		if (!_search_term.is_empty()) {
@@ -853,7 +853,7 @@ void ProjectList::sort_projects() {
 	}
 
 	for (int i = 0; i < _projects.size(); ++i) {
-		Item &item = _projects.write[i];
+		Item &item = _projects.ptrw()[i];
 		item.control->get_parent()->move_child(item.control, i);
 	}
 
@@ -1028,7 +1028,7 @@ void ProjectList::_create_project_item_control(int p_index) {
 	// Will be added last in the list, so make sure indexes match
 	ERR_FAIL_COND(p_index != project_list_vbox->get_child_count());
 
-	Item &item = _projects.write[p_index];
+	Item &item = _projects.ptrw()[p_index];
 	ERR_FAIL_COND(item.control != nullptr); // Already created
 
 	ProjectListItemControl *hb = memnew(ProjectListItemControl);
@@ -1061,7 +1061,7 @@ void ProjectList::_create_project_item_control(int p_index) {
 void ProjectList::_toggle_project(int p_index) {
 	// This methods adds to the selection or removes from the
 	// selection.
-	Item &item = _projects.write[p_index];
+	Item &item = _projects.ptrw()[p_index];
 
 	if (_selected_project_paths.has(item.path)) {
 		_deselect_project_nocheck(p_index);
@@ -1155,14 +1155,14 @@ void ProjectList::_on_favorite_pressed(Node *p_hb) {
 	ProjectListItemControl *control = Object::cast_to<ProjectListItemControl>(p_hb);
 
 	int index = control->get_index();
-	Item item = _projects.write[index]; // Take copy
+	Item item = _projects.ptrw()[index]; // Take copy
 
 	item.favorite = !item.favorite;
 
 	_config.set_value(item.path, "favorite", item.favorite);
 	save_config();
 
-	_projects.write[index] = item;
+	_projects.ptrw()[index] = item;
 
 	control->set_is_favorite(item.favorite);
 
@@ -1260,14 +1260,14 @@ void ProjectList::_clear_project_selection() {
 }
 
 void ProjectList::_select_project_nocheck(int p_index, bool p_hide_focus) {
-	Item &item = _projects.write[p_index];
+	Item &item = _projects.ptrw()[p_index];
 	_selected_project_paths.insert(item.path);
 	item.control->set_selected(true, p_hide_focus);
 	queue_accessibility_update();
 }
 
 void ProjectList::_deselect_project_nocheck(int p_index) {
-	Item &item = _projects.write[p_index];
+	Item &item = _projects.ptrw()[p_index];
 	_selected_project_paths.erase(item.path);
 	item.control->set_selected(false);
 	queue_accessibility_update();
@@ -1337,7 +1337,7 @@ Vector<ProjectList::Item> ProjectList::get_selected_projects() const {
 	for (int i = 0; i < _projects.size(); ++i) {
 		const Item &item = _projects[i];
 		if (_selected_project_paths.has(item.path)) {
-			items.write[j++] = item;
+			items.ptrw()[j++] = item;
 		}
 	}
 	ERR_FAIL_COND_V(j != items.size(), items);
@@ -1376,7 +1376,7 @@ void ProjectList::erase_selected_projects(bool p_delete_project_contents) {
 	}
 
 	for (int i = 0; i < _projects.size(); ++i) {
-		Item &item = _projects.write[i];
+		Item &item = _projects.ptrw()[i];
 		if (_selected_project_paths.has(item.path) && item.control->is_visible()) {
 			_config.erase_section(item.path);
 

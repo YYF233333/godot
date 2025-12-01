@@ -137,7 +137,7 @@ class GDScriptByteCodeGenerator : public GDScriptCodeGenerator {
 		if (index >= vector.size()) {
 			vector.resize(index + 1);
 		}
-		vector.write[index] = name;
+		vector.ptrw()[index] = name;
 	}
 #endif
 
@@ -369,7 +369,7 @@ class GDScriptByteCodeGenerator : public GDScriptCodeGenerator {
 			case Address::FUNCTION_PARAMETER:
 				return p_address.address | (GDScriptFunction::ADDR_TYPE_STACK << GDScriptFunction::ADDR_BITS);
 			case Address::TEMPORARY:
-				temporaries.write[p_address.address].bytecode_indices.push_back(opcodes.size());
+				temporaries.ptrw()[p_address.address].bytecode_indices.push_back(opcodes.size());
 				return -1;
 			case Address::NIL:
 				return GDScriptFunction::ADDR_NIL;
@@ -452,7 +452,7 @@ class GDScriptByteCodeGenerator : public GDScriptCodeGenerator {
 	}
 
 	void patch_jump(int p_address) {
-		opcodes.write[p_address] = opcodes.size();
+		opcodes.ptrw()[p_address] = opcodes.size();
 	}
 
 public:

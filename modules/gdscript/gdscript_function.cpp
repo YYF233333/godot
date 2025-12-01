@@ -122,7 +122,7 @@ GDScriptFunction::~GDScriptFunction() {
 	}
 
 	for (int i = 0; i < argument_types.size(); i++) {
-		argument_types.write[i].script_type_ref = Ref<Script>();
+		argument_types.ptrw()[i].script_type_ref = Ref<Script>();
 	}
 	return_type.script_type_ref = Ref<Script>();
 

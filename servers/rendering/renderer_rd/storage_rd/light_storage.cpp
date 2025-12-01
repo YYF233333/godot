@@ -489,11 +489,11 @@ void LightStorage::light_instance_free(RID p_light) {
 		uint32_t q = (key >> QUADRANT_SHIFT) & 0x3;
 		uint32_t s = key & SHADOW_INDEX_MASK;
 
-		shadow_atlas->quadrants[q].shadows.write[s].owner = RID();
+		shadow_atlas->quadrants[q].shadows.ptrw()[s].owner = RID();
 
 		if (key & OMNI_LIGHT_FLAG) {
 			// Omni lights use two atlas spots, make sure to clear the other as well
-			shadow_atlas->quadrants[q].shadows.write[s + 1].owner = RID();
+			shadow_atlas->quadrants[q].shadows.ptrw()[s + 1].owner = RID();
 		}
 
 		shadow_atlas->shadow_owners.erase(p_light);
@@ -1354,7 +1354,7 @@ void LightStorage::_reflection_atlas_clear(ReflectionAtlas *p_reflection_atlas) 
 	p_reflection_atlas->depth_buffer = RID();
 
 	for (int i = 0; i < p_reflection_atlas->reflections.size(); i++) {
-		p_reflection_atlas->reflections.write[i].data.clear_reflection_data();
+		p_reflection_atlas->reflections.ptrw()[i].data.clear_reflection_data();
 		if (p_reflection_atlas->reflections[i].owner.is_null()) {
 			continue;
 		}
@@ -1443,7 +1443,7 @@ void LightStorage::reflection_probe_release_atlas_index(RID p_instance) {
 	ReflectionAtlas *atlas = reflection_atlas_owner.get_or_null(rpi->atlas);
 	ERR_FAIL_NULL(atlas);
 	ERR_FAIL_INDEX(rpi->atlas_index, atlas->reflections.size());
-	atlas->reflections.write[rpi->atlas_index].owner = RID();
+	atlas->reflections.ptrw()[rpi->atlas_index].owner = RID();
 
 	// TODO investigate if this is enough? shouldn't we be freeing our textures and framebuffers?
 
@@ -1563,7 +1563,7 @@ bool LightStorage::reflection_probe_instance_begin_render(RID p_instance, RID p_
 		}
 		atlas->reflections.resize(atlas->count);
 		for (int i = 0; i < atlas->count; i++) {
-			atlas->reflections.write[i].data.update_reflection_data(atlas->reflection_texture_size, mipmaps, false, atlas->reflection, i, update_always, RendererSceneRenderRD::get_singleton()->get_sky()->roughness_layers, RendererSceneRenderRD::get_singleton()->_render_buffers_get_preferred_color_format(), atlas->uv_border_size);
+			atlas->reflections.ptrw()[i].data.update_reflection_data(atlas->reflection_texture_size, mipmaps, false, atlas->reflection, i, update_always, RendererSceneRenderRD::get_singleton()->get_sky()->roughness_layers, RendererSceneRenderRD::get_singleton()->_render_buffers_get_preferred_color_format(), atlas->uv_border_size);
 		}
 
 		for (int i = 0; i < 6; i++) {
@@ -1602,7 +1602,7 @@ bool LightStorage::reflection_probe_instance_begin_render(RID p_instance, RID p_
 	}
 
 	if (rpi->atlas_index != -1) { // should we fail if this is still -1 ?
-		atlas->reflections.write[rpi->atlas_index].owner = p_instance;
+		atlas->reflections.ptrw()[rpi->atlas_index].owner = p_instance;
 	}
 
 	rpi->atlas = p_reflection_atlas;
@@ -1626,7 +1626,7 @@ bool LightStorage::reflection_probe_instance_end_render(RID p_instance, RID p_re
 	ERR_FAIL_NULL_V(rpi, false);
 
 	RD::get_singleton()->draw_command_begin_label("Convert reflection probe to octahedral");
-	copy_effects->copy_cubemap_to_octmap(atlas->color_buffer, atlas->reflections.write[rpi->atlas_index].data.layers[0].mipmaps[0].framebuffer, atlas->uv_border_size);
+	copy_effects->copy_cubemap_to_octmap(atlas->color_buffer, atlas->reflections.ptrw()[rpi->atlas_index].data.layers[0].mipmaps[0].framebuffer, atlas->uv_border_size);
 	RD::get_singleton()->draw_command_end_label();
 
 	return true;
@@ -1653,13 +1653,13 @@ bool LightStorage::reflection_probe_instance_postprocess_step(RID p_instance) {
 
 	if (LightStorage::get_singleton()->reflection_probe_get_update_mode(rpi->probe) == RS::REFLECTION_PROBE_UPDATE_ALWAYS) {
 		// Using real time reflections, all roughness is done in one step
-		atlas->reflections.write[rpi->atlas_index].data.create_reflection_fast_filter(false);
+		atlas->reflections.ptrw()[rpi->atlas_index].data.create_reflection_fast_filter(false);
 		rpi->rendering = false;
 		rpi->processing_layer = 1;
 		return true;
 	}
 
-	atlas->reflections.write[rpi->atlas_index].data.create_reflection_importance_sample(false, rpi->processing_layer, RendererSceneRenderRD::get_singleton()->get_sky()->sky_ggx_samples_quality);
+	atlas->reflections.ptrw()[rpi->atlas_index].data.create_reflection_importance_sample(false, rpi->processing_layer, RendererSceneRenderRD::get_singleton()->get_sky()->sky_ggx_samples_quality);
 
 	rpi->processing_layer++;
 	if (rpi->processing_layer == (int)atlas->reflections[rpi->atlas_index].data.layers[0].mipmaps.size()) {
@@ -1891,7 +1891,7 @@ void LightStorage::lightmap_set_textures(RID p_lightmap, RID p_light, bool p_use
 	if (!t) {
 		if (using_lightmap_array) {
 			if (lm->array_index >= 0) {
-				lightmap_textures.write[lm->array_index] = default_2d_array;
+				lightmap_textures.ptrw()[lm->array_index] = default_2d_array;
 				lm->array_index = -1;
 			}
 		}
@@ -1914,7 +1914,7 @@ void LightStorage::lightmap_set_textures(RID p_lightmap, RID p_light, bool p_use
 		}
 		ERR_FAIL_COND_MSG(lm->array_index < 0, "Maximum amount of lightmaps in use (" + itos(lightmap_textures.size()) + ") has been exceeded, lightmap will not display properly.");
 
-		lightmap_textures.write[lm->array_index] = t->rd_texture;
+		lightmap_textures.ptrw()[lm->array_index] = t->rd_texture;
 	}
 }
 
@@ -2071,7 +2071,7 @@ void LightStorage::lightmap_set_shadowmask_textures(RID p_lightmap, RID p_shadow
 	RID default_2d_array = texture_storage->texture_rd_get_default(TextureStorage::DEFAULT_RD_TEXTURE_2D_ARRAY_WHITE);
 	if (!t) {
 		if (lm->array_index >= 0) {
-			shadowmask_textures.write[lm->array_index] = default_2d_array;
+			shadowmask_textures.ptrw()[lm->array_index] = default_2d_array;
 			lm->array_index = -1;
 		}
 
@@ -2092,7 +2092,7 @@ void LightStorage::lightmap_set_shadowmask_textures(RID p_lightmap, RID p_shadow
 
 	ERR_FAIL_COND_MSG(lm->array_index < 0, vformat("Maximum amount of shadowmasks in use (%d) has been exceeded, shadowmask will not display properly.", shadowmask_textures.size()));
 
-	shadowmask_textures.write[lm->array_index] = t->rd_texture;
+	shadowmask_textures.ptrw()[lm->array_index] = t->rd_texture;
 }
 
 RS::ShadowmaskMode LightStorage::lightmap_get_shadowmask_mode(RID p_lightmap) {
@@ -2439,7 +2439,7 @@ bool LightStorage::shadow_atlas_update_light(RID p_atlas, RID p_light_instance, 
 		should_redraw = shadow_atlas->quadrants[old_quadrant].shadows[old_shadow].version != p_light_version;
 
 		if (!should_realloc) {
-			shadow_atlas->quadrants[old_quadrant].shadows.write[old_shadow].version = p_light_version;
+			shadow_atlas->quadrants[old_quadrant].shadows.ptrw()[old_shadow].version = p_light_version;
 			//already existing, see if it should redraw or it's just OK
 			return should_redraw;
 		}
@@ -2460,19 +2460,19 @@ bool LightStorage::shadow_atlas_update_light(RID p_atlas, RID p_light_instance, 
 
 	if (found_shadow) {
 		if (old_quadrant != SHADOW_INVALID) {
-			shadow_atlas->quadrants[old_quadrant].shadows.write[old_shadow].version = 0;
-			shadow_atlas->quadrants[old_quadrant].shadows.write[old_shadow].owner = RID();
+			shadow_atlas->quadrants[old_quadrant].shadows.ptrw()[old_shadow].version = 0;
+			shadow_atlas->quadrants[old_quadrant].shadows.ptrw()[old_shadow].owner = RID();
 
 			if (old_key & OMNI_LIGHT_FLAG) {
-				shadow_atlas->quadrants[old_quadrant].shadows.write[old_shadow + 1].version = 0;
-				shadow_atlas->quadrants[old_quadrant].shadows.write[old_shadow + 1].owner = RID();
+				shadow_atlas->quadrants[old_quadrant].shadows.ptrw()[old_shadow + 1].version = 0;
+				shadow_atlas->quadrants[old_quadrant].shadows.ptrw()[old_shadow + 1].owner = RID();
 			}
 		}
 
 		uint32_t new_key = new_quadrant << QUADRANT_SHIFT;
 		new_key |= new_shadow;
 
-		ShadowAtlas::Quadrant::Shadow *sh = &shadow_atlas->quadrants[new_quadrant].shadows.write[new_shadow];
+		ShadowAtlas::Quadrant::Shadow *sh = &shadow_atlas->quadrants[new_quadrant].shadows.ptrw()[new_shadow];
 		_shadow_atlas_invalidate_shadow(sh, p_atlas, shadow_atlas, new_quadrant, new_shadow);
 
 		sh->owner = p_light_instance;
@@ -2483,7 +2483,7 @@ bool LightStorage::shadow_atlas_update_light(RID p_atlas, RID p_light_instance, 
 			new_key |= OMNI_LIGHT_FLAG;
 
 			int new_omni_shadow = new_shadow + 1;
-			ShadowAtlas::Quadrant::Shadow *extra_sh = &shadow_atlas->quadrants[new_quadrant].shadows.write[new_omni_shadow];
+			ShadowAtlas::Quadrant::Shadow *extra_sh = &shadow_atlas->quadrants[new_quadrant].shadows.ptrw()[new_omni_shadow];
 			_shadow_atlas_invalidate_shadow(extra_sh, p_atlas, shadow_atlas, new_quadrant, new_omni_shadow);
 
 			extra_sh->owner = p_light_instance;
@@ -2510,7 +2510,7 @@ void LightStorage::_shadow_atlas_invalidate_shadow(ShadowAtlas::Quadrant::Shadow
 		if (old_key & OMNI_LIGHT_FLAG) {
 			uint32_t s = old_key & SHADOW_INDEX_MASK;
 			uint32_t omni_shadow_idx = p_shadow_idx + (s == (uint32_t)p_shadow_idx ? 1 : -1);
-			ShadowAtlas::Quadrant::Shadow *omni_shadow = &p_shadow_atlas->quadrants[p_quadrant].shadows.write[omni_shadow_idx];
+			ShadowAtlas::Quadrant::Shadow *omni_shadow = &p_shadow_atlas->quadrants[p_quadrant].shadows.ptrw()[omni_shadow_idx];
 			omni_shadow->version = 0;
 			omni_shadow->owner = RID();
 		}

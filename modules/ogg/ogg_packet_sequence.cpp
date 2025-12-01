@@ -50,7 +50,7 @@ void OggPacketSequence::set_packet_data(const TypedArray<Array> &p_data) {
 		page_data.push_back(Vector<PackedByteArray>());
 		TypedArray<PackedByteArray> this_page_data = p_data[page_idx];
 		for (int packet = 0; packet < this_page_data.size(); packet++) {
-			page_data.write[page_idx].push_back(this_page_data[packet]);
+			page_data.ptrw()[page_idx].push_back(this_page_data[packet]);
 		}
 	}
 }

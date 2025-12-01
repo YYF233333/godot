@@ -166,9 +166,9 @@ void RetargetModifier3D::_update_child_skeleton_rests(int p_child_skeleton_idx) 
 		return;
 	}
 	if (use_global_pose) {
-		child_skeletons.write[p_child_skeleton_idx].humanoid_bone_rests = cache_bone_global_rests(c);
+		child_skeletons.ptrw()[p_child_skeleton_idx].humanoid_bone_rests = cache_bone_global_rests(c);
 	} else {
-		child_skeletons.write[p_child_skeleton_idx].humanoid_bone_rests = cache_bone_rests(c);
+		child_skeletons.ptrw()[p_child_skeleton_idx].humanoid_bone_rests = cache_bone_rests(c);
 	}
 }
 

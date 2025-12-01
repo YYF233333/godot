@@ -126,7 +126,7 @@ Callable Callable::bindp(const Variant **p_arguments, int p_argcount) const {
 	Vector<Variant> args;
 	args.resize(p_argcount);
 	for (int i = 0; i < p_argcount; i++) {
-		args.write[i] = *p_arguments[i];
+		args.ptrw()[i] = *p_arguments[i];
 	}
 	return Callable(memnew(CallableCustomBind(*this, args)));
 }
@@ -139,7 +139,7 @@ Callable Callable::bindv(const Array &p_arguments) {
 	Vector<Variant> args;
 	args.resize(p_arguments.size());
 	for (int i = 0; i < p_arguments.size(); i++) {
-		args.write[i] = p_arguments[i];
+		args.ptrw()[i] = p_arguments[i];
 	}
 	return Callable(memnew(CallableCustomBind(*this, args)));
 }

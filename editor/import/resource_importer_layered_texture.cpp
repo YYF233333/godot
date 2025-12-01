@@ -174,12 +174,12 @@ void ResourceImporterLayeredTexture::_save_tex(Vector<Ref<Image>> p_images, cons
 		//3D saves in its own way
 
 		for (int i = 0; i < p_images.size(); i++) {
-			if (p_images.write[i]->has_mipmaps()) {
-				p_images.write[i]->clear_mipmaps();
+			if (p_images.ptrw()[i]->has_mipmaps()) {
+				p_images.ptrw()[i]->clear_mipmaps();
 			}
 
 			if (p_force_po2) {
-				p_images.write[i]->resize_to_po2();
+				p_images.ptrw()[i]->resize_to_po2();
 			}
 		}
 
@@ -255,13 +255,13 @@ void ResourceImporterLayeredTexture::_save_tex(Vector<Ref<Image>> p_images, cons
 	} else {
 		for (int i = 0; i < p_images.size(); i++) {
 			if (p_force_po2) {
-				p_images.write[i]->resize_to_po2();
+				p_images.ptrw()[i]->resize_to_po2();
 			}
 
 			if (p_mipmaps) {
-				p_images.write[i]->generate_mipmaps(p_csource == Image::COMPRESS_SOURCE_NORMAL);
+				p_images.ptrw()[i]->generate_mipmaps(p_csource == Image::COMPRESS_SOURCE_NORMAL);
 			} else {
-				p_images.write[i]->clear_mipmaps();
+				p_images.ptrw()[i]->clear_mipmaps();
 			}
 		}
 	}
@@ -534,12 +534,12 @@ void ResourceImporterLayeredTexture::_check_compress_ctex(const String &p_source
 				// The user selected to compress hdr anyway, so force an alpha-less format.
 				if (r_texture_import->image->get_format() == Image::FORMAT_RGBAF) {
 					for (int i = 0; i < r_texture_import->slices->size(); i++) {
-						r_texture_import->slices->write[i]->convert(Image::FORMAT_RGBF);
+						r_texture_import->slices->ptrw()[i]->convert(Image::FORMAT_RGBF);
 					}
 
 				} else if (r_texture_import->image->get_format() == Image::FORMAT_RGBAH) {
 					for (int i = 0; i < r_texture_import->slices->size(); i++) {
-						r_texture_import->slices->write[i]->convert(Image::FORMAT_RGBH);
+						r_texture_import->slices->ptrw()[i]->convert(Image::FORMAT_RGBH);
 					}
 				}
 			} else {
@@ -551,7 +551,7 @@ void ResourceImporterLayeredTexture::_check_compress_ctex(const String &p_source
 			//default to rgbe
 			if (r_texture_import->image->get_format() != Image::FORMAT_RGBE9995) {
 				for (int i = 0; i < r_texture_import->slices->size(); i++) {
-					r_texture_import->slices->write[i]->convert(Image::FORMAT_RGBE9995);
+					r_texture_import->slices->ptrw()[i]->convert(Image::FORMAT_RGBE9995);
 				}
 			}
 			use_uncompressed = true;

@@ -59,7 +59,7 @@ Error DeltaEncoding::encode_delta(Span<uint8_t> p_old_data, Span<uint8_t> p_new_
 	r_delta.resize(DELTA_HEADER_SIZE + zstd_result);
 
 	memcpy(r_delta.ptrw(), DELTA_MAGIC, 4);
-	r_delta.write[4] = DELTA_VERSION_NUMBER;
+	r_delta.ptrw()[4] = DELTA_VERSION_NUMBER;
 
 	ZstdCompressionContext zstd_context;
 

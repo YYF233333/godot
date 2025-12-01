@@ -53,10 +53,10 @@ struct CSGBrush {
 
 	inline void _regen_face_aabbs() {
 		for (int i = 0; i < faces.size(); i++) {
-			faces.write[i].aabb = AABB();
-			faces.write[i].aabb.position = faces[i].vertices[0];
-			faces.write[i].aabb.expand_to(faces[i].vertices[1]);
-			faces.write[i].aabb.expand_to(faces[i].vertices[2]);
+			faces.ptrw()[i].aabb = AABB();
+			faces.ptrw()[i].aabb.position = faces[i].vertices[0];
+			faces.ptrw()[i].aabb.expand_to(faces[i].vertices[1]);
+			faces.ptrw()[i].aabb.expand_to(faces[i].vertices[2]);
 		}
 	}
 

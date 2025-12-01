@@ -43,7 +43,7 @@ MethodDefinition D_METHODP(const char *p_name, const char *const **p_args, uint3
 	md.name = StringName(p_name);
 	md.args.resize(p_argcount);
 	for (uint32_t i = 0; i < p_argcount; i++) {
-		md.args.write[i] = StringName(*p_args[i]);
+		md.args.ptrw()[i] = StringName(*p_args[i]);
 	}
 	return md;
 }
@@ -2029,7 +2029,7 @@ MethodBind *ClassDB::bind_methodfi(uint32_t p_flags, MethodBind *p_bind, bool p_
 
 	defvals.resize(p_defcount);
 	for (int i = 0; i < p_defcount; i++) {
-		defvals.write[i] = *p_defs[i];
+		defvals.ptrw()[i] = *p_defs[i];
 	}
 
 	p_bind->set_default_arguments(defvals);
@@ -2056,7 +2056,7 @@ void ClassDB::add_virtual_method(const StringName &p_class, const MethodInfo &p_
 			WARN_PRINT(vformat("Mismatch argument name count for virtual method: '%s::%s'.", String(p_class), p_method.name));
 		} else {
 			for (int64_t i = 0; i < p_arg_names.size(); ++i) {
-				mi.arguments.write[i].name = p_arg_names[i];
+				mi.arguments.ptrw()[i].name = p_arg_names[i];
 			}
 		}
 	}

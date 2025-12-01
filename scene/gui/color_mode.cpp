@@ -439,7 +439,7 @@ void ColorModeOKHSL::slider_draw(int p_which) {
 			offsets.resize(precision);
 			for (int i = 0; i < precision; i++) {
 				float h = i / float(precision - 1);
-				offsets.write[i] = h;
+				offsets.ptrw()[i] = h;
 			}
 			hue_gradient->set_offsets(offsets);
 			hue_gradient->set_interpolation_color_space(Gradient::ColorSpace::GRADIENT_COLOR_SPACE_OKLAB);
@@ -451,7 +451,7 @@ void ColorModeOKHSL::slider_draw(int p_which) {
 
 		for (int i = 0; i < precision; i++) {
 			float h = i / float(precision - 1);
-			colors.write[i] = Color::from_ok_hsl(h, slider_sat, okhsl_l);
+			colors.ptrw()[i] = Color::from_ok_hsl(h, slider_sat, okhsl_l);
 		}
 		hue_gradient->set_colors(colors);
 		slider->draw_texture_rect(hue_texture, Rect2(Vector2(), Vector2(size.x, margin)), false);

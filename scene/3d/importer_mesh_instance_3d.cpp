@@ -52,7 +52,7 @@ void ImporterMeshInstance3D::set_surface_material(int p_idx, const Ref<Material>
 		surface_materials.resize(p_idx + 1);
 	}
 
-	surface_materials.write[p_idx] = p_material;
+	surface_materials.ptrw()[p_idx] = p_material;
 }
 Ref<Material> ImporterMeshInstance3D::get_surface_material(int p_idx) const {
 	ERR_FAIL_COND_V(p_idx < 0, Ref<Material>());

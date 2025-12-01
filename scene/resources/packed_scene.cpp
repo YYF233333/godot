@@ -301,7 +301,7 @@ Node *SceneState::instantiate(GenEditState p_edit_state) const {
 							// This may be a scene that did not originally have ids and
 							// was saved before the parent, so force the id to match the
 							// parent scene node id.
-							ids.write[i] = node->get_unique_scene_id();
+							ids.ptrw()[i] = node->get_unique_scene_id();
 						}
 					}
 				}
@@ -1384,20 +1384,20 @@ Error SceneState::pack(Node *p_scene) {
 	names.resize(name_map.size());
 
 	for (const KeyValue<StringName, int> &E : name_map) {
-		names.write[E.value] = E.key;
+		names.ptrw()[E.value] = E.key;
 	}
 
 	variants.resize(variant_map.size());
 
 	for (const KeyValue<Variant, int> &E : variant_map) {
 		int idx = E.value;
-		variants.write[idx] = E.key;
+		variants.ptrw()[idx] = E.key;
 	}
 
 	node_paths.resize(nodepath_map.size());
 	id_paths.resize(nodepath_map.size());
 	for (const KeyValue<Node *, int> &E : nodepath_map) {
-		node_paths.write[E.value] = scene->get_path_to(E.key);
+		node_paths.ptrw()[E.value] = scene->get_path_to(E.key);
 
 		// Build a path of IDs to reach the node.
 		PackedInt32Array id_path;
@@ -1419,7 +1419,7 @@ Error SceneState::pack(Node *p_scene) {
 		// Reverse it since we went from node to owner, and we seek from owner to node.
 		id_path.reverse();
 
-		id_paths.write[E.value] = id_path;
+		id_paths.ptrw()[E.value] = id_path;
 	}
 
 	if (Engine::get_singleton()->is_editor_hint()) {
@@ -1659,7 +1659,7 @@ void SceneState::set_bundled_scene(const Dictionary &p_dictionary) {
 		names.resize(namecount);
 		const String *r = snames.ptr();
 		for (int i = 0; i < names.size(); i++) {
-			names.write[i] = r[i];
+			names.ptrw()[i] = r[i];
 		}
 	}
 
@@ -1669,7 +1669,7 @@ void SceneState::set_bundled_scene(const Dictionary &p_dictionary) {
 		int varcount = svariants.size();
 		variants.resize(varcount);
 		for (int i = 0; i < varcount; i++) {
-			variants.write[i] = svariants[i];
+			variants.ptrw()[i] = svariants[i];
 		}
 
 	} else {
@@ -1681,7 +1681,7 @@ void SceneState::set_bundled_scene(const Dictionary &p_dictionary) {
 		const int *r = snodes.ptr();
 		int idx = 0;
 		for (int i = 0; i < node_count; i++) {
-			NodeData &nd = nodes.write[i];
+			NodeData &nd = nodes.ptrw()[i];
 			nd.parent = r[idx++];
 			nd.owner = r[idx++];
 			nd.type = r[idx++];
@@ -1692,12 +1692,12 @@ void SceneState::set_bundled_scene(const Dictionary &p_dictionary) {
 			nd.instance = r[idx++];
 			nd.properties.resize(r[idx++]);
 			for (int j = 0; j < nd.properties.size(); j++) {
-				nd.properties.write[j].name = r[idx++];
-				nd.properties.write[j].value = r[idx++];
+				nd.properties.ptrw()[j].name = r[idx++];
+				nd.properties.ptrw()[j].value = r[idx++];
 			}
 			nd.groups.resize(r[idx++]);
 			for (int j = 0; j < nd.groups.size(); j++) {
-				nd.groups.write[j] = r[idx++];
+				nd.groups.ptrw()[j] = r[idx++];
 			}
 		}
 	}
@@ -1707,7 +1707,7 @@ void SceneState::set_bundled_scene(const Dictionary &p_dictionary) {
 		const int *r = sconns.ptr();
 		int idx = 0;
 		for (int i = 0; i < conn_count; i++) {
-			ConnectionData &cd = connections.write[i];
+			ConnectionData &cd = connections.ptrw()[i];
 			cd.from = r[idx++];
 			cd.to = r[idx++];
 			cd.signal = r[idx++];
@@ -1716,7 +1716,7 @@ void SceneState::set_bundled_scene(const Dictionary &p_dictionary) {
 			cd.binds.resize(r[idx++]);
 
 			for (int j = 0; j < cd.binds.size(); j++) {
-				cd.binds.write[j] = r[idx++];
+				cd.binds.ptrw()[j] = r[idx++];
 			}
 			if (version >= 3) {
 				cd.unbinds = r[idx++];
@@ -1735,7 +1735,7 @@ void SceneState::set_bundled_scene(const Dictionary &p_dictionary) {
 
 	node_paths.resize(np.size());
 	for (int i = 0; i < np.size(); i++) {
-		node_paths.write[i] = np[i];
+		node_paths.ptrw()[i] = np[i];
 	}
 
 	Array idp;
@@ -1745,7 +1745,7 @@ void SceneState::set_bundled_scene(const Dictionary &p_dictionary) {
 
 	id_paths.resize(idp.size());
 	for (int i = 0; i < idp.size(); i++) {
-		id_paths.write[i] = idp[i];
+		id_paths.ptrw()[i] = idp[i];
 	}
 
 	Array ei;
@@ -1759,7 +1759,7 @@ void SceneState::set_bundled_scene(const Dictionary &p_dictionary) {
 
 	editable_instances.resize(ei.size());
 	for (int i = 0; i < editable_instances.size(); i++) {
-		editable_instances.write[i] = ei[i];
+		editable_instances.ptrw()[i] = ei[i];
 	}
 
 	//path=p_dictionary["path"];
@@ -2315,13 +2315,13 @@ void SceneState::add_node_property(int p_node, int p_name, int p_value, bool p_d
 		prop.name |= FLAG_PATH_PROPERTY_IS_NODE;
 	}
 	prop.value = p_value;
-	nodes.write[p_node].properties.push_back(prop);
+	nodes.ptrw()[p_node].properties.push_back(prop);
 }
 
 void SceneState::add_node_group(int p_node, int p_group) {
 	ERR_FAIL_INDEX(p_node, nodes.size());
 	ERR_FAIL_INDEX(p_group, names.size());
-	nodes.write[p_node].groups.push_back(p_group);
+	nodes.ptrw()[p_node].groups.push_back(p_group);
 }
 
 void SceneState::set_base_scene(int p_idx) {
@@ -2370,7 +2370,7 @@ bool SceneState::rename_group_references(const StringName &p_old_name, const Str
 	for (const NodeData &node : nodes) {
 		for (const int &group : node.groups) {
 			if (names[group] == p_old_name) {
-				names.write[group] = p_new_name;
+				names.ptrw()[group] = p_new_name;
 				edited = true;
 				break;
 			}

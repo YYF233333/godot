@@ -76,7 +76,7 @@ Vector<real_t> get_noise_samples_1d(const FastNoiseLite &p_noise, size_t p_count
 	Vector<real_t> result;
 	result.resize(p_count);
 	for (size_t i = 0; i < p_count; i++) {
-		result.write[i] = p_noise.get_noise_1d(i);
+		result.ptrw()[i] = p_noise.get_noise_1d(i);
 	}
 	return result;
 }
@@ -85,7 +85,7 @@ Vector<real_t> get_noise_samples_2d(const FastNoiseLite &p_noise, size_t p_count
 	Vector<real_t> result;
 	result.resize(p_count);
 	for (size_t i = 0; i < p_count; i++) {
-		result.write[i] = p_noise.get_noise_2d(i, i);
+		result.ptrw()[i] = p_noise.get_noise_2d(i, i);
 	}
 	return result;
 }
@@ -94,7 +94,7 @@ Vector<real_t> get_noise_samples_3d(const FastNoiseLite &p_noise, size_t p_count
 	Vector<real_t> result;
 	result.resize(p_count);
 	for (size_t i = 0; i < p_count; i++) {
-		result.write[i] = p_noise.get_noise_3d(i, i, i);
+		result.ptrw()[i] = p_noise.get_noise_3d(i, i, i);
 	}
 	return result;
 }
