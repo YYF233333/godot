@@ -361,7 +361,7 @@ RID OpenXRRenderModelExtension::render_model_create(XrRenderModelIdEXT p_render_
 	Vector<const char *> supported_gltf_extensions;
 	supported_gltf_extensions.resize(supported_gltf_extensions_char_string.size());
 	for (int64_t i = 0; i < supported_gltf_extensions_char_string.size(); i++) {
-		supported_gltf_extensions.write[i] = supported_gltf_extensions_char_string[i].get_data();
+		supported_gltf_extensions.ptrw()[i] = supported_gltf_extensions_char_string[i].get_data();
 	}
 
 	XrRenderModelCreateInfoEXT create_info = {

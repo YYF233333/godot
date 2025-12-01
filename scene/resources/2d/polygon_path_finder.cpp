@@ -61,8 +61,8 @@ void PolygonPathFinder::setup(const Vector<Vector2> &p_points, const Vector<int>
 	bounds = Rect2();
 
 	for (int i = 0; i < p_points.size(); i++) {
-		points.write[i].pos = p_points[i];
-		points.write[i].penalty = 0;
+		points.ptrw()[i].pos = p_points[i];
+		points.ptrw()[i].penalty = 0;
 
 		outside_point = i == 0 ? p_points[0] : p_points[i].max(outside_point);
 
@@ -82,8 +82,8 @@ void PolygonPathFinder::setup(const Vector<Vector2> &p_points, const Vector<int>
 		Edge e(p_connections[i], p_connections[i + 1]);
 		ERR_FAIL_INDEX(e.points[0], point_count);
 		ERR_FAIL_INDEX(e.points[1], point_count);
-		points.write[p_connections[i]].connections.insert(p_connections[i + 1]);
-		points.write[p_connections[i + 1]].connections.insert(p_connections[i]);
+		points.ptrw()[p_connections[i]].connections.insert(p_connections[i + 1]);
+		points.ptrw()[p_connections[i + 1]].connections.insert(p_connections[i]);
 		edges.insert(e);
 	}
 
@@ -120,8 +120,8 @@ void PolygonPathFinder::setup(const Vector<Vector2> &p_points, const Vector<int>
 			}
 
 			if (valid) {
-				points.write[i].connections.insert(j);
-				points.write[j].connections.insert(i);
+				points.ptrw()[i].connections.insert(j);
+				points.ptrw()[j].connections.insert(i);
 			}
 		}
 	}
@@ -210,20 +210,20 @@ Vector<Vector2> PolygonPathFinder::find_path(const Vector2 &p_from, const Vector
 
 	int aidx = points.size() - 2;
 	int bidx = points.size() - 1;
-	points.write[aidx].pos = from;
-	points.write[bidx].pos = to;
-	points.write[aidx].distance = 0;
-	points.write[bidx].distance = 0;
-	points.write[aidx].prev = -1;
-	points.write[bidx].prev = -1;
-	points.write[aidx].penalty = 0;
-	points.write[bidx].penalty = 0;
+	points.ptrw()[aidx].pos = from;
+	points.ptrw()[bidx].pos = to;
+	points.ptrw()[aidx].distance = 0;
+	points.ptrw()[bidx].distance = 0;
+	points.ptrw()[aidx].prev = -1;
+	points.ptrw()[bidx].prev = -1;
+	points.ptrw()[aidx].penalty = 0;
+	points.ptrw()[bidx].penalty = 0;
 
 	for (int i = 0; i < points.size() - 2; i++) {
 		bool valid_a = true;
 		bool valid_b = true;
-		points.write[i].prev = -1;
-		points.write[i].distance = 0;
+		points.ptrw()[i].prev = -1;
+		points.ptrw()[i].distance = 0;
 
 		if (!_is_point_inside(from * 0.5 + points[i].pos * 0.5)) {
 			valid_a = false;
@@ -271,25 +271,25 @@ Vector<Vector2> PolygonPathFinder::find_path(const Vector2 &p_from, const Vector
 		}
 
 		if (valid_a) {
-			points.write[i].connections.insert(aidx);
-			points.write[aidx].connections.insert(i);
+			points.ptrw()[i].connections.insert(aidx);
+			points.ptrw()[aidx].connections.insert(i);
 		}
 
 		if (valid_b) {
-			points.write[i].connections.insert(bidx);
-			points.write[bidx].connections.insert(i);
+			points.ptrw()[i].connections.insert(bidx);
+			points.ptrw()[bidx].connections.insert(i);
 		}
 	}
 	//solve graph
 
 	HashSet<int> open_list;
 
-	points.write[aidx].distance = 0;
-	points.write[aidx].prev = aidx;
+	points.ptrw()[aidx].distance = 0;
+	points.ptrw()[aidx].prev = aidx;
 	for (const int &E : points[aidx].connections) {
 		open_list.insert(E);
-		points.write[E].distance = from.distance_to(points[E].pos);
-		points.write[E].prev = aidx;
+		points.ptrw()[E].distance = from.distance_to(points[E].pos);
+		points.ptrw()[E].prev = aidx;
 	}
 
 	bool found_route = false;
@@ -321,7 +321,7 @@ Vector<Vector2> PolygonPathFinder::find_path(const Vector2 &p_from, const Vector
 		//open the neighbors for search
 
 		for (const int &E : np.connections) {
-			Point &p = points.write[E];
+			Point &p = points.ptrw()[E];
 			float distance = np.pos.distance_to(p.pos) + np.distance;
 
 			if (p.prev != -1) {
@@ -365,18 +365,18 @@ Vector<Vector2> PolygonPathFinder::find_path(const Vector2 &p_from, const Vector
 	}
 
 	for (int i = 0; i < points.size() - 2; i++) {
-		points.write[i].connections.erase(aidx);
-		points.write[i].connections.erase(bidx);
-		points.write[i].prev = -1;
-		points.write[i].distance = 0;
+		points.ptrw()[i].connections.erase(aidx);
+		points.ptrw()[i].connections.erase(bidx);
+		points.ptrw()[i].prev = -1;
+		points.ptrw()[i].distance = 0;
 	}
 
-	points.write[aidx].connections.clear();
-	points.write[aidx].prev = -1;
-	points.write[aidx].distance = 0;
-	points.write[bidx].connections.clear();
-	points.write[bidx].prev = -1;
-	points.write[bidx].distance = 0;
+	points.ptrw()[aidx].connections.clear();
+	points.ptrw()[aidx].prev = -1;
+	points.ptrw()[aidx].distance = 0;
+	points.ptrw()[bidx].connections.clear();
+	points.ptrw()[bidx].prev = -1;
+	points.ptrw()[bidx].distance = 0;
 
 	return path;
 }
@@ -400,12 +400,12 @@ void PolygonPathFinder::_set_data(const Dictionary &p_data) {
 
 	const Vector2 *pr = p.ptr();
 	for (int i = 0; i < pc; i++) {
-		points.write[i].pos = pr[i];
+		points.ptrw()[i].pos = pr[i];
 		Vector<int> con = c[i];
 		const int *cr = con.ptr();
 		int cc = con.size();
 		for (int j = 0; j < cc; j++) {
-			points.write[i].connections.insert(cr[j]);
+			points.ptrw()[i].connections.insert(cr[j]);
 		}
 	}
 
@@ -414,7 +414,7 @@ void PolygonPathFinder::_set_data(const Dictionary &p_data) {
 		if (penalties.size() == pc) {
 			const real_t *pr2 = penalties.ptr();
 			for (int i = 0; i < pc; i++) {
-				points.write[i].penalty = pr2[i];
+				points.ptrw()[i].penalty = pr2[i];
 			}
 		}
 	}
@@ -525,7 +525,7 @@ Rect2 PolygonPathFinder::get_bounds() const {
 
 void PolygonPathFinder::set_point_penalty(int p_point, float p_penalty) {
 	ERR_FAIL_INDEX(p_point, points.size() - 2);
-	points.write[p_point].penalty = p_penalty;
+	points.ptrw()[p_point].penalty = p_penalty;
 }
 
 float PolygonPathFinder::get_point_penalty(int p_point) const {

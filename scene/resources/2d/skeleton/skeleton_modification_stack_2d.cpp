@@ -183,9 +183,9 @@ void SkeletonModificationStack2D::set_modification(int p_mod_idx, Ref<SkeletonMo
 	ERR_FAIL_INDEX(p_mod_idx, modifications.size());
 
 	if (p_mod.is_null()) {
-		modifications.write[p_mod_idx] = Ref<SkeletonModification2D>();
+		modifications.ptrw()[p_mod_idx] = Ref<SkeletonModification2D>();
 	} else {
-		modifications.write[p_mod_idx] = p_mod;
+		modifications.ptrw()[p_mod_idx] = p_mod;
 		p_mod->_setup_modification(this);
 	}
 

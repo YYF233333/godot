@@ -207,7 +207,7 @@ void MeshInstance2D::navmesh_parse_source_geometry(const Ref<NavigationPolygon> 
 		}
 
 		for (int i = 0; i < shape_outline.size(); i++) {
-			shape_outline.write[i] = mesh_instance_xform.xform(shape_outline[i]);
+			shape_outline.ptrw()[i] = mesh_instance_xform.xform(shape_outline[i]);
 		}
 
 		p_source_geometry_data->add_obstruction_outline(shape_outline);

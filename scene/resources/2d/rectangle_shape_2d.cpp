@@ -76,11 +76,11 @@ void RectangleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
 		// Draw an outlined rectangle to make individual shapes easier to distinguish.
 		Vector<Vector2> stroke_points;
 		stroke_points.resize(5);
-		stroke_points.write[0] = -size * 0.5;
-		stroke_points.write[1] = Vector2(size.x, -size.y) * 0.5;
-		stroke_points.write[2] = size * 0.5;
-		stroke_points.write[3] = Vector2(-size.x, size.y) * 0.5;
-		stroke_points.write[4] = -size * 0.5;
+		stroke_points.ptrw()[0] = -size * 0.5;
+		stroke_points.ptrw()[1] = Vector2(size.x, -size.y) * 0.5;
+		stroke_points.ptrw()[2] = size * 0.5;
+		stroke_points.ptrw()[3] = Vector2(-size.x, size.y) * 0.5;
+		stroke_points.ptrw()[4] = -size * 0.5;
 
 		Vector<Color> stroke_colors = { Color(p_color, 1.0) };
 

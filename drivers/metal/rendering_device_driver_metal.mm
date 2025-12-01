@@ -1094,7 +1094,7 @@ RDD::FramebufferID RenderingDeviceDriverMetal::framebuffer_create(RenderPassID p
 #endif
 			}
 		}
-		textures.write[i] = tex;
+		textures.ptrw()[i] = tex;
 	}
 
 	MDFrameBuffer *fb = new MDFrameBuffer(textures, Size2i(p_width, p_height));
@@ -1246,7 +1246,7 @@ RDD::ShaderID RenderingDeviceDriverMetal::shader_create_from_container(const Ref
 
 	// Create sets.
 	for (uint32_t i = 0; i < uniform_sets_count; i++) {
-		UniformSet &set = uniform_sets.write[i];
+		UniformSet &set = uniform_sets.ptrw()[i];
 		const Vector<ShaderUniform> &refl_set = refl.uniform_sets.ptr()[i];
 		const Vector<RSCM::UniformData> &mtl_set = mtl_refl.uniform_sets.ptr()[i];
 		uint32_t set_size = mtl_set.size();
@@ -1468,7 +1468,7 @@ RDD::UniformSetID RenderingDeviceDriverMetal::uniform_set_create(VectorView<Boun
 	Vector<BoundUniform> bound_uniforms;
 	bound_uniforms.resize(p_uniforms.size());
 	for (uint32_t i = 0; i < p_uniforms.size(); i += 1) {
-		bound_uniforms.write[i] = p_uniforms[i];
+		bound_uniforms.ptrw()[i] = p_uniforms[i];
 	}
 	set->uniforms = bound_uniforms;
 	set->index = p_set_index;
@@ -1637,7 +1637,7 @@ RDD::RenderPassID RenderingDeviceDriverMetal::render_pass_create(VectorView<Atta
 	Vector<MDSubpass> subpasses;
 	subpasses.resize(subpass_count);
 	for (uint32_t i = 0; i < subpass_count; i++) {
-		MDSubpass &subpass = subpasses.write[i];
+		MDSubpass &subpass = subpasses.ptrw()[i];
 		subpass.subpass_index = i;
 		subpass.view_count = p_view_count;
 		subpass.input_references = p_subpasses[i].input_references;
@@ -1662,7 +1662,7 @@ RDD::RenderPassID RenderingDeviceDriverMetal::render_pass_create(VectorView<Atta
 
 	for (uint32_t i = 0; i < p_attachments.size(); i++) {
 		Attachment const &a = p_attachments[i];
-		MDAttachment &mda = attachments.write[i];
+		MDAttachment &mda = attachments.ptrw()[i];
 		MTLPixelFormat format = pf.getMTLPixelFormat(a.format);
 		mda.format = format;
 		if (a.samples > TEXTURE_SAMPLES_1) {

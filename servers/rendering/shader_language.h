@@ -1081,7 +1081,7 @@ private:
 		error_line = tk_line;
 		error_set = true;
 		error_str = p_str;
-		include_positions.write[include_positions.size() - 1].line = tk_line;
+		include_positions.ptrw()[include_positions.size() - 1].line = tk_line;
 	}
 
 	void _set_expected_error(const String &p_what) {

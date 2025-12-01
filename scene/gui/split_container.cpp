@@ -330,10 +330,10 @@ PackedInt32Array SplitContainer::_get_desired_sizes() const {
 	int desired_start_pos = 0;
 	for (int i = 0; i < (int)valid_children.size() - 1; i++) {
 		const int desired_end_pos = default_dragger_positions[i] + split_offsets[i];
-		desired_sizes.write[i] = desired_end_pos - desired_start_pos;
+		desired_sizes.ptrw()[i] = desired_end_pos - desired_start_pos;
 		desired_start_pos = desired_end_pos + sep;
 	}
-	desired_sizes.write[(int)valid_children.size() - 1] = (int)get_size()[axis] - desired_start_pos;
+	desired_sizes.ptrw()[(int)valid_children.size() - 1] = (int)get_size()[axis] - desired_start_pos;
 
 	return desired_sizes;
 }
@@ -476,7 +476,7 @@ void SplitContainer::_set_desired_sizes(const PackedInt32Array &p_desired_sizes,
 			}
 		}
 		pos += final_size;
-		split_offsets.write[i] = pos - default_dragger_positions[i];
+		split_offsets.ptrw()[i] = pos - default_dragger_positions[i];
 		pos += sep;
 	}
 }
@@ -606,7 +606,7 @@ void SplitContainer::_update_dragger_positions(int p_clamp_index) {
 			const Point2i valid_range = _get_valid_range(i);
 			dragger_positions[i] = CLAMP(dragger_positions[i], valid_range.x, valid_range.y);
 			if (p_clamp_index != -1) {
-				split_offsets.write[i] = dragger_positions[i] - default_dragger_positions[i];
+				split_offsets.ptrw()[i] = dragger_positions[i] - default_dragger_positions[i];
 			}
 			if (!vertical && is_layout_rtl()) {
 				dragger_positions[i] = size - dragger_positions[i] - sep;
@@ -662,7 +662,7 @@ void SplitContainer::_update_dragger_positions(int p_clamp_index) {
 	// Clamp the split_offset if requested.
 	if (p_clamp_index != -1) {
 		for (int i = 0; i < (int)dragger_positions.size(); i++) {
-			split_offsets.write[i] = dragger_positions[i] - default_dragger_positions[i];
+			split_offsets.ptrw()[i] = dragger_positions[i] - default_dragger_positions[i];
 		}
 	}
 
@@ -1023,7 +1023,7 @@ void SplitContainer::set_split_offset(int p_offset, int p_index) {
 		return;
 	}
 
-	split_offsets.write[p_index] = p_offset;
+	split_offsets.ptrw()[p_index] = p_offset;
 	queue_sort();
 }
 

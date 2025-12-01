@@ -209,29 +209,29 @@ Vector<float> Collada::AnimationTrack::get_value_at_time(float p_time) const {
 				Vector<float> ret;
 				ret.resize(16);
 				// i wonder why collada matrices are transposed, given that's opposed to opengl..
-				ret.write[0] = interp.basis.rows[0][0];
-				ret.write[1] = interp.basis.rows[0][1];
-				ret.write[2] = interp.basis.rows[0][2];
-				ret.write[4] = interp.basis.rows[1][0];
-				ret.write[5] = interp.basis.rows[1][1];
-				ret.write[6] = interp.basis.rows[1][2];
-				ret.write[8] = interp.basis.rows[2][0];
-				ret.write[9] = interp.basis.rows[2][1];
-				ret.write[10] = interp.basis.rows[2][2];
-				ret.write[3] = interp.origin.x;
-				ret.write[7] = interp.origin.y;
-				ret.write[11] = interp.origin.z;
-				ret.write[12] = 0;
-				ret.write[13] = 0;
-				ret.write[14] = 0;
-				ret.write[15] = 1;
+				ret.ptrw()[0] = interp.basis.rows[0][0];
+				ret.ptrw()[1] = interp.basis.rows[0][1];
+				ret.ptrw()[2] = interp.basis.rows[0][2];
+				ret.ptrw()[4] = interp.basis.rows[1][0];
+				ret.ptrw()[5] = interp.basis.rows[1][1];
+				ret.ptrw()[6] = interp.basis.rows[1][2];
+				ret.ptrw()[8] = interp.basis.rows[2][0];
+				ret.ptrw()[9] = interp.basis.rows[2][1];
+				ret.ptrw()[10] = interp.basis.rows[2][2];
+				ret.ptrw()[3] = interp.origin.x;
+				ret.ptrw()[7] = interp.origin.y;
+				ret.ptrw()[11] = interp.origin.z;
+				ret.ptrw()[12] = 0;
+				ret.ptrw()[13] = 0;
+				ret.ptrw()[14] = 0;
+				ret.ptrw()[15] = 1;
 
 				return ret;
 			} else {
 				Vector<float> dest;
 				dest.resize(keys[i].data.size());
 				for (int j = 0; j < dest.size(); j++) {
-					dest.write[j] = keys[i].data[j] * c + keys[i - 1].data[j] * (1.0 - c);
+					dest.ptrw()[j] = keys[i].data[j] * c + keys[i - 1].data[j] * (1.0 - c);
 				}
 				return dest;
 				//interpolate one by one
@@ -432,7 +432,7 @@ Transform3D Collada::_read_transform(XMLParser &p_parser) {
 	Vector<float> farr;
 	farr.resize(16);
 	for (int i = 0; i < 16; i++) {
-		farr.write[i] = array[i].to_float();
+		farr.ptrw()[i] = array[i].to_float();
 	}
 
 	return _read_transform_from_array(farr);
@@ -1031,7 +1031,7 @@ void Collada::_parse_mesh_geometry(XMLParser &p_parser, const String &p_id, cons
 								int from = prim.indices.size();
 								prim.indices.resize(from + values.size());
 								for (int i = 0; i < values.size(); i++) {
-									prim.indices.write[from + i] = values[i];
+									prim.indices.ptrw()[from + i] = values[i];
 								}
 
 							} else if (prim.vertex_size > 0) {
@@ -1746,7 +1746,7 @@ void Collada::_parse_animation(XMLParser &p_parser) {
 			track.keys.resize(key_count);
 
 			for (int j = 0; j < key_count; j++) {
-				track.keys.write[j].time = time_keys[j];
+				track.keys.ptrw()[j].time = time_keys[j];
 				state.animation_length = MAX(state.animation_length, time_keys[j]);
 			}
 
@@ -1767,9 +1767,9 @@ void Collada::_parse_animation(XMLParser &p_parser) {
 			ERR_CONTINUE_MSG((output.size() / stride) != key_count, "Wrong number of keys in output.");
 
 			for (int j = 0; j < key_count; j++) {
-				track.keys.write[j].data.resize(output_len);
+				track.keys.ptrw()[j].data.resize(output_len);
 				for (int k = 0; k < output_len; k++) {
-					track.keys.write[j].data.write[k] = output[l + j * stride + k]; //super weird but should work:
+					track.keys.ptrw()[j].data.ptrw()[k] = output[l + j * stride + k]; //super weird but should work:
 				}
 			}
 
@@ -1781,9 +1781,9 @@ void Collada::_parse_animation(XMLParser &p_parser) {
 
 				for (int j = 0; j < key_count; j++) {
 					if (interps[j] == "BEZIER") {
-						track.keys.write[j].interp_type = AnimationTrack::INTERP_BEZIER;
+						track.keys.ptrw()[j].interp_type = AnimationTrack::INTERP_BEZIER;
 					} else {
-						track.keys.write[j].interp_type = AnimationTrack::INTERP_LINEAR;
+						track.keys.ptrw()[j].interp_type = AnimationTrack::INTERP_LINEAR;
 					}
 				}
 			}
@@ -1802,8 +1802,8 @@ void Collada::_parse_animation(XMLParser &p_parser) {
 				ERR_CONTINUE(outangents.size() != key_count * 2 * names.size());
 
 				for (int j = 0; j < key_count; j++) {
-					track.keys.write[j].in_tangent = Vector2(intangents[j * 2 * names.size() + 0 + l * 2], intangents[j * 2 * names.size() + 1 + l * 2]);
-					track.keys.write[j].out_tangent = Vector2(outangents[j * 2 * names.size() + 0 + l * 2], outangents[j * 2 * names.size() + 1 + l * 2]);
+					track.keys.ptrw()[j].in_tangent = Vector2(intangents[j * 2 * names.size() + 0 + l * 2], intangents[j * 2 * names.size() + 1 + l * 2]);
+					track.keys.ptrw()[j].out_tangent = Vector2(outangents[j * 2 * names.size() + 0 + l * 2], outangents[j * 2 * names.size() + 1 + l * 2]);
 				}
 			}
 
@@ -1967,7 +1967,7 @@ void Collada::_joint_set_owner(Collada::Node *p_node, NodeSkeleton *p_owner) {
 		nj->owner = p_owner;
 
 		for (int i = 0; i < nj->children.size(); i++) {
-			_joint_set_owner(nj->children.write[i], p_owner);
+			_joint_set_owner(nj->children.ptrw()[i], p_owner);
 		}
 	}
 }
@@ -1993,7 +1993,7 @@ void Collada::_create_skeletons(Collada::Node **p_node, NodeSkeleton *p_skeleton
 	}
 
 	for (int i = 0; i < node->children.size(); i++) {
-		_create_skeletons(&node->children.write[i], p_skeleton);
+		_create_skeletons(&node->children.ptrw()[i], p_skeleton);
 	}
 }
 
@@ -2143,7 +2143,7 @@ bool Collada::_optimize_skeletons(VisualScene *p_vscene, Node *p_node) {
 			bool found = false;
 			for (int i = 0; i < gp->children.size(); i++) {
 				if (gp->children[i] == parent) {
-					gp->children.write[i] = node;
+					gp->children.ptrw()[i] = node;
 					found = true;
 					break;
 				}
@@ -2156,7 +2156,7 @@ bool Collada::_optimize_skeletons(VisualScene *p_vscene, Node *p_node) {
 
 			for (int i = 0; i < p_vscene->root_nodes.size(); i++) {
 				if (p_vscene->root_nodes[i] == parent) {
-					p_vscene->root_nodes.write[i] = node;
+					p_vscene->root_nodes.ptrw()[i] = node;
 					found = true;
 					break;
 				}
@@ -2277,7 +2277,7 @@ void Collada::_optimize() {
 	for (KeyValue<String, VisualScene> &E : state.visual_scene_map) {
 		VisualScene &vs = E.value;
 		for (int i = 0; i < vs.root_nodes.size(); i++) {
-			_create_skeletons(&vs.root_nodes.write[i]);
+			_create_skeletons(&vs.root_nodes.ptrw()[i]);
 		}
 
 		for (int i = 0; i < vs.root_nodes.size(); i++) {

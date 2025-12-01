@@ -361,8 +361,8 @@ bool JoltContactListener3D::_try_add_debug_contacts(const JPH::Body &p_body1, co
 		const JPH::RVec3 point_on_1 = p_manifold.GetWorldSpaceContactPointOn1((JPH::uint)i);
 		const JPH::RVec3 point_on_2 = p_manifold.GetWorldSpaceContactPointOn2((JPH::uint)i);
 
-		debug_contacts.write[pair_index + 0] = to_godot(point_on_1);
-		debug_contacts.write[pair_index + 1] = to_godot(point_on_2);
+		debug_contacts.ptrw()[pair_index + 0] = to_godot(point_on_1);
+		debug_contacts.ptrw()[pair_index + 1] = to_godot(point_on_2);
 	}
 
 	return true;
@@ -406,7 +406,7 @@ bool JoltContactListener3D::_try_add_debug_contacts(const JPH::Body &p_soft_body
 		const JPH::Vec3 local_contact_point = p_manifold.GetLocalContactPoint(vertex);
 		const JPH::RVec3 contact_point = body_com_transform * local_contact_point;
 
-		debug_contacts.write[contact_index++] = to_godot(contact_point);
+		debug_contacts.ptrw()[contact_index++] = to_godot(contact_point);
 	}
 
 	return true;

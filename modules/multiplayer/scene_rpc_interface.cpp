@@ -286,7 +286,7 @@ void SceneRPCInterface::_process_rpc(Node *p_node, const uint16_t p_rpc_method_i
 	int out;
 	MultiplayerAPI::decode_and_decompress_variants(args, &p_packet[p_offset], p_packet_len - p_offset, out, byte_only_or_no_args, multiplayer->is_object_decoding_allowed());
 	for (int i = 0; i < argc; i++) {
-		argp.write[i] = &args[i];
+		argp.ptrw()[i] = &args[i];
 	}
 
 	Callable::CallError ce;
@@ -357,7 +357,7 @@ void SceneRPCInterface::_send_rpc(Node *p_node, int p_to, uint16_t p_rpc_id, con
 
 	MAKE_ROOM(1);
 	// The meta is composed along the way, so just set 0 for now.
-	packet_cache.write[0] = 0;
+	packet_cache.ptrw()[0] = 0;
 	ofs += 1;
 
 	// Encode Node ID.
@@ -367,26 +367,26 @@ void SceneRPCInterface::_send_rpc(Node *p_node, int p_to, uint16_t p_rpc_id, con
 			// We can encode the id in 1 byte
 			node_id_compression = NETWORK_NODE_ID_COMPRESSION_8;
 			MAKE_ROOM(ofs + 1);
-			packet_cache.write[ofs] = static_cast<uint8_t>(psc_id);
+			packet_cache.ptrw()[ofs] = static_cast<uint8_t>(psc_id);
 			ofs += 1;
 		} else if (psc_id >= 0 && psc_id <= 65535) {
 			// We can encode the id in 2 bytes
 			node_id_compression = NETWORK_NODE_ID_COMPRESSION_16;
 			MAKE_ROOM(ofs + 2);
-			encode_uint16(static_cast<uint16_t>(psc_id), &(packet_cache.write[ofs]));
+			encode_uint16(static_cast<uint16_t>(psc_id), &(packet_cache.ptrw()[ofs]));
 			ofs += 2;
 		} else {
 			// Too big, let's use 4 bytes.
 			node_id_compression = NETWORK_NODE_ID_COMPRESSION_32;
 			MAKE_ROOM(ofs + 4);
-			encode_uint32(psc_id, &(packet_cache.write[ofs]));
+			encode_uint32(psc_id, &(packet_cache.ptrw()[ofs]));
 			ofs += 4;
 		}
 	} else {
 		// The targets don't know the node yet, so we need to use 32 bits int.
 		node_id_compression = NETWORK_NODE_ID_COMPRESSION_32;
 		MAKE_ROOM(ofs + 4);
-		encode_uint32(psc_id, &(packet_cache.write[ofs]));
+		encode_uint32(psc_id, &(packet_cache.ptrw()[ofs]));
 		ofs += 4;
 	}
 
@@ -395,13 +395,13 @@ void SceneRPCInterface::_send_rpc(Node *p_node, int p_to, uint16_t p_rpc_id, con
 		// The ID fits in 1 byte
 		name_id_compression = NETWORK_NAME_ID_COMPRESSION_8;
 		MAKE_ROOM(ofs + 1);
-		packet_cache.write[ofs] = static_cast<uint8_t>(p_rpc_id);
+		packet_cache.ptrw()[ofs] = static_cast<uint8_t>(p_rpc_id);
 		ofs += 1;
 	} else {
 		// The ID is larger, let's use 2 bytes
 		name_id_compression = NETWORK_NAME_ID_COMPRESSION_16;
 		MAKE_ROOM(ofs + 2);
-		encode_uint16(p_rpc_id, &(packet_cache.write[ofs]));
+		encode_uint16(p_rpc_id, &(packet_cache.ptrw()[ofs]));
 		ofs += 2;
 	}
 
@@ -412,11 +412,11 @@ void SceneRPCInterface::_send_rpc(Node *p_node, int p_to, uint16_t p_rpc_id, con
 		MAKE_ROOM(ofs + len);
 	} else {
 		MAKE_ROOM(ofs + 1 + len);
-		packet_cache.write[ofs] = p_argcount;
+		packet_cache.ptrw()[ofs] = p_argcount;
 		ofs += 1;
 	}
 	if (len) {
-		MultiplayerAPI::encode_and_compress_variants(p_arg, p_argcount, &packet_cache.write[ofs], len, &byte_only_or_no_args, multiplayer->is_object_decoding_allowed());
+		MultiplayerAPI::encode_and_compress_variants(p_arg, p_argcount, &packet_cache.ptrw()[ofs], len, &byte_only_or_no_args, multiplayer->is_object_decoding_allowed());
 		ofs += len;
 	}
 
@@ -429,7 +429,7 @@ void SceneRPCInterface::_send_rpc(Node *p_node, int p_to, uint16_t p_rpc_id, con
 #endif
 
 	// We can now set the meta
-	packet_cache.write[0] = command_type + (node_id_compression << NODE_ID_COMPRESSION_SHIFT) + (name_id_compression << NAME_ID_COMPRESSION_SHIFT) + (byte_only_or_no_args ? BYTE_ONLY_OR_NO_ARGS_FLAG : 0);
+	packet_cache.ptrw()[0] = command_type + (node_id_compression << NODE_ID_COMPRESSION_SHIFT) + (name_id_compression << NAME_ID_COMPRESSION_SHIFT) + (byte_only_or_no_args ? BYTE_ONLY_OR_NO_ARGS_FLAG : 0);
 
 	// Take chance and set transfer mode, since all send methods will use it.
 	peer->set_transfer_channel(p_config.channel);
@@ -449,18 +449,18 @@ void SceneRPCInterface::_send_rpc(Node *p_node, int p_to, uint16_t p_rpc_id, con
 		CharString pname = String(multiplayer->get_root_path().rel_path_to(p_node->get_path())).utf8();
 		int path_len = encode_cstring(pname.get_data(), nullptr);
 		MAKE_ROOM(ofs + path_len);
-		encode_cstring(pname.get_data(), &(packet_cache.write[ofs]));
+		encode_cstring(pname.get_data(), &(packet_cache.ptrw()[ofs]));
 
 		// Not all verified path, so check which needs the longer packet.
 		for (const int P : targets) {
 			bool confirmed = multiplayer_cache->is_cache_confirmed(p_node, P);
 			if (confirmed) {
 				// This one confirmed path, so use id.
-				encode_uint32(psc_id, &(packet_cache.write[1]));
+				encode_uint32(psc_id, &(packet_cache.ptrw()[1]));
 				multiplayer->send_command(P, packet_cache.ptr(), ofs);
 			} else {
 				// This one did not confirm path yet, so use entire path (sorry!).
-				encode_uint32(0x80000000 | ofs, &(packet_cache.write[1])); // Offset to path and flag.
+				encode_uint32(0x80000000 | ofs, &(packet_cache.ptrw()[1])); // Offset to path and flag.
 				multiplayer->send_command(P, packet_cache.ptr(), ofs + path_len);
 			}
 		}

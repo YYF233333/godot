@@ -186,7 +186,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 	for (int i = 0; i < temporaries.size(); i++) {
 		int stack_index = i + max_locals + GDScriptFunction::FIXED_ADDRESSES_MAX;
 		for (int j = 0; j < temporaries[i].bytecode_indices.size(); j++) {
-			opcodes.write[temporaries[i].bytecode_indices[j]] = stack_index | (GDScriptFunction::ADDR_TYPE_STACK << GDScriptFunction::ADDR_BITS);
+			opcodes.ptrw()[temporaries[i].bytecode_indices[j]] = stack_index | (GDScriptFunction::ADDR_TYPE_STACK << GDScriptFunction::ADDR_BITS);
 		}
 		if (temporaries[i].type != Variant::NIL) {
 			function->temporary_slots[stack_index] = temporaries[i].type;
@@ -198,7 +198,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->constants.resize(constant_map.size());
 		function->_constants_ptr = function->constants.ptrw();
 		for (const KeyValue<Variant, int> &K : constant_map) {
-			function->constants.write[K.value] = K.key;
+			function->constants.ptrw()[K.value] = K.key;
 		}
 	} else {
 		function->_constants_ptr = nullptr;
@@ -209,7 +209,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->global_names.resize(name_map.size());
 		function->_global_names_ptr = &function->global_names[0];
 		for (const KeyValue<StringName, int> &E : name_map) {
-			function->global_names.write[E.value] = E.key;
+			function->global_names.ptrw()[E.value] = E.key;
 		}
 		function->_global_names_count = function->global_names.size();
 
@@ -220,7 +220,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 
 	if (opcodes.size()) {
 		function->code = opcodes;
-		function->_code_ptr = &function->code.write[0];
+		function->_code_ptr = &function->code.ptrw()[0];
 		function->_code_size = opcodes.size();
 
 	} else {
@@ -241,7 +241,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->_operator_funcs_count = function->operator_funcs.size();
 		function->_operator_funcs_ptr = function->operator_funcs.ptr();
 		for (const KeyValue<Variant::ValidatedOperatorEvaluator, int> &E : operator_func_map) {
-			function->operator_funcs.write[E.value] = E.key;
+			function->operator_funcs.ptrw()[E.value] = E.key;
 		}
 	} else {
 		function->_operator_funcs_count = 0;
@@ -253,7 +253,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->_setters_count = function->setters.size();
 		function->_setters_ptr = function->setters.ptr();
 		for (const KeyValue<Variant::ValidatedSetter, int> &E : setters_map) {
-			function->setters.write[E.value] = E.key;
+			function->setters.ptrw()[E.value] = E.key;
 		}
 	} else {
 		function->_setters_count = 0;
@@ -265,7 +265,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->_getters_count = function->getters.size();
 		function->_getters_ptr = function->getters.ptr();
 		for (const KeyValue<Variant::ValidatedGetter, int> &E : getters_map) {
-			function->getters.write[E.value] = E.key;
+			function->getters.ptrw()[E.value] = E.key;
 		}
 	} else {
 		function->_getters_count = 0;
@@ -277,7 +277,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->_keyed_setters_count = function->keyed_setters.size();
 		function->_keyed_setters_ptr = function->keyed_setters.ptr();
 		for (const KeyValue<Variant::ValidatedKeyedSetter, int> &E : keyed_setters_map) {
-			function->keyed_setters.write[E.value] = E.key;
+			function->keyed_setters.ptrw()[E.value] = E.key;
 		}
 	} else {
 		function->_keyed_setters_count = 0;
@@ -289,7 +289,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->_keyed_getters_count = function->keyed_getters.size();
 		function->_keyed_getters_ptr = function->keyed_getters.ptr();
 		for (const KeyValue<Variant::ValidatedKeyedGetter, int> &E : keyed_getters_map) {
-			function->keyed_getters.write[E.value] = E.key;
+			function->keyed_getters.ptrw()[E.value] = E.key;
 		}
 	} else {
 		function->_keyed_getters_count = 0;
@@ -301,7 +301,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->_indexed_setters_count = function->indexed_setters.size();
 		function->_indexed_setters_ptr = function->indexed_setters.ptr();
 		for (const KeyValue<Variant::ValidatedIndexedSetter, int> &E : indexed_setters_map) {
-			function->indexed_setters.write[E.value] = E.key;
+			function->indexed_setters.ptrw()[E.value] = E.key;
 		}
 	} else {
 		function->_indexed_setters_count = 0;
@@ -313,7 +313,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->_indexed_getters_count = function->indexed_getters.size();
 		function->_indexed_getters_ptr = function->indexed_getters.ptr();
 		for (const KeyValue<Variant::ValidatedIndexedGetter, int> &E : indexed_getters_map) {
-			function->indexed_getters.write[E.value] = E.key;
+			function->indexed_getters.ptrw()[E.value] = E.key;
 		}
 	} else {
 		function->_indexed_getters_count = 0;
@@ -325,7 +325,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->_builtin_methods_ptr = function->builtin_methods.ptr();
 		function->_builtin_methods_count = builtin_method_map.size();
 		for (const KeyValue<Variant::ValidatedBuiltInMethod, int> &E : builtin_method_map) {
-			function->builtin_methods.write[E.value] = E.key;
+			function->builtin_methods.ptrw()[E.value] = E.key;
 		}
 	} else {
 		function->_builtin_methods_ptr = nullptr;
@@ -337,7 +337,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->_constructors_ptr = function->constructors.ptr();
 		function->_constructors_count = constructors_map.size();
 		for (const KeyValue<Variant::ValidatedConstructor, int> &E : constructors_map) {
-			function->constructors.write[E.value] = E.key;
+			function->constructors.ptrw()[E.value] = E.key;
 		}
 	} else {
 		function->_constructors_ptr = nullptr;
@@ -349,7 +349,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->_utilities_ptr = function->utilities.ptr();
 		function->_utilities_count = utilities_map.size();
 		for (const KeyValue<Variant::ValidatedUtilityFunction, int> &E : utilities_map) {
-			function->utilities.write[E.value] = E.key;
+			function->utilities.ptrw()[E.value] = E.key;
 		}
 	} else {
 		function->_utilities_ptr = nullptr;
@@ -361,7 +361,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->_gds_utilities_ptr = function->gds_utilities.ptr();
 		function->_gds_utilities_count = gds_utilities_map.size();
 		for (const KeyValue<GDScriptUtilityFunctions::FunctionPtr, int> &E : gds_utilities_map) {
-			function->gds_utilities.write[E.value] = E.key;
+			function->gds_utilities.ptrw()[E.value] = E.key;
 		}
 	} else {
 		function->_gds_utilities_ptr = nullptr;
@@ -373,7 +373,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->_methods_ptr = function->methods.ptrw();
 		function->_methods_count = method_bind_map.size();
 		for (const KeyValue<MethodBind *, int> &E : method_bind_map) {
-			function->methods.write[E.value] = E.key;
+			function->methods.ptrw()[E.value] = E.key;
 		}
 	} else {
 		function->_methods_ptr = nullptr;
@@ -385,7 +385,7 @@ GDScriptFunction *GDScriptByteCodeGenerator::write_end() {
 		function->_lambdas_ptr = function->lambdas.ptrw();
 		function->_lambdas_count = lambdas_map.size();
 		for (const KeyValue<GDScriptFunction *, int> &E : lambdas_map) {
-			function->lambdas.write[E.value] = E.key;
+			function->lambdas.ptrw()[E.value] = E.key;
 		}
 	} else {
 		function->_lambdas_ptr = nullptr;

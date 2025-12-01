@@ -55,7 +55,7 @@ void UndoRedo::discard_redo() {
 	}
 
 	for (int i = current_action + 1; i < actions.size(); i++) {
-		for (Operation &E : actions.write[i].do_ops) {
+		for (Operation &E : actions.ptrw()[i].do_ops) {
 			E.delete_reference();
 		}
 		//ERASE do data
@@ -73,7 +73,7 @@ bool UndoRedo::_redo(bool p_execute) {
 
 	current_action++;
 
-	List<Operation>::Element *start_doops_element = actions.write[current_action].do_ops.front();
+	List<Operation>::Element *start_doops_element = actions.ptrw()[current_action].do_ops.front();
 	while (merge_total > 0 && start_doops_element) {
 		start_doops_element = start_doops_element->next();
 		merge_total--;
@@ -99,7 +99,7 @@ void UndoRedo::create_action(const String &p_name, MergeMode p_mode, bool p_back
 			if (p_mode == MERGE_ENDS) {
 				// Clear all do ops from last action if they are not forced kept
 				LocalVector<List<Operation>::Element *> to_remove;
-				for (List<Operation>::Element *E = actions.write[current_action + 1].do_ops.front(); E; E = E->next()) {
+				for (List<Operation>::Element *E = actions.ptrw()[current_action + 1].do_ops.front(); E; E = E->next()) {
 					if (!E->get().force_keep_in_merge_ends) {
 						to_remove.push_back(E);
 					}
@@ -113,16 +113,16 @@ void UndoRedo::create_action(const String &p_name, MergeMode p_mode, bool p_back
 			}
 
 			if (p_mode == MERGE_ALL) {
-				merge_total = actions.write[current_action + 1].do_ops.size();
+				merge_total = actions.ptrw()[current_action + 1].do_ops.size();
 			} else {
 				merge_total = 0;
 			}
 
-			actions.write[actions.size() - 1].last_tick = ticks;
+			actions.ptrw()[actions.size() - 1].last_tick = ticks;
 
 			// Revert reverse from previous commit.
 			if (actions[actions.size() - 1].backward_undo_ops) {
-				actions.write[actions.size() - 1].undo_ops.reverse();
+				actions.ptrw()[actions.size() - 1].undo_ops.reverse();
 			}
 
 			merge_mode = p_mode;
@@ -166,7 +166,7 @@ void UndoRedo::add_do_method(const Callable &p_callable) {
 		do_op.name = static_cast<String>(p_callable);
 	}
 
-	actions.write[current_action + 1].do_ops.push_back(do_op);
+	actions.ptrw()[current_action + 1].do_ops.push_back(do_op);
 }
 
 void UndoRedo::add_undo_method(const Callable &p_callable) {
@@ -197,7 +197,7 @@ void UndoRedo::add_undo_method(const Callable &p_callable) {
 		undo_op.name = static_cast<String>(p_callable);
 	}
 
-	actions.write[current_action + 1].undo_ops.push_back(undo_op);
+	actions.ptrw()[current_action + 1].undo_ops.push_back(undo_op);
 }
 
 void UndoRedo::add_do_property(Object *p_object, const StringName &p_property, const Variant &p_value) {
@@ -213,7 +213,7 @@ void UndoRedo::add_do_property(Object *p_object, const StringName &p_property, c
 	do_op.type = Operation::TYPE_PROPERTY;
 	do_op.name = p_property;
 	do_op.value = p_value;
-	actions.write[current_action + 1].do_ops.push_back(do_op);
+	actions.ptrw()[current_action + 1].do_ops.push_back(do_op);
 }
 
 void UndoRedo::add_undo_property(Object *p_object, const StringName &p_property, const Variant &p_value) {
@@ -236,7 +236,7 @@ void UndoRedo::add_undo_property(Object *p_object, const StringName &p_property,
 	undo_op.force_keep_in_merge_ends = force_keep_in_merge_ends;
 	undo_op.name = p_property;
 	undo_op.value = p_value;
-	actions.write[current_action + 1].undo_ops.push_back(undo_op);
+	actions.ptrw()[current_action + 1].undo_ops.push_back(undo_op);
 }
 
 void UndoRedo::add_do_reference(Object *p_object) {
@@ -250,7 +250,7 @@ void UndoRedo::add_do_reference(Object *p_object) {
 	}
 
 	do_op.type = Operation::TYPE_REFERENCE;
-	actions.write[current_action + 1].do_ops.push_back(do_op);
+	actions.ptrw()[current_action + 1].do_ops.push_back(do_op);
 }
 
 void UndoRedo::add_undo_reference(Object *p_object) {
@@ -271,7 +271,7 @@ void UndoRedo::add_undo_reference(Object *p_object) {
 
 	undo_op.type = Operation::TYPE_REFERENCE;
 	undo_op.force_keep_in_merge_ends = force_keep_in_merge_ends;
-	actions.write[current_action + 1].undo_ops.push_back(undo_op);
+	actions.ptrw()[current_action + 1].undo_ops.push_back(undo_op);
 }
 
 void UndoRedo::start_force_keep_in_merge_ends() {
@@ -295,7 +295,7 @@ void UndoRedo::_pop_history_tail() {
 		return;
 	}
 
-	for (Operation &E : actions.write[0].undo_ops) {
+	for (Operation &E : actions.ptrw()[0].undo_ops) {
 		E.delete_reference();
 	}
 
@@ -324,7 +324,7 @@ void UndoRedo::commit_action(bool p_execute) {
 	}
 
 	if (actions[actions.size() - 1].backward_undo_ops) {
-		actions.write[actions.size() - 1].undo_ops.reverse();
+		actions.ptrw()[actions.size() - 1].undo_ops.reverse();
 	}
 
 	committing++;
@@ -428,7 +428,7 @@ bool UndoRedo::undo() {
 	if (current_action < 0) {
 		return false; //nothing to redo
 	}
-	_process_operation_list(actions.write[current_action].undo_ops.front(), true);
+	_process_operation_list(actions.ptrw()[current_action].undo_ops.front(), true);
 	current_action--;
 	version--;
 	emit_signal(SNAME("version_changed"));

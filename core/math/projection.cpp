@@ -482,7 +482,7 @@ Vector<Plane> Projection::get_projection_planes(const Transform3D &p_transform) 
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[0] = p_transform.xform(new_plane);
+	planes.ptrw()[0] = p_transform.xform(new_plane);
 
 	///////--- Far Plane ---///////
 	new_plane = Plane(matrix[3] - matrix[2],
@@ -493,7 +493,7 @@ Vector<Plane> Projection::get_projection_planes(const Transform3D &p_transform) 
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[1] = p_transform.xform(new_plane);
+	planes.ptrw()[1] = p_transform.xform(new_plane);
 
 	///////--- Left Plane ---///////
 	new_plane = Plane(matrix[3] + matrix[0],
@@ -504,7 +504,7 @@ Vector<Plane> Projection::get_projection_planes(const Transform3D &p_transform) 
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[2] = p_transform.xform(new_plane);
+	planes.ptrw()[2] = p_transform.xform(new_plane);
 
 	///////--- Top Plane ---///////
 	new_plane = Plane(matrix[3] - matrix[1],
@@ -515,7 +515,7 @@ Vector<Plane> Projection::get_projection_planes(const Transform3D &p_transform) 
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[3] = p_transform.xform(new_plane);
+	planes.ptrw()[3] = p_transform.xform(new_plane);
 
 	///////--- Right Plane ---///////
 	new_plane = Plane(matrix[3] - matrix[0],
@@ -526,7 +526,7 @@ Vector<Plane> Projection::get_projection_planes(const Transform3D &p_transform) 
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[4] = p_transform.xform(new_plane);
+	planes.ptrw()[4] = p_transform.xform(new_plane);
 
 	///////--- Bottom Plane ---///////
 	new_plane = Plane(matrix[3] + matrix[1],
@@ -537,7 +537,7 @@ Vector<Plane> Projection::get_projection_planes(const Transform3D &p_transform) 
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[5] = p_transform.xform(new_plane);
+	planes.ptrw()[5] = p_transform.xform(new_plane);
 
 	return planes;
 }

@@ -734,7 +734,7 @@ void DisplayServerMacOS::push_to_key_event_buffer(const DisplayServerMacOS::KeyE
 	if (key_event_pos >= key_event_buffer.size()) {
 		key_event_buffer.resize(1 + key_event_pos);
 	}
-	key_event_buffer.write[key_event_pos++] = p_event;
+	key_event_buffer.ptrw()[key_event_pos++] = p_event;
 }
 
 void DisplayServerMacOS::update_im_text(const Point2i &p_selection, const String &p_text) {
@@ -3356,10 +3356,10 @@ void DisplayServerMacOS::set_native_icon(const String &p_filename) {
 	ERR_FAIL_COND_MSG(len < 8, "Error reading icon data."); // "icns" + 32-bit length
 
 	data.resize(len);
-	f->get_buffer((uint8_t *)&data.write[0], len);
+	f->get_buffer((uint8_t *)&data.ptrw()[0], len);
 
 	@try {
-		NSData *icon_data = [[NSData alloc] initWithBytes:&data.write[0] length:len];
+		NSData *icon_data = [[NSData alloc] initWithBytes:&data.ptrw()[0] length:len];
 		ERR_FAIL_NULL_MSG(icon_data, "Error reading icon data.");
 
 		NSImage *icon = [[NSImage alloc] initWithData:icon_data];

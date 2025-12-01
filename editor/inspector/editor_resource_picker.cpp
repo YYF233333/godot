@@ -1685,8 +1685,8 @@ void EditorAudioStreamPicker::_preview_draw() {
 			float min = preview->get_min(ofs, ofs_n) * 0.5 + 0.5;
 
 			int idx = i;
-			points.write[idx * 2 + 0] = Vector2(i + 1, rect.position.y + min * rect.size.y);
-			points.write[idx * 2 + 1] = Vector2(i + 1, rect.position.y + max * rect.size.y);
+			points.ptrw()[idx * 2 + 0] = Vector2(i + 1, rect.position.y + min * rect.size.y);
+			points.ptrw()[idx * 2 + 1] = Vector2(i + 1, rect.position.y + max * rect.size.y);
 		}
 
 		Vector<Color> colors = { get_theme_color(SNAME("contrast_color_2"), EditorStringName(Editor)) };

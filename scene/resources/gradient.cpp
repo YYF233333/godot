@@ -102,7 +102,7 @@ Vector<float> Gradient::get_offsets() const {
 	Vector<float> offsets;
 	offsets.resize(points.size());
 	for (uint32_t i = 0; i < points.size(); i++) {
-		offsets.write[i] = points[i].offset;
+		offsets.ptrw()[i] = points[i].offset;
 	}
 	return offsets;
 }
@@ -111,7 +111,7 @@ Vector<Color> Gradient::get_colors() const {
 	Vector<Color> colors;
 	colors.resize(points.size());
 	for (uint32_t i = 0; i < points.size(); i++) {
-		colors.write[i] = points[i].color;
+		colors.ptrw()[i] = points[i].color;
 	}
 	return colors;
 }

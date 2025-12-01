@@ -390,12 +390,12 @@ load_assembly_and_get_function_pointer_fn initialize_hostfxr_self_contained(
 	Vector<const char_t *> argv;
 	argv.resize(cmdline_args.size() + 1);
 
-	argv.write[0] = p_main_assembly_path;
+	argv.ptrw()[0] = p_main_assembly_path;
 
 	int i = 1;
 	for (const String &E : cmdline_args) {
 		HostFxrCharString &stored = argv_store.push_back(str_to_hostfxr(E))->get();
-		argv.write[i] = get_data(stored);
+		argv.ptrw()[i] = get_data(stored);
 		i++;
 	}
 

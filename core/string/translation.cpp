@@ -95,7 +95,7 @@ void Translation::_set_messages(const Dictionary &p_messages) {
 				Vector<StringName> msgstrs;
 				msgstrs.resize(storage_value.size());
 				for (int i = 0; i < storage_value.size(); i++) {
-					msgstrs.write[i] = storage_value[i];
+					msgstrs.ptrw()[i] = storage_value[i];
 				}
 
 				_check_for_incompatibility(msg_key.msgctxt, msg_key.msgid);
@@ -118,7 +118,7 @@ Vector<String> Translation::_get_message_list() const {
 	keys.resize(msgstrs.size());
 	int idx = 0;
 	for (const StringName &msgstr : msgstrs) {
-		keys.write[idx++] = msgstr;
+		keys.ptrw()[idx++] = msgstr;
 	}
 	return keys;
 }
@@ -153,7 +153,7 @@ void Translation::add_plural_message(const StringName &p_src_text, const Vector<
 	Vector<StringName> msgstrs;
 	msgstrs.resize(p_plural_xlated_texts.size());
 	for (int i = 0; i < p_plural_xlated_texts.size(); i++) {
-		msgstrs.write[i] = p_plural_xlated_texts[i];
+		msgstrs.ptrw()[i] = p_plural_xlated_texts[i];
 	}
 
 	_check_for_incompatibility(p_context, p_src_text);

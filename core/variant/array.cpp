@@ -106,7 +106,7 @@ Variant &Array::operator[](int p_idx) {
 		*_p->read_only = _p->array[p_idx];
 		return *_p->read_only;
 	}
-	return _p->array.write[p_idx];
+	return _p->array.ptrw()[p_idx];
 }
 
 const Variant &Array::operator[](int p_idx) const {
@@ -519,7 +519,7 @@ void Array::set(int p_idx, const Variant &p_value) {
 	Variant value = p_value;
 	ERR_FAIL_COND(!_p->typed.validate(value, "set"));
 
-	_p->array.write[p_idx] = std::move(value);
+	_p->array.ptrw()[p_idx] = std::move(value);
 }
 
 const Variant &Array::get(int p_idx) const {

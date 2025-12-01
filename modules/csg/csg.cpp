@@ -54,7 +54,7 @@ void CSGBrush::build_from_faces(const Vector<Vector3> &p_vertices, const Vector<
 	faces.resize(p_vertices.size() / 3);
 
 	for (int i = 0; i < faces.size(); i++) {
-		Face &f = faces.write[i];
+		Face &f = faces.ptrw()[i];
 		f.vertices[0] = rv[i * 3 + 0];
 		f.vertices[1] = rv[i * 3 + 1];
 		f.vertices[2] = rv[i * 3 + 2];
@@ -97,7 +97,7 @@ void CSGBrush::build_from_faces(const Vector<Vector3> &p_vertices, const Vector<
 
 	materials.resize(material_map.size());
 	for (const KeyValue<Ref<Material>, int> &E : material_map) {
-		materials.write[E.value] = E.key;
+		materials.ptrw()[E.value] = E.key;
 	}
 
 	_regen_face_aabbs();
@@ -109,7 +109,7 @@ void CSGBrush::copy_from(const CSGBrush &p_brush, const Transform3D &p_xform) {
 
 	for (int i = 0; i < faces.size(); i++) {
 		for (int j = 0; j < 3; j++) {
-			faces.write[i].vertices[j] = p_xform.xform(p_brush.faces[i].vertices[j]);
+			faces.ptrw()[i].vertices[j] = p_xform.xform(p_brush.faces[i].vertices[j]);
 		}
 	}
 

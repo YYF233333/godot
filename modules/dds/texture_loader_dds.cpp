@@ -410,8 +410,8 @@ static Vector<Ref<Image>> _dds_load_images(Ref<FileAccess> p_f, DDSFormat p_dds_
 	images.resize(p_layer_count);
 
 	for (uint32_t i = 0; i < p_layer_count; i++) {
-		images.write[i] = _dds_load_layer(p_f, p_dds_format, p_width, p_height, p_mipmaps, p_pitch, p_flags, src_data);
-		ERR_FAIL_COND_V(images.write[i].is_null(), Vector<Ref<Image>>());
+		images.ptrw()[i] = _dds_load_layer(p_f, p_dds_format, p_width, p_height, p_mipmaps, p_pitch, p_flags, src_data);
+		ERR_FAIL_COND_V(images.ptrw()[i].is_null(), Vector<Ref<Image>>());
 	}
 
 	return images;

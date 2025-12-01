@@ -57,7 +57,7 @@ Error CryptoKeyMbedTLS::load(const String &p_path, bool p_public_only) {
 	uint64_t flen = f->get_length();
 	out.resize(flen + 1);
 	f->get_buffer(out.ptrw(), flen);
-	out.write[flen] = 0; // string terminator
+	out.ptrw()[flen] = 0; // string terminator
 
 	int ret = 0;
 	if (p_public_only) {
@@ -162,7 +162,7 @@ Error X509CertificateMbedTLS::load(const String &p_path) {
 	uint64_t flen = f->get_length();
 	out.resize(flen + 1);
 	f->get_buffer(out.ptrw(), flen);
-	out.write[flen] = 0; // string terminator
+	out.ptrw()[flen] = 0; // string terminator
 
 	int ret = mbedtls_x509_crt_parse(&cert, out.ptr(), out.size());
 	ERR_FAIL_COND_V_MSG(ret < 0, FAILED, vformat("Error parsing X509 certificates from file '%s': %d.", p_path, ret));
@@ -373,7 +373,7 @@ void CryptoMbedTLS::load_default_certificates(const String &p_path) {
 			certs.resize(_certs_uncompressed_size + 1);
 			const int64_t decompressed_size = Compression::decompress(certs.ptrw(), _certs_uncompressed_size, _certs_compressed, _certs_compressed_size, Compression::MODE_DEFLATE);
 			ERR_FAIL_COND_MSG(decompressed_size != _certs_uncompressed_size, "Error decompressing builtin CA certificates. Decompressed size did not match expected size.");
-			certs.write[_certs_uncompressed_size] = 0; // Make sure it ends with string terminator
+			certs.ptrw()[_certs_uncompressed_size] = 0; // Make sure it ends with string terminator
 			default_certs->load_from_memory(certs.ptr(), certs.size());
 			print_verbose("Loaded builtin CA certificates");
 		}

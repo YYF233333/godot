@@ -345,7 +345,7 @@ void GDScriptEditorTranslationParserPlugin::_assess_call(const GDScriptParser::C
 		// Extract from `tr(id, ctx)` or `atr(id, ctx)`.
 		for (int i = 0; i < p_call->arguments.size(); i++) {
 			if (_is_constant_string(p_call->arguments[i])) {
-				id_ctx_plural.write[i] = p_call->arguments[i]->reduced_value;
+				id_ctx_plural.ptrw()[i] = p_call->arguments[i]->reduced_value;
 			} else {
 				// Avoid adding something like tr("Flying dragon", var_context_level_1). We want to extract both id and context together.
 				extract_id_ctx_plural = false;
@@ -366,7 +366,7 @@ void GDScriptEditorTranslationParserPlugin::_assess_call(const GDScriptParser::C
 			}
 
 			if (_is_constant_string(p_call->arguments[indices[i]])) {
-				id_ctx_plural.write[i] = p_call->arguments[indices[i]]->reduced_value;
+				id_ctx_plural.ptrw()[i] = p_call->arguments[indices[i]]->reduced_value;
 			} else {
 				extract_id_ctx_plural = false;
 			}

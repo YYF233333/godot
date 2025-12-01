@@ -211,7 +211,7 @@ void DisplayServerWeb::_key_callback(const String &p_key_event_code, const Strin
 	if (ds->key_event_pos >= ds->key_event_buffer.size()) {
 		ds->key_event_buffer.resize(1 + ds->key_event_pos);
 	}
-	ds->key_event_buffer.write[ds->key_event_pos++] = ke;
+	ds->key_event_buffer.ptrw()[ds->key_event_pos++] = ke;
 
 	// Make sure to flush all events so we can call restricted APIs inside the event.
 	Input::get_singleton()->flush_buffered_events();
@@ -935,7 +935,7 @@ void DisplayServerWeb::_ime_callback(int p_type, const String &p_text) {
 					if (ds->key_event_pos >= ds->key_event_buffer.size()) {
 						ds->key_event_buffer.resize(1 + ds->key_event_pos);
 					}
-					ds->key_event_buffer.write[ds->key_event_pos++] = ke;
+					ds->key_event_buffer.ptrw()[ds->key_event_pos++] = ke;
 				}
 			}
 		} break;

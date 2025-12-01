@@ -133,7 +133,7 @@ TEST_CASE("[Vector] Fill large array and modify it") {
 	vector.resize(1'000'000);
 	vector.fill(0x60d07);
 
-	vector.write[200] = 0;
+	vector.ptrw()[200] = 0;
 	CHECK(vector.size() == 1'000'000);
 	CHECK(vector[0] == 0x60d07);
 	CHECK(vector[200] == 0);

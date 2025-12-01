@@ -201,7 +201,7 @@ void NavigationObstacle3DGizmoPlugin::set_subgizmo_transform(const EditorNode3DG
 
 	Vector3 vertex = safe_basis.xform(new_vertex_pos);
 	vertex.y = 0.0;
-	vertices.write[p_id] = vertex;
+	vertices.ptrw()[p_id] = vertex;
 
 	obstacle_node->set_vertices(vertices);
 }
@@ -219,7 +219,7 @@ void NavigationObstacle3DGizmoPlugin::commit_subgizmos(const EditorNode3DGizmo *
 		const int idx = p_ids[i];
 		Vector3 vertex = safe_basis.xform(p_restore[i].origin);
 		vertex.y = 0.0;
-		restore_vertices.write[idx] = vertex;
+		restore_vertices.ptrw()[idx] = vertex;
 	}
 
 	if (p_cancel) {
@@ -397,7 +397,7 @@ void NavigationObstacle3DEditorPlugin::_wip_close() {
 	wip_2d_vertices.resize(wip_vertices.size());
 	for (int i = 0; i < wip_vertices.size(); i++) {
 		const Vector3 &vert = wip_vertices[i];
-		wip_2d_vertices.write[i] = Vector2(vert.x, vert.z);
+		wip_2d_vertices.ptrw()[i] = Vector2(vert.x, vert.z);
 	}
 	Vector<int> triangulated_polygon_2d_indices = Geometry2D::triangulate_polygon(wip_2d_vertices);
 
@@ -602,7 +602,7 @@ EditorPlugin::AfterGUIInput NavigationObstacle3DEditorPlugin::forward_3d_gui_inp
 
 						if (edited_point != -1) {
 							ERR_FAIL_INDEX_V(edited_point, obstacle_vertices.size(), EditorPlugin::AFTER_GUI_INPUT_PASS);
-							obstacle_vertices.write[edited_point] = edited_point_pos;
+							obstacle_vertices.ptrw()[edited_point] = edited_point_pos;
 
 							EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 							undo_redo->create_action(TTR("Edit Obstacle (Move Vertex)"));

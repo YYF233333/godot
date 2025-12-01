@@ -88,7 +88,7 @@ TEST_CASE("[StreamPeerGZIP] Compress/Decompress big chunks of data") { // GH-972
 	// Filling it with random data because the issue is related to the size of the data when it's compress.
 	// Random data results in bigger compressed data size.
 	for (int i = 0; i < big_data.size(); i++) {
-		big_data.write[i] = Math::random(48, 122);
+		big_data.ptrw()[i] = Math::random(48, 122);
 	}
 	CHECK_EQ(spgz->put_data(big_data.ptr(), big_data.size()), Error::OK);
 	CHECK_EQ(spgz->finish(), Error::OK);

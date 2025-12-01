@@ -46,7 +46,7 @@ TabContainer::CachedTab &TabContainer::get_pending_tab(int p_idx) const {
 	if (p_idx >= pending_tabs.size()) {
 		pending_tabs.resize(p_idx + 1);
 	}
-	return pending_tabs.write[p_idx];
+	return pending_tabs.ptrw()[p_idx];
 }
 
 int TabContainer::_get_tab_height() const {

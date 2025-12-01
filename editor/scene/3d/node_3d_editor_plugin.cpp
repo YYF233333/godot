@@ -7173,13 +7173,13 @@ void Node3DEditor::set_state(const Dictionary &p_state) {
 			}
 			int state = EditorNode3DGizmoPlugin::VISIBLE;
 			for (const KeyValue<Variant, Variant> &kv : gizmos_status) {
-				if (gizmo_plugins_by_name.write[j]->get_gizmo_name() == String(kv.key)) {
+				if (gizmo_plugins_by_name.ptrw()[j]->get_gizmo_name() == String(kv.key)) {
 					state = kv.value;
 					break;
 				}
 			}
 
-			gizmo_plugins_by_name.write[j]->set_state(state);
+			gizmo_plugins_by_name.ptrw()[j]->set_state(state);
 		}
 		_update_gizmos_menu();
 	}
@@ -7356,7 +7356,7 @@ void Node3DEditor::_menu_gizmo_toggled(int p_option) {
 			break;
 	}
 
-	gizmo_plugins_by_name.write[p_option]->set_state(state);
+	gizmo_plugins_by_name.ptrw()[p_option]->set_state(state);
 
 	update_all_gizmos();
 }
@@ -9135,7 +9135,7 @@ void Node3DEditor::_request_gizmo(Object *p_obj) {
 	Node *edited_scene = EditorNode::get_singleton()->get_edited_scene();
 	if (edited_scene && (sp == edited_scene || (sp->get_owner() && edited_scene->is_ancestor_of(sp)))) {
 		for (int i = 0; i < gizmo_plugins_by_priority.size(); ++i) {
-			Ref<EditorNode3DGizmo> seg = gizmo_plugins_by_priority.write[i]->get_gizmo(sp);
+			Ref<EditorNode3DGizmo> seg = gizmo_plugins_by_priority.ptrw()[i]->get_gizmo(sp);
 
 			if (seg.is_valid()) {
 				sp->add_gizmo(seg);

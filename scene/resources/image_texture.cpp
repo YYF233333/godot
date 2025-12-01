@@ -394,7 +394,7 @@ Error ImageTexture3D::_create(Image::Format p_format, int p_width, int p_height,
 	Vector<Ref<Image>> images;
 	images.resize(p_data.size());
 	for (int i = 0; i < images.size(); i++) {
-		images.write[i] = p_data[i];
+		images.ptrw()[i] = p_data[i];
 	}
 	return create(p_format, p_width, p_height, p_depth, p_mipmaps, images);
 }
@@ -403,7 +403,7 @@ void ImageTexture3D::_update(const TypedArray<Image> &p_data) {
 	Vector<Ref<Image>> images;
 	images.resize(p_data.size());
 	for (int i = 0; i < images.size(); i++) {
-		images.write[i] = p_data[i];
+		images.ptrw()[i] = p_data[i];
 	}
 	return update(images);
 }

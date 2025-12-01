@@ -252,5 +252,5 @@ void Luminance::luminance_reduction(RID p_source_texture, const Size2i p_source_
 		RD::get_singleton()->compute_list_end();
 	}
 
-	SWAP(p_luminance_buffers->current, p_luminance_buffers->reduce.write[p_luminance_buffers->reduce.size() - 1]);
+	SWAP(p_luminance_buffers->current, p_luminance_buffers->reduce.ptrw()[p_luminance_buffers->reduce.size() - 1]);
 }

@@ -484,7 +484,7 @@ RS::ShaderNativeSourceCode ShaderGLES3::version_get_native_source_code(RID p_ver
 			stage.name = "vertex";
 			stage.code = builder.as_string();
 
-			source_code.versions.write[i].stages.push_back(stage);
+			source_code.versions.ptrw()[i].stages.push_back(stage);
 		}
 
 		//fragment stage
@@ -496,7 +496,7 @@ RS::ShaderNativeSourceCode ShaderGLES3::version_get_native_source_code(RID p_ver
 			stage.name = "fragment";
 			stage.code = builder.as_string();
 
-			source_code.versions.write[i].stages.push_back(stage);
+			source_code.versions.ptrw()[i].stages.push_back(stage);
 		}
 	}
 

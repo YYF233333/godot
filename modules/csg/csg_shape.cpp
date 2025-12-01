@@ -581,7 +581,7 @@ void CSGShape3D::update_shape() {
 	Vector<int> face_count;
 	face_count.resize(n->materials.size() + 1);
 	for (int i = 0; i < face_count.size(); i++) {
-		face_count.write[i] = 0;
+		face_count.ptrw()[i] = 0;
 	}
 
 	for (int i = 0; i < n->faces.size(); i++) {
@@ -603,7 +603,7 @@ void CSGShape3D::update_shape() {
 			}
 		}
 
-		face_count.write[idx]++;
+		face_count.ptrw()[idx]++;
 	}
 
 	Vector<ShapeUpdateSurface> surfaces;
@@ -612,23 +612,23 @@ void CSGShape3D::update_shape() {
 
 	//create arrays
 	for (int i = 0; i < surfaces.size(); i++) {
-		surfaces.write[i].vertices.resize(face_count[i] * 3);
-		surfaces.write[i].normals.resize(face_count[i] * 3);
-		surfaces.write[i].uvs.resize(face_count[i] * 3);
+		surfaces.ptrw()[i].vertices.resize(face_count[i] * 3);
+		surfaces.ptrw()[i].normals.resize(face_count[i] * 3);
+		surfaces.ptrw()[i].uvs.resize(face_count[i] * 3);
 		if (calculate_tangents) {
-			surfaces.write[i].tans.resize(face_count[i] * 3 * 4);
+			surfaces.ptrw()[i].tans.resize(face_count[i] * 3 * 4);
 		}
-		surfaces.write[i].last_added = 0;
+		surfaces.ptrw()[i].last_added = 0;
 
 		if (i != surfaces.size() - 1) {
-			surfaces.write[i].material = n->materials[i];
+			surfaces.ptrw()[i].material = n->materials[i];
 		}
 
-		surfaces.write[i].verticesw = surfaces.write[i].vertices.ptrw();
-		surfaces.write[i].normalsw = surfaces.write[i].normals.ptrw();
-		surfaces.write[i].uvsw = surfaces.write[i].uvs.ptrw();
+		surfaces.ptrw()[i].verticesw = surfaces.ptrw()[i].vertices.ptrw();
+		surfaces.ptrw()[i].normalsw = surfaces.ptrw()[i].normals.ptrw();
+		surfaces.ptrw()[i].uvsw = surfaces.ptrw()[i].uvs.ptrw();
 		if (calculate_tangents) {
-			surfaces.write[i].tansw = surfaces.write[i].tans.ptrw();
+			surfaces.ptrw()[i].tansw = surfaces.ptrw()[i].tans.ptrw();
 		}
 	}
 
@@ -680,7 +680,7 @@ void CSGShape3D::update_shape() {
 				}
 			}
 
-			surfaces.write[idx].last_added += 3;
+			surfaces.ptrw()[idx].last_added += 3;
 		}
 	}
 
@@ -702,7 +702,7 @@ void CSGShape3D::update_shape() {
 
 			SMikkTSpaceContext msc;
 			msc.m_pInterface = &mkif;
-			msc.m_pUserData = &surfaces.write[i];
+			msc.m_pUserData = &surfaces.ptrw()[i];
 			have_tangents = genTangSpaceDefault(&msc);
 		}
 

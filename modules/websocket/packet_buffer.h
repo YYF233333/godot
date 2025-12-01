@@ -57,7 +57,7 @@ public:
 			_Packet p;
 			p.size = p_size;
 			p.info = *p_info;
-			_packets.write[_write_pos] = p;
+			_packets.ptrw()[_write_pos] = p;
 			_queued += 1;
 			_write_pos++;
 			if (_write_pos >= _packets.size()) {

@@ -233,13 +233,13 @@ void EditorExport::_notification(int p_what) {
 
 		case NOTIFICATION_EXIT_TREE: {
 			for (int i = 0; i < export_platforms.size(); i++) {
-				export_platforms.write[i]->cleanup();
+				export_platforms.ptrw()[i]->cleanup();
 			}
 		} break;
 
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
 			for (int i = 0; i < export_platforms.size(); i++) {
-				export_platforms.write[i]->notification(p_what);
+				export_platforms.ptrw()[i]->notification(p_what);
 			}
 		} break;
 	}
@@ -281,7 +281,7 @@ void EditorExport::load_config() {
 
 		for (int i = 0; i < export_platforms.size(); i++) {
 			if (export_platforms[i]->get_name() == platform) {
-				preset = export_platforms.write[i]->create_preset();
+				preset = export_platforms.ptrw()[i]->create_preset();
 				break;
 			}
 		}
@@ -416,7 +416,7 @@ void EditorExport::update_export_presets() {
 		bool should_update = should_update_presets;
 		should_update |= platform->should_update_export_options();
 		for (int j = 0; j < export_plugins.size(); j++) {
-			should_update |= export_plugins.write[j]->_should_update_export_options(platform);
+			should_update |= export_plugins.ptrw()[j]->_should_update_export_options(platform);
 		}
 
 		if (should_update) {
@@ -471,7 +471,7 @@ void EditorExport::update_export_presets() {
 bool EditorExport::poll_export_platforms() {
 	bool changed = false;
 	for (int i = 0; i < export_platforms.size(); i++) {
-		if (export_platforms.write[i]->poll_export()) {
+		if (export_platforms.ptrw()[i]->poll_export()) {
 			changed = true;
 		}
 	}

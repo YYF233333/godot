@@ -740,8 +740,8 @@ void CanvasItem::draw_dashed_line(const Point2 &p_from, const Point2 &p_to, cons
 	Vector<Vector2> points;
 	points.resize(steps + 1);
 	for (int i = 0; i < steps; i += 2) {
-		points.write[i] = (i == 0) ? p_from : off;
-		points.write[i + 1] = (p_aligned && i == steps - 1) ? p_to : (off + step);
+		points.ptrw()[i] = (i == 0) ? p_from : off;
+		points.ptrw()[i + 1] = (p_aligned && i == steps - 1) ? p_to : (off + step);
 		off += step * 2;
 	}
 
@@ -829,11 +829,11 @@ void CanvasItem::draw_rect(const Rect2 &p_rect, const Color &p_color, bool p_fil
 	} else {
 		Vector<Vector2> points;
 		points.resize(5);
-		points.write[0] = rect.position;
-		points.write[1] = rect.position + Vector2(rect.size.x, 0);
-		points.write[2] = rect.position + rect.size;
-		points.write[3] = rect.position + Vector2(0, rect.size.y);
-		points.write[4] = rect.position;
+		points.ptrw()[0] = rect.position;
+		points.ptrw()[1] = rect.position + Vector2(rect.size.x, 0);
+		points.ptrw()[2] = rect.position + rect.size;
+		points.ptrw()[3] = rect.position + Vector2(0, rect.size.y);
+		points.ptrw()[4] = rect.position;
 
 		Vector<Color> colors = { p_color };
 

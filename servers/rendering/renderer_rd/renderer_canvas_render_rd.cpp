@@ -145,7 +145,7 @@ RendererCanvasRender::PolygonID RendererCanvasRenderRD::request_polygon(const Ve
 			vd.location = RS::ARRAY_VERTEX;
 			vd.stride = stride * sizeof(float);
 
-			descriptions.write[0] = vd;
+			descriptions.ptrw()[0] = vd;
 
 			const Vector2 *points_ptr = p_points.ptr();
 
@@ -165,7 +165,7 @@ RendererCanvasRender::PolygonID RendererCanvasRenderRD::request_polygon(const Ve
 			vd.location = RS::ARRAY_COLOR;
 			vd.stride = stride * sizeof(float);
 
-			descriptions.write[1] = vd;
+			descriptions.ptrw()[1] = vd;
 
 			if (p_colors.size() == 1) {
 				Color color = p_colors[0];
@@ -193,8 +193,8 @@ RendererCanvasRender::PolygonID RendererCanvasRenderRD::request_polygon(const Ve
 			vd.location = RS::ARRAY_COLOR;
 			vd.stride = 0;
 
-			descriptions.write[1] = vd;
-			buffers.write[1] = mesh_storage->mesh_get_default_rd_buffer(RendererRD::MeshStorage::DEFAULT_RD_BUFFER_COLOR);
+			descriptions.ptrw()[1] = vd;
+			buffers.ptrw()[1] = mesh_storage->mesh_get_default_rd_buffer(RendererRD::MeshStorage::DEFAULT_RD_BUFFER_COLOR);
 		}
 
 		//uvs
@@ -205,7 +205,7 @@ RendererCanvasRender::PolygonID RendererCanvasRenderRD::request_polygon(const Ve
 			vd.location = RS::ARRAY_TEX_UV;
 			vd.stride = stride * sizeof(float);
 
-			descriptions.write[2] = vd;
+			descriptions.ptrw()[2] = vd;
 
 			const Vector2 *uv_ptr = p_uvs.ptr();
 
@@ -221,8 +221,8 @@ RendererCanvasRender::PolygonID RendererCanvasRenderRD::request_polygon(const Ve
 			vd.location = RS::ARRAY_TEX_UV;
 			vd.stride = 0;
 
-			descriptions.write[2] = vd;
-			buffers.write[2] = mesh_storage->mesh_get_default_rd_buffer(RendererRD::MeshStorage::DEFAULT_RD_BUFFER_TEX_UV);
+			descriptions.ptrw()[2] = vd;
+			buffers.ptrw()[2] = mesh_storage->mesh_get_default_rd_buffer(RendererRD::MeshStorage::DEFAULT_RD_BUFFER_TEX_UV);
 		}
 
 		//bones
@@ -233,7 +233,7 @@ RendererCanvasRender::PolygonID RendererCanvasRenderRD::request_polygon(const Ve
 			vd.location = RS::ARRAY_BONES;
 			vd.stride = stride * sizeof(float);
 
-			descriptions.write[3] = vd;
+			descriptions.ptrw()[3] = vd;
 
 			const int *bone_ptr = p_bones.ptr();
 
@@ -254,8 +254,8 @@ RendererCanvasRender::PolygonID RendererCanvasRenderRD::request_polygon(const Ve
 			vd.location = RS::ARRAY_BONES;
 			vd.stride = 0;
 
-			descriptions.write[3] = vd;
-			buffers.write[3] = mesh_storage->mesh_get_default_rd_buffer(RendererRD::MeshStorage::DEFAULT_RD_BUFFER_BONES);
+			descriptions.ptrw()[3] = vd;
+			buffers.ptrw()[3] = mesh_storage->mesh_get_default_rd_buffer(RendererRD::MeshStorage::DEFAULT_RD_BUFFER_BONES);
 		}
 
 		//weights
@@ -266,7 +266,7 @@ RendererCanvasRender::PolygonID RendererCanvasRenderRD::request_polygon(const Ve
 			vd.location = RS::ARRAY_WEIGHTS;
 			vd.stride = stride * sizeof(float);
 
-			descriptions.write[4] = vd;
+			descriptions.ptrw()[4] = vd;
 
 			const float *weight_ptr = p_weights.ptr();
 
@@ -287,8 +287,8 @@ RendererCanvasRender::PolygonID RendererCanvasRenderRD::request_polygon(const Ve
 			vd.location = RS::ARRAY_WEIGHTS;
 			vd.stride = 0;
 
-			descriptions.write[4] = vd;
-			buffers.write[4] = mesh_storage->mesh_get_default_rd_buffer(RendererRD::MeshStorage::DEFAULT_RD_BUFFER_WEIGHTS);
+			descriptions.ptrw()[4] = vd;
+			buffers.ptrw()[4] = mesh_storage->mesh_get_default_rd_buffer(RendererRD::MeshStorage::DEFAULT_RD_BUFFER_WEIGHTS);
 		}
 
 		//check that everything is as it should be
@@ -302,7 +302,7 @@ RendererCanvasRender::PolygonID RendererCanvasRenderRD::request_polygon(const Ve
 	pb.vertex_buffer = RD::get_singleton()->vertex_buffer_create(polygon_buffer.size(), polygon_buffer);
 	for (int i = 0; i < descriptions.size(); i++) {
 		if (buffers[i] == RID()) { //if put in vertex, use as vertex
-			buffers.write[i] = pb.vertex_buffer;
+			buffers.ptrw()[i] = pb.vertex_buffer;
 		}
 	}
 
@@ -1898,7 +1898,7 @@ RendererCanvasRenderRD::RendererCanvasRenderRD() {
 		vd.format = RD::DATA_FORMAT_R32G32_SFLOAT;
 		vd.stride = sizeof(float) * 2;
 
-		vf.write[0] = vd;
+		vf.ptrw()[0] = vd;
 		shadow_render.sdf_vertex_format = RD::get_singleton()->vertex_format_create(vf);
 
 		shadow_render.shader_version = shadow_render.shader.version_create();
@@ -2011,7 +2011,7 @@ RendererCanvasRenderRD::RendererCanvasRenderRD() {
 		shader.quad_vertex_format_id = RD::get_singleton()->vertex_format_create(vf);
 
 		// PRIMITIVE
-		vf.write[attrib_F_index].format = RD::DATA_FORMAT_R32G32B32A32_UINT;
+		vf.ptrw()[attrib_F_index].format = RD::DATA_FORMAT_R32G32B32A32_UINT;
 		shader.primitive_vertex_format_id = RD::get_singleton()->vertex_format_create(vf);
 	}
 

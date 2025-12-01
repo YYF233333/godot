@@ -103,7 +103,7 @@ void NavigationPolygon::_set_polygons(const TypedArray<Vector<int32_t>> &p_array
 	}
 	polygons.resize(p_array.size());
 	for (int i = 0; i < p_array.size(); i++) {
-		polygons.write[i] = p_array[i];
+		polygons.ptrw()[i] = p_array[i];
 	}
 }
 
@@ -122,7 +122,7 @@ void NavigationPolygon::_set_outlines(const TypedArray<Vector<Vector2>> &p_array
 	RWLockWrite write_lock(rwlock);
 	outlines.resize(p_array.size());
 	for (int i = 0; i < p_array.size(); i++) {
-		outlines.write[i] = p_array[i];
+		outlines.ptrw()[i] = p_array[i];
 	}
 	rect_cache_dirty = true;
 }
@@ -286,7 +286,7 @@ int NavigationPolygon::get_outline_count() const {
 void NavigationPolygon::set_outline(int p_idx, const Vector<Vector2> &p_outline) {
 	RWLockWrite write_lock(rwlock);
 	ERR_FAIL_INDEX(p_idx, outlines.size());
-	outlines.write[p_idx] = p_outline;
+	outlines.ptrw()[p_idx] = p_outline;
 	rect_cache_dirty = true;
 }
 

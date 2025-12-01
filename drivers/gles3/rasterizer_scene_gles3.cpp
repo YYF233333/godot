@@ -4224,7 +4224,7 @@ TypedArray<Image> RasterizerSceneGLES3::bake_render_uv2(RID p_base, const TypedA
 
 	for (uint32_t i = 0; i < sc; i++) {
 		if (i < (uint32_t)p_material_overrides.size()) {
-			materials.write[i] = p_material_overrides[i];
+			materials.ptrw()[i] = p_material_overrides[i];
 		}
 	}
 

@@ -395,7 +395,7 @@ void EditorNode3DGizmo::add_collision_segments(const Vector<Vector3> &p_lines) {
 	int from = collision_segments.size();
 	collision_segments.resize(from + p_lines.size());
 	for (int i = 0; i < p_lines.size(); i++) {
-		collision_segments.write[from + i] = p_lines[i];
+		collision_segments.ptrw()[from + i] = p_lines[i];
 	}
 }
 
@@ -471,14 +471,14 @@ void EditorNode3DGizmo::add_handles(const Vector<Vector3> &p_handles, const Ref<
 	int current_size = handle_list.size();
 	handle_list.resize(current_size + p_handles.size());
 	for (int i = 0; i < p_handles.size(); i++) {
-		handle_list.write[current_size + i] = p_handles[i];
+		handle_list.ptrw()[current_size + i] = p_handles[i];
 	}
 
 	if (!p_ids.is_empty()) {
 		current_size = id_list.size();
 		id_list.resize(current_size + p_ids.size());
 		for (int i = 0; i < p_ids.size(); i++) {
-			id_list.write[current_size + i] = p_ids[i];
+			id_list.ptrw()[current_size + i] = p_ids[i];
 		}
 	}
 }
@@ -571,7 +571,7 @@ bool EditorNode3DGizmo::intersect_frustum(const Camera3D *p_camera, const Vector
 		transformed_frustum.resize(plane_count);
 
 		for (int i = 0; i < plane_count; i++) {
-			transformed_frustum.write[i] = it.xform(p_frustum[i]);
+			transformed_frustum.ptrw()[i] = it.xform(p_frustum[i]);
 		}
 
 		Vector<Vector3> convex_points = Geometry3D::compute_convex_mesh_points(transformed_frustum.ptr(), plane_count);
@@ -801,7 +801,7 @@ void EditorNode3DGizmo::create() {
 	valid = true;
 
 	for (int i = 0; i < instances.size(); i++) {
-		instances.write[i].create_instance(spatial_node, hidden);
+		instances.ptrw()[i].create_instance(spatial_node, hidden);
 	}
 
 	bvh_node_id = Node3DEditor::get_singleton()->insert_gizmo_bvh_node(
@@ -830,7 +830,7 @@ void EditorNode3DGizmo::free() {
 		if (instances[i].instance.is_valid()) {
 			RS::get_singleton()->free_rid(instances[i].instance);
 		}
-		instances.write[i].instance = RID();
+		instances.ptrw()[i].instance = RID();
 	}
 
 	clear();

@@ -75,8 +75,8 @@ Vector<uint8_t> TemplateModifier::Structure::save() const {
 }
 
 Vector<uint8_t> &TemplateModifier::Structure::add_length(Vector<uint8_t> &r_bytes) const {
-	r_bytes.write[0] = r_bytes.size() & 0xff;
-	r_bytes.write[1] = r_bytes.size() >> 8 & 0xff;
+	r_bytes.ptrw()[0] = r_bytes.size() & 0xff;
+	r_bytes.ptrw()[1] = r_bytes.size() >> 8 & 0xff;
 	return r_bytes;
 }
 
@@ -647,7 +647,7 @@ Error TemplateModifier::_modify_template(const Ref<EditorExportPreset> &p_preset
 	VersionInfo version_info = _create_version_info(_get_strings(p_preset));
 	ManifestInfo manifest_info = _create_manifest_info();
 
-	SectionEntry &resources_section_entry = section_entries.write[resource_index];
+	SectionEntry &resources_section_entry = section_entries.ptrw()[resource_index];
 	uint32_t old_resources_size_of_raw_data = resources_section_entry.size_of_raw_data;
 	Vector<uint8_t> resources = _create_resources(resources_section_entry.virtual_address, group_icon, version_info, manifest_info);
 	resources_section_entry.virtual_size = resources.size();
@@ -665,7 +665,7 @@ Error TemplateModifier::_modify_template(const Ref<EditorExportPreset> &p_preset
 	uint32_t prev_virtual_address = resources_section_entry.virtual_address;
 	uint32_t prev_virtual_size = resources_section_entry.virtual_size;
 	for (int i = resource_index + 1; i < section_entries.size(); i++) {
-		SectionEntry &section_entry = section_entries.write[i];
+		SectionEntry &section_entry = section_entries.ptrw()[i];
 		template_file->seek(section_entry.pointer_to_raw_data);
 		Vector<uint8_t> data = template_file->get_buffer(section_entry.size_of_raw_data);
 		moved_section_data.push_back(data);

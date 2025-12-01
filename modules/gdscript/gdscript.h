@@ -551,10 +551,10 @@ public:
 		CallLevel *cl = _call_stack;
 		uint32_t idx = 0;
 		while (cl) {
-			csi.write[idx].line = *cl->line;
+			csi.ptrw()[idx].line = *cl->line;
 			if (cl->function) {
-				csi.write[idx].func = cl->function->get_name();
-				csi.write[idx].file = cl->function->get_script()->get_script_path();
+				csi.ptrw()[idx].func = cl->function->get_name();
+				csi.ptrw()[idx].file = cl->function->get_script()->get_script_path();
 			}
 			idx++;
 			cl = cl->prev;

@@ -163,7 +163,7 @@ void Polygon2D::_notification(int p_what) {
 			{
 				const Vector2 *polyr = polygon.ptr();
 				for (int i = 0; i < len; i++) {
-					points.write[i] = polyr[i] + offset;
+					points.ptrw()[i] = polyr[i] + offset;
 				}
 			}
 
@@ -203,16 +203,16 @@ void Polygon2D::_notification(int p_what) {
 					SWAP(ep[1], ep[4]);
 					SWAP(ep[2], ep[3]);
 					SWAP(ep[5], ep[0]);
-					SWAP(ep[6], points.write[highest_idx]);
+					SWAP(ep[6], points.ptrw()[highest_idx]);
 				}
 
 				points.resize(points.size() + 7);
 				for (int i = points.size() - 1; i >= highest_idx + 7; i--) {
-					points.write[i] = points[i - 7];
+					points.ptrw()[i] = points[i - 7];
 				}
 
 				for (int i = 0; i < 7; i++) {
-					points.write[highest_idx + i + 1] = ep[i];
+					points.ptrw()[highest_idx + i + 1] = ep[i];
 				}
 
 				len = points.size();
@@ -229,12 +229,12 @@ void Polygon2D::_notification(int p_what) {
 					const Vector2 *uvr = uv.ptr();
 
 					for (int i = 0; i < len; i++) {
-						uvs.write[i] = texmat.xform(uvr[i]) / tex_size;
+						uvs.ptrw()[i] = texmat.xform(uvr[i]) / tex_size;
 					}
 
 				} else {
 					for (int i = 0; i < len; i++) {
-						uvs.write[i] = texmat.xform(points[i]) / tex_size;
+						uvs.ptrw()[i] = texmat.xform(points[i]) / tex_size;
 					}
 				}
 			}
@@ -310,11 +310,11 @@ void Polygon2D::_notification(int p_what) {
 			if (vertex_colors.size() == points.size()) {
 				const Color *color_r = vertex_colors.ptr();
 				for (int i = 0; i < len; i++) {
-					colors.write[i] = color_r[i];
+					colors.ptrw()[i] = color_r[i];
 				}
 			} else {
 				for (int i = 0; i < len; i++) {
-					colors.write[i] = color;
+					colors.ptrw()[i] = color;
 				}
 			}
 
@@ -338,7 +338,7 @@ void Polygon2D::_notification(int p_what) {
 					for (int j = 0; j < ic; j++) {
 						int idx = r[j];
 						ERR_CONTINUE(idx < 0 || idx >= points.size());
-						tmp_points.write[j] = points[r[j]];
+						tmp_points.ptrw()[j] = points[r[j]];
 					}
 					Vector<int> indices = Geometry2D::triangulate_polygon(tmp_points);
 					int ic2 = indices.size();
@@ -564,13 +564,13 @@ void Polygon2D::clear_bones() {
 
 void Polygon2D::set_bone_weights(int p_index, const Vector<float> &p_weights) {
 	ERR_FAIL_INDEX(p_index, bone_weights.size());
-	bone_weights.write[p_index].weights = p_weights;
+	bone_weights.ptrw()[p_index].weights = p_weights;
 	queue_redraw();
 }
 
 void Polygon2D::set_bone_path(int p_index, const NodePath &p_path) {
 	ERR_FAIL_INDEX(p_index, bone_weights.size());
-	bone_weights.write[p_index].path = p_path;
+	bone_weights.ptrw()[p_index].path = p_path;
 	queue_redraw();
 }
 
@@ -630,7 +630,7 @@ void Polygon2D::navmesh_parse_source_geometry(const Ref<NavigationPolygon> &p_na
 
 		Vector<Vector2> shape_outline = polygon_2d->get_polygon();
 		for (int i = 0; i < shape_outline.size(); i++) {
-			shape_outline.write[i] = polygon_2d_xform.xform(shape_outline[i]);
+			shape_outline.ptrw()[i] = polygon_2d_xform.xform(shape_outline[i]);
 		}
 
 		p_source_geometry_data->add_obstruction_outline(shape_outline);

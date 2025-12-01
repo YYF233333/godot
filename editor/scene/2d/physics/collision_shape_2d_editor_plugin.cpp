@@ -158,7 +158,7 @@ void CollisionShape2DEditor::set_handle(int idx, Point2 &p_point) {
 			Vector<Vector2> segments = concave_shape->get_segments();
 
 			ERR_FAIL_INDEX(idx, segments.size());
-			segments.write[idx] = p_point;
+			segments.ptrw()[idx] = p_point;
 
 			concave_shape->set_segments(segments);
 
@@ -170,7 +170,7 @@ void CollisionShape2DEditor::set_handle(int idx, Point2 &p_point) {
 			Vector<Vector2> points = convex_shape->get_points();
 
 			ERR_FAIL_INDEX(idx, points.size());
-			points.write[idx] = p_point;
+			points.ptrw()[idx] = p_point;
 
 			convex_shape->set_points(points);
 
@@ -271,7 +271,7 @@ void CollisionShape2DEditor::commit_handle(int idx, Variant &p_org) {
 			Vector<Vector2> undo_segments = concave_shape->get_segments();
 
 			ERR_FAIL_INDEX(idx, undo_segments.size());
-			undo_segments.write[idx] = values;
+			undo_segments.ptrw()[idx] = values;
 
 			undo_redo->add_do_method(concave_shape.ptr(), "set_segments", concave_shape->get_segments());
 			undo_redo->add_undo_method(concave_shape.ptr(), "set_segments", undo_segments);
@@ -286,7 +286,7 @@ void CollisionShape2DEditor::commit_handle(int idx, Variant &p_org) {
 			Vector<Vector2> undo_points = convex_shape->get_points();
 
 			ERR_FAIL_INDEX(idx, undo_points.size());
-			undo_points.write[idx] = values;
+			undo_points.ptrw()[idx] = values;
 
 			undo_redo->add_do_method(convex_shape.ptr(), "set_points", convex_shape->get_points());
 			undo_redo->add_undo_method(convex_shape.ptr(), "set_points", undo_points);
@@ -524,8 +524,8 @@ void CollisionShape2DEditor::forward_canvas_draw_over_viewport(Control *p_overla
 			float radius = shape->get_radius();
 			float height = shape->get_height() / 2;
 
-			handles.write[0] = Point2(radius, 0);
-			handles.write[1] = Point2(0, height);
+			handles.ptrw()[0] = Point2(radius, 0);
+			handles.ptrw()[1] = Point2(0, height);
 
 			p_overlay->draw_texture(h, gt.xform(handles[0]) - size);
 			p_overlay->draw_texture(h, gt.xform(handles[1]) - size);
@@ -536,7 +536,7 @@ void CollisionShape2DEditor::forward_canvas_draw_over_viewport(Control *p_overla
 			Ref<CircleShape2D> shape = current_shape;
 
 			handles.resize(1);
-			handles.write[0] = Point2(shape->get_radius(), 0);
+			handles.ptrw()[0] = Point2(shape->get_radius(), 0);
 
 			p_overlay->draw_texture(h, gt.xform(handles[0]) - size);
 
@@ -549,7 +549,7 @@ void CollisionShape2DEditor::forward_canvas_draw_over_viewport(Control *p_overla
 
 			handles.resize(segments.size());
 			for (int i = 0; i < handles.size(); i++) {
-				handles.write[i] = segments[i];
+				handles.ptrw()[i] = segments[i];
 				p_overlay->draw_texture(h, gt.xform(handles[i]) - size);
 			}
 
@@ -562,7 +562,7 @@ void CollisionShape2DEditor::forward_canvas_draw_over_viewport(Control *p_overla
 
 			handles.resize(points.size());
 			for (int i = 0; i < handles.size(); i++) {
-				handles.write[i] = points[i];
+				handles.ptrw()[i] = points[i];
 				p_overlay->draw_texture(h, gt.xform(handles[i]) - size);
 			}
 
@@ -572,8 +572,8 @@ void CollisionShape2DEditor::forward_canvas_draw_over_viewport(Control *p_overla
 			Ref<WorldBoundaryShape2D> shape = current_shape;
 
 			handles.resize(2);
-			handles.write[0] = shape->get_normal() * shape->get_distance();
-			handles.write[1] = shape->get_normal() * (shape->get_distance() + 30.0);
+			handles.ptrw()[0] = shape->get_normal() * shape->get_distance();
+			handles.ptrw()[1] = shape->get_normal() * (shape->get_distance() + 30.0);
 
 			p_overlay->draw_texture(h, gt.xform(handles[0]) - size);
 			p_overlay->draw_texture(h, gt.xform(handles[1]) - size);
@@ -584,7 +584,7 @@ void CollisionShape2DEditor::forward_canvas_draw_over_viewport(Control *p_overla
 			Ref<SeparationRayShape2D> shape = current_shape;
 
 			handles.resize(1);
-			handles.write[0] = Point2(0, shape->get_length());
+			handles.ptrw()[0] = Point2(0, shape->get_length());
 
 			p_overlay->draw_texture(h, gt.xform(handles[0]) - size);
 
@@ -596,7 +596,7 @@ void CollisionShape2DEditor::forward_canvas_draw_over_viewport(Control *p_overla
 			handles.resize(8);
 			Vector2 ext = shape->get_size() / 2;
 			for (int i = 0; i < handles.size(); i++) {
-				handles.write[i] = RECT_HANDLES[i] * ext;
+				handles.ptrw()[i] = RECT_HANDLES[i] * ext;
 				p_overlay->draw_texture(h, gt.xform(handles[i]) - size);
 			}
 
@@ -606,8 +606,8 @@ void CollisionShape2DEditor::forward_canvas_draw_over_viewport(Control *p_overla
 			Ref<SegmentShape2D> shape = current_shape;
 
 			handles.resize(2);
-			handles.write[0] = shape->get_a();
-			handles.write[1] = shape->get_b();
+			handles.ptrw()[0] = shape->get_a();
+			handles.ptrw()[1] = shape->get_b();
 
 			p_overlay->draw_texture(h, gt.xform(handles[0]) - size);
 			p_overlay->draw_texture(h, gt.xform(handles[1]) - size);

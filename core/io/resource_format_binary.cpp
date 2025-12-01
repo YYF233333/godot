@@ -446,7 +446,7 @@ Error ResourceLoaderBinary::parse_variant(Variant &r_v) {
 						WARN_PRINT("Broken external resource! (index out of size)");
 						r_v = Variant();
 					} else {
-						Ref<ResourceLoader::LoadToken> &load_token = external_resources.write[erindex].load_token;
+						Ref<ResourceLoader::LoadToken> &load_token = external_resources.ptrw()[erindex].load_token;
 						if (load_token.is_valid()) { // If not valid, it's OK since then we know this load accepts broken dependencies.
 							Error err;
 							Ref<Resource> res = ResourceLoader::_load_complete(*load_token.ptr(), &err);
@@ -695,8 +695,8 @@ Error ResourceLoaderBinary::load() {
 			path = ProjectSettings::get_singleton()->localize_path(path.get_base_dir().path_join(external_resources[i].path));
 		}
 
-		external_resources.write[i].path = path; //remap happens here, not on load because on load it can actually be used for filesystem dock resource remap
-		external_resources.write[i].load_token = ResourceLoader::_load_start(path, external_resources[i].type, use_sub_threads ? ResourceLoader::LOAD_THREAD_DISTRIBUTE : ResourceLoader::LOAD_THREAD_FROM_CURRENT, cache_mode_for_external);
+		external_resources.ptrw()[i].path = path; //remap happens here, not on load because on load it can actually be used for filesystem dock resource remap
+		external_resources.ptrw()[i].load_token = ResourceLoader::_load_start(path, external_resources[i].type, use_sub_threads ? ResourceLoader::LOAD_THREAD_DISTRIBUTE : ResourceLoader::LOAD_THREAD_FROM_CURRENT, cache_mode_for_external);
 		if (external_resources[i].load_token.is_null()) {
 			if (!ResourceLoader::get_abort_on_missing_resources()) {
 				ResourceLoader::notify_dependency_error(local_path, path, external_resources[i].type);
@@ -722,7 +722,7 @@ Error ResourceLoaderBinary::load() {
 				id = path;
 				path = res_path + "::" + path;
 
-				internal_resources.write[i].path = path; // Update path.
+				internal_resources.ptrw()[i].path = path; // Update path.
 			}
 
 			if (cache_mode == ResourceFormatLoader::CACHE_MODE_REUSE && ResourceCache::has(path)) {
@@ -1066,7 +1066,7 @@ void ResourceLoaderBinary::open(Ref<FileAccess> p_f, bool p_no_resources, bool p
 	string_map.resize(string_table_size);
 	for (uint32_t i = 0; i < string_table_size; i++) {
 		StringName s = get_unicode_string();
-		string_map.write[i] = s;
+		string_map.ptrw()[i] = s;
 	}
 
 	print_bl("strings: " + itos(string_table_size));
@@ -2311,7 +2311,7 @@ Error ResourceFormatSaverBinaryInstance::save(const String &p_path, const Ref<Re
 	save_order.resize(external_resources.size());
 
 	for (const KeyValue<Ref<Resource>, int> &E : external_resources) {
-		save_order.write[E.value] = E.key;
+		save_order.ptrw()[E.value] = E.key;
 	}
 
 	for (int i = 0; i < save_order.size(); i++) {

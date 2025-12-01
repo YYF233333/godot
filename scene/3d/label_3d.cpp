@@ -414,35 +414,35 @@ void Label3D::_generate_glyph_surfaces(const Glyph &p_glyph, Vector2 &r_offset, 
 		s.mesh_colors.resize((s.offset + 1) * 4);
 		s.mesh_uvs.resize((s.offset + 1) * 4);
 
-		s.mesh_vertices.write[(s.offset * 4) + 3] = Vector3(r_offset.x + gl_of.x, r_offset.y - gl_of.y - gl_sz.y, s.z_shift);
-		s.mesh_vertices.write[(s.offset * 4) + 2] = Vector3(r_offset.x + gl_of.x + gl_sz.x, r_offset.y - gl_of.y - gl_sz.y, s.z_shift);
-		s.mesh_vertices.write[(s.offset * 4) + 1] = Vector3(r_offset.x + gl_of.x + gl_sz.x, r_offset.y - gl_of.y, s.z_shift);
-		s.mesh_vertices.write[(s.offset * 4) + 0] = Vector3(r_offset.x + gl_of.x, r_offset.y - gl_of.y, s.z_shift);
+		s.mesh_vertices.ptrw()[(s.offset * 4) + 3] = Vector3(r_offset.x + gl_of.x, r_offset.y - gl_of.y - gl_sz.y, s.z_shift);
+		s.mesh_vertices.ptrw()[(s.offset * 4) + 2] = Vector3(r_offset.x + gl_of.x + gl_sz.x, r_offset.y - gl_of.y - gl_sz.y, s.z_shift);
+		s.mesh_vertices.ptrw()[(s.offset * 4) + 1] = Vector3(r_offset.x + gl_of.x + gl_sz.x, r_offset.y - gl_of.y, s.z_shift);
+		s.mesh_vertices.ptrw()[(s.offset * 4) + 0] = Vector3(r_offset.x + gl_of.x, r_offset.y - gl_of.y, s.z_shift);
 
 		for (int i = 0; i < 4; i++) {
-			s.mesh_normals.write[(s.offset * 4) + i] = Vector3(0.0, 0.0, 1.0);
-			s.mesh_tangents.write[(s.offset * 16) + (i * 4) + 0] = 1.0;
-			s.mesh_tangents.write[(s.offset * 16) + (i * 4) + 1] = 0.0;
-			s.mesh_tangents.write[(s.offset * 16) + (i * 4) + 2] = 0.0;
-			s.mesh_tangents.write[(s.offset * 16) + (i * 4) + 3] = 1.0;
-			s.mesh_colors.write[(s.offset * 4) + i] = p_modulate;
-			s.mesh_uvs.write[(s.offset * 4) + i] = Vector2();
+			s.mesh_normals.ptrw()[(s.offset * 4) + i] = Vector3(0.0, 0.0, 1.0);
+			s.mesh_tangents.ptrw()[(s.offset * 16) + (i * 4) + 0] = 1.0;
+			s.mesh_tangents.ptrw()[(s.offset * 16) + (i * 4) + 1] = 0.0;
+			s.mesh_tangents.ptrw()[(s.offset * 16) + (i * 4) + 2] = 0.0;
+			s.mesh_tangents.ptrw()[(s.offset * 16) + (i * 4) + 3] = 1.0;
+			s.mesh_colors.ptrw()[(s.offset * 4) + i] = p_modulate;
+			s.mesh_uvs.ptrw()[(s.offset * 4) + i] = Vector2();
 		}
 
 		if (tex.is_valid()) {
-			s.mesh_uvs.write[(s.offset * 4) + 3] = Vector2(gl_uv.position.x / texs.x, (gl_uv.position.y + gl_uv.size.y) / texs.y);
-			s.mesh_uvs.write[(s.offset * 4) + 2] = Vector2((gl_uv.position.x + gl_uv.size.x) / texs.x, (gl_uv.position.y + gl_uv.size.y) / texs.y);
-			s.mesh_uvs.write[(s.offset * 4) + 1] = Vector2((gl_uv.position.x + gl_uv.size.x) / texs.x, gl_uv.position.y / texs.y);
-			s.mesh_uvs.write[(s.offset * 4) + 0] = Vector2(gl_uv.position.x / texs.x, gl_uv.position.y / texs.y);
+			s.mesh_uvs.ptrw()[(s.offset * 4) + 3] = Vector2(gl_uv.position.x / texs.x, (gl_uv.position.y + gl_uv.size.y) / texs.y);
+			s.mesh_uvs.ptrw()[(s.offset * 4) + 2] = Vector2((gl_uv.position.x + gl_uv.size.x) / texs.x, (gl_uv.position.y + gl_uv.size.y) / texs.y);
+			s.mesh_uvs.ptrw()[(s.offset * 4) + 1] = Vector2((gl_uv.position.x + gl_uv.size.x) / texs.x, gl_uv.position.y / texs.y);
+			s.mesh_uvs.ptrw()[(s.offset * 4) + 0] = Vector2(gl_uv.position.x / texs.x, gl_uv.position.y / texs.y);
 		}
 
 		s.indices.resize((s.offset + 1) * 6);
-		s.indices.write[(s.offset * 6) + 0] = (s.offset * 4) + 0;
-		s.indices.write[(s.offset * 6) + 1] = (s.offset * 4) + 1;
-		s.indices.write[(s.offset * 6) + 2] = (s.offset * 4) + 2;
-		s.indices.write[(s.offset * 6) + 3] = (s.offset * 4) + 0;
-		s.indices.write[(s.offset * 6) + 4] = (s.offset * 4) + 2;
-		s.indices.write[(s.offset * 6) + 5] = (s.offset * 4) + 3;
+		s.indices.ptrw()[(s.offset * 6) + 0] = (s.offset * 4) + 0;
+		s.indices.ptrw()[(s.offset * 6) + 1] = (s.offset * 4) + 1;
+		s.indices.ptrw()[(s.offset * 6) + 2] = (s.offset * 4) + 2;
+		s.indices.ptrw()[(s.offset * 6) + 3] = (s.offset * 4) + 0;
+		s.indices.ptrw()[(s.offset * 6) + 4] = (s.offset * 4) + 2;
+		s.indices.ptrw()[(s.offset * 6) + 5] = (s.offset * 4) + 3;
 
 		s.offset++;
 		r_offset.x += p_glyph.advance * pixel_size;

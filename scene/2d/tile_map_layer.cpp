@@ -1531,7 +1531,7 @@ void TileMapLayer::_navigation_draw_cell_debug(const RID &p_canvas_item, const V
 							debug_polygon_vertices.resize(polygon.size());
 							for (int j = 0; j < polygon.size(); j++) {
 								ERR_FAIL_INDEX(polygon[j], navigation_polygon_vertices.size());
-								debug_polygon_vertices.write[j] = navigation_polygon_vertices[polygon[j]];
+								debug_polygon_vertices.ptrw()[j] = navigation_polygon_vertices[polygon[j]];
 							}
 
 							// Generate the polygon color, slightly randomly modified from the settings one.
@@ -3007,7 +3007,7 @@ Ref<TileMapPattern> TileMapLayer::get_pattern(TypedArray<Vector2i> p_coords_arra
 				}
 			}
 		}
-		coords_in_pattern_array.write[i] = coords_in_pattern;
+		coords_in_pattern_array.ptrw()[i] = coords_in_pattern;
 	}
 
 	for (int i = 0; i < coords_in_pattern_array.size(); i++) {

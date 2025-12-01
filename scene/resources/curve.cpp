@@ -511,12 +511,12 @@ void Curve::_bake() const {
 	for (int i = 1; i < _bake_resolution - 1; ++i) {
 		real_t x = get_domain_range() * i / static_cast<real_t>(_bake_resolution - 1) + _min_domain;
 		real_t y = sample(x);
-		_baked_cache.write[i] = y;
+		_baked_cache.ptrw()[i] = y;
 	}
 
 	if (_points.size() != 0) {
-		_baked_cache.write[0] = _points[0].position.y;
-		_baked_cache.write[_baked_cache.size() - 1] = _points[_points.size() - 1].position.y;
+		_baked_cache.ptrw()[0] = _points[0].position.y;
+		_baked_cache.ptrw()[_baked_cache.size() - 1] = _points[_points.size() - 1].position.y;
 	}
 
 	_baked_cache_dirty = false;
@@ -1274,7 +1274,7 @@ PackedVector2Array Curve2D::tessellate(int p_max_stages, real_t p_tolerance) con
 
 	int pc = 1;
 	for (uint32_t i = 0; i < points.size() - 1; i++) {
-		_bake_segment2d(midpoints.write[i], 0, 1, points[i].position, points[i].out, points[i + 1].position, points[i + 1].in, 0, p_max_stages, p_tolerance);
+		_bake_segment2d(midpoints.ptrw()[i], 0, 1, points[i].position, points[i].out, points[i + 1].position, points[i + 1].in, 0, p_max_stages, p_tolerance);
 		pc++;
 		pc += midpoints[i].size();
 	}
@@ -1304,7 +1304,7 @@ Vector<RBMap<real_t, Vector2>> Curve2D::_tessellate_even_length(int p_max_stages
 	midpoints.resize(points.size() - 1);
 
 	for (uint32_t i = 0; i < points.size() - 1; i++) {
-		_bake_segment2d_even_length(midpoints.write[i], 0, 1, points[i].position, points[i].out, points[i + 1].position, points[i + 1].in, 0, p_max_stages, p_length);
+		_bake_segment2d_even_length(midpoints.ptrw()[i], 0, 1, points[i].position, points[i].out, points[i + 1].position, points[i + 1].in, 0, p_max_stages, p_length);
 	}
 	return midpoints;
 }
@@ -2319,9 +2319,9 @@ PackedVector3Array Curve3D::tessellate(int p_max_stages, real_t p_tolerance) con
 	int pc = 1;
 	for (int i = 0; i < num_intervals; i++) {
 		if (!closed || i < num_intervals - 1) {
-			_bake_segment3d(midpoints.write[i], 0, 1, points[i].position, points[i].out, points[i + 1].position, points[i + 1].in, 0, p_max_stages, p_tolerance);
+			_bake_segment3d(midpoints.ptrw()[i], 0, 1, points[i].position, points[i].out, points[i + 1].position, points[i + 1].in, 0, p_max_stages, p_tolerance);
 		} else {
-			_bake_segment3d(midpoints.write[i], 0, 1, points[i].position, points[i].out, points[0].position, points[0].in, 0, p_max_stages, p_tolerance);
+			_bake_segment3d(midpoints.ptrw()[i], 0, 1, points[i].position, points[i].out, points[0].position, points[0].in, 0, p_max_stages, p_tolerance);
 		}
 		pc++;
 		pc += midpoints[i].size();
@@ -2358,9 +2358,9 @@ Vector<RBMap<real_t, Vector3>> Curve3D::_tessellate_even_length(int p_max_stages
 
 	for (int i = 0; i < num_intervals; i++) {
 		if (!closed || i < num_intervals - 1) {
-			_bake_segment3d_even_length(midpoints.write[i], 0, 1, points[i].position, points[i].out, points[i + 1].position, points[i + 1].in, 0, p_max_stages, p_length);
+			_bake_segment3d_even_length(midpoints.ptrw()[i], 0, 1, points[i].position, points[i].out, points[i + 1].position, points[i + 1].in, 0, p_max_stages, p_length);
 		} else {
-			_bake_segment3d_even_length(midpoints.write[i], 0, 1, points[i].position, points[i].out, points[0].position, points[0].in, 0, p_max_stages, p_length);
+			_bake_segment3d_even_length(midpoints.ptrw()[i], 0, 1, points[i].position, points[i].out, points[0].position, points[0].in, 0, p_max_stages, p_length);
 		}
 	}
 	return midpoints;

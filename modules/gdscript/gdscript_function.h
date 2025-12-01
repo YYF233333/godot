@@ -207,7 +207,7 @@ public:
 		while (p_index >= container_element_types.size()) {
 			container_element_types.push_back(GDScriptDataType());
 		}
-		container_element_types.write[p_index] = GDScriptDataType(p_element_type);
+		container_element_types.ptrw()[p_index] = GDScriptDataType(p_element_type);
 	}
 
 	GDScriptDataType get_container_element_type(int p_index) const {

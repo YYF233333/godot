@@ -726,7 +726,7 @@ Error CompressedTextureLayered::_load_data(const String &p_path, Vector<Ref<Imag
 	for (uint32_t i = 0; i < layer_count; i++) {
 		Ref<Image> image = CompressedTexture2D::load_image_from_file(f, p_size_limit);
 		ERR_FAIL_COND_V(image.is_null() || image->is_empty(), ERR_CANT_OPEN);
-		images.write[i] = image;
+		images.ptrw()[i] = image;
 	}
 
 	return OK;

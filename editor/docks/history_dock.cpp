@@ -82,21 +82,21 @@ void HistoryDock::refresh_history() {
 	int i = 0;
 	if (include_scene) {
 		for (const EditorUndoRedoManager::Action &E : current_scene_history.redo_stack) {
-			full_history.write[i] = E;
+			full_history.ptrw()[i] = E;
 			i++;
 		}
 		for (const EditorUndoRedoManager::Action &E : current_scene_history.undo_stack) {
-			full_history.write[i] = E;
+			full_history.ptrw()[i] = E;
 			i++;
 		}
 	}
 	if (include_global) {
 		for (const EditorUndoRedoManager::Action &E : global_history.redo_stack) {
-			full_history.write[i] = E;
+			full_history.ptrw()[i] = E;
 			i++;
 		}
 		for (const EditorUndoRedoManager::Action &E : global_history.undo_stack) {
-			full_history.write[i] = E;
+			full_history.ptrw()[i] = E;
 			i++;
 		}
 	}

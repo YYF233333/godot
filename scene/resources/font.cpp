@@ -579,7 +579,7 @@ _FORCE_INLINE_ void FontFile::_clear_cache() {
 	for (int i = 0; i < cache.size(); i++) {
 		if (cache[i].is_valid()) {
 			TS->free_rid(cache[i]);
-			cache.write[i] = RID();
+			cache.ptrw()[i] = RID();
 		}
 	}
 }
@@ -590,9 +590,9 @@ _FORCE_INLINE_ void FontFile::_ensure_rid(int p_cache_index, int p_make_linked_f
 	}
 	if (unlikely(!cache[p_cache_index].is_valid())) {
 		if (p_make_linked_from >= 0 && p_make_linked_from != p_cache_index && p_make_linked_from < cache.size()) {
-			cache.write[p_cache_index] = TS->create_font_linked_variation(cache[p_make_linked_from]);
+			cache.ptrw()[p_cache_index] = TS->create_font_linked_variation(cache[p_make_linked_from]);
 		} else {
-			cache.write[p_cache_index] = TS->create_font();
+			cache.ptrw()[p_cache_index] = TS->create_font();
 			TS->font_set_data_ptr(cache[p_cache_index], data_ptr, data_size);
 			TS->font_set_antialiasing(cache[p_cache_index], antialiasing);
 			TS->font_set_generate_mipmaps(cache[p_cache_index], mipmaps);
@@ -2448,7 +2448,7 @@ void FontFile::clear_cache() {
 void FontFile::remove_cache(int p_cache_index) {
 	ERR_FAIL_INDEX(p_cache_index, cache.size());
 	if (cache[p_cache_index].is_valid()) {
-		TS->free_rid(cache.write[p_cache_index]);
+		TS->free_rid(cache.ptrw()[p_cache_index]);
 	}
 	cache.remove_at(p_cache_index);
 	emit_changed();

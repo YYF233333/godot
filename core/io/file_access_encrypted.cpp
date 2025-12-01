@@ -124,7 +124,7 @@ Error FileAccessEncrypted::open_and_parse_password(Ref<FileAccess> p_base, const
 	Vector<uint8_t> key_md5;
 	key_md5.resize(32);
 	for (int i = 0; i < 32; i++) {
-		key_md5.write[i] = cs[i];
+		key_md5.ptrw()[i] = cs[i];
 	}
 
 	return open_and_parse(p_base, key_md5, p_mode);

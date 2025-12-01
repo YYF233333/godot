@@ -152,7 +152,7 @@ String EditorExportPreset::_get_property_warning(const StringName &p_name) const
 			continue;
 		}
 
-		export_plugins.write[i]->set_export_preset(Ref<EditorExportPreset>(this));
+		export_plugins.ptrw()[i]->set_export_preset(Ref<EditorExportPreset>(this));
 		String plugin_warning = export_plugins[i]->_get_export_option_warning(platform, p_name);
 		if (!plugin_warning.is_empty()) {
 			warning += plugin_warning + "\n";
@@ -177,7 +177,7 @@ void EditorExportPreset::_get_property_list(List<PropertyInfo> *p_list) const {
 					continue;
 				}
 
-				export_plugins.write[i]->set_export_preset(Ref<EditorExportPreset>(this));
+				export_plugins.ptrw()[i]->set_export_preset(Ref<EditorExportPreset>(this));
 				property_visible = export_plugins[i]->_get_export_option_visibility(platform, E.key);
 				if (!property_visible) {
 					break;
@@ -232,7 +232,7 @@ void EditorExportPreset::update_value_overrides() {
 			continue;
 		}
 
-		export_plugins.write[i]->set_export_preset(Ref<EditorExportPreset>(this));
+		export_plugins.ptrw()[i]->set_export_preset(Ref<EditorExportPreset>(this));
 
 		Dictionary plugin_overrides = export_plugins[i]->_get_export_options_overrides(platform);
 		if (!plugin_overrides.is_empty()) {

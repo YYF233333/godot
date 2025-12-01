@@ -143,12 +143,12 @@ public:
 
 	/// Set the texture at the given index.
 	_ALWAYS_INLINE_ void set_texture(uint32_t p_idx, MTL::Texture p_texture) {
-		textures.write[p_idx] = p_texture;
+		textures.ptrw()[p_idx] = p_texture;
 	}
 
 	/// Unset or nil the texture at the given index.
 	_ALWAYS_INLINE_ void unset_texture(uint32_t p_idx) {
-		textures.write[p_idx] = nil;
+		textures.ptrw()[p_idx] = nil;
 	}
 
 	/// Resizes buffers to the specified size.

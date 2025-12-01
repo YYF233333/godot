@@ -126,9 +126,9 @@ void SceneCacheInterface::process_simplify_path(int p_from, const uint8_t *p_pac
 	// Send ack.
 	Vector<uint8_t> packet;
 	packet.resize(1 + 1 + 4);
-	packet.write[0] = SceneMultiplayer::NETWORK_COMMAND_CONFIRM_PATH;
-	packet.write[1] = valid_rpc_checksum;
-	encode_uint32(id, &packet.write[2]);
+	packet.ptrw()[0] = SceneMultiplayer::NETWORK_COMMAND_CONFIRM_PATH;
+	packet.ptrw()[1] = valid_rpc_checksum;
+	encode_uint32(id, &packet.ptrw()[2]);
 
 	Ref<MultiplayerPeer> multiplayer_peer = multiplayer->get_multiplayer_peer();
 	ERR_FAIL_COND(multiplayer_peer.is_null());
@@ -178,14 +178,14 @@ Error SceneCacheInterface::_send_confirm_path(Node *p_node, NodeCache &p_cache, 
 	packet.resize(1 + 4 + path_len + methods_md5_len);
 	int ofs = 0;
 
-	packet.write[ofs] = SceneMultiplayer::NETWORK_COMMAND_SIMPLIFY_PATH;
+	packet.ptrw()[ofs] = SceneMultiplayer::NETWORK_COMMAND_SIMPLIFY_PATH;
 	ofs += 1;
 
-	ofs += encode_cstring(methods_md5.utf8().get_data(), &packet.write[ofs]);
+	ofs += encode_cstring(methods_md5.utf8().get_data(), &packet.ptrw()[ofs]);
 
-	ofs += encode_uint32(p_cache.cache_id, &packet.write[ofs]);
+	ofs += encode_uint32(p_cache.cache_id, &packet.ptrw()[ofs]);
 
-	ofs += encode_cstring(path.get_data(), &packet.write[ofs]);
+	ofs += encode_cstring(path.get_data(), &packet.ptrw()[ofs]);
 
 	Ref<MultiplayerPeer> multiplayer_peer = multiplayer->get_multiplayer_peer();
 	ERR_FAIL_COND_V(multiplayer_peer.is_null(), ERR_BUG);

@@ -519,7 +519,7 @@ bool RenderingShaderContainerD3D12::_generate_root_signature(BitField<RenderingD
 					r_first_in_set = false;
 				}
 
-				TraceableDescriptorTable &table = r_tables.write[r_tables.size() - 1];
+				TraceableDescriptorTable &table = r_tables.ptrw()[r_tables.size() - 1];
 				DEV_ASSERT(table.set == UINT_MAX || table.set == i);
 
 				table.stages_mask |= p_dxil_stages_mask;

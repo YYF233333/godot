@@ -144,11 +144,11 @@ void StaticBody2D::navmesh_parse_source_geometry(const Ref<NavigationPolygon> &p
 				const Vector2 &rectangle_size = rectangle_shape->get_size();
 
 				shape_outline.resize(5);
-				shape_outline.write[0] = static_body_xform.xform(-rectangle_size * 0.5);
-				shape_outline.write[1] = static_body_xform.xform(Vector2(rectangle_size.x, -rectangle_size.y) * 0.5);
-				shape_outline.write[2] = static_body_xform.xform(rectangle_size * 0.5);
-				shape_outline.write[3] = static_body_xform.xform(Vector2(-rectangle_size.x, rectangle_size.y) * 0.5);
-				shape_outline.write[4] = static_body_xform.xform(-rectangle_size * 0.5);
+				shape_outline.ptrw()[0] = static_body_xform.xform(-rectangle_size * 0.5);
+				shape_outline.ptrw()[1] = static_body_xform.xform(Vector2(rectangle_size.x, -rectangle_size.y) * 0.5);
+				shape_outline.ptrw()[2] = static_body_xform.xform(rectangle_size * 0.5);
+				shape_outline.ptrw()[3] = static_body_xform.xform(Vector2(-rectangle_size.x, rectangle_size.y) * 0.5);
+				shape_outline.ptrw()[4] = static_body_xform.xform(-rectangle_size * 0.5);
 
 				p_source_geometry_data->add_obstruction_outline(shape_outline);
 			}
@@ -165,10 +165,10 @@ void StaticBody2D::navmesh_parse_source_geometry(const Ref<NavigationPolygon> &p
 				for (int i = 0; i < 12; i++) {
 					Vector2 ofs = Vector2(0, (i > 3 && i <= 9) ? capsule_height * 0.5 - capsule_radius : -capsule_height * 0.5 + capsule_radius);
 
-					shape_outline.write[shape_outline_inx] = static_body_xform.xform(Vector2(Math::sin(i * turn_step), -Math::cos(i * turn_step)) * capsule_radius + ofs);
+					shape_outline.ptrw()[shape_outline_inx] = static_body_xform.xform(Vector2(Math::sin(i * turn_step), -Math::cos(i * turn_step)) * capsule_radius + ofs);
 					shape_outline_inx += 1;
 					if (i == 3 || i == 9) {
-						shape_outline.write[shape_outline_inx] = static_body_xform.xform(Vector2(Math::sin(i * turn_step), -Math::cos(i * turn_step)) * capsule_radius - ofs);
+						shape_outline.ptrw()[shape_outline_inx] = static_body_xform.xform(Vector2(Math::sin(i * turn_step), -Math::cos(i * turn_step)) * capsule_radius - ofs);
 						shape_outline_inx += 1;
 					}
 				}
@@ -186,7 +186,7 @@ void StaticBody2D::navmesh_parse_source_geometry(const Ref<NavigationPolygon> &p
 
 				const real_t turn_step = Math::TAU / real_t(circle_edge_count);
 				for (int i = 0; i < circle_edge_count; i++) {
-					shape_outline.write[i] = static_body_xform.xform(Vector2(Math::cos(i * turn_step), Math::sin(i * turn_step)) * circle_radius);
+					shape_outline.ptrw()[i] = static_body_xform.xform(Vector2(Math::cos(i * turn_step), Math::sin(i * turn_step)) * circle_radius);
 				}
 
 				p_source_geometry_data->add_obstruction_outline(shape_outline);
@@ -197,7 +197,7 @@ void StaticBody2D::navmesh_parse_source_geometry(const Ref<NavigationPolygon> &p
 				Vector<Vector2> shape_outline = concave_polygon_shape->get_segments();
 
 				for (int i = 0; i < shape_outline.size(); i++) {
-					shape_outline.write[i] = static_body_xform.xform(shape_outline[i]);
+					shape_outline.ptrw()[i] = static_body_xform.xform(shape_outline[i]);
 				}
 
 				p_source_geometry_data->add_obstruction_outline(shape_outline);
@@ -208,7 +208,7 @@ void StaticBody2D::navmesh_parse_source_geometry(const Ref<NavigationPolygon> &p
 				Vector<Vector2> shape_outline = convex_polygon_shape->get_points();
 
 				for (int i = 0; i < shape_outline.size(); i++) {
-					shape_outline.write[i] = static_body_xform.xform(shape_outline[i]);
+					shape_outline.ptrw()[i] = static_body_xform.xform(shape_outline[i]);
 				}
 
 				p_source_geometry_data->add_obstruction_outline(shape_outline);

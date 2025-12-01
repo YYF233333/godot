@@ -85,7 +85,7 @@ ClusterBuilderSharedDataRD::ClusterBuilderSharedDataRD() {
 		} else {
 			Vector<RD::AttachmentFormat> afs;
 			afs.push_back(RD::AttachmentFormat());
-			afs.write[0].usage_flags = RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT;
+			afs.ptrw()[0].usage_flags = RD::TEXTURE_USAGE_COLOR_ATTACHMENT_BIT;
 			fb_format = rd->framebuffer_format_create(afs);
 			blend_state = RD::PipelineColorBlendState::create_blend();
 #if (defined(MACOS_ENABLED) || defined(APPLE_EMBEDDED_ENABLED))

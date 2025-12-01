@@ -619,7 +619,7 @@ void TileSet::remove_occlusion_layer(int p_index) {
 
 void TileSet::set_occlusion_layer_light_mask(int p_layer_index, int p_light_mask) {
 	ERR_FAIL_INDEX(p_layer_index, occlusion_layers.size());
-	occlusion_layers.write[p_layer_index].light_mask = p_light_mask;
+	occlusion_layers.ptrw()[p_layer_index].light_mask = p_light_mask;
 	emit_changed();
 }
 
@@ -630,7 +630,7 @@ int TileSet::get_occlusion_layer_light_mask(int p_layer_index) const {
 
 void TileSet::set_occlusion_layer_sdf_collision(int p_layer_index, bool p_sdf_collision) {
 	ERR_FAIL_INDEX(p_layer_index, occlusion_layers.size());
-	occlusion_layers.write[p_layer_index].sdf_collision = p_sdf_collision;
+	occlusion_layers.ptrw()[p_layer_index].sdf_collision = p_sdf_collision;
 	emit_changed();
 }
 
@@ -683,7 +683,7 @@ void TileSet::remove_physics_layer(int p_index) {
 
 void TileSet::set_physics_layer_collision_layer(int p_layer_index, uint32_t p_layer) {
 	ERR_FAIL_INDEX(p_layer_index, physics_layers.size());
-	physics_layers.write[p_layer_index].collision_layer = p_layer;
+	physics_layers.ptrw()[p_layer_index].collision_layer = p_layer;
 	emit_changed();
 }
 
@@ -694,7 +694,7 @@ uint32_t TileSet::get_physics_layer_collision_layer(int p_layer_index) const {
 
 void TileSet::set_physics_layer_collision_mask(int p_layer_index, uint32_t p_mask) {
 	ERR_FAIL_INDEX(p_layer_index, physics_layers.size());
-	physics_layers.write[p_layer_index].collision_mask = p_mask;
+	physics_layers.ptrw()[p_layer_index].collision_mask = p_mask;
 	emit_changed();
 }
 
@@ -705,7 +705,7 @@ uint32_t TileSet::get_physics_layer_collision_mask(int p_layer_index) const {
 
 void TileSet::set_physics_layer_collision_priority(int p_layer_index, real_t p_priority) {
 	ERR_FAIL_INDEX(p_layer_index, physics_layers.size());
-	physics_layers.write[p_layer_index].collision_priority = p_priority;
+	physics_layers.ptrw()[p_layer_index].collision_priority = p_priority;
 	emit_changed();
 }
 
@@ -716,7 +716,7 @@ real_t TileSet::get_physics_layer_collision_priority(int p_layer_index) const {
 
 void TileSet::set_physics_layer_physics_material(int p_layer_index, Ref<PhysicsMaterial> p_physics_material) {
 	ERR_FAIL_INDEX(p_layer_index, physics_layers.size());
-	physics_layers.write[p_layer_index].physics_material = p_physics_material;
+	physics_layers.ptrw()[p_layer_index].physics_material = p_physics_material;
 }
 
 Ref<PhysicsMaterial> TileSet::get_physics_layer_physics_material(int p_layer_index) const {
@@ -772,7 +772,7 @@ void TileSet::remove_terrain_set(int p_index) {
 
 void TileSet::set_terrain_set_mode(int p_terrain_set, TerrainMode p_terrain_mode) {
 	ERR_FAIL_INDEX(p_terrain_set, terrain_sets.size());
-	terrain_sets.write[p_terrain_set].mode = p_terrain_mode;
+	terrain_sets.ptrw()[p_terrain_set].mode = p_terrain_mode;
 	for (KeyValue<int, Ref<TileSetSource>> &E_source : sources) {
 		E_source.value->notify_tile_data_properties_should_change();
 	}
@@ -794,7 +794,7 @@ int TileSet::get_terrains_count(int p_terrain_set) const {
 
 void TileSet::add_terrain(int p_terrain_set, int p_index) {
 	ERR_FAIL_INDEX(p_terrain_set, terrain_sets.size());
-	Vector<Terrain> &terrains = terrain_sets.write[p_terrain_set].terrains;
+	Vector<Terrain> &terrains = terrain_sets.ptrw()[p_terrain_set].terrains;
 	if (p_index < 0) {
 		p_index = terrains.size();
 	}
@@ -805,8 +805,8 @@ void TileSet::add_terrain(int p_terrain_set, int p_index) {
 	float hue_rotate = (terrains.size() % 16) / 16.0;
 	Color c;
 	c.set_hsv(Math::fmod(float(hue_rotate), float(1.0)), 0.5, 0.5);
-	terrains.write[p_index].color = c;
-	terrains.write[p_index].name = String(vformat("Terrain %d", p_index));
+	terrains.ptrw()[p_index].color = c;
+	terrains.ptrw()[p_index].name = String(vformat("Terrain %d", p_index));
 
 	for (KeyValue<int, Ref<TileSetSource>> source : sources) {
 		source.value->add_terrain(p_terrain_set, p_index);
@@ -819,7 +819,7 @@ void TileSet::add_terrain(int p_terrain_set, int p_index) {
 
 void TileSet::move_terrain(int p_terrain_set, int p_from_index, int p_to_pos) {
 	ERR_FAIL_INDEX(p_terrain_set, terrain_sets.size());
-	Vector<Terrain> &terrains = terrain_sets.write[p_terrain_set].terrains;
+	Vector<Terrain> &terrains = terrain_sets.ptrw()[p_terrain_set].terrains;
 
 	ERR_FAIL_INDEX(p_from_index, terrains.size());
 	ERR_FAIL_INDEX(p_to_pos, terrains.size() + 1);
@@ -835,7 +835,7 @@ void TileSet::move_terrain(int p_terrain_set, int p_from_index, int p_to_pos) {
 
 void TileSet::remove_terrain(int p_terrain_set, int p_index) {
 	ERR_FAIL_INDEX(p_terrain_set, terrain_sets.size());
-	Vector<Terrain> &terrains = terrain_sets.write[p_terrain_set].terrains;
+	Vector<Terrain> &terrains = terrain_sets.ptrw()[p_terrain_set].terrains;
 
 	ERR_FAIL_INDEX(p_index, terrains.size());
 	terrains.remove_at(p_index);
@@ -850,7 +850,7 @@ void TileSet::remove_terrain(int p_terrain_set, int p_index) {
 void TileSet::set_terrain_name(int p_terrain_set, int p_terrain_index, String p_name) {
 	ERR_FAIL_INDEX(p_terrain_set, terrain_sets.size());
 	ERR_FAIL_INDEX(p_terrain_index, terrain_sets[p_terrain_set].terrains.size());
-	terrain_sets.write[p_terrain_set].terrains.write[p_terrain_index].name = p_name;
+	terrain_sets.ptrw()[p_terrain_set].terrains.ptrw()[p_terrain_index].name = p_name;
 	emit_changed();
 }
 
@@ -867,7 +867,7 @@ void TileSet::set_terrain_color(int p_terrain_set, int p_terrain_index, Color p_
 		WARN_PRINT("Terrain color should have alpha == 1.0");
 		p_color.a = 1.0;
 	}
-	terrain_sets.write[p_terrain_set].terrains.write[p_terrain_index].color = p_color;
+	terrain_sets.ptrw()[p_terrain_set].terrains.ptrw()[p_terrain_index].color = p_color;
 	emit_changed();
 }
 
@@ -1014,7 +1014,7 @@ void TileSet::remove_navigation_layer(int p_index) {
 
 void TileSet::set_navigation_layer_layers(int p_layer_index, uint32_t p_layers) {
 	ERR_FAIL_INDEX(p_layer_index, navigation_layers.size());
-	navigation_layers.write[p_layer_index].layers = p_layers;
+	navigation_layers.ptrw()[p_layer_index].layers = p_layers;
 	emit_changed();
 }
 
@@ -1125,7 +1125,7 @@ void TileSet::set_custom_data_layer_name(int p_layer_id, String p_value) {
 		custom_data_layers_by_name[p_value] = p_layer_id;
 	}
 
-	custom_data_layers.write[p_layer_id].name = p_value;
+	custom_data_layers.ptrw()[p_layer_id].name = p_value;
 	emit_changed();
 }
 
@@ -1140,7 +1140,7 @@ String TileSet::get_custom_data_layer_name(int p_layer_id) const {
 
 void TileSet::set_custom_data_layer_type(int p_layer_id, Variant::Type p_value) {
 	ERR_FAIL_INDEX(p_layer_id, custom_data_layers.size());
-	custom_data_layers.write[p_layer_id].type = p_value;
+	custom_data_layers.ptrw()[p_layer_id].type = p_value;
 
 	for (KeyValue<int, Ref<TileSetSource>> &E_source : sources) {
 		E_source.value->notify_tile_data_properties_should_change();
@@ -1486,7 +1486,7 @@ Vector<Vector2> TileSet::get_tile_shape_polygon() const {
 
 		if (get_tile_offset_axis() == TileSet::TILE_OFFSET_AXIS_VERTICAL) {
 			for (int i = 0; i < points.size(); i++) {
-				points.write[i] = Vector2(points[i].y, points[i].x);
+				points.ptrw()[i] = Vector2(points[i].y, points[i].x);
 			}
 		}
 	}
@@ -1499,7 +1499,7 @@ void TileSet::draw_tile_shape(CanvasItem *p_canvas_item, Transform2D p_transform
 		Vector<Vector2> uvs;
 		uvs.resize(shape.size());
 		for (int i = 0; i < shape.size(); i++) {
-			uvs.write[i] = shape[i] + Vector2(0.5, 0.5);
+			uvs.ptrw()[i] = shape[i] + Vector2(0.5, 0.5);
 		}
 
 		Vector<Color> colors;
@@ -2457,7 +2457,7 @@ Vector<Vector<Ref<Texture2D>>> TileSet::generate_terrains_icons(Size2i p_size) {
 	output.resize(get_terrain_sets_count());
 	counts.resize(get_terrain_sets_count());
 	for (int terrain_set = 0; terrain_set < get_terrain_sets_count(); terrain_set++) {
-		output.write[terrain_set].resize(get_terrains_count(terrain_set));
+		output.ptrw()[terrain_set].resize(get_terrains_count(terrain_set));
 		counts[terrain_set].resize(get_terrains_count(terrain_set));
 	}
 
@@ -2536,7 +2536,7 @@ Vector<Vector<Ref<Texture2D>>> TileSet::generate_terrains_icons(Size2i p_size) {
 			}
 			Ref<ImageTexture> icon = ImageTexture::create_from_image(dst_image);
 			icon->set_size_override(p_size);
-			output.write[terrain_set].write[terrain] = icon;
+			output.ptrw()[terrain_set].ptrw()[terrain] = icon;
 		}
 	}
 	return output;
@@ -2869,7 +2869,7 @@ Vector<Point2> TileSet::_get_half_offset_corner_or_side_terrain_peering_bit_poly
 	Vector<Vector2> polygon;
 	if (p_offset_axis == TileSet::TILE_OFFSET_AXIS_HORIZONTAL) {
 		for (int i = 0; i < point_list.size(); i++) {
-			point_list.write[i] = point_list[i] * unit;
+			point_list.ptrw()[i] = point_list[i] * unit;
 		}
 		switch (p_bit) {
 			case TileSet::CELL_NEIGHBOR_RIGHT_SIDE:
@@ -2931,7 +2931,7 @@ Vector<Point2> TileSet::_get_half_offset_corner_or_side_terrain_peering_bit_poly
 		}
 	} else {
 		for (int i = 0; i < point_list.size(); i++) {
-			point_list.write[i] = Vector2(point_list[i].y, point_list[i].x) * unit;
+			point_list.ptrw()[i] = Vector2(point_list[i].y, point_list[i].x) * unit;
 		}
 		switch (p_bit) {
 			case TileSet::CELL_NEIGHBOR_RIGHT_CORNER:
@@ -3021,7 +3021,7 @@ Vector<Point2> TileSet::_get_half_offset_corner_terrain_peering_bit_polygon(Vect
 	Vector<Vector2> polygon;
 	if (p_offset_axis == TileSet::TILE_OFFSET_AXIS_HORIZONTAL) {
 		for (int i = 0; i < point_list.size(); i++) {
-			point_list.write[i] = point_list[i] * unit;
+			point_list.ptrw()[i] = point_list[i] * unit;
 		}
 		switch (p_bit) {
 			case TileSet::CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER:
@@ -3059,7 +3059,7 @@ Vector<Point2> TileSet::_get_half_offset_corner_terrain_peering_bit_polygon(Vect
 		}
 	} else {
 		for (int i = 0; i < point_list.size(); i++) {
-			point_list.write[i] = Vector2(point_list[i].y, point_list[i].x) * unit;
+			point_list.ptrw()[i] = Vector2(point_list[i].y, point_list[i].x) * unit;
 		}
 		switch (p_bit) {
 			case TileSet::CELL_NEIGHBOR_RIGHT_CORNER:
@@ -3119,7 +3119,7 @@ Vector<Point2> TileSet::_get_half_offset_side_terrain_peering_bit_polygon(Vector
 	Vector<Vector2> polygon;
 	if (p_offset_axis == TileSet::TILE_OFFSET_AXIS_HORIZONTAL) {
 		for (int i = 0; i < point_list.size(); i++) {
-			point_list.write[i] = point_list[i] * unit;
+			point_list.ptrw()[i] = point_list[i] * unit;
 		}
 		switch (p_bit) {
 			case TileSet::CELL_NEIGHBOR_RIGHT_SIDE:
@@ -3151,7 +3151,7 @@ Vector<Point2> TileSet::_get_half_offset_side_terrain_peering_bit_polygon(Vector
 		}
 	} else {
 		for (int i = 0; i < point_list.size(); i++) {
-			point_list.write[i] = Vector2(point_list[i].y, point_list[i].x) * unit;
+			point_list.ptrw()[i] = Vector2(point_list[i].y, point_list[i].x) * unit;
 		}
 		switch (p_bit) {
 			case TileSet::CELL_NEIGHBOR_BOTTOM_RIGHT_SIDE:
@@ -3411,7 +3411,7 @@ void TileSet::_compatibility_conversion() {
 						Ref<OccluderPolygon2D> occluder = ctd->occluder->duplicate();
 						Vector<Vector2> polygon = ctd->occluder->get_polygon();
 						for (int index = 0; index < polygon.size(); index++) {
-							polygon.write[index] = xform.xform(polygon[index] - ctd->region.get_size() / 2.0);
+							polygon.ptrw()[index] = xform.xform(polygon[index] - ctd->region.get_size() / 2.0);
 						}
 						occluder->set_polygon(polygon);
 						tile_data->add_occluder_polygon(0);
@@ -3425,7 +3425,7 @@ void TileSet::_compatibility_conversion() {
 						Ref<NavigationPolygon> navigation = ctd->navigation->duplicate();
 						Vector<Vector2> vertices = navigation->get_vertices();
 						for (int index = 0; index < vertices.size(); index++) {
-							vertices.write[index] = xform.xform(vertices[index] - ctd->region.get_size() / 2.0);
+							vertices.ptrw()[index] = xform.xform(vertices[index] - ctd->region.get_size() / 2.0);
 						}
 						navigation->set_vertices(vertices);
 						tile_data->set_navigation_polygon(0, navigation);
@@ -3448,7 +3448,7 @@ void TileSet::_compatibility_conversion() {
 							if (convex_shape.is_valid()) {
 								Vector<Vector2> polygon = convex_shape->get_points();
 								for (int point_index = 0; point_index < polygon.size(); point_index++) {
-									polygon.write[point_index] = xform.xform(csd.transform.xform(polygon[point_index]) - ctd->region.get_size() / 2.0);
+									polygon.ptrw()[point_index] = xform.xform(csd.transform.xform(polygon[point_index]) - ctd->region.get_size() / 2.0);
 								}
 								tile_data->set_collision_polygons_count(0, tile_data->get_collision_polygons_count(0) + 1);
 								int index = tile_data->get_collision_polygons_count(0) - 1;
@@ -3523,7 +3523,7 @@ void TileSet::_compatibility_conversion() {
 								Ref<OccluderPolygon2D> occluder = ctd->autotile_occluder_map[coords]->duplicate();
 								Vector<Vector2> polygon = ctd->occluder->get_polygon();
 								for (int index = 0; index < polygon.size(); index++) {
-									polygon.write[index] = xform.xform(polygon[index] - ctd->region.get_size() / 2.0);
+									polygon.ptrw()[index] = xform.xform(polygon[index] - ctd->region.get_size() / 2.0);
 								}
 								occluder->set_polygon(polygon);
 								tile_data->add_occluder_polygon(0);
@@ -3537,7 +3537,7 @@ void TileSet::_compatibility_conversion() {
 								Ref<NavigationPolygon> navigation = ctd->autotile_navpoly_map[coords]->duplicate();
 								Vector<Vector2> vertices = navigation->get_vertices();
 								for (int index = 0; index < vertices.size(); index++) {
-									vertices.write[index] = xform.xform(vertices[index] - ctd->region.get_size() / 2.0);
+									vertices.ptrw()[index] = xform.xform(vertices[index] - ctd->region.get_size() / 2.0);
 								}
 								navigation->set_vertices(vertices);
 								tile_data->set_navigation_polygon(0, navigation);
@@ -3564,7 +3564,7 @@ void TileSet::_compatibility_conversion() {
 									if (convex_shape.is_valid()) {
 										Vector<Vector2> polygon = convex_shape->get_points();
 										for (int point_index = 0; point_index < polygon.size(); point_index++) {
-											polygon.write[point_index] = xform.xform(csd.transform.xform(polygon[point_index]) - ctd->autotile_tile_size / 2.0);
+											polygon.ptrw()[point_index] = xform.xform(csd.transform.xform(polygon[point_index]) - ctd->autotile_tile_size / 2.0);
 										}
 										tile_data->set_collision_polygons_count(0, tile_data->get_collision_polygons_count(0) + 1);
 										int index = tile_data->get_collision_polygons_count(0) - 1;
@@ -3604,7 +3604,7 @@ void TileSet::_compatibility_conversion() {
 			if (convex.is_valid()) {
 				Vector<Vector2> points = convex->get_points();
 				for (int i_point = 0; i_point < points.size(); i_point++) {
-					points.write[i_point] = points[i_point] - get_tile_size() / 2;
+					points.ptrw()[i_point] = points[i_point] - get_tile_size() / 2;
 				}
 				convex->set_points(points);
 			}
@@ -5976,7 +5976,7 @@ void TileData::notify_tile_data_properties_should_change() {
 			} else {
 				Variant::construct(tile_set->get_custom_data_layer_type(i), new_val, nullptr, 0, error);
 			}
-			custom_data.write[i] = new_val;
+			custom_data.ptrw()[i] = new_val;
 		}
 	}
 
@@ -6278,10 +6278,10 @@ Ref<OccluderPolygon2D> TileData::get_occluder(int p_layer_id, bool p_flip_h, boo
 void TileData::set_occluder_polygons_count(int p_layer_id, int p_polygons_count) {
 	ERR_FAIL_INDEX(p_layer_id, occluders.size());
 	ERR_FAIL_COND(p_polygons_count < 0);
-	if (p_polygons_count == occluders.write[p_layer_id].polygons.size()) {
+	if (p_polygons_count == occluders.ptrw()[p_layer_id].polygons.size()) {
 		return;
 	}
-	occluders.write[p_layer_id].polygons.resize(p_polygons_count);
+	occluders.ptrw()[p_layer_id].polygons.resize(p_polygons_count);
 	notify_property_list_changed();
 	emit_signal(CoreStringName(changed));
 }
@@ -6293,14 +6293,14 @@ int TileData::get_occluder_polygons_count(int p_layer_id) const {
 
 void TileData::add_occluder_polygon(int p_layer_id) {
 	ERR_FAIL_INDEX(p_layer_id, occluders.size());
-	occluders.write[p_layer_id].polygons.push_back(OcclusionLayerTileData::PolygonOccluderTileData());
+	occluders.ptrw()[p_layer_id].polygons.push_back(OcclusionLayerTileData::PolygonOccluderTileData());
 	emit_signal(CoreStringName(changed));
 }
 
 void TileData::remove_occluder_polygon(int p_layer_id, int p_polygon_index) {
 	ERR_FAIL_INDEX(p_layer_id, occluders.size());
 	ERR_FAIL_INDEX(p_polygon_index, occluders[p_layer_id].polygons.size());
-	occluders.write[p_layer_id].polygons.remove_at(p_polygon_index);
+	occluders.ptrw()[p_layer_id].polygons.remove_at(p_polygon_index);
 	emit_signal(CoreStringName(changed));
 }
 
@@ -6308,7 +6308,7 @@ void TileData::set_occluder_polygon(int p_layer_id, int p_polygon_index, const R
 	ERR_FAIL_INDEX(p_layer_id, occluders.size());
 	ERR_FAIL_INDEX(p_polygon_index, occluders[p_layer_id].polygons.size());
 
-	OcclusionLayerTileData::PolygonOccluderTileData &polygon_occluder_tile_data = occluders.write[p_layer_id].polygons.write[p_polygon_index];
+	OcclusionLayerTileData::PolygonOccluderTileData &polygon_occluder_tile_data = occluders.ptrw()[p_layer_id].polygons.ptrw()[p_polygon_index];
 	polygon_occluder_tile_data.occluder_polygon = p_occluder_polygon;
 	polygon_occluder_tile_data.transformed_polygon_occluders.clear();
 	emit_signal(CoreStringName(changed));
@@ -6346,7 +6346,7 @@ Ref<OccluderPolygon2D> TileData::get_occluder_polygon(int p_layer_id, int p_poly
 // Physics
 void TileData::set_constant_linear_velocity(int p_layer_id, const Vector2 &p_velocity) {
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
-	physics.write[p_layer_id].linear_velocity = p_velocity;
+	physics.ptrw()[p_layer_id].linear_velocity = p_velocity;
 	emit_signal(CoreStringName(changed));
 }
 
@@ -6357,7 +6357,7 @@ Vector2 TileData::get_constant_linear_velocity(int p_layer_id) const {
 
 void TileData::set_constant_angular_velocity(int p_layer_id, real_t p_velocity) {
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
-	physics.write[p_layer_id].angular_velocity = p_velocity;
+	physics.ptrw()[p_layer_id].angular_velocity = p_velocity;
 	emit_signal(CoreStringName(changed));
 }
 
@@ -6369,10 +6369,10 @@ real_t TileData::get_constant_angular_velocity(int p_layer_id) const {
 void TileData::set_collision_polygons_count(int p_layer_id, int p_polygons_count) {
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
 	ERR_FAIL_COND(p_polygons_count < 0);
-	if (p_polygons_count == physics.write[p_layer_id].polygons.size()) {
+	if (p_polygons_count == physics.ptrw()[p_layer_id].polygons.size()) {
 		return;
 	}
-	physics.write[p_layer_id].polygons.resize(p_polygons_count);
+	physics.ptrw()[p_layer_id].polygons.resize(p_polygons_count);
 	notify_property_list_changed();
 	emit_signal(CoreStringName(changed));
 }
@@ -6384,14 +6384,14 @@ int TileData::get_collision_polygons_count(int p_layer_id) const {
 
 void TileData::add_collision_polygon(int p_layer_id) {
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
-	physics.write[p_layer_id].polygons.push_back(PhysicsLayerTileData::PolygonShapeTileData());
+	physics.ptrw()[p_layer_id].polygons.push_back(PhysicsLayerTileData::PolygonShapeTileData());
 	emit_signal(CoreStringName(changed));
 }
 
 void TileData::remove_collision_polygon(int p_layer_id, int p_polygon_index) {
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
 	ERR_FAIL_INDEX(p_polygon_index, physics[p_layer_id].polygons.size());
-	physics.write[p_layer_id].polygons.remove_at(p_polygon_index);
+	physics.ptrw()[p_layer_id].polygons.remove_at(p_polygon_index);
 	emit_signal(CoreStringName(changed));
 }
 
@@ -6400,7 +6400,7 @@ void TileData::set_collision_polygon_points(int p_layer_id, int p_polygon_index,
 	ERR_FAIL_INDEX(p_polygon_index, physics[p_layer_id].polygons.size());
 	ERR_FAIL_COND_MSG(p_polygon.size() != 0 && p_polygon.size() < 3, "Invalid polygon. Needs either 0 or more than 3 points.");
 
-	TileData::PhysicsLayerTileData::PolygonShapeTileData &polygon_shape_tile_data = physics.write[p_layer_id].polygons.write[p_polygon_index];
+	TileData::PhysicsLayerTileData::PolygonShapeTileData &polygon_shape_tile_data = physics.ptrw()[p_layer_id].polygons.ptrw()[p_polygon_index];
 
 	if (p_polygon.is_empty()) {
 		polygon_shape_tile_data.shapes.clear();
@@ -6431,7 +6431,7 @@ Vector<Vector2> TileData::get_collision_polygon_points(int p_layer_id, int p_pol
 void TileData::set_collision_polygon_one_way(int p_layer_id, int p_polygon_index, bool p_one_way) {
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
 	ERR_FAIL_INDEX(p_polygon_index, physics[p_layer_id].polygons.size());
-	physics.write[p_layer_id].polygons.write[p_polygon_index].one_way = p_one_way;
+	physics.ptrw()[p_layer_id].polygons.ptrw()[p_polygon_index].one_way = p_one_way;
 	emit_signal(CoreStringName(changed));
 }
 
@@ -6444,7 +6444,7 @@ bool TileData::is_collision_polygon_one_way(int p_layer_id, int p_polygon_index)
 void TileData::set_collision_polygon_one_way_margin(int p_layer_id, int p_polygon_index, float p_one_way_margin) {
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
 	ERR_FAIL_INDEX(p_polygon_index, physics[p_layer_id].polygons.size());
-	physics.write[p_layer_id].polygons.write[p_polygon_index].one_way_margin = p_one_way_margin;
+	physics.ptrw()[p_layer_id].polygons.ptrw()[p_polygon_index].one_way_margin = p_one_way_margin;
 	emit_signal(CoreStringName(changed));
 }
 
@@ -6569,8 +6569,8 @@ TileSet::TerrainsPattern TileData::get_terrains_pattern() const {
 // Navigation
 void TileData::set_navigation_polygon(int p_layer_id, Ref<NavigationPolygon> p_navigation_polygon) {
 	ERR_FAIL_INDEX(p_layer_id, navigation.size());
-	navigation.write[p_layer_id].navigation_polygon = p_navigation_polygon;
-	navigation.write[p_layer_id].transformed_navigation_polygon.clear();
+	navigation.ptrw()[p_layer_id].navigation_polygon = p_navigation_polygon;
+	navigation.ptrw()[p_layer_id].transformed_navigation_polygon.clear();
 	emit_signal(CoreStringName(changed));
 }
 
@@ -6602,7 +6602,7 @@ Ref<NavigationPolygon> TileData::get_navigation_polygon(int p_layer_id, bool p_f
 		new_outlines.resize(outline_count);
 
 		for (int i = 0; i < outline_count; i++) {
-			new_outlines.write[i] = get_transformed_vertices(outlines[i], p_flip_h, p_flip_v, p_transpose);
+			new_outlines.ptrw()[i] = get_transformed_vertices(outlines[i], p_flip_h, p_flip_v, p_transpose);
 		}
 
 		transformed_polygon->set_data(new_points, layer_tile_data.navigation_polygon->get_polygons(), new_outlines);
@@ -6647,7 +6647,7 @@ bool TileData::has_custom_data(const String &p_layer_name) const {
 
 void TileData::set_custom_data_by_layer_id(int p_layer_id, Variant p_value) {
 	ERR_FAIL_INDEX(p_layer_id, custom_data.size());
-	custom_data.write[p_layer_id] = p_value;
+	custom_data.ptrw()[p_layer_id] = p_value;
 	emit_signal(CoreStringName(changed));
 }
 
@@ -6733,7 +6733,7 @@ bool TileData::_set(const StringName &p_name, const Variant &p_value) {
 			}
 
 			if (polygon_index >= occluders[layer_index].polygons.size()) {
-				occluders.write[layer_index].polygons.resize(polygon_index + 1);
+				occluders.ptrw()[layer_index].polygons.resize(polygon_index + 1);
 			}
 
 			if (components[2] == "polygon") {
@@ -6784,7 +6784,7 @@ bool TileData::_set(const StringName &p_name, const Variant &p_value) {
 				}
 
 				if (polygon_index >= physics[layer_index].polygons.size()) {
-					physics.write[layer_index].polygons.resize(polygon_index + 1);
+					physics.ptrw()[layer_index].polygons.resize(polygon_index + 1);
 				}
 			}
 			if (components[2] == "points") {

@@ -359,12 +359,12 @@ void RichTextLabel::_add_list_prefixes(ItemFrame *p_frame, int p_line, Line &r_l
 					}
 					font = found_font_item != nullptr ? found_font_item->font : font;
 					font_size = item_font_size != -1 ? item_font_size : font_size;
-					list_index.write[0] = index;
+					list_index.ptrw()[0] = index;
 					String prefix = _get_prefix(list_row_line.from, list_index, list_items);
 					list_row_line.text_prefix.instantiate();
 					list_row_line.text_prefix->set_direction(_find_direction(list_row_line.from));
 					list_row_line.text_prefix->add_string(prefix, font, font_size);
-					list_items.write[0]->max_width = MAX(this_list->max_width, list_row_line.text_prefix->get_size().x);
+					list_items.ptrw()[0]->max_width = MAX(this_list->max_width, list_row_line.text_prefix->get_size().x);
 				}
 			}
 		}

@@ -322,7 +322,7 @@ void GenericTilePolygonEditor::_advanced_menu_item_pressed(int p_item_pressed) {
 			undo_redo->add_do_method(this, "clear_polygons");
 			Vector<Vector2> polygon = tile_set->get_tile_shape_polygon();
 			for (int i = 0; i < polygon.size(); i++) {
-				polygon.write[i] = polygon[i] * tile_set->get_tile_size();
+				polygon.ptrw()[i] = polygon[i] * tile_set->get_tile_size();
 			}
 			undo_redo->add_do_method(this, "add_polygon", polygon);
 			undo_redo->add_do_method(base_control, "queue_redraw");
@@ -457,7 +457,7 @@ void GenericTilePolygonEditor::_snap_to_tile_shape(Point2 &r_point, float &r_cur
 
 	Vector<Point2> polygon = tile_set->get_tile_shape_polygon();
 	for (int i = 0; i < polygon.size(); i++) {
-		polygon.write[i] = polygon[i] * tile_set->get_tile_size();
+		polygon.ptrw()[i] = polygon[i] * tile_set->get_tile_size();
 	}
 	Point2 snapped_point = r_point;
 
@@ -549,7 +549,7 @@ void GenericTilePolygonEditor::_base_control_gui_input(Ref<InputEvent> p_event) 
 			float distance = grab_threshold * 2.0;
 			_snap_to_tile_shape(point, distance, grab_threshold / editor_zoom_widget->get_zoom());
 			_snap_point(point);
-			polygons[drag_polygon_index].write[drag_point_index] = point;
+			polygons[drag_polygon_index].ptrw()[drag_point_index] = point;
 		} else if (drag_type == DRAG_TYPE_PAN) {
 			panning += mm->get_position() - drag_last_pos;
 			drag_last_pos = mm->get_position();
@@ -763,7 +763,7 @@ void GenericTilePolygonEditor::set_tile_set(Ref<TileSet> p_tile_set) {
 	if (p_tile_set.is_valid()) {
 		Vector<Vector2> polygon = p_tile_set->get_tile_shape_polygon();
 		for (int i = 0; i < polygon.size(); i++) {
-			polygon.write[i] = polygon[i] * p_tile_set->get_tile_size();
+			polygon.ptrw()[i] = polygon[i] * p_tile_set->get_tile_size();
 		}
 		add_polygon(polygon);
 	}
@@ -1842,7 +1842,7 @@ void TileDataCollisionEditor::draw_over_tile(CanvasItem *p_canvas_item, Transfor
 			Vector2 size_1 = Vector2(1, 1) / tile_set->get_tile_size();
 
 			for (int j = 0; j < polygon.size(); j++) {
-				uvs.write[j] = polygon[j] * size_1 + Vector2(0.5, 0.5);
+				uvs.ptrw()[j] = polygon[j] * size_1 + Vector2(0.5, 0.5);
 			}
 
 			Vector<Color> color2;
@@ -2084,7 +2084,7 @@ void TileDataTerrainsEditor::forward_draw_over_atlas(TileAtlasView *p_tile_atlas
 
 			Vector<Vector2> polygon = tile_set->get_terrain_polygon(terrain_set);
 			for (int j = 0; j < polygon.size(); j++) {
-				polygon.write[j] += position;
+				polygon.ptrw()[j] += position;
 			}
 			if (!Geometry2D::intersect_polygons(polygon, mouse_pos_rect_polygon).is_empty()) {
 				// Draw terrain.
@@ -2096,7 +2096,7 @@ void TileDataTerrainsEditor::forward_draw_over_atlas(TileAtlasView *p_tile_atlas
 				if (tile_set->is_valid_terrain_peering_bit(terrain_set, bit)) {
 					polygon = tile_set->get_terrain_peering_bit_polygon(terrain_set, bit);
 					for (int j = 0; j < polygon.size(); j++) {
-						polygon.write[j] += position;
+						polygon.ptrw()[j] += position;
 					}
 					if (!Geometry2D::intersect_polygons(polygon, mouse_pos_rect_polygon).is_empty()) {
 						// Draw bit.
@@ -2562,7 +2562,7 @@ void TileDataTerrainsEditor::forward_painting_atlas_gui_input(TileAtlasView *p_t
 
 						Vector<Vector2> polygon = tile_set->get_terrain_polygon(terrain_set);
 						for (int j = 0; j < polygon.size(); j++) {
-							polygon.write[j] += position;
+							polygon.ptrw()[j] += position;
 						}
 						if (!Geometry2D::intersect_polygons(polygon, mouse_pos_rect_polygon).is_empty()) {
 							// Draw terrain.
@@ -2575,7 +2575,7 @@ void TileDataTerrainsEditor::forward_painting_atlas_gui_input(TileAtlasView *p_t
 							if (tile_set->is_valid_terrain_peering_bit(terrain_set, bit)) {
 								polygon = tile_set->get_terrain_peering_bit_polygon(terrain_set, bit);
 								for (int j = 0; j < polygon.size(); j++) {
-									polygon.write[j] += position;
+									polygon.ptrw()[j] += position;
 								}
 								if (!Geometry2D::intersect_polygons(polygon, mouse_pos_rect_polygon).is_empty()) {
 									// Draw bit.
@@ -3022,7 +3022,7 @@ void TileDataNavigationEditor::draw_over_tile(CanvasItem *p_canvas_item, Transfo
 			vertices.resize(polygon.size());
 			for (int j = 0; j < polygon.size(); j++) {
 				ERR_FAIL_INDEX(polygon[j], verts.size());
-				vertices.write[j] = verts[polygon[j]];
+				vertices.ptrw()[j] = verts[polygon[j]];
 			}
 
 			// Generate the polygon color, slightly randomly modified from the settings one.

@@ -124,10 +124,10 @@ void AudioStreamImportSettingsDialog::_draw_preview() {
 		float min = preview->get_min(ofs, ofs_n) * 0.5 + 0.5;
 
 		int idx = i;
-		points.write[idx * 2 + 0] = Vector2(i + 1, rect.position.y + min * rect.size.y);
-		points.write[idx * 2 + 1] = Vector2(i + 1, rect.position.y + max * rect.size.y);
+		points.ptrw()[idx * 2 + 0] = Vector2(i + 1, rect.position.y + min * rect.size.y);
+		points.ptrw()[idx * 2 + 1] = Vector2(i + 1, rect.position.y + max * rect.size.y);
 
-		colors.write[idx] = ofs > inactive_from ? color_inactive : color_active;
+		colors.ptrw()[idx] = ofs > inactive_from ? color_inactive : color_active;
 	}
 
 	if (!points.is_empty()) {

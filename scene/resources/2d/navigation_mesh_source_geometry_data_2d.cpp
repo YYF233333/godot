@@ -93,7 +93,7 @@ void NavigationMeshSourceGeometryData2D::set_traversable_outlines(const TypedArr
 	RWLockWrite write_lock(geometry_rwlock);
 	traversable_outlines.resize(p_traversable_outlines.size());
 	for (int i = 0; i < p_traversable_outlines.size(); i++) {
-		traversable_outlines.write[i] = p_traversable_outlines[i];
+		traversable_outlines.ptrw()[i] = p_traversable_outlines[i];
 	}
 	bounds_dirty = true;
 }
@@ -113,7 +113,7 @@ void NavigationMeshSourceGeometryData2D::set_obstruction_outlines(const TypedArr
 	RWLockWrite write_lock(geometry_rwlock);
 	obstruction_outlines.resize(p_obstruction_outlines.size());
 	for (int i = 0; i < p_obstruction_outlines.size(); i++) {
-		obstruction_outlines.write[i] = p_obstruction_outlines[i];
+		obstruction_outlines.ptrw()[i] = p_obstruction_outlines[i];
 	}
 	bounds_dirty = true;
 }
@@ -134,7 +134,7 @@ void NavigationMeshSourceGeometryData2D::append_traversable_outlines(const Typed
 	int traversable_outlines_size = traversable_outlines.size();
 	traversable_outlines.resize(traversable_outlines_size + p_traversable_outlines.size());
 	for (int i = traversable_outlines_size; i < p_traversable_outlines.size(); i++) {
-		traversable_outlines.write[i] = p_traversable_outlines[i];
+		traversable_outlines.ptrw()[i] = p_traversable_outlines[i];
 	}
 	bounds_dirty = true;
 }
@@ -144,7 +144,7 @@ void NavigationMeshSourceGeometryData2D::append_obstruction_outlines(const Typed
 	int obstruction_outlines_size = obstruction_outlines.size();
 	obstruction_outlines.resize(obstruction_outlines_size + p_obstruction_outlines.size());
 	for (int i = obstruction_outlines_size; i < p_obstruction_outlines.size(); i++) {
-		obstruction_outlines.write[i] = p_obstruction_outlines[i];
+		obstruction_outlines.ptrw()[i] = p_obstruction_outlines[i];
 	}
 	bounds_dirty = true;
 }
@@ -155,7 +155,7 @@ void NavigationMeshSourceGeometryData2D::add_traversable_outline(const PackedVec
 		Vector<Vector2> traversable_outline;
 		traversable_outline.resize(p_shape_outline.size());
 		for (int i = 0; i < p_shape_outline.size(); i++) {
-			traversable_outline.write[i] = p_shape_outline[i];
+			traversable_outline.ptrw()[i] = p_shape_outline[i];
 		}
 		traversable_outlines.push_back(traversable_outline);
 		bounds_dirty = true;
@@ -168,7 +168,7 @@ void NavigationMeshSourceGeometryData2D::add_obstruction_outline(const PackedVec
 		Vector<Vector2> obstruction_outline;
 		obstruction_outline.resize(p_shape_outline.size());
 		for (int i = 0; i < p_shape_outline.size(); i++) {
-			obstruction_outline.write[i] = p_shape_outline[i];
+			obstruction_outline.ptrw()[i] = p_shape_outline[i];
 		}
 		obstruction_outlines.push_back(obstruction_outline);
 		bounds_dirty = true;

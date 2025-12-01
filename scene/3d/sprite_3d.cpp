@@ -738,23 +738,23 @@ SpriteBase3D::SpriteBase3D() {
 
 	// Create basic mesh and store format information.
 	for (int i = 0; i < 4; i++) {
-		mesh_normals.write[i] = Vector3(0.0, 0.0, 1.0);
-		mesh_tangents.write[i * 4 + 0] = 1.0;
-		mesh_tangents.write[i * 4 + 1] = 0.0;
-		mesh_tangents.write[i * 4 + 2] = 0.0;
-		mesh_tangents.write[i * 4 + 3] = 1.0;
-		mesh_colors.write[i] = Color(1.0, 1.0, 1.0, 1.0);
-		mesh_uvs.write[i] = Vector2(0.0, 0.0);
-		mesh_vertices.write[i] = Vector3(0.0, 0.0, 0.0);
+		mesh_normals.ptrw()[i] = Vector3(0.0, 0.0, 1.0);
+		mesh_tangents.ptrw()[i * 4 + 0] = 1.0;
+		mesh_tangents.ptrw()[i * 4 + 1] = 0.0;
+		mesh_tangents.ptrw()[i * 4 + 2] = 0.0;
+		mesh_tangents.ptrw()[i * 4 + 3] = 1.0;
+		mesh_colors.ptrw()[i] = Color(1.0, 1.0, 1.0, 1.0);
+		mesh_uvs.ptrw()[i] = Vector2(0.0, 0.0);
+		mesh_vertices.ptrw()[i] = Vector3(0.0, 0.0, 0.0);
 	}
 
 	indices.resize(6);
-	indices.write[0] = 0;
-	indices.write[1] = 1;
-	indices.write[2] = 2;
-	indices.write[3] = 0;
-	indices.write[4] = 2;
-	indices.write[5] = 3;
+	indices.ptrw()[0] = 0;
+	indices.ptrw()[1] = 1;
+	indices.ptrw()[2] = 2;
+	indices.ptrw()[3] = 0;
+	indices.ptrw()[4] = 2;
+	indices.ptrw()[5] = 3;
 
 	Array mesh_array;
 	mesh_array.resize(RS::ARRAY_MAX);

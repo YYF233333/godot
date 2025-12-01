@@ -269,7 +269,7 @@ Error EditorExportPlatform::_encrypt_and_store_data(Ref<FileAccess> p_fd, const 
 			RandomPCG rng = RandomPCG(seed);
 			iv.resize(16);
 			for (int i = 0; i < 16; i++) {
-				iv.write[i] = rng.rand() % 256;
+				iv.ptrw()[i] = rng.rand() % 256;
 			}
 		}
 
@@ -331,7 +331,7 @@ Error EditorExportPlatform::_save_pack_file(const Ref<EditorExportPreset> &p_pre
 		CryptoCore::md5(p_data.ptr(), p_data.size(), hash);
 		sd.md5.resize(16);
 		for (int i = 0; i < 16; i++) {
-			sd.md5.write[i] = hash[i];
+			sd.md5.ptrw()[i] = hash[i];
 		}
 	}
 
@@ -486,7 +486,7 @@ Ref<EditorExportPreset> EditorExportPlatform::create_preset() {
 
 	Vector<Ref<EditorExportPlugin>> export_plugins = EditorExport::get_singleton()->get_export_plugins();
 	for (int i = 0; i < export_plugins.size(); i++) {
-		export_plugins.write[i]->_get_export_options(Ref<EditorExportPlatform>(this), &options);
+		export_plugins.ptrw()[i]->_get_export_options(Ref<EditorExportPlatform>(this), &options);
 	}
 
 	for (const ExportOption &E : options) {
@@ -663,15 +663,15 @@ EditorExportPlatform::ExportNotifier::ExportNotifier(EditorExportPlatform &p_pla
 	Vector<Ref<EditorExportPlugin>> export_plugins = EditorExport::get_singleton()->get_export_plugins();
 	//initial export plugin callback
 	for (int i = 0; i < export_plugins.size(); i++) {
-		export_plugins.write[i]->set_export_preset(p_preset);
+		export_plugins.ptrw()[i]->set_export_preset(p_preset);
 		if (GDVIRTUAL_IS_OVERRIDDEN_PTR(export_plugins[i], _export_begin)) {
 			PackedStringArray features_psa;
 			for (const String &feature : features) {
 				features_psa.push_back(feature);
 			}
-			export_plugins.write[i]->_export_begin_script(features_psa, p_debug, p_path, p_flags);
+			export_plugins.ptrw()[i]->_export_begin_script(features_psa, p_debug, p_path, p_flags);
 		} else {
-			export_plugins.write[i]->_export_begin(features, p_debug, p_path, p_flags);
+			export_plugins.ptrw()[i]->_export_begin(features, p_debug, p_path, p_flags);
 		}
 	}
 }
@@ -680,12 +680,12 @@ EditorExportPlatform::ExportNotifier::~ExportNotifier() {
 	Vector<Ref<EditorExportPlugin>> export_plugins = EditorExport::get_singleton()->get_export_plugins();
 	for (int i = 0; i < export_plugins.size(); i++) {
 		if (GDVIRTUAL_IS_OVERRIDDEN_PTR(export_plugins[i], _export_end)) {
-			export_plugins.write[i]->_export_end_script();
+			export_plugins.ptrw()[i]->_export_end_script();
 		} else {
-			export_plugins.write[i]->_export_end();
+			export_plugins.ptrw()[i]->_export_end();
 		}
-		export_plugins.write[i]->_export_end_clear();
-		export_plugins.write[i]->set_export_preset(Ref<EditorExportPreset>());
+		export_plugins.ptrw()[i]->_export_end_clear();
+		export_plugins.ptrw()[i]->set_export_preset(Ref<EditorExportPreset>());
 	}
 }
 
@@ -1236,7 +1236,7 @@ Error EditorExportPlatform::export_project_files(const Ref<EditorExportPreset> &
 					}
 					v |= ct;
 				}
-				key.write[i] = v;
+				key.ptrw()[i] = v;
 			}
 		}
 	}
@@ -1269,7 +1269,7 @@ Error EditorExportPlatform::export_project_files(const Ref<EditorExportPreset> &
 				}
 			}
 
-			export_plugins.write[i]->_clear();
+			export_plugins.ptrw()[i]->_clear();
 		}
 
 		return OK;
@@ -1292,14 +1292,14 @@ Error EditorExportPlatform::export_project_files(const Ref<EditorExportPreset> &
 	LocalVector<Ref<EditorExportPlugin>> customize_scenes_plugins;
 
 	for (int i = 0; i < export_plugins.size(); i++) {
-		if (export_plugins.write[i]->_begin_customize_resources(Ref<EditorExportPlatform>(this), features_psa)) {
+		if (export_plugins.ptrw()[i]->_begin_customize_resources(Ref<EditorExportPlatform>(this), features_psa)) {
 			customize_resources_plugins.push_back(export_plugins[i]);
 
 			custom_resources_hash = hash_murmur3_one_64(export_plugins[i]->get_name().hash64(), custom_resources_hash);
 			uint64_t hash = export_plugins[i]->_get_customization_configuration_hash();
 			custom_resources_hash = hash_murmur3_one_64(hash, custom_resources_hash);
 		}
-		if (export_plugins.write[i]->_begin_customize_scenes(Ref<EditorExportPlatform>(this), features_psa)) {
+		if (export_plugins.ptrw()[i]->_begin_customize_scenes(Ref<EditorExportPlatform>(this), features_psa)) {
 			customize_scenes_plugins.push_back(export_plugins[i]);
 
 			custom_resources_hash = hash_murmur3_one_64(export_plugins[i]->get_name().hash64(), custom_resources_hash);
@@ -1346,7 +1346,7 @@ Error EditorExportPlatform::export_project_files(const Ref<EditorExportPreset> &
 	}
 
 	for (int i = 0; i < export_plugins.size(); i++) {
-		export_plugins.write[i]->set_export_base_path(export_base_path);
+		export_plugins.ptrw()[i]->set_export_base_path(export_base_path);
 	}
 
 	//store everything in the export medium
@@ -1380,9 +1380,9 @@ Error EditorExportPlatform::export_project_files(const Ref<EditorExportPreset> &
 		bool do_export = true;
 		for (int i = 0; i < export_plugins.size(); i++) {
 			if (GDVIRTUAL_IS_OVERRIDDEN_PTR(export_plugins[i], _export_file)) {
-				export_plugins.write[i]->_export_file_script(path, type, features_psa);
+				export_plugins.ptrw()[i]->_export_file_script(path, type, features_psa);
 			} else {
-				export_plugins.write[i]->_export_file(path, type, features);
+				export_plugins.ptrw()[i]->_export_file(path, type, features);
 			}
 			if (p_so_func) {
 				for (int j = 0; j < export_plugins[i]->shared_objects.size(); j++) {
@@ -1408,7 +1408,7 @@ Error EditorExportPlatform::export_project_files(const Ref<EditorExportPreset> &
 			if (export_plugins[i]->skipped) {
 				do_export = false;
 			}
-			export_plugins.write[i]->_clear();
+			export_plugins.ptrw()[i]->_clear();
 
 			if (!do_export) {
 				break;
@@ -1620,7 +1620,7 @@ Error EditorExportPlatform::export_project_files(const Ref<EditorExportPreset> &
 			Vector<uint8_t> new_file;
 			new_file.resize(utf8.length());
 			for (int j = 0; j < utf8.length(); j++) {
-				new_file.write[j] = utf8[j];
+				new_file.ptrw()[j] = utf8[j];
 			}
 
 			err = save_proxy.save_file(p_preset, p_udata, from + ".remap", new_file, idx, total, enc_in_filters, enc_ex_filters, key, seed, false);
@@ -2004,7 +2004,7 @@ bool EditorExportPlatform::_encrypt_and_store_directory(Ref<FileAccess> p_fd, Pa
 			RandomPCG rng = RandomPCG(seed);
 			iv.resize(16);
 			for (int i = 0; i < 16; i++) {
-				iv.write[i] = rng.rand() % 256;
+				iv.ptrw()[i] = rng.rand() % 256;
 			}
 		}
 
@@ -2165,7 +2165,7 @@ Error EditorExportPlatform::save_pack(const Ref<EditorExportPreset> &p_preset, b
 					}
 					v |= ct;
 				}
-				key.write[i] = v;
+				key.ptrw()[i] = v;
 			}
 		}
 	}
@@ -2350,7 +2350,7 @@ bool EditorExportPlatform::can_export(const Ref<EditorExportPreset> &p_preset, S
 			continue;
 		}
 
-		String plugin_warning = export_plugins.write[i]->_has_valid_export_configuration(export_platform, p_preset);
+		String plugin_warning = export_plugins.ptrw()[i]->_has_valid_export_configuration(export_platform, p_preset);
 		if (!plugin_warning.is_empty()) {
 			export_plugins_warning += plugin_warning;
 		}

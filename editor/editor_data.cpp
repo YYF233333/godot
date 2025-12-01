@@ -124,7 +124,7 @@ void EditorSelectionHistory::add_object(ObjectID p_object, const String &p_prope
 	HistoryElement h;
 	if (!p_property.is_empty() && has_prev) {
 		// Add a sub property.
-		HistoryElement &prev_element = history.write[current_elem_idx];
+		HistoryElement &prev_element = history.ptrw()[current_elem_idx];
 		h = prev_element;
 		h.path.resize(h.level + 1);
 		h.path.push_back(o);
@@ -144,7 +144,7 @@ void EditorSelectionHistory::replace_object(ObjectID p_old_object, ObjectID p_ne
 	for (HistoryElement &element : history) {
 		for (int index = 0; index < element.path.size(); index++) {
 			if (element.path[index].object == p_old_object) {
-				element.path.write[index].object = p_new_object;
+				element.path.ptrw()[index].object = p_new_object;
 			}
 		}
 	}
@@ -428,7 +428,7 @@ bool EditorData::is_scene_changed(int p_idx) {
 
 	uint64_t current_scene_version = undo_redo_manager->get_or_create_history(edited_scene[p_idx].history_id).undo_redo->get_version();
 	bool is_changed = edited_scene[p_idx].last_checked_version != current_scene_version;
-	edited_scene.write[p_idx].last_checked_version = current_scene_version;
+	edited_scene.ptrw()[p_idx].last_checked_version = current_scene_version;
 	return is_changed;
 }
 
@@ -633,7 +633,7 @@ int EditorData::add_edited_scene(int p_at_pos) {
 void EditorData::move_edited_scene_index(int p_idx, int p_to_idx) {
 	ERR_FAIL_INDEX(p_idx, edited_scene.size());
 	ERR_FAIL_INDEX(p_to_idx, edited_scene.size());
-	SWAP(edited_scene.write[p_idx], edited_scene.write[p_to_idx]);
+	SWAP(edited_scene.ptrw()[p_idx], edited_scene.ptrw()[p_to_idx]);
 }
 
 void EditorData::remove_scene(int p_idx) {
@@ -647,7 +647,7 @@ void EditorData::remove_scene(int p_idx) {
 			SceneTree::get_singleton()->set_edited_scene_root(nullptr);
 		}
 		memdelete(edited_scene[p_idx].root);
-		edited_scene.write[p_idx].root = nullptr;
+		edited_scene.ptrw()[p_idx].root = nullptr;
 	}
 
 	if (current_edited_scene > p_idx) {
@@ -737,7 +737,7 @@ bool EditorData::reload_scene_from_memory(int p_idx, bool p_mark_unsaved) {
 
 	// Transfer selection.
 	List<Node *> new_selection;
-	for (const Node *E : edited_scene.write[p_idx].selection) {
+	for (const Node *E : edited_scene.ptrw()[p_idx].selection) {
 		NodePath p = edited_scene[p_idx].root->get_path_to(E);
 		Node *new_node = new_scene->get_node(p);
 		if (new_node) {
@@ -749,7 +749,7 @@ bool EditorData::reload_scene_from_memory(int p_idx, bool p_mark_unsaved) {
 	Node *old_root = edited_scene[p_idx].root;
 	EditorNode::get_singleton()->set_edited_scene(new_scene);
 	memdelete(old_root);
-	edited_scene.write[p_idx].selection = new_selection;
+	edited_scene.ptrw()[p_idx].selection = new_selection;
 
 	if (p_mark_unsaved) {
 		EditorUndoRedoManager::get_singleton()->clear_history(get_scene_history_id(p_idx));
@@ -788,17 +788,17 @@ Node *EditorData::get_edited_scene_root(int p_idx) {
 
 void EditorData::set_edited_scene_root(Node *p_root) {
 	ERR_FAIL_INDEX(current_edited_scene, edited_scene.size());
-	edited_scene.write[current_edited_scene].root = p_root;
+	edited_scene.ptrw()[current_edited_scene].root = p_root;
 	if (p_root) {
 		if (p_root->is_instance()) {
-			edited_scene.write[current_edited_scene].path = p_root->get_scene_file_path();
+			edited_scene.ptrw()[current_edited_scene].path = p_root->get_scene_file_path();
 		} else {
 			p_root->set_scene_file_path(edited_scene[current_edited_scene].path);
 		}
 	}
 
 	if (!edited_scene[current_edited_scene].path.is_empty()) {
-		edited_scene.write[current_edited_scene].file_modified_time = FileAccess::get_modified_time(edited_scene[current_edited_scene].path);
+		edited_scene.ptrw()[current_edited_scene].file_modified_time = FileAccess::get_modified_time(edited_scene[current_edited_scene].path);
 	}
 }
 
@@ -822,7 +822,7 @@ void EditorData::set_scene_modified_time(int p_idx, uint64_t p_time) {
 	}
 	ERR_FAIL_INDEX(p_idx, edited_scene.size());
 
-	edited_scene.write[p_idx].file_modified_time = p_time;
+	edited_scene.ptrw()[p_idx].file_modified_time = p_time;
 }
 
 uint64_t EditorData::get_scene_modified_time(int p_idx) const {
@@ -898,7 +898,7 @@ String EditorData::get_scene_title(int p_idx, bool p_always_strip_extension) con
 
 void EditorData::set_scene_path(int p_idx, const String &p_path) {
 	ERR_FAIL_INDEX(p_idx, edited_scene.size());
-	edited_scene.write[p_idx].path = p_path;
+	edited_scene.ptrw()[p_idx].path = p_path;
 
 	if (!edited_scene[p_idx].root) {
 		return;
@@ -923,7 +923,7 @@ String EditorData::get_scene_path(int p_idx) const {
 void EditorData::set_edited_scene_live_edit_root(const NodePath &p_root) {
 	ERR_FAIL_INDEX(current_edited_scene, edited_scene.size());
 
-	edited_scene.write[current_edited_scene].live_edit_root = p_root;
+	edited_scene.ptrw()[current_edited_scene].live_edit_root = p_root;
 }
 
 NodePath EditorData::get_edited_scene_live_edit_root() {
@@ -935,7 +935,7 @@ NodePath EditorData::get_edited_scene_live_edit_root() {
 void EditorData::save_edited_scene_state(EditorSelection *p_selection, EditorSelectionHistory *p_history, const Dictionary &p_custom) {
 	ERR_FAIL_INDEX(current_edited_scene, edited_scene.size());
 
-	EditedScene &es = edited_scene.write[current_edited_scene];
+	EditedScene &es = edited_scene.ptrw()[current_edited_scene];
 	es.selection = p_selection->get_full_selected_node_list();
 	es.history_current = p_history->current_elem_idx;
 	es.history_stored = p_history->history;
@@ -946,7 +946,7 @@ void EditorData::save_edited_scene_state(EditorSelection *p_selection, EditorSel
 Dictionary EditorData::restore_edited_scene_state(EditorSelection *p_selection, EditorSelectionHistory *p_history) {
 	ERR_FAIL_INDEX_V(current_edited_scene, edited_scene.size(), Dictionary());
 
-	const EditedScene &es = edited_scene.write[current_edited_scene];
+	const EditedScene &es = edited_scene.ptrw()[current_edited_scene];
 
 	p_history->current_elem_idx = es.history_current;
 	p_history->history = es.history_stored;

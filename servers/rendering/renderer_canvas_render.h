@@ -405,7 +405,7 @@ public:
 						blocks.push_back(cb);
 					}
 
-					CommandBlock *c = &blocks.write[current_block];
+					CommandBlock *c = &blocks.ptrw()[current_block];
 					size_t space_left = CommandBlock::MAX_SIZE - c->usage;
 					if (space_left < sizeof(T)) {
 						current_block++;

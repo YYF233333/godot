@@ -42,9 +42,9 @@
 
 void EditorProfiler::_make_metric_ptrs(Metric &m) {
 	for (int i = 0; i < m.categories.size(); i++) {
-		m.category_ptrs[m.categories[i].signature] = &m.categories.write[i];
+		m.category_ptrs[m.categories[i].signature] = &m.categories.ptrw()[i];
 		for (int j = 0; j < m.categories[i].items.size(); j++) {
-			m.item_ptrs[m.categories[i].items[j].signature] = &m.categories.write[i].items.write[j];
+			m.item_ptrs[m.categories[i].items[j].signature] = &m.categories.ptrw()[i].items.ptrw()[j];
 		}
 	}
 }
@@ -64,8 +64,8 @@ void EditorProfiler::add_frame_metric(const Metric &p_metric, bool p_final) {
 		total_metrics = frame_metrics.size();
 	}
 
-	frame_metrics.write[last_metric] = p_metric;
-	_make_metric_ptrs(frame_metrics.write[last_metric]);
+	frame_metrics.ptrw()[last_metric] = p_metric;
+	_make_metric_ptrs(frame_metrics.ptrw()[last_metric]);
 
 	updating_frame = true;
 	clear_button->set_disabled(false);
@@ -625,7 +625,7 @@ Vector<Vector<String>> EditorProfiler::get_data_as_csv() const {
 	signatures.resize(possible_signatures.size());
 	int sig_index = 0;
 	for (const StringName &E : possible_signatures) {
-		signatures.write[sig_index] = E;
+		signatures.ptrw()[sig_index] = E;
 		sig_map[E] = sig_index;
 		sig_index++;
 	}
@@ -654,10 +654,10 @@ Vector<Vector<String>> EditorProfiler::get_data_as_csv() const {
 		values.resize(possible_signatures.size());
 
 		for (const KeyValue<StringName, Metric::Category *> &E : m.category_ptrs) {
-			values.write[sig_map[E.key]] = String::num_real(E.value->total_time);
+			values.ptrw()[sig_map[E.key]] = String::num_real(E.value->total_time);
 		}
 		for (const KeyValue<StringName, Metric::Category::Item *> &E : m.item_ptrs) {
-			values.write[sig_map[E.key]] = String::num_real(E.value->total);
+			values.ptrw()[sig_map[E.key]] = String::num_real(E.value->total);
 		}
 
 		res.push_back(values);

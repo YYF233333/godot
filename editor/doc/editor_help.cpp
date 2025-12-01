@@ -4848,7 +4848,7 @@ EditorHelpHighlighter::HighlightData EditorHelpHighlighter::_get_highlight_data(
 
 			const Color color = dict[*key].operator Dictionary().get("color", Color());
 
-			result.write[result_index] = { source_offset + column, color };
+			result.ptrw()[result_index] = { source_offset + column, color };
 			result_index++;
 		}
 

@@ -307,7 +307,7 @@ bool ResourceImporterScene::get_option_visibility(const String &p_path, const St
 	}
 
 	for (int i = 0; i < post_importer_plugins.size(); i++) {
-		Variant ret = post_importer_plugins.write[i]->get_option_visibility(p_path, _scene_import_type, p_option, p_options);
+		Variant ret = post_importer_plugins.ptrw()[i]->get_option_visibility(p_path, _scene_import_type, p_option, p_options);
 		if (ret.get_type() == Variant::BOOL) {
 			if (!ret) {
 				return false;
@@ -499,7 +499,7 @@ void _rescale_importer_mesh(Vector3 p_scale, Ref<ImporterMesh> p_mesh, bool is_s
 		{
 			Vector<Vector3> vertex_array = arr[ArrayMesh::ARRAY_VERTEX];
 			for (int vert_arr_i = 0; vert_arr_i < vertex_array.size(); vert_arr_i++) {
-				vertex_array.write[vert_arr_i] = vertex_array[vert_arr_i] * p_scale;
+				vertex_array.ptrw()[vert_arr_i] = vertex_array[vert_arr_i] * p_scale;
 			}
 			arr[ArrayMesh::ARRAY_VERTEX] = vertex_array;
 		}
@@ -509,7 +509,7 @@ void _rescale_importer_mesh(Vector3 p_scale, Ref<ImporterMesh> p_mesh, bool is_s
 			Vector<Vector3> current_bs_vertex_array = current_bsarr[ArrayMesh::ARRAY_VERTEX];
 			int current_bs_vert_arr_len = current_bs_vertex_array.size();
 			for (int32_t bs_vert_arr_i = 0; bs_vert_arr_i < current_bs_vert_arr_len; bs_vert_arr_i++) {
-				current_bs_vertex_array.write[bs_vert_arr_i] = current_bs_vertex_array[bs_vert_arr_i] * p_scale;
+				current_bs_vertex_array.ptrw()[bs_vert_arr_i] = current_bs_vertex_array[bs_vert_arr_i] * p_scale;
 			}
 			current_bsarr[ArrayMesh::ARRAY_VERTEX] = current_bs_vertex_array;
 			blendshapes.push_back(current_bsarr);
@@ -1475,7 +1475,7 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 	{
 		ObjectID node_id = p_node->get_instance_id();
 		for (int i = 0; i < post_importer_plugins.size(); i++) {
-			post_importer_plugins.write[i]->internal_process(EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_NODE, p_root, p_node, Ref<Resource>(), node_settings);
+			post_importer_plugins.ptrw()[i]->internal_process(EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_NODE, p_root, p_node, Ref<Resource>(), node_settings);
 			if (ObjectDB::get_instance(node_id) == nullptr) { //may have been erased, so do not continue
 				break;
 			}
@@ -1485,7 +1485,7 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 	if (Object::cast_to<ImporterMeshInstance3D>(p_node)) {
 		ObjectID node_id = p_node->get_instance_id();
 		for (int i = 0; i < post_importer_plugins.size(); i++) {
-			post_importer_plugins.write[i]->internal_process(EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_MESH_3D_NODE, p_root, p_node, Ref<Resource>(), node_settings);
+			post_importer_plugins.ptrw()[i]->internal_process(EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_MESH_3D_NODE, p_root, p_node, Ref<Resource>(), node_settings);
 			if (ObjectDB::get_instance(node_id) == nullptr) { //may have been erased, so do not continue
 				break;
 			}
@@ -1563,7 +1563,7 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 
 		ObjectID node_id = p_node->get_instance_id();
 		for (int i = 0; i < post_importer_plugins.size(); i++) {
-			post_importer_plugins.write[i]->internal_process(EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_SKELETON_3D_NODE, p_root, p_node, Ref<Resource>(), node_settings);
+			post_importer_plugins.ptrw()[i]->internal_process(EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_SKELETON_3D_NODE, p_root, p_node, Ref<Resource>(), node_settings);
 			if (ObjectDB::get_instance(node_id) == nullptr) { //may have been erased, so do not continue
 				break;
 			}
@@ -1595,7 +1595,7 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 							}
 
 							for (int j = 0; j < post_importer_plugins.size(); j++) {
-								post_importer_plugins.write[j]->internal_process(EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_MATERIAL, p_root, p_node, mat, matdata);
+								post_importer_plugins.ptrw()[j]->internal_process(EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_MATERIAL, p_root, p_node, mat, matdata);
 							}
 						}
 						if (!mat_id.is_empty() && extract_mat != 0) {
@@ -1868,7 +1868,7 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 		AnimationPlayer *ap = Object::cast_to<AnimationPlayer>(p_node);
 
 		for (int i = 0; i < post_importer_plugins.size(); i++) {
-			post_importer_plugins.write[i]->internal_process(EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_ANIMATION_NODE, p_root, p_node, Ref<Resource>(), node_settings);
+			post_importer_plugins.ptrw()[i]->internal_process(EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_ANIMATION_NODE, p_root, p_node, Ref<Resource>(), node_settings);
 		}
 
 		if (post_importer_plugins.size()) {
@@ -1890,7 +1890,7 @@ Node *ResourceImporterScene::_post_fix_node(Node *p_node, Node *p_root, HashMap<
 					}
 
 					for (int i = 0; i < post_importer_plugins.size(); i++) {
-						post_importer_plugins.write[i]->internal_process(EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_ANIMATION, p_root, p_node, anim, anim_settings);
+						post_importer_plugins.ptrw()[i]->internal_process(EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_ANIMATION, p_root, p_node, anim, anim_settings);
 					}
 				}
 			}
@@ -2253,7 +2253,7 @@ void ResourceImporterScene::get_internal_import_options(InternalImportCategory p
 	}
 
 	for (int i = 0; i < post_importer_plugins.size(); i++) {
-		post_importer_plugins.write[i]->get_internal_import_options(EditorScenePostImportPlugin::InternalImportCategory(p_category), r_options);
+		post_importer_plugins.ptrw()[i]->get_internal_import_options(EditorScenePostImportPlugin::InternalImportCategory(p_category), r_options);
 	}
 }
 
@@ -2452,7 +2452,7 @@ bool ResourceImporterScene::get_internal_option_visibility(InternalImportCategor
 
 	// TODO: If there are more than 2 or equal get_internal_option_visibility method, visibility state is broken.
 	for (int i = 0; i < post_importer_plugins.size(); i++) {
-		Variant ret = post_importer_plugins.write[i]->get_internal_option_visibility(EditorScenePostImportPlugin::InternalImportCategory(p_category), _scene_import_type, p_option, p_options);
+		Variant ret = post_importer_plugins.ptrw()[i]->get_internal_option_visibility(EditorScenePostImportPlugin::InternalImportCategory(p_category), _scene_import_type, p_option, p_options);
 		if (ret.get_type() == Variant::BOOL) {
 			return ret;
 		}
@@ -2489,7 +2489,7 @@ bool ResourceImporterScene::get_internal_option_update_view_required(InternalImp
 	}
 
 	for (int i = 0; i < post_importer_plugins.size(); i++) {
-		Variant ret = post_importer_plugins.write[i]->get_internal_option_update_view_required(EditorScenePostImportPlugin::InternalImportCategory(p_category), p_option, p_options);
+		Variant ret = post_importer_plugins.ptrw()[i]->get_internal_option_update_view_required(EditorScenePostImportPlugin::InternalImportCategory(p_category), p_option, p_options);
 		if (ret.get_type() == Variant::BOOL) {
 			return ret;
 		}
@@ -2541,7 +2541,7 @@ void ResourceImporterScene::get_import_options(const String &p_path, List<Import
 	r_options->push_back(ImportOption(PropertyInfo(Variant::DICTIONARY, "_subresources", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), Dictionary()));
 
 	for (int i = 0; i < post_importer_plugins.size(); i++) {
-		post_importer_plugins.write[i]->get_import_options(p_path, r_options);
+		post_importer_plugins.ptrw()[i]->get_import_options(p_path, r_options);
 	}
 
 	for (Ref<EditorSceneFormatImporter> importer_elem : scene_importers) {
@@ -2676,7 +2676,7 @@ Node *ResourceImporterScene::_generate_meshes(Node *p_node, const Dictionary &p_
 					}
 
 					for (int i = 0; i < post_importer_plugins.size(); i++) {
-						post_importer_plugins.write[i]->internal_process(EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_MESH, nullptr, src_mesh_node, importer_mesh, mesh_settings);
+						post_importer_plugins.ptrw()[i]->internal_process(EditorScenePostImportPlugin::INTERNAL_IMPORT_CATEGORY_MESH, nullptr, src_mesh_node, importer_mesh, mesh_settings);
 					}
 				}
 
@@ -3180,7 +3180,7 @@ Error ResourceImporterScene::import(ResourceUID::ID p_source_id, const String &p
 	_pre_fix_node(scene, scene, collision_map, &occluder_arrays, node_renames, p_options);
 
 	for (int i = 0; i < post_importer_plugins.size(); i++) {
-		post_importer_plugins.write[i]->pre_process(scene, p_options);
+		post_importer_plugins.ptrw()[i]->pre_process(scene, p_options);
 	}
 
 	// data in _subresources may be modified by pre_process(), so wait until now to check.
@@ -3317,7 +3317,7 @@ Error ResourceImporterScene::import(ResourceUID::ID p_source_id, const String &p
 	}
 
 	for (int i = 0; i < post_importer_plugins.size(); i++) {
-		post_importer_plugins.write[i]->post_process(scene, p_options);
+		post_importer_plugins.ptrw()[i]->post_process(scene, p_options);
 	}
 
 	progress.step(TTR("Saving..."), 104);

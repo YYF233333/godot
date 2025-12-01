@@ -195,8 +195,8 @@ class Noise : public Resource {
 				}
 			}
 			Ref<Image> image = memnew(Image(p_width, p_height, false, format, dest));
-			p_src.write[d].unref();
-			images.write[d] = image;
+			p_src.ptrw()[d].unref();
+			images.ptrw()[d] = image;
 		}
 
 		// Now blend across z.
@@ -208,8 +208,8 @@ class Noise : public Resource {
 			// Swap halves on depth.
 			for (int i = 0; i < half_depth; i++) {
 				Ref<Image> img = images[i];
-				images.write[i] = images[i + half_depth];
-				images.write[i + half_depth] = img;
+				images.ptrw()[i] = images[i + half_depth];
+				images.ptrw()[i + half_depth] = img;
 			}
 
 			Vector<Ref<Image>> new_images = images;
@@ -236,11 +236,11 @@ class Noise : public Resource {
 
 					out = (uint8_t)((a * fg + inv_a * bg) >> 8);
 
-					dest.write[i] = out;
+					dest.ptrw()[i] = out;
 				}
 
 				Ref<Image> new_image = memnew(Image(images[0]->get_width(), images[0]->get_height(), false, images[0]->get_format(), dest));
-				new_images.write[z % p_depth] = new_image;
+				new_images.ptrw()[z % p_depth] = new_image;
 			}
 			return new_images;
 		}

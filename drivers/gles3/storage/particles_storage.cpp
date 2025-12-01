@@ -357,7 +357,7 @@ void ParticlesStorage::particles_set_draw_pass_mesh(RID p_particles, int p_pass,
 	Particles *particles = particles_owner.get_or_null(p_particles);
 	ERR_FAIL_NULL(particles);
 	ERR_FAIL_INDEX(p_pass, particles->draw_passes.size());
-	particles->draw_passes.write[p_pass] = p_mesh;
+	particles->draw_passes.ptrw()[p_pass] = p_mesh;
 	particles->dependency.changed_notify(Dependency::DEPENDENCY_CHANGED_PARTICLES);
 }
 

@@ -61,7 +61,7 @@ void SpriteFrames::set_frame(const StringName &p_anim, int p_idx, const Ref<Text
 
 	Frame frame = { p_texture, p_duration };
 
-	E->value.frames.write[p_idx] = frame;
+	E->value.frames.ptrw()[p_idx] = frame;
 
 	emit_changed();
 }

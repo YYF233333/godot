@@ -655,10 +655,10 @@ void ScriptEditor::_save_history() {
 		Node *n = tab_container->get_current_tab_control();
 
 		if (Object::cast_to<ScriptEditorBase>(n)) {
-			history.write[history_pos].state = Object::cast_to<ScriptEditorBase>(n)->get_navigation_state();
+			history.ptrw()[history_pos].state = Object::cast_to<ScriptEditorBase>(n)->get_navigation_state();
 		}
 		if (Object::cast_to<EditorHelp>(n)) {
-			history.write[history_pos].state = Object::cast_to<EditorHelp>(n)->get_scroll();
+			history.ptrw()[history_pos].state = Object::cast_to<EditorHelp>(n)->get_scroll();
 		}
 	}
 
@@ -684,7 +684,7 @@ void ScriptEditor::_save_previous_state(Dictionary p_state) {
 		Node *n = tab_container->get_current_tab_control();
 
 		if (Object::cast_to<ScriptTextEditor>(n)) {
-			history.write[history_pos].state = p_state;
+			history.ptrw()[history_pos].state = p_state;
 		}
 	}
 
@@ -716,10 +716,10 @@ void ScriptEditor::_go_to_tab(int p_idx) {
 		Node *n = tab_container->get_current_tab_control();
 
 		if (Object::cast_to<ScriptEditorBase>(n)) {
-			history.write[history_pos].state = Object::cast_to<ScriptEditorBase>(n)->get_navigation_state();
+			history.ptrw()[history_pos].state = Object::cast_to<ScriptEditorBase>(n)->get_navigation_state();
 		}
 		if (Object::cast_to<EditorHelp>(n)) {
-			history.write[history_pos].state = Object::cast_to<EditorHelp>(n)->get_scroll();
+			history.ptrw()[history_pos].state = Object::cast_to<EditorHelp>(n)->get_scroll();
 		}
 	}
 
@@ -2409,9 +2409,9 @@ void ScriptEditor::_update_script_names() {
 
 	for (int j = 0; j < sedata.size(); j++) {
 		if (sedata[j].name.ends_with("(*)")) {
-			sedata.write[j].name = disambiguated_script_names[j] + "(*)";
+			sedata.ptrw()[j].name = disambiguated_script_names[j] + "(*)";
 		} else {
-			sedata.write[j].name = disambiguated_script_names[j];
+			sedata.ptrw()[j].name = disambiguated_script_names[j];
 		}
 	}
 
@@ -3858,10 +3858,10 @@ void ScriptEditor::_update_history_pos(int p_new_pos) {
 	Node *n = tab_container->get_current_tab_control();
 
 	if (Object::cast_to<ScriptEditorBase>(n)) {
-		history.write[history_pos].state = Object::cast_to<ScriptEditorBase>(n)->get_navigation_state();
+		history.ptrw()[history_pos].state = Object::cast_to<ScriptEditorBase>(n)->get_navigation_state();
 	}
 	if (Object::cast_to<EditorHelp>(n)) {
-		history.write[history_pos].state = Object::cast_to<EditorHelp>(n)->get_scroll();
+		history.ptrw()[history_pos].state = Object::cast_to<EditorHelp>(n)->get_scroll();
 	}
 
 	history_pos = p_new_pos;
@@ -4738,11 +4738,11 @@ String ScriptEditorPlugin::get_unsaved_status(const String &p_for_scene) const {
 			return String();
 		} else {
 			message.resize(unsaved_built_in_scripts.size() + 1);
-			message.write[0] = TTR("There are unsaved changes in the following built-in script(s):");
+			message.ptrw()[0] = TTR("There are unsaved changes in the following built-in script(s):");
 
 			int i = 1;
 			for (const String &E : unsaved_built_in_scripts) {
-				message.write[i] = E.trim_suffix("(*)");
+				message.ptrw()[i] = E.trim_suffix("(*)");
 				i++;
 			}
 			return String("\n").join(message);
@@ -4750,11 +4750,11 @@ String ScriptEditorPlugin::get_unsaved_status(const String &p_for_scene) const {
 	}
 
 	message.resize(unsaved_scripts.size() + 1);
-	message.write[0] = TTR("Save changes to the following script(s) before quitting?");
+	message.ptrw()[0] = TTR("Save changes to the following script(s) before quitting?");
 
 	int i = 1;
 	for (const String &E : unsaved_scripts) {
-		message.write[i] = E.trim_suffix("(*)");
+		message.ptrw()[i] = E.trim_suffix("(*)");
 		i++;
 	}
 	return String("\n").join(message);

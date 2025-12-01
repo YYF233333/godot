@@ -844,7 +844,7 @@ void VisualShaderGraphPlugin::add_node(VisualShader::Type p_type, int p_id, bool
 	for (int i = 0; i < editor->plugins.size(); i++) {
 		vsnode->set_meta("id", p_id);
 		vsnode->set_meta("shader_type", (int)p_type);
-		custom_editor = editor->plugins.write[i]->create_editor(visual_shader, vsnode);
+		custom_editor = editor->plugins.ptrw()[i]->create_editor(visual_shader, vsnode);
 		vsnode->remove_meta("id");
 		vsnode->remove_meta("shader_type");
 		if (custom_editor) {
@@ -1778,11 +1778,11 @@ void VisualShaderEditor::_update_custom_script(const Ref<Script> &p_script) {
 		if (add_options[i].script == p_script) {
 			found_type = true;
 
-			add_options.write[i].name = dict["name"];
-			add_options.write[i].return_type = dict["return_icon_type"];
-			add_options.write[i].description = dict["description"];
-			add_options.write[i].category = dict["category"];
-			add_options.write[i].highend = dict["highend"];
+			add_options.ptrw()[i].name = dict["name"];
+			add_options.ptrw()[i].return_type = dict["return_icon_type"];
+			add_options.ptrw()[i].description = dict["description"];
+			add_options.ptrw()[i].category = dict["category"];
+			add_options.ptrw()[i].highend = dict["highend"];
 
 			int begin_type = 0;
 			int end_type = 0;

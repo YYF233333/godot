@@ -472,7 +472,7 @@ void CollisionObject2D::shape_owner_remove_shape(uint32_t p_owner, int p_shape) 
 	for (KeyValue<uint32_t, ShapeData> &E : shapes) {
 		for (int i = 0; i < E.value.shapes.size(); i++) {
 			if (E.value.shapes[i].index > index_to_remove) {
-				E.value.shapes.write[i].index -= 1;
+				E.value.shapes.ptrw()[i].index -= 1;
 			}
 		}
 	}

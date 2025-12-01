@@ -71,7 +71,7 @@ PackedVector2Array Shape2D::collide_with_motion_and_get_contacts(const Transform
 	PackedVector2Array results;
 	results.resize(contacts * 2);
 	for (int i = 0; i < contacts * 2; i++) {
-		results.write[i] = result[i];
+		results.ptrw()[i] = result[i];
 	}
 
 	return results;
@@ -90,7 +90,7 @@ PackedVector2Array Shape2D::collide_and_get_contacts(const Transform2D &p_local_
 	PackedVector2Array results;
 	results.resize(contacts * 2);
 	for (int i = 0; i < contacts * 2; i++) {
-		results.write[i] = result[i];
+		results.ptrw()[i] = result[i];
 	}
 
 	return results;

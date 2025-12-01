@@ -76,7 +76,7 @@ public:
 		DummyMesh *m = mesh_owner.get_or_null(p_mesh);
 		ERR_FAIL_NULL(m);
 		m->surfaces.push_back(RS::SurfaceData());
-		RS::SurfaceData *s = &m->surfaces.write[m->surfaces.size() - 1];
+		RS::SurfaceData *s = &m->surfaces.ptrw()[m->surfaces.size() - 1];
 		s->format = p_surface.format;
 		s->primitive = p_surface.primitive;
 		s->vertex_data = p_surface.vertex_data;

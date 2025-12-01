@@ -95,7 +95,7 @@ Error ImageLoader::load_image(const String &p_file, Ref<Image> p_image, Ref<File
 		if (!loader[i]->recognize(extension)) {
 			continue;
 		}
-		Error err = loader.write[i]->load_image(p_image, f, p_flags, p_scale);
+		Error err = loader.ptrw()[i]->load_image(p_image, f, p_flags, p_scale);
 		if (err != OK) {
 			ERR_PRINT(vformat("Error loading image: '%s'.", file));
 		}
@@ -181,7 +181,7 @@ Ref<Resource> ResourceFormatLoaderImage::load(const String &p_path, const String
 	Ref<Image> image;
 	image.instantiate();
 
-	Error err = ImageLoader::loader.write[idx]->load_image(image, f);
+	Error err = ImageLoader::loader.ptrw()[idx]->load_image(image, f);
 
 	if (err != OK) {
 		if (r_error) {

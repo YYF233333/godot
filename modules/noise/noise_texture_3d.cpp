@@ -102,7 +102,7 @@ void NoiseTexture3D::_set_texture_data(const TypedArray<Image> &p_data) {
 		data.resize(p_data.size());
 
 		for (int i = 0; i < data.size(); i++) {
-			data.write[i] = p_data[i];
+			data.ptrw()[i] = p_data[i];
 		}
 
 		if (texture.is_valid()) {
@@ -159,7 +159,7 @@ TypedArray<Image> NoiseTexture3D::_generate_texture() {
 
 	if (color_ramp.is_valid()) {
 		for (int i = 0; i < images.size(); i++) {
-			images.write[i] = _modulate_with_gradient(images[i], color_ramp);
+			images.ptrw()[i] = _modulate_with_gradient(images[i], color_ramp);
 		}
 	}
 

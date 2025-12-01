@@ -745,13 +745,13 @@ TEST_SUITE("[Navigation2D]") {
 		real_t simplify_epsilon = 0.2;
 		Vector<Vector2> source_path;
 		source_path.resize(7);
-		source_path.write[0] = Vector2(0.0, 0.0);
-		source_path.write[1] = Vector2(0.0, 1.0); // This point needs to go.
-		source_path.write[2] = Vector2(0.0, 2.0); // This point needs to go.
-		source_path.write[3] = Vector2(0.0, 2.0);
-		source_path.write[4] = Vector2(2.0, 3.0);
-		source_path.write[5] = Vector2(2.5, 4.0); // This point needs to go.
-		source_path.write[6] = Vector2(3.0, 5.0);
+		source_path.ptrw()[0] = Vector2(0.0, 0.0);
+		source_path.ptrw()[1] = Vector2(0.0, 1.0); // This point needs to go.
+		source_path.ptrw()[2] = Vector2(0.0, 2.0); // This point needs to go.
+		source_path.ptrw()[3] = Vector2(0.0, 2.0);
+		source_path.ptrw()[4] = Vector2(2.0, 3.0);
+		source_path.ptrw()[5] = Vector2(2.5, 4.0); // This point needs to go.
+		source_path.ptrw()[6] = Vector2(3.0, 5.0);
 		Vector<Vector2> simplified_path = NavigationServer2D::get_singleton()->simplify_path(source_path, simplify_epsilon);
 		CHECK_EQ(simplified_path.size(), 4);
 	}

@@ -168,7 +168,7 @@ Vector<Ref<Image>> Texture3D::get_data() const {
 	Vector<Ref<Image>> data;
 	data.resize(ret.size());
 	for (int i = 0; i < data.size(); i++) {
-		data.write[i] = ret[i];
+		data.ptrw()[i] = ret[i];
 	}
 	return data;
 }

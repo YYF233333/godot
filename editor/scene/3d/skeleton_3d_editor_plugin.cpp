@@ -546,11 +546,11 @@ void Skeleton3DEditor::create_physical_skeleton() {
 		const int parent = skeleton->get_bone_parent(bone_id);
 
 		if (parent < 0) {
-			bones_infos.write[bone_id].relative_rest = skeleton->get_bone_rest(bone_id);
+			bones_infos.ptrw()[bone_id].relative_rest = skeleton->get_bone_rest(bone_id);
 		} else {
 			const int parent_parent = skeleton->get_bone_parent(parent);
 
-			bones_infos.write[bone_id].relative_rest = bones_infos[parent].relative_rest * skeleton->get_bone_rest(bone_id);
+			bones_infos.ptrw()[bone_id].relative_rest = bones_infos[parent].relative_rest * skeleton->get_bone_rest(bone_id);
 
 			// Create physical bone on parent.
 			if (!bones_infos[parent].physical_bone) {
@@ -558,7 +558,7 @@ void Skeleton3DEditor::create_physical_skeleton() {
 				if (physical_bone && physical_bone->get_child(0)) {
 					CollisionShape3D *collision_shape = Object::cast_to<CollisionShape3D>(physical_bone->get_child(0));
 					if (collision_shape) {
-						bones_infos.write[parent].physical_bone = physical_bone;
+						bones_infos.ptrw()[parent].physical_bone = physical_bone;
 
 						ur->add_do_method(simulator, "add_child", physical_bone);
 						ur->add_do_method(physical_bone, "set_owner", owner);
@@ -682,7 +682,7 @@ void Skeleton3DEditor::_file_selected(const String &p_file) {
 	float nrm = MAX(bound.x, bound.y);
 	if (nrm > 0) {
 		for (int i = 0; i < bone_count; i++) {
-			handle_positions.write[i] = (handle_positions[i] - center) / nrm * 0.9;
+			handle_positions.ptrw()[i] = (handle_positions[i] - center) / nrm * 0.9;
 			sp->set_handle_offset(i, Vector2(0.5 + handle_positions[i].x, 0.5 - handle_positions[i].y));
 		}
 	}

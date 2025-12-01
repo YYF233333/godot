@@ -120,7 +120,7 @@ String ImporterMesh::get_surface_name(int p_surface) const {
 }
 void ImporterMesh::set_surface_name(int p_surface, const String &p_name) {
 	ERR_FAIL_INDEX(p_surface, surfaces.size());
-	surfaces.write[p_surface].name = p_name;
+	surfaces.ptrw()[p_surface].name = p_name;
 	mesh.unref();
 }
 
@@ -158,7 +158,7 @@ Ref<Material> ImporterMesh::get_surface_material(int p_surface) const {
 
 void ImporterMesh::set_surface_material(int p_surface, const Ref<Material> &p_material) {
 	ERR_FAIL_INDEX(p_surface, surfaces.size());
-	surfaces.write[p_surface].material = p_material;
+	surfaces.ptrw()[p_surface].material = p_material;
 	mesh.unref();
 }
 
@@ -231,10 +231,10 @@ void ImporterMesh::optimize_indices() {
 		// Optimize indices for vertex cache to establish final triangle order.
 		int *indices_ptr = indices.ptrw();
 		SurfaceTool::optimize_vertex_cache_func((unsigned int *)indices_ptr, (const unsigned int *)indices_ptr, index_count, vertex_count);
-		surfaces.write[i].arrays[RS::ARRAY_INDEX] = indices;
+		surfaces.ptrw()[i].arrays[RS::ARRAY_INDEX] = indices;
 
 		for (int j = 0; j < surfaces[i].lods.size(); ++j) {
-			Surface::LOD &lod = surfaces.write[i].lods.write[j];
+			Surface::LOD &lod = surfaces.ptrw()[i].lods.ptrw()[j];
 			int *lod_indices_ptr = lod.indices.ptrw();
 			SurfaceTool::optimize_vertex_cache_func((unsigned int *)lod_indices_ptr, (const unsigned int *)lod_indices_ptr, lod.indices.size(), vertex_count);
 		}
@@ -254,17 +254,17 @@ void ImporterMesh::optimize_indices() {
 
 		// We need to remap all vertex and index arrays in lockstep according to the remap.
 		SurfaceTool::remap_index_func((unsigned int *)indices_ptr, (const unsigned int *)indices_ptr, index_count, remap.ptr());
-		surfaces.write[i].arrays[RS::ARRAY_INDEX] = indices;
+		surfaces.ptrw()[i].arrays[RS::ARRAY_INDEX] = indices;
 
 		for (int j = 0; j < surfaces[i].lods.size(); ++j) {
-			Surface::LOD &lod = surfaces.write[i].lods.write[j];
+			Surface::LOD &lod = surfaces.ptrw()[i].lods.ptrw()[j];
 			int *lod_indices_ptr = lod.indices.ptrw();
 			SurfaceTool::remap_index_func((unsigned int *)lod_indices_ptr, (const unsigned int *)lod_indices_ptr, lod.indices.size(), remap.ptr());
 		}
 
-		_remap_arrays(surfaces.write[i].arrays, remap, new_vertex_count);
+		_remap_arrays(surfaces.ptrw()[i].arrays, remap, new_vertex_count);
 		for (int j = 0; j < surfaces[i].blend_shape_data.size(); j++) {
-			_remap_arrays(surfaces.write[i].blend_shape_data.write[j].arrays, remap, new_vertex_count);
+			_remap_arrays(surfaces.ptrw()[i].blend_shape_data.ptrw()[j].arrays, remap, new_vertex_count);
 		}
 	}
 
@@ -305,7 +305,7 @@ void ImporterMesh::generate_lods(float p_normal_merge_angle, Array p_bone_transf
 			continue;
 		}
 
-		surfaces.write[i].lods.clear();
+		surfaces.ptrw()[i].lods.clear();
 		Vector<Vector3> vertices = surfaces[i].arrays[RS::ARRAY_VERTEX];
 		PackedInt32Array indices = surfaces[i].arrays[RS::ARRAY_INDEX];
 		Vector<Vector3> normals = surfaces[i].arrays[RS::ARRAY_NORMAL];
@@ -557,12 +557,12 @@ void ImporterMesh::generate_lods(float p_normal_merge_angle, Array p_bone_transf
 			Surface::LOD lod;
 			lod.distance = MAX(current_error * scale, CMP_EPSILON2);
 			lod.indices = new_indices;
-			surfaces.write[i].lods.push_back(lod);
+			surfaces.ptrw()[i].lods.push_back(lod);
 
-			print_verbose("  LOD " + itos(surfaces.write[i].lods.size()) + ": " + itos(new_index_count / 3) + " triangles, error " + rtos(current_error) + " (step error " + rtos(step_error) + ")");
+			print_verbose("  LOD " + itos(surfaces.ptrw()[i].lods.size()) + ": " + itos(new_index_count / 3) + " triangles, error " + rtos(current_error) + " (step error " + rtos(step_error) + ")");
 		}
 
-		surfaces.write[i].lods.sort_custom<Surface::LODComparator>();
+		surfaces.ptrw()[i].lods.sort_custom<Surface::LODComparator>();
 	}
 }
 
@@ -1006,15 +1006,15 @@ Ref<NavigationMesh> ImporterMesh::create_navigation_mesh() {
 				idx = unique_vertices.size();
 				unique_vertices[v] = idx;
 			}
-			face_indices.write[j] = idx;
+			face_indices.ptrw()[j] = idx;
 		}
-		face_polygons.write[i] = face_indices;
+		face_polygons.ptrw()[i] = face_indices;
 	}
 
 	Vector<Vector3> vertices;
 	vertices.resize(unique_vertices.size());
 	for (const KeyValue<Vector3, int> &E : unique_vertices) {
-		vertices.write[E.value] = E.key;
+		vertices.ptrw()[E.value] = E.key;
 	}
 
 	Ref<NavigationMesh> nm;

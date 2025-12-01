@@ -67,7 +67,7 @@ static Vector<Vector<Vector3>> convex_decompose(const real_t *p_vertices, int p_
 		VHACD::IVHACD::ConvexHull hull;
 		decomposer->GetConvexHull(i, hull);
 
-		Vector<Vector3> &points = ret.write[i];
+		Vector<Vector3> &points = ret.ptrw()[i];
 		points.resize(hull.m_nPoints);
 
 		Vector3 *w = points.ptrw();
@@ -78,7 +78,7 @@ static Vector<Vector<Vector3>> convex_decompose(const real_t *p_vertices, int p_
 		}
 
 		if (r_convex_indices) {
-			Vector<uint32_t> &indices = r_convex_indices->write[i];
+			Vector<uint32_t> &indices = r_convex_indices->ptrw()[i];
 			indices.resize(hull.m_nTriangles * 3);
 
 			memcpy(indices.ptrw(), hull.m_triangles, hull.m_nTriangles * 3 * sizeof(uint32_t));

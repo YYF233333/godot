@@ -217,14 +217,14 @@ public:
 		int ofs = 0;
 		for (int i = 0; i < ScriptServer::get_language_count(); i++) {
 			if (p_accumulated) {
-				ofs += ScriptServer::get_language(i)->profiling_get_accumulated_data(&info.write[ofs], info.size() - ofs);
+				ofs += ScriptServer::get_language(i)->profiling_get_accumulated_data(&info.ptrw()[ofs], info.size() - ofs);
 			} else {
-				ofs += ScriptServer::get_language(i)->profiling_get_frame_data(&info.write[ofs], info.size() - ofs);
+				ofs += ScriptServer::get_language(i)->profiling_get_frame_data(&info.ptrw()[ofs], info.size() - ofs);
 			}
 		}
 
 		for (int i = 0; i < ofs; i++) {
-			ptrs.write[i] = &info.write[i];
+			ptrs.ptrw()[i] = &info.ptrw()[i];
 		}
 
 		SortArray<ScriptLanguage::ProfilingInfo *, ProfileInfoSort> sa;

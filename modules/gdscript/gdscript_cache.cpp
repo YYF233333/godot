@@ -272,7 +272,7 @@ String GDScriptCache::get_source_code(const String &p_path) {
 	source_file.resize(len + 1);
 	uint64_t r = f->get_buffer(source_file.ptrw(), len);
 	ERR_FAIL_COND_V(r != len, "");
-	source_file.write[len] = 0;
+	source_file.ptrw()[len] = 0;
 
 	String source;
 	if (source.append_utf8((const char *)source_file.ptr(), len) != OK) {

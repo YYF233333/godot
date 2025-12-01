@@ -2739,7 +2739,7 @@ void RuntimeNodeSelect::_find_3d_items_at_rect(const Rect2 &p_rect, Vector<Selec
 				transformed_frustum.resize(plane_count);
 
 				for (int j = 0; j < plane_count; j++) {
-					transformed_frustum.write[j] = it.xform(frustum[j]);
+					transformed_frustum.ptrw()[j] = it.xform(frustum[j]);
 				}
 				Vector<Vector3> convex_points = Geometry3D::compute_convex_mesh_points(transformed_frustum.ptr(), plane_count);
 				if (mesh_collision->inside_convex_shape(transformed_frustum.ptr(), transformed_frustum.size(), convex_points.ptr(), convex_points.size(), mesh_scale)) {

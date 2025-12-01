@@ -545,7 +545,7 @@ bool RenderingShaderContainerMetal::_set_code_from_spirv(const ReflectShader &p_
 	}
 
 	for (uint32_t i = 0; i < p_spirv.size(); i++) {
-		StageData &stage_data = mtl_shaders.write[i];
+		StageData &stage_data = mtl_shaders.ptrw()[i];
 		const ReflectShaderStage &v = p_spirv[i];
 		RD::ShaderStage stage = v.shader_stage;
 		Span<uint32_t> spirv = v.spirv();
@@ -630,7 +630,7 @@ bool RenderingShaderContainerMetal::_set_code_from_spirv(const ReflectShader &p_
 		}
 
 		uint32_t binary_data_size = binary_data.size();
-		Shader &shader = shaders.write[i];
+		Shader &shader = shaders.ptrw()[i];
 		shader.shader_stage = stage;
 		shader.code_decompressed_size = binary_data_size;
 		shader.code_compressed_bytes.resize(binary_data_size);

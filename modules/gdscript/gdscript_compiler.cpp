@@ -1400,7 +1400,7 @@ GDScriptCodeGenerator::Address GDScriptCompiler::_parse_expression(CodeGen &code
 			Vector<GDScriptCodeGenerator::Address> captures;
 			captures.resize(lambda->captures.size());
 			for (int i = 0; i < lambda->captures.size(); i++) {
-				captures.write[i] = _parse_expression(codegen, r_error, lambda->captures[i]);
+				captures.ptrw()[i] = _parse_expression(codegen, r_error, lambda->captures[i]);
 				if (r_error) {
 					return GDScriptCodeGenerator::Address();
 				}
@@ -2059,7 +2059,7 @@ Error GDScriptCompiler::_parse_block(CodeGen &codegen, const GDScriptParser::Sui
 					args.resize(range_call->arguments.size());
 
 					for (int j = 0; j < args.size(); j++) {
-						args.write[j] = _parse_expression(codegen, err, range_call->arguments[j]);
+						args.ptrw()[j] = _parse_expression(codegen, err, range_call->arguments[j]);
 						if (err) {
 							return err;
 						}

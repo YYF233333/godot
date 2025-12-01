@@ -719,7 +719,7 @@ void EditorAutoloadSettings::drop_data_fw(const Point2 &p_point, const Variant &
 	initial_orders.resize(autoload_cache.size());
 	int idx = 0;
 	for (const AutoloadInfo &F : autoload_cache) {
-		initial_orders.write[idx++] = F.order;
+		initial_orders.ptrw()[idx++] = F.order;
 	}
 
 	// Perform the drag-and-drop operation.
@@ -744,7 +744,7 @@ void EditorAutoloadSettings::drop_data_fw(const Point2 &p_point, const Variant &
 
 	idx = 0;
 	for (const AutoloadInfo &F : autoload_cache) {
-		orders.write[idx++] = F.order;
+		orders.ptrw()[idx++] = F.order;
 	}
 
 	// If the order didn't change, we shouldn't create undo/redo actions.

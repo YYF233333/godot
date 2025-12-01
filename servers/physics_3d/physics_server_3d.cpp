@@ -437,8 +437,8 @@ Vector<real_t> PhysicsDirectSpaceState3D::_cast_motion(RequiredParam<PhysicsShap
 	}
 	Vector<real_t> ret;
 	ret.resize(2);
-	ret.write[0] = closest_safe;
-	ret.write[1] = closest_unsafe;
+	ret.ptrw()[0] = closest_safe;
+	ret.ptrw()[1] = closest_unsafe;
 	return ret;
 }
 

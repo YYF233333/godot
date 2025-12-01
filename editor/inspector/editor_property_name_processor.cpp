@@ -76,9 +76,9 @@ String EditorPropertyNameProcessor::_capitalize_name(const String &p_name) const
 		}
 		HashMap<String, String>::ConstIterator remap = capitalize_string_remaps.find(parts[i]);
 		if (remap) {
-			parts.write[i] = remap->value;
+			parts.ptrw()[i] = remap->value;
 		} else {
-			parts.write[i] = parts[i].capitalize();
+			parts.ptrw()[i] = parts[i].capitalize();
 		}
 	}
 	const String capitalized = String(" ").join(parts);

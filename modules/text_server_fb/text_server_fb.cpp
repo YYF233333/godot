@@ -330,7 +330,7 @@ _FORCE_INLINE_ TextServerFallback::FontTexturePosition TextServerFallback::find_
 		p_data->textures.push_back(tex);
 
 		int32_t idx = p_data->textures.size() - 1;
-		ret = p_data->textures.write[idx].pack_rect(idx, mh, mw);
+		ret = p_data->textures.ptrw()[idx].pack_rect(idx, mh, mw);
 	}
 
 	return ret;
@@ -470,7 +470,7 @@ _FORCE_INLINE_ TextServerFallback::FontGlyph TextServerFallback::rasterize_msdf(
 
 		FontTexturePosition tex_pos = find_texture_pos_for_glyph(p_data, 4, Image::FORMAT_RGBA8, mw, mh, true);
 		ERR_FAIL_COND_V(tex_pos.index < 0, FontGlyph());
-		ShelfPackTexture &tex = p_data->textures.write[tex_pos.index];
+		ShelfPackTexture &tex = p_data->textures.ptrw()[tex_pos.index];
 
 		edgeColoringSimple(shape, 3.0); // Max. angle.
 		msdfgen::Bitmap<float, 4> image(w, h); // Texture size.
@@ -565,7 +565,7 @@ _FORCE_INLINE_ TextServerFallback::FontGlyph TextServerFallback::rasterize_bitma
 	ERR_FAIL_COND_V(tex_pos.index < 0, FontGlyph());
 
 	// Fit character in char texture.
-	ShelfPackTexture &tex = p_data->textures.write[tex_pos.index];
+	ShelfPackTexture &tex = p_data->textures.ptrw()[tex_pos.index];
 
 	{
 		uint8_t *wr = tex.image->ptrw();
@@ -1015,16 +1015,16 @@ bool TextServerFallback::_ensure_cache_for_size(FontFallback *p_font_data, const
 				// Reset to default.
 				int32_t var_tag = amaster->axis[i].tag;
 				double var_value = (double)amaster->axis[i].def / 65536.0;
-				coords.write[i] = amaster->axis[i].def;
+				coords.ptrw()[i] = amaster->axis[i].def;
 
 				if (p_font_data->variation_coordinates.has(var_tag)) {
 					var_value = p_font_data->variation_coordinates[var_tag];
-					coords.write[i] = CLAMP(var_value * 65536.0, amaster->axis[i].minimum, amaster->axis[i].maximum);
+					coords.ptrw()[i] = CLAMP(var_value * 65536.0, amaster->axis[i].minimum, amaster->axis[i].maximum);
 				}
 
 				if (p_font_data->variation_coordinates.has(tag_to_name(var_tag))) {
 					var_value = p_font_data->variation_coordinates[tag_to_name(var_tag)];
-					coords.write[i] = CLAMP(var_value * 65536.0, amaster->axis[i].minimum, amaster->axis[i].maximum);
+					coords.ptrw()[i] = CLAMP(var_value * 65536.0, amaster->axis[i].minimum, amaster->axis[i].maximum);
 				}
 			}
 
@@ -1385,8 +1385,8 @@ void TextServerFallback::_font_set_generate_mipmaps(const RID &p_font_rid, bool 
 	if (fd->mipmaps != p_generate_mipmaps) {
 		for (KeyValue<Vector2i, FontForSizeFallback *> &E : fd->cache) {
 			for (int i = 0; i < E.value->textures.size(); i++) {
-				E.value->textures.write[i].dirty = true;
-				E.value->textures.write[i].texture = Ref<ImageTexture>();
+				E.value->textures.ptrw()[i].dirty = true;
+				E.value->textures.ptrw()[i].texture = Ref<ImageTexture>();
 			}
 		}
 		fd->mipmaps = p_generate_mipmaps;
@@ -2040,7 +2040,7 @@ void TextServerFallback::_font_set_texture_image(const RID &p_font_rid, const Ve
 		ffsd->textures.resize(p_texture_index + 1);
 	}
 
-	ShelfPackTexture &tex = ffsd->textures.write[p_texture_index];
+	ShelfPackTexture &tex = ffsd->textures.ptrw()[p_texture_index];
 
 	tex.image = p_image;
 	tex.texture_w = p_image->get_width();
@@ -2083,7 +2083,7 @@ void TextServerFallback::_font_set_texture_offsets(const RID &p_font_rid, const 
 		ffsd->textures.resize(p_texture_index + 1);
 	}
 
-	ShelfPackTexture &tex = ffsd->textures.write[p_texture_index];
+	ShelfPackTexture &tex = ffsd->textures.ptrw()[p_texture_index];
 	tex.shelves.clear();
 	for (int32_t i = 0; i < p_offsets.size(); i += 4) {
 		tex.shelves.push_back(Shelf(p_offsets[i], p_offsets[i + 1], p_offsets[i + 2], p_offsets[i + 3]));
@@ -2433,7 +2433,7 @@ RID TextServerFallback::_font_get_glyph_texture_rid(const RID &p_font_rid, const
 	if (RenderingServer::get_singleton() != nullptr) {
 		if (fgl.texture_idx != -1) {
 			if (ffsd->textures[fgl.texture_idx].dirty) {
-				ShelfPackTexture &tex = ffsd->textures.write[fgl.texture_idx];
+				ShelfPackTexture &tex = ffsd->textures.ptrw()[fgl.texture_idx];
 				Ref<Image> img = tex.image;
 				if (fgl.from_svg) {
 					// Same as the "fix alpha border" process option when importing SVGs
@@ -2485,7 +2485,7 @@ Size2 TextServerFallback::_font_get_glyph_texture_size(const RID &p_font_rid, co
 	if (RenderingServer::get_singleton() != nullptr) {
 		if (fgl.texture_idx != -1) {
 			if (ffsd->textures[fgl.texture_idx].dirty) {
-				ShelfPackTexture &tex = ffsd->textures.write[fgl.texture_idx];
+				ShelfPackTexture &tex = ffsd->textures.ptrw()[fgl.texture_idx];
 				Ref<Image> img = tex.image;
 				if (fgl.from_svg) {
 					// Same as the "fix alpha border" process option when importing SVGs
@@ -2916,7 +2916,7 @@ void TextServerFallback::_font_draw_glyph(const RID &p_font_rid, const RID &p_ca
 #endif
 			if (RenderingServer::get_singleton() != nullptr) {
 				if (ffsd->textures[fgl.texture_idx].dirty) {
-					ShelfPackTexture &tex = ffsd->textures.write[fgl.texture_idx];
+					ShelfPackTexture &tex = ffsd->textures.ptrw()[fgl.texture_idx];
 					Ref<Image> img = tex.image;
 					if (fgl.from_svg) {
 						// Same as the "fix alpha border" process option when importing SVGs
@@ -3062,7 +3062,7 @@ void TextServerFallback::_font_draw_glyph_outline(const RID &p_font_rid, const R
 #endif
 			if (RenderingServer::get_singleton() != nullptr) {
 				if (ffsd->textures[fgl.texture_idx].dirty) {
-					ShelfPackTexture &tex = ffsd->textures.write[fgl.texture_idx];
+					ShelfPackTexture &tex = ffsd->textures.ptrw()[fgl.texture_idx];
 					Ref<Image> img = tex.image;
 					if (fd->mipmaps && !img->has_mipmaps()) {
 						img = tex.image->duplicate();
@@ -3910,11 +3910,11 @@ bool TextServerFallback::_shaped_text_resize_object(const RID &p_shaped, const V
 				if (sd->orientation == ORIENTATION_HORIZONTAL) {
 					sd->objects[key].rect.position.x = sd->width;
 					sd->width += sd->objects[key].rect.size.x;
-					sd->glyphs.write[i].advance = sd->objects[key].rect.size.x;
+					sd->glyphs.ptrw()[i].advance = sd->objects[key].rect.size.x;
 				} else {
 					sd->objects[key].rect.position.y = sd->width;
 					sd->width += sd->objects[key].rect.size.y;
-					sd->glyphs.write[i].advance = sd->objects[key].rect.size.y;
+					sd->glyphs.ptrw()[i].advance = sd->objects[key].rect.size.y;
 				}
 			} else {
 				if (gl.font_rid.is_valid()) {
@@ -4198,12 +4198,12 @@ double TextServerFallback::_shaped_text_fit_to_width(const RID &p_shaped, double
 		// Trim spaces.
 		while ((start_pos < end_pos) && ((sd->glyphs[start_pos].flags & GRAPHEME_IS_SOFT_HYPHEN) != GRAPHEME_IS_SOFT_HYPHEN) && ((sd->glyphs[start_pos].flags & GRAPHEME_IS_SPACE) == GRAPHEME_IS_SPACE || (sd->glyphs[start_pos].flags & GRAPHEME_IS_BREAK_HARD) == GRAPHEME_IS_BREAK_HARD || (sd->glyphs[start_pos].flags & GRAPHEME_IS_BREAK_SOFT) == GRAPHEME_IS_BREAK_SOFT)) {
 			justification_width -= sd->glyphs[start_pos].advance * sd->glyphs[start_pos].repeat;
-			sd->glyphs.write[start_pos].advance = 0;
+			sd->glyphs.ptrw()[start_pos].advance = 0;
 			start_pos += sd->glyphs[start_pos].count;
 		}
 		while ((start_pos < end_pos) && ((sd->glyphs[end_pos].flags & GRAPHEME_IS_SOFT_HYPHEN) != GRAPHEME_IS_SOFT_HYPHEN) && ((sd->glyphs[end_pos].flags & GRAPHEME_IS_SPACE) == GRAPHEME_IS_SPACE || (sd->glyphs[end_pos].flags & GRAPHEME_IS_BREAK_HARD) == GRAPHEME_IS_BREAK_HARD || (sd->glyphs[end_pos].flags & GRAPHEME_IS_BREAK_SOFT) == GRAPHEME_IS_BREAK_SOFT)) {
 			justification_width -= sd->glyphs[end_pos].advance * sd->glyphs[end_pos].repeat;
-			sd->glyphs.write[end_pos].advance = 0;
+			sd->glyphs.ptrw()[end_pos].advance = 0;
 			end_pos -= sd->glyphs[end_pos].count;
 		}
 	} else {
@@ -4229,7 +4229,7 @@ double TextServerFallback::_shaped_text_fit_to_width(const RID &p_shaped, double
 	if ((space_count > 0) && p_jst_flags.has_flag(JUSTIFICATION_WORD_BOUND)) {
 		double delta_width_per_space = (p_width - justification_width) / space_count;
 		for (int i = start_pos; i <= end_pos; i++) {
-			Glyph &gl = sd->glyphs.write[i];
+			Glyph &gl = sd->glyphs.ptrw()[i];
 			if (gl.count > 0) {
 				if ((gl.flags & GRAPHEME_IS_SOFT_HYPHEN) != GRAPHEME_IS_SOFT_HYPHEN && (gl.flags & GRAPHEME_IS_SPACE) == GRAPHEME_IS_SPACE && (gl.flags & GRAPHEME_IS_PUNCTUATION) != GRAPHEME_IS_PUNCTUATION) {
 					double old_adv = gl.advance;
@@ -4343,7 +4343,7 @@ bool TextServerFallback::_shaped_text_update_breaks(const RID &p_shaped) {
 				}
 			}
 			if (is_underscore(c)) {
-				sd->glyphs.write[i].flags |= GRAPHEME_IS_UNDERSCORE;
+				sd->glyphs.ptrw()[i].flags |= GRAPHEME_IS_UNDERSCORE;
 			}
 			if (is_whitespace(c) && !is_linebreak(c)) {
 				sd_glyphs[i].flags |= GRAPHEME_IS_SPACE;
@@ -4949,7 +4949,7 @@ bool TextServerFallback::_shaped_text_shape(const RID &p_shaped) {
 
 					// Add kerning to previous glyph.
 					if (sd->glyphs.size() > 0) {
-						Glyph &prev_gl = sd->glyphs.write[sd->glyphs.size() - 1];
+						Glyph &prev_gl = sd->glyphs.ptrw()[sd->glyphs.size() - 1];
 						if (prev_gl.font_rid == gl.font_rid && prev_gl.font_size == gl.font_size) {
 							if (sd->orientation == ORIENTATION_HORIZONTAL) {
 								prev_gl.advance += _font_get_kerning(gl.font_rid, gl.font_size, Vector2i(prev_gl.index, gl.index)).x;
@@ -5175,7 +5175,7 @@ PackedInt32Array TextServerFallback::_shaped_text_get_character_breaks(const RID
 #ifdef GDEXTENSION
 			ret[i] = i + 1 + sd->start;
 #else
-			ret.write[i] = i + 1 + sd->start;
+			ret.ptrw()[i] = i + 1 + sd->start;
 #endif
 		}
 	}

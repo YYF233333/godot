@@ -203,7 +203,7 @@ void AbstractPolygon2DEditor::_menu_option(int p_option) {
 				Vector<Vector2> new_vertices;
 				new_vertices.resize(n_points);
 				for (int n = 0; n < n_points; n++) {
-					new_vertices.write[n] = vertices[n] - center;
+					new_vertices.ptrw()[n] = vertices[n] - center;
 				}
 				_action_set_polygon(i, vertices, new_vertices);
 			}
@@ -420,7 +420,7 @@ bool AbstractPolygon2DEditor::forward_gui_input(const Ref<InputEvent> &p_event) 
 						if (original_mouse_pos != gpoint) {
 							Vector<Vector2> vertices = _get_polygon(edited_point.polygon);
 							ERR_FAIL_INDEX_V(edited_point.vertex, vertices.size(), false);
-							vertices.write[edited_point.vertex] = edited_point.pos - _get_offset(edited_point.polygon);
+							vertices.ptrw()[edited_point.vertex] = edited_point.pos - _get_offset(edited_point.polygon);
 
 							undo_redo->create_action(TTR("Edit Polygon"));
 							_action_set_polygon(edited_point.polygon, pre_move_edit, vertices);
@@ -541,7 +541,7 @@ bool AbstractPolygon2DEditor::forward_gui_input(const Ref<InputEvent> &p_event) 
 				Vector<Vector2> new_vertices;
 				new_vertices.resize(n_points);
 				for (int n = 0; n < n_points; n++) {
-					new_vertices.write[n] = vertices[n] - delta;
+					new_vertices.ptrw()[n] = vertices[n] - delta;
 				}
 				_set_polygon(i, new_vertices);
 			}
@@ -565,7 +565,7 @@ bool AbstractPolygon2DEditor::forward_gui_input(const Ref<InputEvent> &p_event) 
 			if (!wip_active) {
 				Vector<Vector2> vertices = _get_polygon(edited_point.polygon);
 				ERR_FAIL_INDEX_V(edited_point.vertex, vertices.size(), false);
-				vertices.write[edited_point.vertex] = cpoint - _get_offset(edited_point.polygon);
+				vertices.ptrw()[edited_point.vertex] = cpoint - _get_offset(edited_point.polygon);
 				_set_polygon(edited_point.polygon, vertices);
 			}
 

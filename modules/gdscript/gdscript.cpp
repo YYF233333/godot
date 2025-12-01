@@ -695,18 +695,18 @@ void GDScript::_static_default_init() {
 			const GDScriptDataType element_type = type.get_container_element_type(0);
 			Array default_value;
 			default_value.set_typed(element_type.builtin_type, element_type.native_type, element_type.script_type);
-			static_variables.write[E.value.index] = default_value;
+			static_variables.ptrw()[E.value.index] = default_value;
 		} else if (type.builtin_type == Variant::DICTIONARY && type.has_container_element_types()) {
 			const GDScriptDataType key_type = type.get_container_element_type_or_variant(0);
 			const GDScriptDataType value_type = type.get_container_element_type_or_variant(1);
 			Dictionary default_value;
 			default_value.set_typed(key_type.builtin_type, key_type.native_type, key_type.script_type, value_type.builtin_type, value_type.native_type, value_type.script_type);
-			static_variables.write[E.value.index] = default_value;
+			static_variables.ptrw()[E.value.index] = default_value;
 		} else {
 			Variant default_value;
 			Callable::CallError err;
 			Variant::construct(type.builtin_type, default_value, nullptr, 0, err);
-			static_variables.write[E.value.index] = default_value;
+			static_variables.ptrw()[E.value.index] = default_value;
 		}
 	}
 }
@@ -724,7 +724,7 @@ void GDScript::_save_old_static_data() {
 void GDScript::_restore_old_static_data() {
 	for (KeyValue<StringName, MemberInfo> &E : old_static_variables_indices) {
 		if (static_variables_indices.has(E.key)) {
-			static_variables.write[static_variables_indices[E.key].index] = old_static_variables[E.value.index];
+			static_variables.ptrw()[static_variables_indices[E.key].index] = old_static_variables[E.value.index];
 		}
 	}
 	old_static_variables_indices.clear();
@@ -1033,7 +1033,7 @@ bool GDScript::_set(const StringName &p_name, const Variant &p_value) {
 				callp(member->setter, &args, 1, err);
 				return err.error == Callable::CallError::CALL_OK;
 			} else {
-				top->static_variables.write[member->index] = value;
+				top->static_variables.ptrw()[member->index] = value;
 				return true;
 			}
 		}
@@ -1706,7 +1706,7 @@ bool GDScriptInstance::set(const StringName &p_name, const Variant &p_value) {
 				callp(member->setter, &args, 1, err);
 				return err.error == Callable::CallError::CALL_OK;
 			} else {
-				members.write[member->index] = value;
+				members.ptrw()[member->index] = value;
 				return true;
 			}
 		}
@@ -1733,7 +1733,7 @@ bool GDScriptInstance::set(const StringName &p_name, const Variant &p_value) {
 					callp(member->setter, &args, 1, err);
 					return err.error == Callable::CallError::CALL_OK;
 				} else {
-					sptr->static_variables.write[member->index] = value;
+					sptr->static_variables.ptrw()[member->index] = value;
 					return true;
 				}
 			}
@@ -2159,7 +2159,7 @@ void GDScriptInstance::reload_members() {
 	for (KeyValue<StringName, GDScript::MemberInfo> &E : script->member_indices) {
 		if (member_indices_cache.has(E.key)) {
 			Variant value = members[member_indices_cache[E.key]];
-			new_members.write[E.value.index] = value;
+			new_members.ptrw()[E.value.index] = value;
 		}
 	}
 
@@ -2210,14 +2210,14 @@ String GDScriptLanguage::get_name() const {
 void GDScriptLanguage::_add_global(const StringName &p_name, const Variant &p_value) {
 	if (globals.has(p_name)) {
 		//overwrite existing
-		global_array.write[globals[p_name]] = p_value;
+		global_array.ptrw()[globals[p_name]] = p_value;
 		return;
 	}
 
 	if (global_array_empty_indexes.size()) {
 		int index = global_array_empty_indexes[global_array_empty_indexes.size() - 1];
 		globals[p_name] = index;
-		global_array.write[index] = p_value;
+		global_array.ptrw()[index] = p_value;
 		global_array_empty_indexes.resize(global_array_empty_indexes.size() - 1);
 	} else {
 		globals[p_name] = global_array.size();
@@ -2231,7 +2231,7 @@ void GDScriptLanguage::_remove_global(const StringName &p_name) {
 		return;
 	}
 	global_array_empty_indexes.push_back(globals[p_name]);
-	global_array.write[globals[p_name]] = Variant::NIL;
+	global_array.ptrw()[globals[p_name]] = Variant::NIL;
 	globals.erase(p_name);
 }
 
@@ -2362,7 +2362,7 @@ void GDScriptLanguage::finish() {
 			for (KeyValue<StringName, GDScriptFunction *> &E : scr->member_functions) {
 				GDScriptFunction *func = E.value;
 				for (int i = 0; i < func->argument_types.size(); i++) {
-					func->argument_types.write[i].script_type_ref = Ref<Script>();
+					func->argument_types.ptrw()[i].script_type_ref = Ref<Script>();
 				}
 				func->return_type.script_type_ref = Ref<Script>();
 			}

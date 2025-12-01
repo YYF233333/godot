@@ -75,7 +75,7 @@ static PackedInt64Array to_int_array(const Vector<ObjectID> &ids) {
 	PackedInt64Array a;
 	a.resize(ids.size());
 	for (int i = 0; i < ids.size(); ++i) {
-		a.write[i] = ids[i];
+		a.ptrw()[i] = ids[i];
 	}
 	return a;
 }
@@ -932,7 +932,7 @@ Error RenderingServer::_surface_set_data(Array p_arrays, uint64_t p_format, uint
 
 		if (first) {
 			for (int i = 0; i < total_bones; i++) {
-				r_bone_aabb.write[i].size = Vector3(-1, -1, -1); // Negative means unused.
+				r_bone_aabb.ptrw()[i].size = Vector3(-1, -1, -1); // Negative means unused.
 			}
 		}
 
@@ -1960,7 +1960,7 @@ static Vector<Ref<Image>> _get_imgvec(const TypedArray<Image> &p_layers) {
 	Vector<Ref<Image>> images;
 	images.resize(p_layers.size());
 	for (int i = 0; i < p_layers.size(); i++) {
-		images.write[i] = p_layers[i];
+		images.ptrw()[i] = p_layers[i];
 	}
 	return images;
 }
@@ -2138,7 +2138,7 @@ void RenderingServer::_particles_set_trail_bind_poses(RID p_particles, const Typ
 	Vector<Transform3D> tbposes;
 	tbposes.resize(p_bind_poses.size());
 	for (int i = 0; i < p_bind_poses.size(); i++) {
-		tbposes.write[i] = p_bind_poses[i];
+		tbposes.ptrw()[i] = p_bind_poses[i];
 	}
 	particles_set_trail_bind_poses(p_particles, tbposes);
 }

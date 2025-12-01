@@ -809,7 +809,7 @@ bool EditorFileSystem::_scan_import_support(const Vector<String> &reimports) {
 	Vector<bool> import_support_tested;
 	import_support_tested.resize(import_support_queries.size());
 	for (int i = 0; i < import_support_queries.size(); i++) {
-		import_support_tested.write[i] = false;
+		import_support_tested.ptrw()[i] = false;
 		if (import_support_queries[i]->is_active()) {
 			Vector<String> extensions = import_support_queries[i]->get_file_extensions();
 			for (int j = 0; j < extensions.size(); j++) {
@@ -825,13 +825,13 @@ bool EditorFileSystem::_scan_import_support(const Vector<String> &reimports) {
 	for (int i = 0; i < reimports.size(); i++) {
 		HashMap<String, int>::Iterator E = import_support_test.find(reimports[i].get_extension().to_lower());
 		if (E) {
-			import_support_tested.write[E->value] = true;
+			import_support_tested.ptrw()[E->value] = true;
 		}
 	}
 
 	for (int i = 0; i < import_support_tested.size(); i++) {
 		if (import_support_tested[i]) {
-			if (import_support_queries.write[i]->query()) {
+			if (import_support_queries.ptrw()[i]->query()) {
 				return true;
 			}
 		}
@@ -3274,7 +3274,7 @@ void EditorFileSystem::reimport_files(const Vector<String> &p_files) {
 		EditorFileSystemDirectory *fs = nullptr;
 		int cpos = -1;
 		if (_find_file(file, &fs, cpos)) {
-			fs->files.write[cpos]->import_group_file = group_file;
+			fs->files.ptrw()[cpos]->import_group_file = group_file;
 		}
 	}
 

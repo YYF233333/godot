@@ -662,17 +662,17 @@ void _rgba8_to_packbits_encode(int p_ch, int p_size, Vector<uint8_t> &p_source, 
 
 	int ofs = p_dest.size();
 	p_dest.resize(p_dest.size() + result.size());
-	memcpy(&p_dest.write[ofs], result.ptr(), result.size());
+	memcpy(&p_dest.ptrw()[ofs], result.ptr(), result.size());
 }
 
 void EditorExportPlatformMacOS::_make_icon(const Ref<EditorExportPreset> &p_preset, const Ref<Image> &p_icon, Vector<uint8_t> &p_data) {
 	Vector<uint8_t> data;
 
 	data.resize(8);
-	data.write[0] = 'i';
-	data.write[1] = 'c';
-	data.write[2] = 'n';
-	data.write[3] = 's';
+	data.ptrw()[0] = 'i';
+	data.ptrw()[1] = 'c';
+	data.ptrw()[2] = 'n';
+	data.ptrw()[3] = 's';
 
 	struct MacOSIconInfo {
 		const char *name;
@@ -707,11 +707,11 @@ void EditorExportPlatformMacOS::_make_icon(const Ref<EditorExportPreset> &p_pres
 				int ofs = data.size();
 				uint64_t len = png_buffer.size();
 				data.resize(data.size() + len + 8);
-				memcpy(&data.write[ofs + 8], png_buffer.ptr(), len);
+				memcpy(&data.ptrw()[ofs + 8], png_buffer.ptr(), len);
 				len += 8;
 				len = BSWAP32(len);
-				memcpy(&data.write[ofs], icon_infos[i].name, 4);
-				encode_uint32(len, &data.write[ofs + 4]);
+				memcpy(&data.ptrw()[ofs], icon_infos[i].name, 4);
+				encode_uint32(len, &data.ptrw()[ofs + 4]);
 			}
 		} else {
 			Vector<uint8_t> src_data = copy->get_data();
@@ -730,8 +730,8 @@ void EditorExportPlatformMacOS::_make_icon(const Ref<EditorExportPreset> &p_pres
 
 				int len = data.size() - ofs;
 				len = BSWAP32(len);
-				memcpy(&data.write[ofs], icon_infos[i].name, 4);
-				encode_uint32(len, &data.write[ofs + 4]);
+				memcpy(&data.ptrw()[ofs], icon_infos[i].name, 4);
+				encode_uint32(len, &data.ptrw()[ofs + 4]);
 			}
 
 			// Encode 8-bit mask uncompressed icon.
@@ -741,19 +741,19 @@ void EditorExportPlatformMacOS::_make_icon(const Ref<EditorExportPreset> &p_pres
 				data.resize(data.size() + len + 8);
 
 				for (int j = 0; j < len; j++) {
-					data.write[ofs + 8 + j] = src_data.ptr()[j * 4 + 3];
+					data.ptrw()[ofs + 8 + j] = src_data.ptr()[j * 4 + 3];
 				}
 				len += 8;
 				len = BSWAP32(len);
-				memcpy(&data.write[ofs], icon_infos[i].mask_name, 4);
-				encode_uint32(len, &data.write[ofs + 4]);
+				memcpy(&data.ptrw()[ofs], icon_infos[i].mask_name, 4);
+				encode_uint32(len, &data.ptrw()[ofs + 4]);
 			}
 		}
 	}
 
 	uint32_t total_len = data.size();
 	total_len = BSWAP32(total_len);
-	encode_uint32(total_len, &data.write[4]);
+	encode_uint32(total_len, &data.ptrw()[4]);
 
 	p_data = data;
 }
@@ -832,7 +832,7 @@ void EditorExportPlatformMacOS::_fix_privacy_manifest(const Ref<EditorExportPres
 	CharString cs = strnew.utf8();
 	plist.resize(cs.size() - 1);
 	for (int i = 0; i < cs.size() - 1; i++) {
-		plist.write[i] = cs[i];
+		plist.ptrw()[i] = cs[i];
 	}
 }
 
@@ -943,7 +943,7 @@ void EditorExportPlatformMacOS::_fix_plist(const Ref<EditorExportPreset> &p_pres
 	CharString cs = strnew.utf8();
 	plist.resize(cs.size() - 1);
 	for (int i = 0; i < cs.size() - 1; i++) {
-		plist.write[i] = cs[i];
+		plist.ptrw()[i] = cs[i];
 	}
 }
 
@@ -1998,7 +1998,7 @@ Error EditorExportPlatformMacOS::export_project(const Ref<EditorExportPreset> &p
 					Ref<FileAccess> icon = FileAccess::open(icon_path, FileAccess::READ);
 					if (icon.is_valid()) {
 						data.resize(icon->get_length());
-						icon->get_buffer(&data.write[0], icon->get_length());
+						icon->get_buffer(&data.ptrw()[0], icon->get_length());
 					}
 				} else {
 					Ref<Image> icon = _load_icon_or_splash_image(icon_path, &err);

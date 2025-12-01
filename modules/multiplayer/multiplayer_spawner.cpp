@@ -138,7 +138,7 @@ Vector<String> MultiplayerSpawner::_get_spawnable_scenes() const {
 	Vector<String> ss;
 	ss.resize(spawnable_scenes.size());
 	for (int i = 0; i < ss.size(); i++) {
-		ss.write[i] = ResourceUID::path_to_uid(spawnable_scenes[i].path);
+		ss.ptrw()[i] = ResourceUID::path_to_uid(spawnable_scenes[i].path);
 	}
 	return ss;
 }

@@ -1042,7 +1042,7 @@ void TextureStorage::texture_3d_initialize(RID p_texture, Image::Format p_format
 		images.resize(p_data.size());
 		for (int i = 0; i < p_data.size(); i++) {
 			TextureToRDFormat f;
-			images.write[i] = _validate_texture_format(p_data[i], f);
+			images.ptrw()[i] = _validate_texture_format(p_data[i], f);
 			if (i == 0) {
 				ret_format = f;
 				validated_format = images[0]->get_format();
@@ -1057,7 +1057,7 @@ void TextureStorage::texture_3d_initialize(RID p_texture, Image::Format p_format
 		for (int i = 0; i < p_data.size(); i++) {
 			uint32_t s = images[i]->get_data().size();
 
-			memcpy(&all_data.write[offset], images[i]->get_data().ptr(), s);
+			memcpy(&all_data.ptrw()[offset], images[i]->get_data().ptr(), s);
 			{
 				Texture::BufferSlice3D slice;
 				slice.size.width = images[i]->get_width();
@@ -1412,7 +1412,7 @@ void TextureStorage::texture_3d_update(RID p_texture, const Vector<Ref<Image>> &
 				image->convert(tex->validated_format);
 			}
 			all_data_size += image->get_data().size();
-			images.write[i] = image;
+			images.ptrw()[i] = image;
 		}
 
 		all_data.resize(all_data_size); //consolidate all data here
@@ -1420,7 +1420,7 @@ void TextureStorage::texture_3d_update(RID p_texture, const Vector<Ref<Image>> &
 
 		for (int i = 0; i < p_data.size(); i++) {
 			uint32_t s = images[i]->get_data().size();
-			memcpy(&all_data.write[offset], images[i]->get_data().ptr(), s);
+			memcpy(&all_data.ptrw()[offset], images[i]->get_data().ptr(), s);
 			offset += s;
 		}
 	}
@@ -3063,7 +3063,7 @@ void TextureStorage::update_decal_atlas() {
 		int idx = 0;
 
 		for (const KeyValue<RID, DecalAtlas::Texture> &E : decal_atlas.textures) {
-			DecalAtlas::SortItem &si = itemsv.write[idx];
+			DecalAtlas::SortItem &si = itemsv.ptrw()[idx];
 
 			Texture *src_tex = get_texture(E.key);
 
@@ -4229,10 +4229,10 @@ void TextureStorage::_render_target_allocate_sdf(RenderTarget *rt) {
 		}
 
 		rt->sdf_buffer_process_uniform_sets[0] = RD::get_singleton()->uniform_set_create(uniforms, rt_sdf.shader.version_get_shader(rt_sdf.shader_version, 0), 0);
-		RID aux2 = uniforms.write[2].get_id(0);
-		RID aux3 = uniforms.write[3].get_id(0);
-		uniforms.write[2].set_id(0, aux3);
-		uniforms.write[3].set_id(0, aux2);
+		RID aux2 = uniforms.ptrw()[2].get_id(0);
+		RID aux3 = uniforms.ptrw()[3].get_id(0);
+		uniforms.ptrw()[2].set_id(0, aux3);
+		uniforms.ptrw()[3].set_id(0, aux2);
 		rt->sdf_buffer_process_uniform_sets[1] = RD::get_singleton()->uniform_set_create(uniforms, rt_sdf.shader.version_get_shader(rt_sdf.shader_version, 0), 0);
 	}
 }
