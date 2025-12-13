@@ -200,9 +200,9 @@ private:
 		Node *parent = nullptr;
 		Node *owner = nullptr;
 		HashMap<StringName, Node *> children;
-		mutable bool children_cache_dirty = false;
 		mutable LocalVector<Node *> children_cache;
 		HashMap<StringName, Node *> owned_unique_nodes;
+		mutable bool children_cache_dirty = false;
 		bool unique_name_in_owner = false;
 		InternalMode internal_mode = INTERNAL_MODE_DISABLED;
 		mutable int internal_children_front_count_cache = 0;
@@ -225,11 +225,13 @@ private:
 		List<Node *> owned;
 
 		Node *process_owner = nullptr;
-		ProcessThreadGroup process_thread_group = PROCESS_THREAD_GROUP_INHERIT;
 		Node *process_thread_group_owner = nullptr;
+		ProcessThreadGroup process_thread_group = PROCESS_THREAD_GROUP_INHERIT;
 		int process_thread_group_order = 0;
 		BitField<ProcessThreadMessages> process_thread_messages = {};
 		void *process_group = nullptr; // to avoid cyclic dependency
+
+		int32_t unique_scene_id = UNIQUE_SCENE_ID_UNASSIGNED;
 
 		int multiplayer_authority = 1; // Server by default.
 		Variant rpc_config;
@@ -287,8 +289,6 @@ private:
 
 		mutable bool is_translation_domain_inherited : 1;
 		mutable bool is_translation_domain_dirty : 1;
-
-		int32_t unique_scene_id = UNIQUE_SCENE_ID_UNASSIGNED;
 
 		mutable NodePath *path_cache = nullptr;
 
