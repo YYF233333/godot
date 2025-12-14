@@ -30,6 +30,8 @@
 
 #include "webrtc_peer_connection.h"
 
+#include "core/object/class_db.h"
+
 #ifdef WEB_ENABLED
 #include "webrtc_peer_connection_js.h"
 #endif

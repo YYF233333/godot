@@ -32,13 +32,15 @@
 
 #include "nav_rid_3d.h"
 
-#include "core/object/class_db.h"
+#include "core/math/vector3.h"
 #include "core/templates/self_list.h"
+#include "core/variant/callable.h"
 #include "servers/navigation_3d/navigation_constants_3d.h"
 
 #include <Agent2d.h>
 #include <Agent3d.h>
 
+class Dictionary;
 class NavMap3D;
 
 class NavAgent3D : public NavRid3D {

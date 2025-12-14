@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "core/object/class_db.h"
+#include "core/variant/binder_common.h"
 #include "core/variant/variant.h"
 
 class JSONRPC : public Object {

@@ -30,10 +30,8 @@
 
 #pragma once
 
-#include "core/object/class_db.h"
 #include "core/object/gdvirtual.gen.inc"
 #include "core/object/object.h"
-#include "core/object/script_language.h"
 
 class RenderSceneData : public Object {
 	GDCLASS(RenderSceneData, Object);
