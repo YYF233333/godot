@@ -241,64 +241,56 @@ private:
 	static bool _can_instantiate(ClassInfo *p_class_info, bool p_exposed_only = true);
 
 public:
-	template <typename T>
-	static void register_class(bool p_virtual = false) {
+	static void register_class(void (*initialize_class)(), const StringName &(*get_class_static)(), void *(*get_class_ptr_static)(), void (*register_custom_data_to_otdb)(), Object *(*creator)(bool), bool p_virtual = false) {
 		Locker::Lock lock(Locker::STATE_WRITE);
-		static_assert(std::is_same_v<typename T::self_type, T>, "Class not declared properly, please use GDCLASS.");
-		T::initialize_class();
-		ClassInfo *t = classes.getptr(T::get_class_static());
+		initialize_class();
+		ClassInfo *t = classes.getptr(get_class_static());
 		ERR_FAIL_NULL(t);
-		t->creation_func = &creator<T>;
+		t->creation_func = creator;
 		t->exposed = true;
 		t->is_virtual = p_virtual;
-		t->class_ptr = T::get_class_ptr_static();
+		t->class_ptr = get_class_ptr_static();
 		t->api = current_api;
-		T::register_custom_data_to_otdb();
+		register_custom_data_to_otdb();
 	}
 
-	template <typename T>
-	static void register_abstract_class() {
+	static void register_abstract_class(void (*initialize_class)(), const StringName &(*get_class_static)(), void *(*get_class_ptr_static)()) {
 		Locker::Lock lock(Locker::STATE_WRITE);
-		static_assert(std::is_same_v<typename T::self_type, T>, "Class not declared properly, please use GDCLASS.");
-		T::initialize_class();
-		ClassInfo *t = classes.getptr(T::get_class_static());
+		initialize_class();
+		ClassInfo *t = classes.getptr(get_class_static());
 		ERR_FAIL_NULL(t);
 		t->exposed = true;
-		t->class_ptr = T::get_class_ptr_static();
+		t->class_ptr = get_class_ptr_static();
 		t->api = current_api;
 		//nothing
 	}
 
-	template <typename T>
-	static void register_internal_class() {
+	static void register_internal_class(void (*initialize_class)(), const StringName &(*get_class_static)(), void *(*get_class_ptr_static)(), void (*register_custom_data_to_otdb)(), Object *(*creator)(bool)) {
 		Locker::Lock lock(Locker::STATE_WRITE);
-		static_assert(std::is_same_v<typename T::self_type, T>, "Class not declared properly, please use GDCLASS.");
-		T::initialize_class();
-		ClassInfo *t = classes.getptr(T::get_class_static());
+		initialize_class();
+		ClassInfo *t = classes.getptr(get_class_static());
 		ERR_FAIL_NULL(t);
-		t->creation_func = &creator<T>;
+		t->creation_func = creator;
 		t->exposed = false;
 		t->is_virtual = false;
-		t->class_ptr = T::get_class_ptr_static();
+		t->class_ptr = get_class_ptr_static();
 		t->api = current_api;
-		T::register_custom_data_to_otdb();
+		register_custom_data_to_otdb();
 	}
 
-	template <typename T>
-	static void register_runtime_class() {
+	static void register_runtime_class(void (*initialize_class)(), const StringName &(*get_class_static)(), void *(*get_class_ptr_static)(), void (*register_custom_data_to_otdb)(), Object *(*creator)(bool)) {
 		Locker::Lock lock(Locker::STATE_WRITE);
-		static_assert(std::is_same_v<typename T::self_type, T>, "Class not declared properly, please use GDCLASS.");
-		T::initialize_class();
-		ClassInfo *t = classes.getptr(T::get_class_static());
+		initialize_class();
+		ClassInfo *t = classes.getptr(get_class_static());
 		ERR_FAIL_NULL(t);
-		ERR_FAIL_COND_MSG(t->inherits_ptr && !t->inherits_ptr->creation_func, vformat("Cannot register runtime class '%s' that descends from an abstract parent class.", T::get_class_static()));
-		t->creation_func = &creator<T>;
+		ERR_FAIL_COND_MSG(t->inherits_ptr && !t->inherits_ptr->creation_func, vformat("Cannot register runtime class '%s' that descends from an abstract parent class.", get_class_static()));
+		t->creation_func = creator;
 		t->exposed = true;
 		t->is_virtual = false;
 		t->is_runtime = true;
-		t->class_ptr = T::get_class_ptr_static();
+		t->class_ptr = get_class_ptr_static();
 		t->api = current_api;
-		T::register_custom_data_to_otdb();
+		register_custom_data_to_otdb();
 	}
 
 	static void register_extension_class(ObjectGDExtension *p_extension);
@@ -312,7 +304,6 @@ public:
 	template <typename T>
 	static void register_custom_instance_class() {
 		Locker::Lock lock(Locker::STATE_WRITE);
-		static_assert(std::is_same_v<typename T::self_type, T>, "Class not declared properly, please use GDCLASS.");
 		T::initialize_class();
 		ClassInfo *t = classes.getptr(T::get_class_static());
 		ERR_FAIL_NULL(t);
@@ -563,25 +554,30 @@ public:
 
 #endif // DEBUG_ENABLED
 
-#define GDREGISTER_CLASS(m_class)                 \
-	if constexpr (GD_IS_CLASS_ENABLED(m_class)) { \
-		::ClassDB::register_class<m_class>();     \
+#define GDREGISTER_CLASS(m_class)                                                                                                                                                          \
+	if constexpr (GD_IS_CLASS_ENABLED(m_class)) {                                                                                                                                          \
+		static_assert(std::is_same_v<typename m_class::self_type, m_class>, "Class not declared properly, please use GDCLASS.");                                                           \
+		::ClassDB::register_class(m_class::initialize_class, m_class::get_class_static, m_class::get_class_ptr_static, m_class::register_custom_data_to_otdb, &ClassDB::creator<m_class>); \
 	}
-#define GDREGISTER_VIRTUAL_CLASS(m_class)         \
-	if constexpr (GD_IS_CLASS_ENABLED(m_class)) { \
-		::ClassDB::register_class<m_class>(true); \
+#define GDREGISTER_VIRTUAL_CLASS(m_class)                                                                                                                                                        \
+	if constexpr (GD_IS_CLASS_ENABLED(m_class)) {                                                                                                                                                \
+		static_assert(std::is_same_v<typename m_class::self_type, m_class>, "Class not declared properly, please use GDCLASS.");                                                                 \
+		::ClassDB::register_class(m_class::initialize_class, m_class::get_class_static, m_class::get_class_ptr_static, m_class::register_custom_data_to_otdb, &ClassDB::creator<m_class>, true); \
 	}
-#define GDREGISTER_ABSTRACT_CLASS(m_class)             \
-	if constexpr (GD_IS_CLASS_ENABLED(m_class)) {      \
-		::ClassDB::register_abstract_class<m_class>(); \
+#define GDREGISTER_ABSTRACT_CLASS(m_class)                                                                                       \
+	if constexpr (GD_IS_CLASS_ENABLED(m_class)) {                                                                                \
+		static_assert(std::is_same_v<typename m_class::self_type, m_class>, "Class not declared properly, please use GDCLASS."); \
+		::ClassDB::register_abstract_class(m_class::initialize_class, m_class::get_class_static, m_class::get_class_ptr_static); \
 	}
-#define GDREGISTER_INTERNAL_CLASS(m_class)             \
-	if constexpr (GD_IS_CLASS_ENABLED(m_class)) {      \
-		::ClassDB::register_internal_class<m_class>(); \
+#define GDREGISTER_INTERNAL_CLASS(m_class)                                                                                                                                                          \
+	if constexpr (GD_IS_CLASS_ENABLED(m_class)) {                                                                                                                                                   \
+		static_assert(std::is_same_v<typename m_class::self_type, m_class>, "Class not declared properly, please use GDCLASS.");                                                                    \
+		::ClassDB::register_internal_class(m_class::initialize_class, m_class::get_class_static, m_class::get_class_ptr_static, m_class::register_custom_data_to_otdb, &ClassDB::creator<m_class>); \
 	}
-#define GDREGISTER_RUNTIME_CLASS(m_class)             \
-	if constexpr (GD_IS_CLASS_ENABLED(m_class)) {     \
-		::ClassDB::register_runtime_class<m_class>(); \
+#define GDREGISTER_RUNTIME_CLASS(m_class)                                                                                                                                                          \
+	if constexpr (GD_IS_CLASS_ENABLED(m_class)) {                                                                                                                                                  \
+		static_assert(std::is_same_v<typename m_class::self_type, m_class>, "Class not declared properly, please use GDCLASS.");                                                                   \
+		::ClassDB::register_runtime_class(m_class::initialize_class, m_class::get_class_static, m_class::get_class_ptr_static, m_class::register_custom_data_to_otdb, &ClassDB::creator<m_class>); \
 	}
 
 #define GDREGISTER_NATIVE_STRUCT(m_class, m_code) ClassDB::register_native_struct(#m_class, m_code, sizeof(m_class))
