@@ -33,17 +33,8 @@
 #include "core/core_string_names.h"
 #include "core/input/input_enums.h"
 #include "core/io/ip_address.h"
-#include "core/math/aabb.h"
-#include "core/math/basis.h"
-#include "core/math/color.h"
-#include "core/math/face3.h"
-#include "core/math/plane.h"
-#include "core/math/projection.h"
-#include "core/math/quaternion.h"
 #include "core/math/rect2.h"
 #include "core/math/rect2i.h"
-#include "core/math/transform_2d.h"
-#include "core/math/transform_3d.h"
 #include "core/math/vector2.h"
 #include "core/math/vector2i.h"
 #include "core/math/vector3.h"
@@ -55,8 +46,6 @@
 #include "core/string/node_path.h"
 #include "core/string/ustring.h"
 #include "core/templates/bit_field.h"
-#include "core/templates/list.h"
-#include "core/templates/paged_allocator.h"
 #include "core/templates/rid.h"
 #include "core/variant/array.h"
 #include "core/variant/callable.h"
@@ -75,8 +64,15 @@ class TypedArray;
 template <typename K, typename V>
 class TypedDictionary;
 
-struct PropertyInfo;
+struct AABB;
+struct Color;
+struct Face3;
 struct MethodInfo;
+struct Plane;
+struct PropertyInfo;
+struct Projection;
+struct Quaternion;
+struct Transform3D;
 
 typedef Vector<uint8_t> PackedByteArray;
 typedef Vector<int32_t> PackedInt32Array;
@@ -151,29 +147,7 @@ public:
 	};
 
 private:
-	struct Pools {
-		union BucketSmall {
-			BucketSmall() {}
-			~BucketSmall() {}
-			Transform2D _transform2d;
-			::AABB _aabb;
-		};
-		union BucketMedium {
-			BucketMedium() {}
-			~BucketMedium() {}
-			Basis _basis;
-			Transform3D _transform3d;
-		};
-		union BucketLarge {
-			BucketLarge() {}
-			~BucketLarge() {}
-			Projection _projection;
-		};
-
-		static PagedAllocator<BucketSmall, true> _bucket_small;
-		static PagedAllocator<BucketMedium, true> _bucket_medium;
-		static PagedAllocator<BucketLarge, true> _bucket_large;
-	};
+	struct Pools;
 
 	friend struct _VariantCall;
 	friend class VariantInternal;

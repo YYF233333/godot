@@ -33,6 +33,7 @@
 #include "core/debugger/engine_debugger.h"
 #include "core/io/json.h"
 #include "core/io/resource.h"
+#include "core/math/face3.h"
 #include "core/math/math_funcs.h"
 #include "core/variant/variant_parser.h"
 
