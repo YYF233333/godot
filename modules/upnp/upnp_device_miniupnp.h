@@ -34,6 +34,8 @@
 
 #include "upnp_device.h"
 
+#include "core/object/class_db.h"
+
 class UPNPDeviceMiniUPNP : public UPNPDevice {
 	GDCLASS(UPNPDeviceMiniUPNP, UPNPDevice);
 

@@ -30,6 +30,8 @@
 
 #ifndef DISABLE_DEPRECATED
 
+#include "core/object/class_db.h"
+
 int EditorExportPreset::_get_script_export_mode_bind_compat_107167() const {
 	return get_script_export_mode();
 }

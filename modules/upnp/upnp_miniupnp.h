@@ -34,6 +34,8 @@
 
 #include "upnp.h"
 
+#include "core/object/class_db.h"
+
 #include <miniupnpc/miniupnpc.h>
 
 class UPNPMiniUPNP : public UPNP {

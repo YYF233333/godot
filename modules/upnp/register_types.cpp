@@ -30,6 +30,8 @@
 
 #include "register_types.h"
 
+#include "core/object/class_db.h"
+
 #include "upnp.h"
 #include "upnp_device.h"
 

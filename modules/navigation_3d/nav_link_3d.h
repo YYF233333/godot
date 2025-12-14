@@ -30,6 +30,8 @@
 
 #pragma once
 
+#include "core/os/rw_lock.h"
+
 #include "3d/nav_base_iteration_3d.h"
 #include "nav_base_3d.h"
 #include "nav_utils_3d.h"
