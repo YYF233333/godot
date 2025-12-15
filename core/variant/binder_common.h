@@ -639,30 +639,6 @@ void call_get_argument_type_info(int p_arg, PropertyInfo &info) {
 	(void)index; // Suppress GCC warning.
 }
 
-#ifdef DEBUG_ENABLED
-template <typename Q>
-void call_get_argument_metadata_helper(int p_arg, int &index, GodotTypeInfo::Metadata &md) {
-	if (p_arg == index) {
-		md = GetTypeInfo<Q>::METADATA;
-	}
-	index++;
-}
-
-template <typename... P>
-GodotTypeInfo::Metadata call_get_argument_metadata(int p_arg) {
-	GodotTypeInfo::Metadata md = GodotTypeInfo::METADATA_NONE;
-
-	int index = 0;
-	// I think rocket science is simpler than modern C++.
-	using expand_type = int[];
-	expand_type a{ 0, (call_get_argument_metadata_helper<P>(p_arg, index, md), 0)... };
-	(void)a; // Suppress (valid, but unavoidable) -Wunused-variable warning.
-	(void)index;
-	return md;
-}
-
-#endif // DEBUG_ENABLED
-
 //////////////////////
 
 template <typename T, typename R, typename... P, size_t... Is>

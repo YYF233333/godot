@@ -54,9 +54,9 @@ class GDExtensionMethodBind : public MethodBind {
 	bool vararg;
 	uint32_t argument_count;
 	PropertyInfo return_value_info;
-	GodotTypeInfo::Metadata return_value_metadata;
 	List<PropertyInfo> arguments_info;
-	List<GodotTypeInfo::Metadata> arguments_metadata;
+	// {Return Metadata, Arg1 Metadata, Arg2 Metadata, ..., ArgN Metadata}
+	LocalVector<GodotTypeInfo::Metadata> _params_metadata;
 
 #ifdef TOOLS_ENABLED
 	friend class GDExtension;
@@ -86,16 +86,6 @@ public:
 #ifdef TOOLS_ENABLED
 	virtual bool is_valid() const override { return valid; }
 #endif
-
-#ifdef DEBUG_ENABLED
-	virtual GodotTypeInfo::Metadata get_argument_meta(int p_arg) const override {
-		if (p_arg < 0) {
-			return return_value_metadata;
-		} else {
-			return arguments_metadata.get(p_arg);
-		}
-	}
-#endif // DEBUG_ENABLED
 
 	virtual Variant call(Object *p_object, const Variant **p_args, int p_arg_count, Callable::CallError &r_error) const override {
 #ifdef TOOLS_ENABLED
@@ -201,17 +191,25 @@ public:
 		ptrcall_func = p_method_info->ptrcall_func;
 		set_name(*reinterpret_cast<StringName *>(p_method_info->name));
 
+		arguments_info.clear();
+		_params_metadata.clear();
+
 		if (p_method_info->has_return_value) {
 			return_value_info = PropertyInfo(*p_method_info->return_value_info);
-			return_value_metadata = GodotTypeInfo::Metadata(p_method_info->return_value_metadata);
+			_params_metadata.push_back(GodotTypeInfo::Metadata(p_method_info->return_value_metadata));
+		} else {
+			_params_metadata.push_back(GodotTypeInfo::METADATA_NONE);
 		}
 
-		arguments_info.clear();
-		arguments_metadata.clear();
 		for (uint32_t i = 0; i < p_method_info->argument_count; i++) {
 			arguments_info.push_back(PropertyInfo(p_method_info->arguments_info[i]));
-			arguments_metadata.push_back(GodotTypeInfo::Metadata(p_method_info->arguments_metadata[i]));
+			_params_metadata.push_back(GodotTypeInfo::Metadata(p_method_info->arguments_metadata[i]));
 		}
+
+#ifdef DEBUG_ENABLED
+		// Update parent pointer in case of reallocation.
+		params_metadata = _params_metadata.ptr();
+#endif // DEBUG_ENABLED
 
 		set_hint_flags(p_method_info->method_flags);
 		argument_count = p_method_info->argument_count;
