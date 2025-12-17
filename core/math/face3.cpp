@@ -31,6 +31,7 @@
 #include "face3.h"
 
 #include "core/math/geometry_3d.h"
+#include "core/math/transform_3d.h"
 
 int Face3::split_by_plane(const Plane &p_plane, Face3 p_res[3], bool p_is_point_over[3]) const {
 	ERR_FAIL_COND_V(is_degenerate(), 0);
@@ -136,6 +137,13 @@ Plane Face3::get_plane(ClockDirection p_dir) const {
 
 real_t Face3::get_area() const {
 	return vec3_cross(vertex[0] - vertex[1], vertex[0] - vertex[2]).length() * 0.5f;
+}
+
+AABB Face3::get_aabb() const {
+	AABB aabb(vertex[0], Vector3());
+	aabb.expand_to(vertex[1]);
+	aabb.expand_to(vertex[2]);
+	return aabb;
 }
 
 bool Face3::intersects_aabb(const AABB &p_aabb) const {
