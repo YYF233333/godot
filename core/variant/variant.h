@@ -43,7 +43,6 @@
 #include "core/math/vector4i.h"
 #include "core/object/object_id.h"
 #include "core/os/keyboard.h"
-#include "core/string/node_path.h"
 #include "core/string/ustring.h"
 #include "core/templates/bit_field.h"
 #include "core/templates/rid.h"
@@ -54,6 +53,7 @@
 
 class Object;
 class RefCounted;
+class NodePath;
 
 template <typename T>
 class Ref;

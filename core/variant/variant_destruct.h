@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/math/color.h"
+#include "core/string/node_path.h"
 #include "core/variant/type_info.h"
 #include "core/variant/variant.h"
 
