@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/doc_data.h"
+#include "core/io/xml_parser.h"
 #include "core/templates/rb_set.h"
 
 class DocTools {
