@@ -31,6 +31,7 @@
 #include "register_types.h"
 
 #include "core/crypto/crypto_core.h"
+#include "core/os/memory.h"
 
 #include <xatlas.h>
 

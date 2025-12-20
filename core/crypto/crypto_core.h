@@ -30,7 +30,9 @@
 
 #pragma once
 
-#include "core/object/ref_counted.h"
+#include "core/typedefs.h"
+
+class String;
 
 class CryptoCore {
 public:
