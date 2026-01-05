@@ -552,6 +552,9 @@ GDScript2Type GDScript2Type::from_type_name(const StringName &p_name) {
 	if (p_name == "Variant") {
 		return make_variant();
 	}
+	if (p_name == "void") {
+		return make_nil();
+	}
 	if (p_name == "bool") {
 		return make_bool();
 	}

@@ -793,6 +793,14 @@ void GDScript2SemanticAnalyzer::analyze_pattern(GDScript2PatternNode *p_pattern,
 
 		case GDScript2PatternType::PATTERN_EXPRESSION:
 			if (p_pattern->expression) {
+				// Special case: wildcard pattern (_) should not be analyzed as identifier
+				if (p_pattern->expression->type == GDScript2ASTNodeType::NODE_IDENTIFIER) {
+					GDScript2IdentifierNode *ident = static_cast<GDScript2IdentifierNode *>(p_pattern->expression);
+					if (ident->name == "_") {
+						// Wildcard pattern - matches anything, no analysis needed
+						break;
+					}
+				}
 				analyze_expression(p_pattern->expression);
 			}
 			break;
@@ -1200,6 +1208,8 @@ GDScript2Type GDScript2SemanticAnalyzer::analyze_lambda(GDScript2LambdaNode *p_l
 	if (p_lambda->body) {
 		if (p_lambda->body->type == GDScript2ASTNodeType::NODE_SUITE) {
 			analyze_suite(static_cast<GDScript2SuiteNode *>(p_lambda->body));
+		} else if (p_lambda->body->type == GDScript2ASTNodeType::NODE_RETURN) {
+			analyze_return(static_cast<GDScript2ReturnNode *>(p_lambda->body));
 		} else {
 			analyze_expression(p_lambda->body);
 		}

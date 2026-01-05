@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  test_gdscript2_front.cpp                                              */
+/*  gdscript2_test_suite.h                                                */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -28,31 +28,63 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
+#pragma once
+
 #include "tests/test_macros.h"
 
-#include "modules/gdscript2/front/gdscript2_parser.h"
+// Forward declarations of test functions from cpp files
+namespace GDScript2Tests {
+void test_tokenizer();
+void test_parser();
+void test_semantic();
+void test_ir();
+void test_codegen();
+void test_vm();
+void test_runtime();
+void test_front();
+void test_coroutine();
+void test_signal();
+} //namespace GDScript2Tests
 
-namespace {
+// Register tests with doctest
+TEST_SUITE("[Modules][GDScript2]") {
+	TEST_CASE("[GDScript2] Tokenizer") {
+		GDScript2Tests::test_tokenizer();
+	}
 
-void test_gdscript2_parser_minimal() {
-	Ref<GDScript2Parser> parser;
-	parser.instantiate();
+	TEST_CASE("[GDScript2] Parser") {
+		GDScript2Tests::test_parser();
+	}
 
-	GDScript2Parser::Result result = parser->parse("", GDScript2Parser::Options());
+	TEST_CASE("[GDScript2] Semantic Analyzer") {
+		GDScript2Tests::test_semantic();
+	}
 
-	CHECK_MESSAGE(result.root != nullptr, "Parser should return a root node for empty source.");
-	if (result.root) {
-		memdelete(result.root);
+	TEST_CASE("[GDScript2] IR Builder") {
+		GDScript2Tests::test_ir();
+	}
+
+	TEST_CASE("[GDScript2] Codegen") {
+		GDScript2Tests::test_codegen();
+	}
+
+	TEST_CASE("[GDScript2] Virtual Machine") {
+		GDScript2Tests::test_vm();
+	}
+
+	TEST_CASE("[GDScript2] Runtime") {
+		GDScript2Tests::test_runtime();
+	}
+
+	TEST_CASE("[GDScript2] Frontend Integration") {
+		GDScript2Tests::test_front();
+	}
+
+	TEST_CASE("[GDScript2] Coroutine System") {
+		GDScript2Tests::test_coroutine();
+	}
+
+	TEST_CASE("[GDScript2] Signal System") {
+		GDScript2Tests::test_signal();
 	}
 }
-
-} // namespace
-
-// Main test function
-namespace GDScript2Tests {
-
-void test_front() {
-	test_gdscript2_parser_minimal();
-}
-
-} // namespace GDScript2Tests

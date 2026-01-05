@@ -224,7 +224,7 @@ GDScript2IRInstr GDScript2IRInstr::make_load_local(GDScript2IROperand p_dest, in
 
 GDScript2IRInstr GDScript2IRInstr::make_store_local(int p_local_idx, GDScript2IROperand p_src) {
 	GDScript2IRInstr instr(GDScript2IROp::OP_STORE_LOCAL);
-	instr.args.push_back(GDScript2IROperand::make_local(p_local_idx));
+	instr.dest = GDScript2IROperand::make_local(p_local_idx);
 	instr.args.push_back(p_src);
 	return instr;
 }

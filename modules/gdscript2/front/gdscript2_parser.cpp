@@ -201,7 +201,17 @@ GDScript2ClassNode *GDScript2Parser::parse_class(bool p_is_inner) {
 void GDScript2Parser::parse_class_body(GDScript2ClassNode *p_class) {
 	LocalVector<GDScript2AnnotationNode *> pending_annotations;
 
+	int iteration_count = 0;
+	const int MAX_ITERATIONS = 10000;
+	GDScript2Token last_token = current;
+
 	while (!is_at_end()) {
+		iteration_count++;
+		if (iteration_count > MAX_ITERATIONS) {
+			error("Too many iterations in parse_class_body, possible infinite loop.");
+			break;
+		}
+
 		// Check for dedent (end of inner class)
 		if (p_class->is_inner_class && check(GDScript2TokenType::TK_DEDENT)) {
 			break;
@@ -218,6 +228,9 @@ void GDScript2Parser::parse_class_body(GDScript2ClassNode *p_class) {
 		if (p_class->is_inner_class && check(GDScript2TokenType::TK_DEDENT)) {
 			break;
 		}
+
+		// Safety: track token position to detect stuck parsing
+		GDScript2Token before_parse = current;
 
 		// Parse annotations
 		if (check(GDScript2TokenType::TK_ANNOTATION)) {
@@ -286,6 +299,10 @@ void GDScript2Parser::parse_class_body(GDScript2ClassNode *p_class) {
 
 		if (is_static) {
 			error("'static' can only be used with 'func' or 'var'.");
+			// Force advance to prevent infinite loop
+			if (!is_at_end()) {
+				advance();
+			}
 			continue;
 		}
 
@@ -327,8 +344,24 @@ void GDScript2Parser::parse_class_body(GDScript2ClassNode *p_class) {
 		}
 
 		// Unexpected token
+		// Special handling for indent/dedent tokens - they indicate structure issues
+		if (current.type == GDScript2TokenType::TK_INDENT ||
+				current.type == GDScript2TokenType::TK_DEDENT) {
+			// Skip these tokens as they're likely leftover from failed parse
+			advance();
+			continue;
+		}
+
 		error_at_current("Expected class member declaration.");
 		synchronize();
+
+		// Safety: if token didn't advance, force progress to avoid infinite loop
+		if (before_parse.type == current.type &&
+				before_parse.start_line == current.start_line &&
+				before_parse.start_column == current.start_column) {
+			// Still stuck - force one token advance
+			advance();
+		}
 	}
 
 	// Clean up any leftover annotations
@@ -511,6 +544,21 @@ GDScript2TypeNode *GDScript2Parser::parse_type() {
 	GDScript2TypeNode *type_node = memnew(GDScript2TypeNode);
 	set_node_start(type_node, current);
 
+	// Handle void keyword
+	if (match(GDScript2TokenType::TK_VOID)) {
+		type_node->type_name = "void";
+		set_node_end(type_node, previous);
+		return type_node;
+	}
+
+	if (!check(GDScript2TokenType::TK_IDENTIFIER)) {
+		error_at_current("Expected type name.");
+		// Return a dummy type node to avoid null pointer issues
+		type_node->type_name = "Variant";
+		set_node_end(type_node, current);
+		return type_node;
+	}
+
 	consume(GDScript2TokenType::TK_IDENTIFIER, "Expected type name.");
 	type_node->type_name = previous.literal;
 
@@ -577,7 +625,16 @@ GDScript2SuiteNode *GDScript2Parser::parse_suite() {
 	set_node_start(suite, current);
 
 	if (match(GDScript2TokenType::TK_INDENT)) {
+		int iteration = 0;
+		const int MAX_ITERATIONS = 10000;
+
 		while (!check(GDScript2TokenType::TK_DEDENT) && !is_at_end()) {
+			iteration++;
+			if (iteration > MAX_ITERATIONS) {
+				error("Too many iterations in parse_suite, possible infinite loop.");
+				break;
+			}
+
 			// Skip empty lines
 			while (match(GDScript2TokenType::TK_NEWLINE)) {
 			}
@@ -770,16 +827,38 @@ GDScript2MatchNode *GDScript2Parser::parse_match() {
 	consume(GDScript2TokenType::TK_NEWLINE, "Expected newline after match.");
 	consume(GDScript2TokenType::TK_INDENT, "Expected indented block for match branches.");
 
+	int iteration = 0;
 	while (!check(GDScript2TokenType::TK_DEDENT) && !is_at_end()) {
+		iteration++;
+		if (iteration > 100) {
+			error("Too many iterations in match parsing, possible infinite loop.");
+			break;
+		}
+
 		while (match(GDScript2TokenType::TK_NEWLINE)) {
 		}
 		if (check(GDScript2TokenType::TK_DEDENT)) {
 			break;
 		}
 
+		// Safety: track position before parsing branch
+		GDScript2Token before_branch = current;
+
 		GDScript2MatchBranchNode *branch = parse_match_branch();
 		if (branch) {
 			match_node->branches.push_back(branch);
+
+			// Safety: if no progress was made, break to avoid infinite loop
+			if (before_branch.type == current.type &&
+					before_branch.source == current.source &&
+					before_branch.start_line == current.start_line &&
+					before_branch.start_column == current.start_column) {
+				error("No progress in match branch parsing, aborting.");
+				break;
+			}
+		} else {
+			error("Failed to parse match branch.");
+			break;
 		}
 	}
 
@@ -795,9 +874,15 @@ GDScript2MatchBranchNode *GDScript2Parser::parse_match_branch() {
 
 	// Parse patterns (comma-separated)
 	do {
+		GDScript2Token before_pattern = current;
 		GDScript2PatternNode *pattern = parse_pattern();
 		if (pattern) {
 			branch->patterns.push_back(pattern);
+		}
+		// Safety check to prevent infinite loop
+		if (before_pattern.type == current.type && before_pattern.source == current.source && !pattern) {
+			error("Failed to parse pattern, no progress made.");
+			break;
 		}
 	} while (match(GDScript2TokenType::TK_COMMA));
 
@@ -826,6 +911,17 @@ GDScript2PatternNode *GDScript2Parser::parse_pattern() {
 		return pattern;
 	}
 
+	// Wildcard pattern (_)
+	if (match(GDScript2TokenType::TK_UNDERSCORE)) {
+		pattern->pattern_type = GDScript2PatternType::PATTERN_EXPRESSION;
+		// Create a simple identifier node for wildcard
+		GDScript2IdentifierNode *wildcard = memnew(GDScript2IdentifierNode);
+		wildcard->name = "_";
+		pattern->expression = wildcard;
+		set_node_end(pattern, previous);
+		return pattern;
+	}
+
 	// Binding pattern (var name)
 	if (match(GDScript2TokenType::TK_VAR)) {
 		consume(GDScript2TokenType::TK_IDENTIFIER, "Expected identifier after 'var' in pattern.");
@@ -842,11 +938,18 @@ GDScript2PatternNode *GDScript2Parser::parse_pattern() {
 
 		if (!check(GDScript2TokenType::TK_BRACKET_CLOSE)) {
 			do {
+				// Safety check: ensure we're making progress
+				GDScript2Token before_parse = current;
 				GDScript2PatternNode *elem = parse_pattern();
 				if (elem) {
 					pattern->array_patterns.push_back(elem);
 				}
-			} while (match(GDScript2TokenType::TK_COMMA));
+				// If no progress was made, break to avoid infinite loop
+				if (before_parse.type == current.type && before_parse.source == current.source) {
+					error("Failed to parse array pattern element.");
+					break;
+				}
+			} while (match(GDScript2TokenType::TK_COMMA) && !check(GDScript2TokenType::TK_BRACKET_CLOSE));
 		}
 
 		consume(GDScript2TokenType::TK_BRACKET_CLOSE, "Expected ']' after array pattern.");
@@ -861,6 +964,9 @@ GDScript2PatternNode *GDScript2Parser::parse_pattern() {
 
 		if (!check(GDScript2TokenType::TK_BRACE_CLOSE)) {
 			do {
+				// Safety check: ensure we're making progress
+				GDScript2Token before_parse = current;
+
 				GDScript2ASTNode *key = parse_expression();
 				pattern->dictionary_keys.push_back(key);
 
@@ -868,7 +974,13 @@ GDScript2PatternNode *GDScript2Parser::parse_pattern() {
 
 				GDScript2PatternNode *value_pattern = parse_pattern();
 				pattern->dictionary_patterns.push_back(value_pattern);
-			} while (match(GDScript2TokenType::TK_COMMA));
+
+				// If no progress was made, break to avoid infinite loop
+				if (before_parse.type == current.type && before_parse.source == current.source) {
+					error("Failed to parse dictionary pattern element.");
+					break;
+				}
+			} while (match(GDScript2TokenType::TK_COMMA) && !check(GDScript2TokenType::TK_BRACE_CLOSE));
 		}
 
 		consume(GDScript2TokenType::TK_BRACE_CLOSE, "Expected '}' after dictionary pattern.");
@@ -886,8 +998,22 @@ GDScript2PatternNode *GDScript2Parser::parse_pattern() {
 	}
 
 	// Expression pattern (identifier, etc.)
+	// Safety check: if we can't parse anything, advance at least one token to avoid infinite loop
+	if (is_at_end()) {
+		error("Unexpected end of file in pattern.");
+		memdelete(pattern);
+		return nullptr;
+	}
+
 	pattern->pattern_type = GDScript2PatternType::PATTERN_EXPRESSION;
 	pattern->expression = parse_expression();
+
+	// If parse_expression returned null, create a dummy expression to avoid null pointer issues
+	if (!pattern->expression) {
+		pattern->expression = memnew(GDScript2IdentifierNode);
+		static_cast<GDScript2IdentifierNode *>(pattern->expression)->name = "_";
+	}
+
 	set_node_end(pattern, previous);
 	return pattern;
 }
@@ -1624,8 +1750,12 @@ GDScript2LambdaNode *GDScript2Parser::parse_lambda() {
 		lambda->body = parse_suite();
 		tokenizer.pop_expression_indented_block();
 	} else {
-		// Single expression lambda
-		lambda->body = parse_expression();
+		// Single line lambda - can be return statement or expression
+		if (check(GDScript2TokenType::TK_RETURN)) {
+			lambda->body = parse_return();
+		} else {
+			lambda->body = parse_expression();
+		}
 	}
 
 	set_node_end(lambda, previous);

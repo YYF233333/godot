@@ -37,8 +37,6 @@
 #include "modules/gdscript2/vm/gdscript2_coroutine.h"
 #include "modules/gdscript2/vm/gdscript2_vm.h"
 
-namespace TestGDScript2Coroutine {
-
 // Helper function to compile and run a script
 GDScript2ExecutionResult compile_and_run(const String &p_source, GDScript2VM *p_vm) {
 	// Parse
@@ -82,7 +80,7 @@ GDScript2ExecutionResult compile_and_run(const String &p_source, GDScript2VM *p_
 	return p_vm->call("test");
 }
 
-TEST_CASE("[Modules][GDScript2] Coroutine - Basic creation and state") {
+void test_coroutine_basic_creation() {
 	Ref<GDScript2Coroutine> coro;
 	coro.instantiate();
 
@@ -91,7 +89,7 @@ TEST_CASE("[Modules][GDScript2] Coroutine - Basic creation and state") {
 	CHECK(!coro->is_completed());
 }
 
-TEST_CASE("[Modules][GDScript2] Coroutine - State transitions") {
+void test_coroutine_state_transitions() {
 	Ref<GDScript2Coroutine> coro;
 	coro.instantiate();
 
@@ -105,7 +103,7 @@ TEST_CASE("[Modules][GDScript2] Coroutine - State transitions") {
 	CHECK((int)coro->get_resume_value() == 42);
 }
 
-TEST_CASE("[Modules][GDScript2] Coroutine - Cancel") {
+void test_coroutine_cancel() {
 	Ref<GDScript2Coroutine> coro;
 	coro.instantiate();
 
@@ -115,7 +113,7 @@ TEST_CASE("[Modules][GDScript2] Coroutine - Cancel") {
 	CHECK(!coro->is_valid());
 }
 
-TEST_CASE("[Modules][GDScript2] Coroutine - Error state") {
+void test_coroutine_error_state() {
 	Ref<GDScript2Coroutine> coro;
 	coro.instantiate();
 
@@ -126,7 +124,7 @@ TEST_CASE("[Modules][GDScript2] Coroutine - Error state") {
 	CHECK(coro->get_error_line() == 42);
 }
 
-TEST_CASE("[Modules][GDScript2] Coroutine Manager - Creation") {
+void test_coroutine_manager_creation() {
 	Ref<GDScript2CoroutineManager> manager;
 	manager.instantiate();
 
@@ -135,7 +133,7 @@ TEST_CASE("[Modules][GDScript2] Coroutine Manager - Creation") {
 	CHECK(manager->get_active_count() == 1);
 }
 
-TEST_CASE("[Modules][GDScript2] Coroutine Manager - Cleanup completed") {
+void test_coroutine_manager_cleanup() {
 	Ref<GDScript2CoroutineManager> manager;
 	manager.instantiate();
 
@@ -152,7 +150,7 @@ TEST_CASE("[Modules][GDScript2] Coroutine Manager - Cleanup completed") {
 	CHECK(manager->get_active_count() == 2);
 }
 
-TEST_CASE("[Modules][GDScript2] Coroutine Manager - Cancel all") {
+void test_coroutine_manager_cancel_all() {
 	Ref<GDScript2CoroutineManager> manager;
 	manager.instantiate();
 
@@ -166,7 +164,7 @@ TEST_CASE("[Modules][GDScript2] Coroutine Manager - Cancel all") {
 	CHECK(coro2->is_completed());
 }
 
-TEST_CASE("[Modules][GDScript2] Coroutine - Signal waiting setup") {
+void test_coroutine_signal_waiting() {
 	Ref<GDScript2Coroutine> coro;
 	coro.instantiate();
 
@@ -186,7 +184,7 @@ TEST_CASE("[Modules][GDScript2] Coroutine - Signal waiting setup") {
 	memdelete(test_obj);
 }
 
-TEST_CASE("[Modules][GDScript2] Coroutine - Await marks function as coroutine") {
+void test_coroutine_await_marking() {
 	String source = R"(
 func test():
 	var sig = Signal()
@@ -212,7 +210,7 @@ func test():
 	}
 }
 
-TEST_CASE("[Modules][GDScript2] Coroutine - Simple await in IR") {
+void test_coroutine_await_ir() {
 	String source = R"(
 func test():
 	var sig = Signal()
@@ -246,7 +244,7 @@ func test():
 	CHECK(found_await);
 }
 
-TEST_CASE("[Modules][GDScript2] Coroutine - Await in bytecode") {
+void test_coroutine_await_bytecode() {
 	String source = R"(
 func test():
 	var sig = Signal()
@@ -282,7 +280,7 @@ func test():
 	CHECK(found_await);
 }
 
-TEST_CASE("[Modules][GDScript2] Coroutine - VM integration basic") {
+void test_coroutine_vm_integration() {
 	Ref<GDScript2VM> vm;
 	vm.instantiate();
 
@@ -295,4 +293,22 @@ TEST_CASE("[Modules][GDScript2] Coroutine - VM integration basic") {
 	CHECK(!vm->is_in_coroutine());
 }
 
-} // namespace TestGDScript2Coroutine
+// Main test function for coroutine tests
+namespace GDScript2Tests {
+
+void test_coroutine() {
+	test_coroutine_basic_creation();
+	test_coroutine_state_transitions();
+	test_coroutine_cancel();
+	test_coroutine_error_state();
+	test_coroutine_manager_creation();
+	test_coroutine_manager_cleanup();
+	test_coroutine_manager_cancel_all();
+	test_coroutine_signal_waiting();
+	test_coroutine_await_marking();
+	test_coroutine_await_ir();
+	test_coroutine_await_bytecode();
+	test_coroutine_vm_integration();
+}
+
+} // namespace GDScript2Tests

@@ -335,28 +335,31 @@ func add(a, b):
 
 } // namespace
 
-// ============================================================================
-// Test Registration
-// ============================================================================
+// Main test function
+namespace GDScript2Tests {
 
-REGISTER_TEST_COMMAND("gdscript2-ir-build-empty", &test_gdscript2_ir_build_empty);
-REGISTER_TEST_COMMAND("gdscript2-ir-build-function", &test_gdscript2_ir_build_function);
-REGISTER_TEST_COMMAND("gdscript2-ir-build-variables", &test_gdscript2_ir_build_variables);
-REGISTER_TEST_COMMAND("gdscript2-ir-build-if", &test_gdscript2_ir_build_if);
-REGISTER_TEST_COMMAND("gdscript2-ir-build-for", &test_gdscript2_ir_build_for);
-REGISTER_TEST_COMMAND("gdscript2-ir-build-while", &test_gdscript2_ir_build_while);
-REGISTER_TEST_COMMAND("gdscript2-ir-build-call", &test_gdscript2_ir_build_call);
-REGISTER_TEST_COMMAND("gdscript2-ir-build-array", &test_gdscript2_ir_build_array);
-REGISTER_TEST_COMMAND("gdscript2-ir-build-dictionary", &test_gdscript2_ir_build_dictionary);
-REGISTER_TEST_COMMAND("gdscript2-ir-build-binary-ops", &test_gdscript2_ir_build_binary_ops);
-REGISTER_TEST_COMMAND("gdscript2-ir-build-comparison", &test_gdscript2_ir_build_comparison);
-REGISTER_TEST_COMMAND("gdscript2-ir-build-logical", &test_gdscript2_ir_build_logical_short_circuit);
-REGISTER_TEST_COMMAND("gdscript2-ir-build-ternary", &test_gdscript2_ir_build_ternary);
-REGISTER_TEST_COMMAND("gdscript2-ir-build-match", &test_gdscript2_ir_build_match);
-REGISTER_TEST_COMMAND("gdscript2-ir-pass-const-fold", &test_gdscript2_ir_pass_const_fold);
-REGISTER_TEST_COMMAND("gdscript2-ir-pass-dce", &test_gdscript2_ir_pass_dce);
-REGISTER_TEST_COMMAND("gdscript2-ir-pass-copy-prop", &test_gdscript2_ir_pass_copy_prop);
-REGISTER_TEST_COMMAND("gdscript2-ir-pass-simplify-cfg", &test_gdscript2_ir_pass_simplify_cfg);
-REGISTER_TEST_COMMAND("gdscript2-ir-pass-strength-reduction", &test_gdscript2_ir_pass_strength_reduction);
-REGISTER_TEST_COMMAND("gdscript2-ir-pass-manager", &test_gdscript2_ir_pass_manager);
-REGISTER_TEST_COMMAND("gdscript2-ir-to-string", &test_gdscript2_ir_to_string);
+void test_ir() {
+	test_gdscript2_ir_build_empty();
+	test_gdscript2_ir_build_function();
+	test_gdscript2_ir_build_variables();
+	test_gdscript2_ir_build_if();
+	test_gdscript2_ir_build_for();
+	test_gdscript2_ir_build_while();
+	test_gdscript2_ir_build_call();
+	test_gdscript2_ir_build_array();
+	test_gdscript2_ir_build_dictionary();
+	test_gdscript2_ir_build_binary_ops();
+	test_gdscript2_ir_build_comparison();
+	test_gdscript2_ir_build_logical_short_circuit();
+	test_gdscript2_ir_build_ternary();
+	test_gdscript2_ir_build_match();
+	test_gdscript2_ir_pass_const_fold();
+	test_gdscript2_ir_pass_dce();
+	test_gdscript2_ir_pass_copy_prop();
+	test_gdscript2_ir_pass_simplify_cfg();
+	test_gdscript2_ir_pass_strength_reduction();
+	test_gdscript2_ir_pass_manager();
+	test_gdscript2_ir_to_string();
+}
+
+} // namespace GDScript2Tests

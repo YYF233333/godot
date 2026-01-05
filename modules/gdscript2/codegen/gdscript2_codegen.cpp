@@ -247,7 +247,8 @@ int GDScript2CodeGenerator::add_name(const StringName &p_name) {
 int32_t GDScript2CodeGenerator::operand_to_reg(const GDScript2IROperand &p_operand) {
 	switch (p_operand.type) {
 		case GDScript2IROperandType::REGISTER:
-			return p_operand.reg_id;
+			// Registers come after locals in the stack
+			return p_operand.reg_id + (current_ir_func ? current_ir_func->locals.size() : 0);
 		case GDScript2IROperandType::LOCAL_VAR:
 			return p_operand.local_idx;
 		default:
@@ -256,32 +257,38 @@ int32_t GDScript2CodeGenerator::operand_to_reg(const GDScript2IROperand &p_opera
 }
 
 int32_t GDScript2CodeGenerator::emit_load_operand(const GDScript2IROperand &p_operand, int32_t p_temp_reg) {
+	int32_t local_offset = current_ir_func ? current_ir_func->locals.size() : 0;
+
 	switch (p_operand.type) {
 		case GDScript2IROperandType::REGISTER:
-			return p_operand.reg_id;
+			// Registers come after locals in the stack
+			return p_operand.reg_id + local_offset;
 
 		case GDScript2IROperandType::LOCAL_VAR:
 			return p_operand.local_idx;
 
 		case GDScript2IROperandType::CONSTANT: {
 			// Load from function constant pool
+			// p_temp_reg is already an IR register ID, needs offset
 			int const_idx = p_operand.const_idx;
-			emit_op(GDScript2Opcode::OP_LOAD_CONST, p_temp_reg, const_idx);
-			return p_temp_reg;
+			emit_op(GDScript2Opcode::OP_LOAD_CONST, p_temp_reg + local_offset, const_idx);
+			return p_temp_reg + local_offset;
 		}
 
 		case GDScript2IROperandType::IMMEDIATE: {
 			// Add to constant pool and load
+			// p_temp_reg is already an IR register ID, needs offset
 			int const_idx = add_constant(p_operand.imm_value);
-			emit_op(GDScript2Opcode::OP_LOAD_CONST, p_temp_reg, const_idx);
-			return p_temp_reg;
+			emit_op(GDScript2Opcode::OP_LOAD_CONST, p_temp_reg + local_offset, const_idx);
+			return p_temp_reg + local_offset;
 		}
 
 		case GDScript2IROperandType::NAME: {
 			// Load global by name
+			// p_temp_reg is already an IR register ID, needs offset
 			int name_idx = add_name(p_operand.name);
-			emit_op(GDScript2Opcode::OP_LOAD_GLOBAL, p_temp_reg, name_idx);
-			return p_temp_reg;
+			emit_op(GDScript2Opcode::OP_LOAD_GLOBAL, p_temp_reg + local_offset, name_idx);
+			return p_temp_reg + local_offset;
 		}
 
 		default:
@@ -390,8 +397,10 @@ void GDScript2CodeGenerator::generate_function(const GDScript2IRFunction &p_ir_f
 	// Emit end marker
 	emit_op(GDScript2Opcode::OP_END);
 
-	// Calculate max stack
-	current_func->max_stack = current_func->local_count + current_func->temp_count;
+	// Calculate max stack - simple and safe: locals + temps with room for extra temporaries
+	int32_t base_stack = current_func->local_count + (current_ir_func ? current_ir_func->next_reg : 0);
+	// Add extra space for temporaries used during code generation (2x for safety)
+	current_func->max_stack = base_stack * 2 + 32;
 }
 
 void GDScript2CodeGenerator::generate_block(const GDScript2IRBlock &p_block) {
@@ -718,7 +727,8 @@ void GDScript2CodeGenerator::gen_store_local(const GDScript2IRInstr &p_instr) {
 		src_reg = operand_to_reg(p_instr.args[0]);
 		if (src_reg < 0 && p_instr.args[0].type == GDScript2IROperandType::IMMEDIATE) {
 			// Need to load immediate first
-			int32_t temp = current_ir_func ? current_ir_func->next_reg : 0;
+			int32_t local_offset = current_ir_func ? current_ir_func->locals.size() : 0;
+			int32_t temp = (current_ir_func ? current_ir_func->next_reg : 0) + local_offset;
 			int const_idx = add_constant(p_instr.args[0].imm_value);
 			emit_op(GDScript2Opcode::OP_LOAD_CONST, temp, const_idx);
 			src_reg = temp;
@@ -996,15 +1006,24 @@ void GDScript2CodeGenerator::gen_type_op(const GDScript2IRInstr &p_instr) {
 void GDScript2CodeGenerator::gen_construct_array(const GDScript2IRInstr &p_instr) {
 	int32_t dest = operand_to_reg(p_instr.dest);
 
-	GDScript2BytecodeInstr bc(GDScript2Opcode::OP_CONSTRUCT_ARRAY);
-	bc.add_operand(dest);
-	bc.add_operand(static_cast<int32_t>(p_instr.args.size()));
-
-	// Add each element register
+	// First, load all immediates into temporaries
+	LocalVector<int32_t> element_regs;
+	int32_t temp_base = current_ir_func ? current_ir_func->next_reg : 0;
 	for (uint32_t i = 0; i < p_instr.args.size(); i++) {
 		int32_t reg = operand_to_reg(p_instr.args[i]);
-		// For simplicity, assume args are already in registers
-		// In practice, we might need to load immediates first
+		if (reg < 0) {
+			// Need to load constant/immediate first
+			reg = emit_load_operand(p_instr.args[i], temp_base);
+			temp_base++;
+		}
+		element_regs.push_back(reg);
+	}
+
+	// Now emit the construct array instruction
+	GDScript2BytecodeInstr bc(GDScript2Opcode::OP_CONSTRUCT_ARRAY);
+	bc.add_operand(dest);
+	bc.add_operand(static_cast<int32_t>(element_regs.size()));
+	for (int32_t reg : element_regs) {
 		bc.add_operand(reg);
 	}
 
@@ -1014,13 +1033,24 @@ void GDScript2CodeGenerator::gen_construct_array(const GDScript2IRInstr &p_instr
 void GDScript2CodeGenerator::gen_construct_dict(const GDScript2IRInstr &p_instr) {
 	int32_t dest = operand_to_reg(p_instr.dest);
 
-	GDScript2BytecodeInstr bc(GDScript2Opcode::OP_CONSTRUCT_DICT);
-	bc.add_operand(dest);
-	bc.add_operand(static_cast<int32_t>(p_instr.args.size() / 2)); // Pair count
-
-	// Add key-value pairs
+	// First, load all immediates into temporaries
+	LocalVector<int32_t> element_regs;
+	int32_t temp_base = current_ir_func ? current_ir_func->next_reg : 0;
 	for (uint32_t i = 0; i < p_instr.args.size(); i++) {
 		int32_t reg = operand_to_reg(p_instr.args[i]);
+		if (reg < 0) {
+			// Need to load constant/immediate first
+			reg = emit_load_operand(p_instr.args[i], temp_base);
+			temp_base++;
+		}
+		element_regs.push_back(reg);
+	}
+
+	// Now emit the construct dict instruction
+	GDScript2BytecodeInstr bc(GDScript2Opcode::OP_CONSTRUCT_DICT);
+	bc.add_operand(dest);
+	bc.add_operand(static_cast<int32_t>(element_regs.size() / 2)); // Pair count
+	for (int32_t reg : element_regs) {
 		bc.add_operand(reg);
 	}
 
@@ -1175,26 +1205,63 @@ void GDScript2CodeGenerator::gen_jump_if_not(const GDScript2IRInstr &p_instr) {
 void GDScript2CodeGenerator::gen_call(const GDScript2IRInstr &p_instr) {
 	int32_t dest = operand_to_reg(p_instr.dest);
 
-	GDScript2BytecodeInstr bc(GDScript2Opcode::OP_CALL);
-	bc.add_operand(dest);
+	// Check if this is a direct call by name or indirect call
+	if (p_instr.args.size() >= 1 && p_instr.args[0].type == GDScript2IROperandType::NAME) {
+		// Direct function call by name - use OP_CALL_SELF
+		GDScript2BytecodeInstr bc(GDScript2Opcode::OP_CALL_SELF);
+		bc.add_operand(dest);
 
-	// First arg is callee
-	if (p_instr.args.size() >= 1) {
-		int32_t callee_reg = operand_to_reg(p_instr.args[0]);
-		bc.add_operand(callee_reg);
+		int32_t name_idx = add_name(p_instr.args[0].name);
+		bc.add_operand(name_idx);
+
+		// Load arguments into registers and collect their indices
+		LocalVector<int32_t> arg_regs;
+		int32_t temp_base = current_ir_func ? current_ir_func->next_reg : 0;
+
+		for (uint32_t i = 1; i < p_instr.args.size(); i++) {
+			int32_t arg_reg = emit_load_operand(p_instr.args[i], temp_base + (i - 1));
+			arg_regs.push_back(arg_reg);
+		}
+
+		// Arg count
+		bc.add_operand(static_cast<int32_t>(arg_regs.size()));
+
+		// Arguments
+		for (int32_t reg : arg_regs) {
+			bc.add_operand(reg);
+		}
+
+		emit(bc);
+	} else {
+		// Indirect call (callable in register) - use OP_CALL
+		GDScript2BytecodeInstr bc(GDScript2Opcode::OP_CALL);
+		bc.add_operand(dest);
+
+		// First arg is callee register
+		if (p_instr.args.size() >= 1) {
+			int32_t callee_reg = operand_to_reg(p_instr.args[0]);
+			bc.add_operand(callee_reg);
+		}
+
+		// Load arguments into registers and collect their indices
+		LocalVector<int32_t> arg_regs;
+		int32_t temp_base = current_ir_func ? current_ir_func->next_reg : 0;
+
+		for (uint32_t i = 1; i < p_instr.args.size(); i++) {
+			int32_t arg_reg = emit_load_operand(p_instr.args[i], temp_base + (i - 1));
+			arg_regs.push_back(arg_reg);
+		}
+
+		// Arg count
+		bc.add_operand(static_cast<int32_t>(arg_regs.size()));
+
+		// Arguments
+		for (int32_t reg : arg_regs) {
+			bc.add_operand(reg);
+		}
+
+		emit(bc);
 	}
-
-	// Arg count (excluding callee)
-	int arg_count = p_instr.args.size() > 1 ? static_cast<int>(p_instr.args.size()) - 1 : 0;
-	bc.add_operand(arg_count);
-
-	// Arguments
-	for (uint32_t i = 1; i < p_instr.args.size(); i++) {
-		int32_t reg = operand_to_reg(p_instr.args[i]);
-		bc.add_operand(reg);
-	}
-
-	emit(bc);
 }
 
 void GDScript2CodeGenerator::gen_call_method(const GDScript2IRInstr &p_instr) {

@@ -45,6 +45,17 @@ GDScript2SemanticAnalyzer::Result parse_and_analyze(const String &p_source) {
 	sema.instantiate();
 	GDScript2SemanticAnalyzer::Result sema_result = sema->analyze(parse_result.root);
 
+	// Merge parser errors into semantic result
+	if (parse_result.has_errors()) {
+		for (const GDScript2Parser::Error &err : parse_result.errors) {
+			sema_result.diagnostics.report_error(
+					GDScript2DiagnosticCode::ERR_UNKNOWN,
+					err.message,
+					err.line,
+					err.column);
+		}
+	}
+
 	if (parse_result.root) {
 		memdelete(parse_result.root);
 	}
@@ -458,42 +469,45 @@ func test():
 
 } // namespace
 
-// ============================================================================
-// Test Registration
-// ============================================================================
+// Main test function that calls all semantic tests
+namespace GDScript2Tests {
 
-REGISTER_TEST_COMMAND("gdscript2-semantic-minimal", &test_gdscript2_semantic_minimal);
-REGISTER_TEST_COMMAND("gdscript2-semantic-variable", &test_gdscript2_semantic_variable_declaration);
-REGISTER_TEST_COMMAND("gdscript2-semantic-constant", &test_gdscript2_semantic_constant_declaration);
-REGISTER_TEST_COMMAND("gdscript2-semantic-function", &test_gdscript2_semantic_function_declaration);
-REGISTER_TEST_COMMAND("gdscript2-semantic-type-mismatch", &test_gdscript2_semantic_type_mismatch);
-REGISTER_TEST_COMMAND("gdscript2-semantic-numeric-promotion", &test_gdscript2_semantic_numeric_promotion);
-REGISTER_TEST_COMMAND("gdscript2-semantic-array-type", &test_gdscript2_semantic_array_type);
-REGISTER_TEST_COMMAND("gdscript2-semantic-dictionary-type", &test_gdscript2_semantic_dictionary_type);
-REGISTER_TEST_COMMAND("gdscript2-semantic-if", &test_gdscript2_semantic_if_statement);
-REGISTER_TEST_COMMAND("gdscript2-semantic-for", &test_gdscript2_semantic_for_loop);
-REGISTER_TEST_COMMAND("gdscript2-semantic-while", &test_gdscript2_semantic_while_loop);
-REGISTER_TEST_COMMAND("gdscript2-semantic-break-outside-loop", &test_gdscript2_semantic_break_outside_loop);
-REGISTER_TEST_COMMAND("gdscript2-semantic-continue-outside-loop", &test_gdscript2_semantic_continue_outside_loop);
-REGISTER_TEST_COMMAND("gdscript2-semantic-return-outside-func", &test_gdscript2_semantic_return_outside_function);
-REGISTER_TEST_COMMAND("gdscript2-semantic-undefined-var", &test_gdscript2_semantic_undefined_variable);
-REGISTER_TEST_COMMAND("gdscript2-semantic-duplicate-decl", &test_gdscript2_semantic_duplicate_declaration);
-REGISTER_TEST_COMMAND("gdscript2-semantic-scope-isolation", &test_gdscript2_semantic_scope_isolation);
-REGISTER_TEST_COMMAND("gdscript2-semantic-class-members", &test_gdscript2_semantic_class_members);
-REGISTER_TEST_COMMAND("gdscript2-semantic-enum", &test_gdscript2_semantic_enum);
-REGISTER_TEST_COMMAND("gdscript2-semantic-self-in-static", &test_gdscript2_semantic_self_in_static);
-REGISTER_TEST_COMMAND("gdscript2-semantic-binary-ops", &test_gdscript2_semantic_binary_ops);
-REGISTER_TEST_COMMAND("gdscript2-semantic-unary-ops", &test_gdscript2_semantic_unary_ops);
-REGISTER_TEST_COMMAND("gdscript2-semantic-ternary-op", &test_gdscript2_semantic_ternary_op);
-REGISTER_TEST_COMMAND("gdscript2-semantic-assign-to-const", &test_gdscript2_semantic_assignment_to_constant);
-REGISTER_TEST_COMMAND("gdscript2-semantic-function-call", &test_gdscript2_semantic_function_call);
-REGISTER_TEST_COMMAND("gdscript2-semantic-builtin-call", &test_gdscript2_semantic_builtin_call);
-REGISTER_TEST_COMMAND("gdscript2-semantic-match", &test_gdscript2_semantic_match_statement);
-REGISTER_TEST_COMMAND("gdscript2-semantic-match-binding", &test_gdscript2_semantic_match_binding);
-REGISTER_TEST_COMMAND("gdscript2-semantic-lambda", &test_gdscript2_semantic_lambda);
-REGISTER_TEST_COMMAND("gdscript2-semantic-await-in-func", &test_gdscript2_semantic_await_in_function);
-REGISTER_TEST_COMMAND("gdscript2-semantic-await-outside-func", &test_gdscript2_semantic_await_outside_function);
-REGISTER_TEST_COMMAND("gdscript2-semantic-type-from-variant", &test_gdscript2_semantic_type_from_variant);
-REGISTER_TEST_COMMAND("gdscript2-semantic-type-compat", &test_gdscript2_semantic_type_compatibility);
-REGISTER_TEST_COMMAND("gdscript2-semantic-symbol-lookup", &test_gdscript2_semantic_symbol_lookup);
-REGISTER_TEST_COMMAND("gdscript2-semantic-nested-scope", &test_gdscript2_semantic_nested_scope);
+void test_semantic() {
+	test_gdscript2_semantic_minimal();
+	test_gdscript2_semantic_variable_declaration();
+	test_gdscript2_semantic_constant_declaration();
+	test_gdscript2_semantic_function_declaration();
+	test_gdscript2_semantic_type_mismatch();
+	test_gdscript2_semantic_numeric_promotion();
+	test_gdscript2_semantic_array_type();
+	test_gdscript2_semantic_dictionary_type();
+	test_gdscript2_semantic_if_statement();
+	test_gdscript2_semantic_for_loop();
+	test_gdscript2_semantic_while_loop();
+	test_gdscript2_semantic_break_outside_loop();
+	test_gdscript2_semantic_continue_outside_loop();
+	test_gdscript2_semantic_return_outside_function();
+	test_gdscript2_semantic_undefined_variable();
+	test_gdscript2_semantic_duplicate_declaration();
+	test_gdscript2_semantic_scope_isolation();
+	test_gdscript2_semantic_class_members();
+	test_gdscript2_semantic_enum();
+	test_gdscript2_semantic_self_in_static();
+	test_gdscript2_semantic_binary_ops();
+	test_gdscript2_semantic_unary_ops();
+	test_gdscript2_semantic_ternary_op();
+	test_gdscript2_semantic_assignment_to_constant();
+	test_gdscript2_semantic_function_call();
+	test_gdscript2_semantic_builtin_call();
+	test_gdscript2_semantic_match_statement();
+	test_gdscript2_semantic_match_binding();
+	test_gdscript2_semantic_lambda();
+	test_gdscript2_semantic_await_in_function();
+	test_gdscript2_semantic_await_outside_function();
+	test_gdscript2_semantic_type_from_variant();
+	test_gdscript2_semantic_type_compatibility();
+	test_gdscript2_semantic_symbol_lookup();
+	test_gdscript2_semantic_nested_scope();
+}
+
+} // namespace GDScript2Tests

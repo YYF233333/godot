@@ -32,11 +32,15 @@
 
 #include "modules/gdscript2/runtime/gdscript2_signal.h"
 
-namespace TestGDScript2Signal {
-
 // Helper class for testing signal callbacks
 class TestCallbackObject : public Object {
 	GDCLASS(TestCallbackObject, Object);
+
+protected:
+	static void _bind_methods() {
+		ClassDB::bind_method(D_METHOD("increment_count"), &TestCallbackObject::increment_count);
+		ClassDB::bind_method(D_METHOD("increment_count_with_args", "value"), &TestCallbackObject::increment_count_with_args);
+	}
 
 public:
 	int call_count = 0;
@@ -50,7 +54,7 @@ public:
 	}
 };
 
-TEST_CASE("[Modules][GDScript2] Signal - Registry creation") {
+void test_signal_registry_creation() {
 	Ref<GDScript2SignalRegistry> registry;
 	registry.instantiate();
 
@@ -58,7 +62,7 @@ TEST_CASE("[Modules][GDScript2] Signal - Registry creation") {
 	CHECK(registry->get_signal_list().is_empty());
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - Define signal") {
+void test_signal_define() {
 	Ref<GDScript2SignalRegistry> registry;
 	registry.instantiate();
 
@@ -66,10 +70,10 @@ TEST_CASE("[Modules][GDScript2] Signal - Define signal") {
 
 	CHECK(registry->has_signal("test_signal"));
 	CHECK(registry->get_signal_list().size() == 1);
-	CHECK(registry->get_signal_list()[0] == "test_signal");
+	CHECK(String(registry->get_signal_list()[0]) == String("test_signal"));
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - Define signal with parameters") {
+void test_signal_define_with_params() {
 	Ref<GDScript2SignalRegistry> registry;
 	registry.instantiate();
 
@@ -90,12 +94,12 @@ TEST_CASE("[Modules][GDScript2] Signal - Define signal with parameters") {
 	CHECK(def.parameters[1].type == Variant::STRING);
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - Connect and disconnect") {
+void test_signal_connect_disconnect() {
 	Ref<GDScript2SignalRegistry> registry;
 	registry.instantiate();
 
-	Object *test_obj = memnew(Object);
-	Callable test_callable = Callable(test_obj, "test_method");
+	TestCallbackObject *test_obj = memnew(TestCallbackObject);
+	Callable test_callable = Callable(test_obj, "increment_count");
 
 	registry->define_signal("test_signal");
 
@@ -113,17 +117,17 @@ TEST_CASE("[Modules][GDScript2] Signal - Connect and disconnect") {
 	memdelete(test_obj);
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - Multiple connections") {
+void test_signal_multiple_connections() {
 	Ref<GDScript2SignalRegistry> registry;
 	registry.instantiate();
 
-	Object *obj1 = memnew(Object);
-	Object *obj2 = memnew(Object);
-	Object *obj3 = memnew(Object);
+	TestCallbackObject *obj1 = memnew(TestCallbackObject);
+	TestCallbackObject *obj2 = memnew(TestCallbackObject);
+	TestCallbackObject *obj3 = memnew(TestCallbackObject);
 
-	Callable callable1 = Callable(obj1, "method1");
-	Callable callable2 = Callable(obj2, "method2");
-	Callable callable3 = Callable(obj3, "method3");
+	Callable callable1 = Callable(obj1, "increment_count");
+	Callable callable2 = Callable(obj2, "increment_count");
+	Callable callable3 = Callable(obj3, "increment_count");
 
 	registry->define_signal("multi_signal");
 
@@ -150,7 +154,7 @@ TEST_CASE("[Modules][GDScript2] Signal - Multiple connections") {
 	memdelete(obj3);
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - Emit signal") {
+void test_signal_emit() {
 	Ref<GDScript2SignalRegistry> registry;
 	registry.instantiate();
 
@@ -174,7 +178,7 @@ TEST_CASE("[Modules][GDScript2] Signal - Emit signal") {
 	memdelete(test_obj);
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - Emit with arguments") {
+void test_signal_emit_with_args() {
 	Ref<GDScript2SignalRegistry> registry;
 	registry.instantiate();
 
@@ -195,7 +199,7 @@ TEST_CASE("[Modules][GDScript2] Signal - Emit with arguments") {
 	memdelete(test_obj);
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - SignalEmitter basic") {
+void test_signal_emitter_basic() {
 	Ref<GDScript2SignalEmitter> emitter;
 	emitter.instantiate();
 
@@ -205,7 +209,7 @@ TEST_CASE("[Modules][GDScript2] Signal - SignalEmitter basic") {
 	CHECK(emitter->get_signal_registry().is_valid());
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - SignalEmitter with parameters") {
+void test_signal_emitter_with_params() {
 	Ref<GDScript2SignalEmitter> emitter;
 	emitter.instantiate();
 
@@ -222,7 +226,7 @@ TEST_CASE("[Modules][GDScript2] Signal - SignalEmitter with parameters") {
 	CHECK(def.get_parameter_count() == 2);
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - SignalEmitter connect and emit") {
+void test_signal_emitter_connect_emit() {
 	Ref<GDScript2SignalEmitter> emitter;
 	emitter.instantiate();
 
@@ -243,7 +247,7 @@ TEST_CASE("[Modules][GDScript2] Signal - SignalEmitter connect and emit") {
 	memdelete(test_obj);
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - Utils make_signal") {
+void test_signal_utils_make() {
 	Object *test_obj = memnew(Object);
 	test_obj->add_user_signal(MethodInfo("test_signal"));
 
@@ -255,7 +259,7 @@ TEST_CASE("[Modules][GDScript2] Signal - Utils make_signal") {
 	memdelete(test_obj);
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - Utils is_signal") {
+void test_signal_utils_is() {
 	Object *test_obj = memnew(Object);
 	test_obj->add_user_signal(MethodInfo("test_signal"));
 
@@ -269,7 +273,7 @@ TEST_CASE("[Modules][GDScript2] Signal - Utils is_signal") {
 	memdelete(test_obj);
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - Utils safe_connect") {
+void test_signal_utils_safe_connect() {
 	Object *test_obj = memnew(Object);
 	Object *target_obj = memnew(Object);
 
@@ -286,7 +290,7 @@ TEST_CASE("[Modules][GDScript2] Signal - Utils safe_connect") {
 	memdelete(target_obj);
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - Utils safe_disconnect") {
+void test_signal_utils_safe_disconnect() {
 	Object *test_obj = memnew(Object);
 	Object *target_obj = memnew(Object);
 
@@ -306,18 +310,18 @@ TEST_CASE("[Modules][GDScript2] Signal - Utils safe_disconnect") {
 	memdelete(target_obj);
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - Clear all connections") {
+void test_signal_clear_all() {
 	Ref<GDScript2SignalRegistry> registry;
 	registry.instantiate();
 
-	Object *obj1 = memnew(Object);
-	Object *obj2 = memnew(Object);
+	TestCallbackObject *obj1 = memnew(TestCallbackObject);
+	TestCallbackObject *obj2 = memnew(TestCallbackObject);
 
 	registry->define_signal("sig1");
 	registry->define_signal("sig2");
 
-	registry->connect_signal("sig1", Callable(obj1, "method1"));
-	registry->connect_signal("sig2", Callable(obj2, "method2"));
+	registry->connect_signal("sig1", Callable(obj1, "increment_count"));
+	registry->connect_signal("sig2", Callable(obj2, "increment_count"));
 
 	CHECK(registry->get_connection_count("sig1") == 1);
 	CHECK(registry->get_connection_count("sig2") == 1);
@@ -331,15 +335,15 @@ TEST_CASE("[Modules][GDScript2] Signal - Clear all connections") {
 	memdelete(obj2);
 }
 
-TEST_CASE("[Modules][GDScript2] Signal - Get connections list") {
+void test_signal_get_connections() {
 	Ref<GDScript2SignalRegistry> registry;
 	registry.instantiate();
 
-	Object *obj1 = memnew(Object);
-	Object *obj2 = memnew(Object);
+	TestCallbackObject *obj1 = memnew(TestCallbackObject);
+	TestCallbackObject *obj2 = memnew(TestCallbackObject);
 
-	Callable callable1 = Callable(obj1, "method1");
-	Callable callable2 = Callable(obj2, "method2");
+	Callable callable1 = Callable(obj1, "increment_count");
+	Callable callable2 = Callable(obj2, "increment_count");
 
 	registry->define_signal("test_signal");
 	registry->connect_signal("test_signal", callable1);
@@ -354,4 +358,26 @@ TEST_CASE("[Modules][GDScript2] Signal - Get connections list") {
 	memdelete(obj2);
 }
 
-} // namespace TestGDScript2Signal
+// Main test function for signal tests
+namespace GDScript2Tests {
+
+void test_signal() {
+	test_signal_registry_creation();
+	test_signal_define();
+	test_signal_define_with_params();
+	test_signal_connect_disconnect();
+	test_signal_multiple_connections();
+	test_signal_emit();
+	test_signal_emit_with_args();
+	test_signal_emitter_basic();
+	test_signal_emitter_with_params();
+	test_signal_emitter_connect_emit();
+	test_signal_utils_make();
+	test_signal_utils_is();
+	test_signal_utils_safe_connect();
+	test_signal_utils_safe_disconnect();
+	test_signal_clear_all();
+	test_signal_get_connections();
+}
+
+} // namespace GDScript2Tests

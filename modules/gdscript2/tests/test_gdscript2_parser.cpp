@@ -582,27 +582,33 @@ var y = 10
 
 } // namespace
 
-// Register all tests
-REGISTER_TEST_COMMAND("gdscript2-parser-empty", &test_parser_empty);
-REGISTER_TEST_COMMAND("gdscript2-parser-variable", &test_parser_variable);
-REGISTER_TEST_COMMAND("gdscript2-parser-variable-typed", &test_parser_variable_typed);
-REGISTER_TEST_COMMAND("gdscript2-parser-constant", &test_parser_constant);
-REGISTER_TEST_COMMAND("gdscript2-parser-function", &test_parser_function);
-REGISTER_TEST_COMMAND("gdscript2-parser-function-params", &test_parser_function_params);
-REGISTER_TEST_COMMAND("gdscript2-parser-if", &test_parser_if);
-REGISTER_TEST_COMMAND("gdscript2-parser-if-else", &test_parser_if_else);
-REGISTER_TEST_COMMAND("gdscript2-parser-for", &test_parser_for);
-REGISTER_TEST_COMMAND("gdscript2-parser-while", &test_parser_while);
-REGISTER_TEST_COMMAND("gdscript2-parser-binary-expr", &test_parser_binary_expr);
-REGISTER_TEST_COMMAND("gdscript2-parser-call", &test_parser_call);
-REGISTER_TEST_COMMAND("gdscript2-parser-array", &test_parser_array);
-REGISTER_TEST_COMMAND("gdscript2-parser-dictionary", &test_parser_dictionary);
-REGISTER_TEST_COMMAND("gdscript2-parser-signal", &test_parser_signal);
-REGISTER_TEST_COMMAND("gdscript2-parser-enum", &test_parser_enum);
-REGISTER_TEST_COMMAND("gdscript2-parser-annotation", &test_parser_annotation);
-REGISTER_TEST_COMMAND("gdscript2-parser-extends", &test_parser_extends);
-REGISTER_TEST_COMMAND("gdscript2-parser-inner-class", &test_parser_inner_class);
-REGISTER_TEST_COMMAND("gdscript2-parser-match", &test_parser_match);
-REGISTER_TEST_COMMAND("gdscript2-parser-return", &test_parser_return);
-REGISTER_TEST_COMMAND("gdscript2-parser-static", &test_parser_static);
-REGISTER_TEST_COMMAND("gdscript2-parser-error-recovery", &test_parser_error_recovery);
+// Main test function that calls all parser tests
+namespace GDScript2Tests {
+
+void test_parser() {
+	test_parser_empty();
+	test_parser_variable();
+	test_parser_variable_typed();
+	test_parser_constant();
+	test_parser_function();
+	test_parser_function_params();
+	test_parser_if();
+	test_parser_if_else();
+	test_parser_for();
+	test_parser_while();
+	test_parser_binary_expr();
+	test_parser_call();
+	test_parser_array();
+	test_parser_dictionary();
+	test_parser_signal();
+	test_parser_enum();
+	test_parser_annotation();
+	test_parser_extends();
+	test_parser_inner_class();
+	test_parser_match();
+	test_parser_return();
+	test_parser_static();
+	test_parser_error_recovery();
+}
+
+} // namespace GDScript2Tests

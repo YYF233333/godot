@@ -677,39 +677,42 @@ func test():
 
 } // namespace
 
-// ============================================================================
-// Test Registration
-// ============================================================================
+// Main test function
+namespace GDScript2Tests {
 
-REGISTER_TEST_COMMAND("gdscript2-vm-empty", &test_gdscript2_vm_empty);
-REGISTER_TEST_COMMAND("gdscript2-vm-return-constant", &test_gdscript2_vm_return_constant);
-REGISTER_TEST_COMMAND("gdscript2-vm-return-string", &test_gdscript2_vm_return_string);
-REGISTER_TEST_COMMAND("gdscript2-vm-return-nil", &test_gdscript2_vm_return_nil);
-REGISTER_TEST_COMMAND("gdscript2-vm-return-bool", &test_gdscript2_vm_return_bool);
-REGISTER_TEST_COMMAND("gdscript2-vm-arithmetic-add", &test_gdscript2_vm_arithmetic_add);
-REGISTER_TEST_COMMAND("gdscript2-vm-arithmetic-sub", &test_gdscript2_vm_arithmetic_sub);
-REGISTER_TEST_COMMAND("gdscript2-vm-arithmetic-mul", &test_gdscript2_vm_arithmetic_mul);
-REGISTER_TEST_COMMAND("gdscript2-vm-arithmetic-div", &test_gdscript2_vm_arithmetic_div);
-REGISTER_TEST_COMMAND("gdscript2-vm-arithmetic-mod", &test_gdscript2_vm_arithmetic_mod);
-REGISTER_TEST_COMMAND("gdscript2-vm-arithmetic-complex", &test_gdscript2_vm_arithmetic_complex);
-REGISTER_TEST_COMMAND("gdscript2-vm-comparison-eq", &test_gdscript2_vm_comparison_eq);
-REGISTER_TEST_COMMAND("gdscript2-vm-comparison-lt", &test_gdscript2_vm_comparison_lt);
-REGISTER_TEST_COMMAND("gdscript2-vm-if-statement", &test_gdscript2_vm_if_statement);
-REGISTER_TEST_COMMAND("gdscript2-vm-while-loop", &test_gdscript2_vm_while_loop);
-REGISTER_TEST_COMMAND("gdscript2-vm-nested-if", &test_gdscript2_vm_nested_if);
-REGISTER_TEST_COMMAND("gdscript2-vm-local-variables", &test_gdscript2_vm_local_variables);
-REGISTER_TEST_COMMAND("gdscript2-vm-variable-reassign", &test_gdscript2_vm_variable_reassign);
-REGISTER_TEST_COMMAND("gdscript2-vm-array-create", &test_gdscript2_vm_array_create);
-REGISTER_TEST_COMMAND("gdscript2-vm-array-access", &test_gdscript2_vm_array_access);
-REGISTER_TEST_COMMAND("gdscript2-vm-array-modify", &test_gdscript2_vm_array_modify);
-REGISTER_TEST_COMMAND("gdscript2-vm-dictionary-create", &test_gdscript2_vm_dictionary_create);
-REGISTER_TEST_COMMAND("gdscript2-vm-dictionary-access", &test_gdscript2_vm_dictionary_access);
-REGISTER_TEST_COMMAND("gdscript2-vm-function-call", &test_gdscript2_vm_function_call);
-REGISTER_TEST_COMMAND("gdscript2-vm-recursive-function", &test_gdscript2_vm_recursive_function);
-REGISTER_TEST_COMMAND("gdscript2-vm-fibonacci", &test_gdscript2_vm_fibonacci);
-REGISTER_TEST_COMMAND("gdscript2-vm-unary-neg", &test_gdscript2_vm_unary_neg);
-REGISTER_TEST_COMMAND("gdscript2-vm-unary-not", &test_gdscript2_vm_unary_not);
-REGISTER_TEST_COMMAND("gdscript2-vm-globals", &test_gdscript2_vm_globals);
-REGISTER_TEST_COMMAND("gdscript2-vm-function-not-found", &test_gdscript2_vm_function_not_found);
-REGISTER_TEST_COMMAND("gdscript2-vm-no-module", &test_gdscript2_vm_no_module);
-REGISTER_TEST_COMMAND("gdscript2-vm-string-concat", &test_gdscript2_vm_string_concat);
+void test_vm() {
+	test_gdscript2_vm_empty();
+	test_gdscript2_vm_return_constant();
+	test_gdscript2_vm_return_string();
+	test_gdscript2_vm_return_nil();
+	test_gdscript2_vm_return_bool();
+	test_gdscript2_vm_arithmetic_add();
+	test_gdscript2_vm_arithmetic_sub();
+	test_gdscript2_vm_arithmetic_mul();
+	test_gdscript2_vm_arithmetic_div();
+	test_gdscript2_vm_arithmetic_mod();
+	test_gdscript2_vm_arithmetic_complex();
+	test_gdscript2_vm_comparison_eq();
+	test_gdscript2_vm_comparison_lt();
+	test_gdscript2_vm_if_statement();
+	test_gdscript2_vm_while_loop();
+	test_gdscript2_vm_nested_if();
+	test_gdscript2_vm_local_variables();
+	test_gdscript2_vm_variable_reassign();
+	test_gdscript2_vm_array_create();
+	test_gdscript2_vm_array_access();
+	test_gdscript2_vm_array_modify();
+	test_gdscript2_vm_dictionary_create();
+	test_gdscript2_vm_dictionary_access();
+	test_gdscript2_vm_function_call();
+	test_gdscript2_vm_recursive_function();
+	test_gdscript2_vm_fibonacci();
+	test_gdscript2_vm_unary_neg();
+	test_gdscript2_vm_unary_not();
+	test_gdscript2_vm_globals();
+	test_gdscript2_vm_function_not_found();
+	test_gdscript2_vm_no_module();
+	test_gdscript2_vm_string_concat();
+}
+
+} // namespace GDScript2Tests

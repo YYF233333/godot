@@ -478,7 +478,7 @@ void GDScript2IRBuilder::build_while(GDScript2WhileNode *p_while) {
 }
 
 void GDScript2IRBuilder::build_match(GDScript2MatchNode *p_match) {
-	if (!p_match) {
+	if (!p_match || !current_func) {
 		return;
 	}
 
@@ -493,6 +493,7 @@ void GDScript2IRBuilder::build_match(GDScript2MatchNode *p_match) {
 		int branch_block = create_block(vformat("match.branch%d", i));
 		int next_block = (i + 1 < p_match->branches.size()) ? create_block(vformat("match.check%d", i + 1)) : end_block;
 
+		// Generate pattern check in current block
 		// For now, simplified: just check first pattern as literal equality
 		// TODO: Implement full pattern matching
 		if (!branch->patterns.is_empty()) {
@@ -505,10 +506,16 @@ void GDScript2IRBuilder::build_match(GDScript2MatchNode *p_match) {
 				emit(GDScript2IRInstr::make_binary(GDScript2IROp::OP_EQ, match_result, test_value, pattern_val));
 
 				emit_jump_if(match_result, branch_block, next_block);
+			} else if (pattern->pattern_type == GDScript2PatternType::PATTERN_EXPRESSION) {
+				// Wildcard pattern (_) or other expression - always matches
+				emit_jump(branch_block);
 			} else {
-				// Default: always match (for _ pattern)
+				// For other pattern types, default to branch for now
 				emit_jump(branch_block);
 			}
+		} else {
+			// No patterns means always match (shouldn't happen, but safe fallback)
+			emit_jump(branch_block);
 		}
 
 		// Branch body
@@ -516,13 +523,18 @@ void GDScript2IRBuilder::build_match(GDScript2MatchNode *p_match) {
 		if (branch->body) {
 			build_suite(branch->body);
 		}
+		// Jump to end after branch execution
 		if (!current_block_has_terminator()) {
 			emit_jump(end_block);
 		}
 
-		set_block(next_block);
+		// Move to next check block (or end_block if this was the last branch)
+		if (i + 1 < p_match->branches.size()) {
+			set_block(next_block);
+		}
 	}
 
+	// Set current block to end
 	set_block(end_block);
 }
 

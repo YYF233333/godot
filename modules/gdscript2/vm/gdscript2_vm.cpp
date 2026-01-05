@@ -1187,7 +1187,53 @@ GDScript2ExecutionResult GDScript2VM::exec_call_self(GDScript2CallFrame &p_frame
 		return result;
 	}
 
-	// If not found in module, try calling on self object
+	// Try builtin functions
+	if (GDScript2BuiltinRegistry::has_function(func_name)) {
+		const Variant **argptrs = nullptr;
+		if (!args.is_empty()) {
+			argptrs = (const Variant **)alloca(sizeof(Variant *) * args.size());
+			for (int i = 0; i < args.size(); i++) {
+				argptrs[i] = &args[i];
+			}
+		}
+
+		Variant result;
+		Callable::CallError error;
+		result = GDScript2BuiltinRegistry::call_function(func_name, argptrs, args.size(), error);
+
+		if (error.error != Callable::CallError::CALL_OK) {
+			return GDScript2ExecutionResult::make_error(GDScript2ExecutionResult::ERROR_RUNTIME,
+					"Builtin call failed: " + String(func_name));
+		}
+
+		get_stack_value(p_frame, dest) = result;
+		return GDScript2ExecutionResult::make_ok();
+	}
+
+	// Try Godot utility functions
+	if (Variant::has_utility_function(func_name)) {
+		const Variant **argptrs = nullptr;
+		if (!args.is_empty()) {
+			argptrs = (const Variant **)alloca(sizeof(Variant *) * args.size());
+			for (int i = 0; i < args.size(); i++) {
+				argptrs[i] = &args[i];
+			}
+		}
+
+		Variant result;
+		Callable::CallError error;
+		Variant::call_utility_function(func_name, &result, argptrs, args.size(), error);
+
+		if (error.error != Callable::CallError::CALL_OK) {
+			return GDScript2ExecutionResult::make_error(GDScript2ExecutionResult::ERROR_RUNTIME,
+					"Utility function call failed: " + String(func_name));
+		}
+
+		get_stack_value(p_frame, dest) = result;
+		return GDScript2ExecutionResult::make_ok();
+	}
+
+	// If not found in module or builtins, try calling on self object
 	if (p_frame.self.get_type() == Variant::OBJECT) {
 		Object *obj = p_frame.self.get_validated_object();
 		if (obj) {
@@ -1210,10 +1256,13 @@ GDScript2ExecutionResult GDScript2VM::exec_call_self(GDScript2CallFrame &p_frame
 			}
 
 			get_stack_value(p_frame, dest) = result;
+			return GDScript2ExecutionResult::make_ok();
 		}
 	}
 
-	return GDScript2ExecutionResult::make_ok();
+	// Function not found anywhere
+	return GDScript2ExecutionResult::make_error(GDScript2ExecutionResult::ERROR_RUNTIME,
+			"Function not found: " + String(func_name));
 }
 
 // ============================================================================

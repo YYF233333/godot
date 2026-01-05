@@ -320,25 +320,31 @@ void test_tokenizer_power_operator() {
 
 } // namespace
 
-// Register all tests
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-empty", &test_tokenizer_empty);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-identifier", &test_tokenizer_identifier);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-keywords", &test_tokenizer_keywords);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-integers", &test_tokenizer_integers);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-hex-binary", &test_tokenizer_hex_binary);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-floats", &test_tokenizer_floats);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-strings", &test_tokenizer_strings);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-operators", &test_tokenizer_operators);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-punctuation", &test_tokenizer_punctuation);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-indentation", &test_tokenizer_indentation);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-newlines", &test_tokenizer_newlines);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-comments", &test_tokenizer_comments);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-booleans", &test_tokenizer_booleans);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-constants", &test_tokenizer_constants);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-assignment-ops", &test_tokenizer_assignment_ops);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-annotation", &test_tokenizer_annotation);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-underscore-numbers", &test_tokenizer_underscore_numbers);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-multiline-string", &test_tokenizer_multiline_string);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-string-escapes", &test_tokenizer_string_escapes);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-line-tracking", &test_tokenizer_line_tracking);
-REGISTER_TEST_COMMAND("gdscript2-tokenizer-power-operator", &test_tokenizer_power_operator);
+// Main test function that calls all tokenizer tests
+namespace GDScript2Tests {
+
+void test_tokenizer() {
+	test_tokenizer_empty();
+	test_tokenizer_identifier();
+	test_tokenizer_keywords();
+	test_tokenizer_integers();
+	test_tokenizer_hex_binary();
+	test_tokenizer_floats();
+	test_tokenizer_strings();
+	test_tokenizer_operators();
+	test_tokenizer_punctuation();
+	test_tokenizer_indentation();
+	test_tokenizer_newlines();
+	test_tokenizer_comments();
+	test_tokenizer_booleans();
+	test_tokenizer_constants();
+	test_tokenizer_assignment_ops();
+	test_tokenizer_annotation();
+	test_tokenizer_underscore_numbers();
+	test_tokenizer_multiline_string();
+	test_tokenizer_string_escapes();
+	test_tokenizer_line_tracking();
+	test_tokenizer_power_operator();
+}
+
+} // namespace GDScript2Tests
