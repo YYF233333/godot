@@ -96,16 +96,35 @@
 - `GDScript2StrengthReductionPass` - **强度削减**（x*2 → x+x, x*4 → x<<2）
 - `add_standard_passes()` - 标准优化流水线
 
-### M4 代码生成（已完成 - stub）
+### M4 代码生成（✅ 已完成）
 
 **文件：**
-- `codegen/gdscript2_codegen.h/.cpp` - 字节码生成器
+- `codegen/gdscript2_codegen.h/.cpp` - **完整字节码生成器**
+
+**字节码操作码（68 种）：**
+- 特殊操作（NOP, END）
+- 常量加载（LOAD_CONST, LOAD_NIL, LOAD_TRUE, LOAD_FALSE, LOAD_SMALL_INT）
+- 变量操作（LOAD/STORE_LOCAL, LOAD/STORE_MEMBER, LOAD/STORE_GLOBAL, LOAD_SELF）
+- 算术运算（ADD, SUB, MUL, DIV, MOD, POW, NEG, POS）
+- 位运算（BIT_AND, BIT_OR, BIT_XOR, BIT_NOT, BIT_LSH, BIT_RSH）
+- 比较运算（EQ, NE, LT, LE, GT, GE）
+- 逻辑运算（NOT）
+- 类型操作（IS, AS, TYPEOF, IN）
+- 容器操作（CONSTRUCT_ARRAY, CONSTRUCT_DICT, GET/SET_INDEX, GET/SET_NAMED）
+- 控制流（JUMP, JUMP_IF, JUMP_IF_NOT）
+- 函数调用（CALL, CALL_METHOD, CALL_BUILTIN, CALL_SUPER, CALL_SELF）
+- 返回（RETURN, RETURN_VOID）
+- 迭代器（ITER_BEGIN, ITER_NEXT, ITER_GET, JUMP_IF_ITER_END）
+- 特殊构造（AWAIT, YIELD, PRELOAD, GET_NODE, LAMBDA）
+- 其他（COPY, ASSERT, BREAKPOINT, LINE）
 
 **功能：**
-- 字节码操作码定义
-- 字节码指令结构
-- 编译函数/模块结构
-- 从 IR 生成字节码的占位实现
+- 完整 IR 到字节码转换
+- 跳转目标修补机制（基本块 ID → 线性地址）
+- 常量池管理
+- 名称池管理
+- 调试信息支持（行号映射）
+- 反汇编输出
 
 ### M5 虚拟机（已完成 - stub）
 
@@ -125,7 +144,7 @@
 - `tests/test_gdscript2_parser.cpp` - **Parser 测试（23 个）**
 - `tests/test_gdscript2_semantic.cpp` - **语义测试（35 个）**
 - `tests/test_gdscript2_ir.cpp` - **IR 测试（21 个）**
-- `tests/test_gdscript2_codegen.cpp` - Codegen 测试
+- `tests/test_gdscript2_codegen.cpp` - **Codegen 测试（17 个）**
 - `tests/test_gdscript2_vm.cpp` - VM 测试
 
 **IR 测试命令：**
@@ -150,6 +169,25 @@
 - `gdscript2-ir-pass-strength-reduction` - 强度削减测试
 - `gdscript2-ir-pass-manager` - Pass 管理器测试
 - `gdscript2-ir-to-string` - IR 输出测试
+
+**Codegen 测试命令：**
+- `gdscript2-codegen-empty` - 空脚本编译
+- `gdscript2-codegen-simple-function` - 简单函数编译
+- `gdscript2-codegen-return-value` - 返回值编译
+- `gdscript2-codegen-constants` - 常量编译
+- `gdscript2-codegen-if-statement` - if 语句编译
+- `gdscript2-codegen-while-loop` - while 循环编译
+- `gdscript2-codegen-for-loop` - for 循环编译
+- `gdscript2-codegen-function-call` - 函数调用编译
+- `gdscript2-codegen-array-operations` - 数组操作编译
+- `gdscript2-codegen-dictionary` - 字典编译
+- `gdscript2-codegen-binary-operators` - 二元运算符编译
+- `gdscript2-codegen-comparison-operators` - 比较运算符编译
+- `gdscript2-codegen-unary-operators` - 一元运算符编译
+- `gdscript2-codegen-bitwise-operators` - 位运算符编译
+- `gdscript2-codegen-disassemble` - 反汇编测试
+- `gdscript2-codegen-jump-patching` - 跳转修补测试
+- `gdscript2-codegen-line-info` - 行号信息测试
 
 ### 语言注册
 
@@ -198,7 +236,7 @@
     │
     ▼
 ┌─────────────┐
-│  Codegen    │  codegen/gdscript2_codegen.h (stub)
+│  Codegen    │  codegen/gdscript2_codegen.h ✅ 已完成
 └─────────────┘
     │
     ▼
@@ -216,14 +254,7 @@
 
 ### 高优先级
 
-1. **M4 Codegen 完善**
-   - 完整指令集生成
-   - 从 IR 生成字节码
-   - 跳转目标修补
-   - 常量池管理
-   - 调试信息生成
-
-2. **M5 VM 完善**
+1. **M5 VM 完善**
    - 完整指令集解释
    - 内建函数调用
    - 对象/类实例化
@@ -338,6 +369,6 @@ modules/gdscript2/
 
 ## 下次对话建议
 
-1. **完善 Codegen** - 从 IR 生成字节码
-2. **完善 VM** - 实现完整指令集解释执行
-3. 或添加 Tools/LSP 支持
+1. **完善 VM** - 实现完整指令集解释执行（与 Codegen 的字节码格式对应）
+2. 或添加 Tools/LSP 支持
+3. 或完善 Runtime - Godot 对象桥接、内建函数
