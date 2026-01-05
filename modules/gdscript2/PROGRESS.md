@@ -12,15 +12,31 @@
 - 添加构建文件：`SCsub`, `config.py`, `register_types.h/.cpp`
 - 模块可被 SCons 识别并编译链接
 
-### M1 前端（已完成 - stub）
+### M1 前端（Tokenizer 已完成，Parser stub）
 
 **文件：**
-- `front/gdscript2_token.h` - Token 类型与结构体
+- `front/gdscript2_token.h` - 完整 Token 类型枚举与结构体
+- `front/gdscript2_tokenizer.h/.cpp` - **完整词法分析器实现**
 - `front/gdscript2_ast.h` - AST 节点枚举与结构
 - `front/gdscript2_parser.h/.cpp` - 解析器接口与占位实现
 
-**功能：**
-- Token 定义（关键字、运算符、字面量等）
+**Tokenizer 功能（已完成）：**
+- 完整的 Token 类型定义（90+ 种 token）
+- 关键字识别（if, else, func, var, class, return 等 40+ 关键字）
+- 运算符扫描（算术、比较、逻辑、位运算、赋值等）
+- 数字字面量（整数、浮点、十六进制 0x、二进制 0b、下划线分隔 1_000）
+- 字符串字面量（单引号、双引号、多行字符串、转义序列、原始字符串 r""）
+- 特殊字符串（StringName &""、NodePath ^""）
+- 缩进处理（INDENT/DEDENT token，Python 风格）
+- 注释跳过与保存（TOOLS_ENABLED 时保存注释内容）
+- 行继续符（\\ 换行）
+- 括号匹配检测
+- VCS 冲突标记检测
+- Unicode 标识符支持
+- 光标位置追踪（IDE 集成）
+- 完整的错误报告
+
+**Parser 功能（stub）：**
 - AST 节点类型（表达式、语句、声明）
 - Parser 返回空块根节点的 stub
 
@@ -75,6 +91,7 @@
 
 **文件：**
 - `tests/test_gdscript2_front.cpp` - 前端测试
+- `tests/test_gdscript2_tokenizer.cpp` - **Tokenizer 测试（21 个测试用例）**
 - `tests/test_gdscript2_semantic.cpp` - 语义测试
 - `tests/test_gdscript2_ir.cpp` - IR 测试
 - `tests/test_gdscript2_codegen.cpp` - Codegen 测试
@@ -82,6 +99,27 @@
 
 **注册的测试命令：**
 - `gdscript2-front-minimal`
+- `gdscript2-tokenizer-empty` - 空源码测试
+- `gdscript2-tokenizer-identifier` - 标识符测试
+- `gdscript2-tokenizer-keywords` - 关键字测试
+- `gdscript2-tokenizer-integers` - 整数测试
+- `gdscript2-tokenizer-hex-binary` - 十六进制/二进制测试
+- `gdscript2-tokenizer-floats` - 浮点数测试
+- `gdscript2-tokenizer-strings` - 字符串测试
+- `gdscript2-tokenizer-operators` - 运算符测试
+- `gdscript2-tokenizer-punctuation` - 标点符号测试
+- `gdscript2-tokenizer-indentation` - 缩进测试
+- `gdscript2-tokenizer-newlines` - 换行测试
+- `gdscript2-tokenizer-comments` - 注释测试
+- `gdscript2-tokenizer-booleans` - 布尔值测试
+- `gdscript2-tokenizer-constants` - 常量测试
+- `gdscript2-tokenizer-assignment-ops` - 赋值运算符测试
+- `gdscript2-tokenizer-annotation` - 注解测试
+- `gdscript2-tokenizer-underscore-numbers` - 下划线数字测试
+- `gdscript2-tokenizer-multiline-string` - 多行字符串测试
+- `gdscript2-tokenizer-string-escapes` - 字符串转义测试
+- `gdscript2-tokenizer-line-tracking` - 行号追踪测试
+- `gdscript2-tokenizer-power-operator` - 幂运算符测试
 - `gdscript2-semantic-minimal`
 - `gdscript2-ir-build`
 - `gdscript2-ir-passes`
@@ -106,12 +144,12 @@
     │
     ▼
 ┌─────────────┐
-│   Tokenizer │  (待实现)
+│   Tokenizer │  front/gdscript2_tokenizer.h ✅ 已完成
 └─────────────┘
     │
     ▼
 ┌─────────────┐
-│   Parser    │  front/gdscript2_parser.h
+│   Parser    │  front/gdscript2_parser.h (stub)
 └─────────────┘
     │
     ▼
@@ -159,7 +197,7 @@
 ### 高优先级
 
 1. **M1 前端真实实现**
-   - 实现完整 Tokenizer（参考 `modules/gdscript/gdscript_tokenizer.cpp`）
+   - ~~实现完整 Tokenizer~~ ✅ 已完成
    - 实现完整 Parser（支持所有 GDScript 语法）
    - 完善 AST 节点类型（类、函数、变量、表达式等）
 
@@ -242,6 +280,8 @@ modules/gdscript2/
 │   └── main_plan.md
 ├── front/
 │   ├── gdscript2_token.h
+│   ├── gdscript2_tokenizer.h
+│   ├── gdscript2_tokenizer.cpp
 │   ├── gdscript2_ast.h
 │   ├── gdscript2_parser.h
 │   └── gdscript2_parser.cpp
@@ -267,6 +307,7 @@ modules/gdscript2/
 ├── compat/
 └── tests/
     ├── test_gdscript2_front.cpp
+    ├── test_gdscript2_tokenizer.cpp
     ├── test_gdscript2_semantic.cpp
     ├── test_gdscript2_ir.cpp
     ├── test_gdscript2_codegen.cpp
@@ -286,6 +327,7 @@ modules/gdscript2/
 
 ## 下次对话建议
 
-1. 继续实现 Tokenizer（可直接复用或参考现有实现）
-2. 或选择某一层深入完善（如 IR 优化 pass）
-3. 或添加 Tools/LSP 支持
+1. **实现 Parser** - 使用已完成的 Tokenizer，实现递归下降解析器
+2. 或完善 AST 节点类型，支持完整 GDScript 语法
+3. 或选择其他层深入完善（如 IR 优化 pass、语义分析）
+4. 或添加 Tools/LSP 支持
