@@ -137,6 +137,15 @@ enum class GDScript2Opcode : uint32_t {
 	// Special constructs
 	OP_AWAIT, // dest = await signal/coroutine
 	OP_YIELD, // yield from coroutine
+
+	// Signal operations
+	OP_SIGNAL_DEFINE, // Define signal: name_idx
+	OP_SIGNAL_CONNECT, // dest = signal_reg.connect(callable_reg, flags)
+	OP_SIGNAL_DISCONNECT, // signal_reg.disconnect(callable_reg)
+	OP_SIGNAL_EMIT, // signal_reg.emit(arg1, arg2, ...)
+	OP_SIGNAL_IS_CONNECTED, // dest = signal_reg.is_connected(callable_reg)
+	OP_MAKE_SIGNAL, // dest = Signal(object_reg, name_idx)
+
 	OP_PRELOAD, // dest = preload(path)
 	OP_GET_NODE, // dest = get_node(path) ($path)
 	OP_LAMBDA, // dest = create lambda with captures

@@ -234,6 +234,14 @@ private:
 	bool exec_assert(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr, GDScript2ExecutionResult &r_result);
 	void exec_breakpoint(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr);
 
+	// Signal operations
+	void exec_signal_define(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr);
+	void exec_signal_connect(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr, GDScript2ExecutionResult &r_result);
+	void exec_signal_disconnect(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr);
+	void exec_signal_emit(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr, GDScript2ExecutionResult &r_result);
+	void exec_signal_is_connected(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr);
+	void exec_make_signal(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr, GDScript2ExecutionResult &r_result);
+
 	// Internal call implementation
 	GDScript2ExecutionResult call_internal(const GDScript2CompiledFunction *p_func, const Vector<Variant> &p_args, const Variant &p_self = Variant());
 

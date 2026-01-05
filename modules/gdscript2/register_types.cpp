@@ -32,6 +32,7 @@
 
 #include "gdscript2_language.h"
 #include "runtime/gdscript2_builtin.h"
+#include "runtime/gdscript2_signal.h"
 #include "vm/gdscript2_coroutine.h"
 
 #include "core/io/resource_loader.h"
@@ -50,6 +51,10 @@ void initialize_gdscript2_module(ModuleInitializationLevel p_level) {
 	// Register coroutine classes
 	GDREGISTER_CLASS(GDScript2Coroutine);
 	GDREGISTER_CLASS(GDScript2CoroutineManager);
+
+	// Register signal classes
+	GDREGISTER_CLASS(GDScript2SignalRegistry);
+	GDREGISTER_CLASS(GDScript2SignalEmitter);
 
 	// Initialize builtin functions registry
 	GDScript2BuiltinRegistry::initialize();

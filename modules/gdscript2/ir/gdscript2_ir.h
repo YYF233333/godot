@@ -134,6 +134,15 @@ enum class GDScript2IROp {
 	// Special constructs
 	OP_AWAIT, // dest = await signal/coroutine
 	OP_YIELD, // yield from coroutine
+
+	// Signal operations
+	OP_SIGNAL_DEFINE, // Define a signal: signal_name
+	OP_SIGNAL_CONNECT, // Connect signal: dest = signal.connect(callable, flags)
+	OP_SIGNAL_DISCONNECT, // Disconnect signal: signal.disconnect(callable)
+	OP_SIGNAL_EMIT, // Emit signal: signal.emit(args...)
+	OP_SIGNAL_IS_CONNECTED, // dest = signal.is_connected(callable)
+	OP_MAKE_SIGNAL, // dest = Signal(object, signal_name)
+
 	OP_PRELOAD, // dest = preload(path)
 	OP_GET_NODE, // dest = get_node(path) ($path)
 	OP_LAMBDA, // dest = lambda_id (captures)

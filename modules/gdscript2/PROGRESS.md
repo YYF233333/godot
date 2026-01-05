@@ -283,14 +283,15 @@
 | M1 前端 | ✅ 100% | Tokenizer, Parser, AST（40+ 节点类型）|
 | M2 语义分析 | ✅ 100% | 类型系统、符号表、诊断（50+ 错误码）|
 | M3 IR | ✅ 100% | IR 数据结构、Builder、优化 Pass（5 种）|
-| M4 Codegen | ✅ 100% | 字节码生成（68 种操作码）|
+| M4 Codegen | ✅ 100% | 字节码生成（74 种操作码）|
 | M5 VM | ✅ 100% | 完整解释执行、迭代器、调试支持 |
 | M6 协程/Await | ✅ 100% | 协程系统、信号等待、状态管理 |
-| Runtime | ✅ 80% | 内建函数（40+）、Variant 工具 |
+| M7 信号系统 | ✅ 100% | 信号定义、连接、触发、管理 |
+| Runtime | ✅ 90% | 内建函数（40+）、Variant 工具、信号 |
 | Tools/LSP | ⏳ 0% | 语言服务器协议（待实现）|
 | Compat | ⏳ 0% | 兼容层（待实现）|
 
-**测试用例总计：** 176+ 个
+**测试用例总计：** 193+ 个
 - Tokenizer: 21 个
 - Parser: 23 个
 - Semantic: 35 个
@@ -299,6 +300,7 @@
 - VM: 30 个
 - Runtime: 19 个
 - Coroutine: 15 个
+- Signal: 17 个
 
 ## 当前架构
 
@@ -394,11 +396,58 @@
 - 字节码中的 await 操作
 - VM 协程集成
 
+### M7 信号系统（✅ 已完成）
+
+**文件：**
+- `runtime/gdscript2_signal.h/.cpp` - **完整信号系统实现**
+
+**核心组件：**
+- `GDScript2SignalDefinition` - 信号定义（名称、参数）
+- `GDScript2SignalConnection` - 信号连接信息
+- `GDScript2SignalRegistry` - 信号注册表（定义、连接管理）
+- `GDScript2SignalEmitter` - 信号发射器基类
+- `GDScript2SignalUtils` - 信号工具函数
+
+**功能：**
+- 信号定义（带参数类型）
+- 信号连接/断开（支持多个连接）
+- 信号触发（emit，带参数）
+- 连接状态查询
+- 自动清理无效连接
+- 支持 CONNECT_ONE_SHOT 等标志
+
+**IR/字节码操作（6 种）：**
+- `OP_SIGNAL_DEFINE` - 定义信号
+- `OP_SIGNAL_CONNECT` - 连接信号
+- `OP_SIGNAL_DISCONNECT` - 断开信号
+- `OP_SIGNAL_EMIT` - 触发信号
+- `OP_SIGNAL_IS_CONNECTED` - 查询连接状态
+- `OP_MAKE_SIGNAL` - 创建 Signal 对象
+
+**VM 集成：**
+- `exec_signal_define()` - 信号定义执行
+- `exec_signal_connect()` - 信号连接执行
+- `exec_signal_disconnect()` - 信号断开执行
+- `exec_signal_emit()` - 信号触发执行
+- `exec_signal_is_connected()` - 连接查询执行
+- `exec_make_signal()` - Signal 对象创建
+
+**测试用例（17 个）：**
+- 信号注册表创建
+- 信号定义（带/不带参数）
+- 信号连接与断开
+- 多个连接管理
+- 信号触发（带/不带参数）
+- SignalEmitter 功能
+- 工具函数（make_signal, is_signal, safe_connect/disconnect）
+- 连接列表查询
+- 清理功能
+
 ### 高优先级
 
-1. **信号/RPC 支持**
-   - 信号连接与触发
+1. **RPC 支持**
    - RPC 调用
+   - RPC 模式（server、client、sync）
 
 ### 中优先级
 
@@ -517,7 +566,9 @@ modules/gdscript2/
 │   ├── gdscript2_builtin.h
 │   ├── gdscript2_builtin.cpp
 │   ├── gdscript2_variant_utils.h
-│   └── gdscript2_variant_utils.cpp
+│   ├── gdscript2_variant_utils.cpp
+│   ├── gdscript2_signal.h
+│   └── gdscript2_signal.cpp
 ├── tools/
 ├── compat/
 └── tests/
@@ -529,7 +580,8 @@ modules/gdscript2/
     ├── test_gdscript2_codegen.cpp
     ├── test_gdscript2_vm.cpp
     ├── test_gdscript2_runtime.cpp
-    └── test_gdscript2_coroutine.cpp
+    ├── test_gdscript2_coroutine.cpp
+    └── test_gdscript2_signal.cpp
 ```
 
 ## 参考文件
@@ -545,8 +597,8 @@ modules/gdscript2/
 
 ## 下次对话建议
 
-1. 添加 **信号系统支持** - 信号定义、连接、触发、RPC
+1. 添加 **高级特性** - Lambda 闭包、Preload、GetNode 等
 2. 添加 **Tools/LSP 支持** - 代码补全、跳转定义、符号索引
 3. 或添加 **Compat 兼容层** - 与旧 GDScript 的兼容
 4. 或完善 **测试覆盖率** - 更全面的集成测试
-5. 或添加 **高级特性** - Lambda 闭包、Preload、GetNode 等
+5. 或添加 **RPC 支持** - RPC 调用、模式管理

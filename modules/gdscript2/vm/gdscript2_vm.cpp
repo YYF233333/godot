@@ -32,6 +32,7 @@
 
 #include "core/variant/variant_utility.h"
 #include "modules/gdscript2/runtime/gdscript2_builtin.h"
+#include "modules/gdscript2/runtime/gdscript2_signal.h"
 #include "modules/gdscript2/runtime/gdscript2_variant_utils.h"
 #include "modules/gdscript2/vm/gdscript2_coroutine.h"
 
@@ -295,6 +296,170 @@ void GDScript2VM::reset() {
 	if (coroutine_manager) {
 		coroutine_manager->cancel_all();
 	}
+}
+
+// ============================================================================
+// Signal Operations
+// ============================================================================
+
+void GDScript2VM::exec_signal_define(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr) {
+	// Get signal name from name pool
+	int32_t name_idx = get_operand(p_instr, 0);
+	const StringName &signal_name = get_name(p_frame, name_idx);
+
+	// Get self object
+	if (p_frame.self.get_type() != Variant::OBJECT) {
+		ERR_PRINT("Cannot define signal on non-object.");
+		return;
+	}
+
+	Object *obj = p_frame.self;
+	if (!obj) {
+		ERR_PRINT("Self is null.");
+		return;
+	}
+
+	// Add user signal if not already defined
+	if (!obj->has_signal(signal_name)) {
+		obj->add_user_signal(MethodInfo(signal_name));
+	}
+}
+
+void GDScript2VM::exec_signal_connect(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr, GDScript2ExecutionResult &r_result) {
+	int32_t dest = get_operand(p_instr, 0);
+	int32_t signal_reg = get_operand(p_instr, 1);
+	int32_t callable_reg = get_operand(p_instr, 2);
+	int32_t flags = (p_instr.operand_count >= 4) ? get_operand(p_instr, 3) : 0;
+
+	Variant signal_var = get_stack_value(p_frame, signal_reg);
+	Variant callable_var = get_stack_value(p_frame, callable_reg);
+
+	if (signal_var.get_type() != Variant::SIGNAL) {
+		r_result = GDScript2ExecutionResult::make_error(
+				GDScript2ExecutionResult::ERROR_TYPE_MISMATCH,
+				"First argument must be a Signal.",
+				p_frame.current_line);
+		return;
+	}
+
+	if (callable_var.get_type() != Variant::CALLABLE) {
+		r_result = GDScript2ExecutionResult::make_error(
+				GDScript2ExecutionResult::ERROR_TYPE_MISMATCH,
+				"Second argument must be a Callable.",
+				p_frame.current_line);
+		return;
+	}
+
+	Signal sig = signal_var;
+	Callable callable = callable_var;
+
+	Error err = GDScript2SignalUtils::safe_connect(sig, callable, flags);
+	get_stack_value(p_frame, dest) = (err == OK);
+}
+
+void GDScript2VM::exec_signal_disconnect(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr) {
+	int32_t signal_reg = get_operand(p_instr, 0);
+	int32_t callable_reg = get_operand(p_instr, 1);
+
+	Variant signal_var = get_stack_value(p_frame, signal_reg);
+	Variant callable_var = get_stack_value(p_frame, callable_reg);
+
+	if (signal_var.get_type() != Variant::SIGNAL) {
+		ERR_PRINT("First argument must be a Signal.");
+		return;
+	}
+
+	if (callable_var.get_type() != Variant::CALLABLE) {
+		ERR_PRINT("Second argument must be a Callable.");
+		return;
+	}
+
+	Signal sig = signal_var;
+	Callable callable = callable_var;
+
+	GDScript2SignalUtils::safe_disconnect(sig, callable);
+}
+
+void GDScript2VM::exec_signal_emit(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr, GDScript2ExecutionResult &r_result) {
+	int32_t signal_reg = get_operand(p_instr, 0);
+	Variant signal_var = get_stack_value(p_frame, signal_reg);
+
+	if (signal_var.get_type() != Variant::SIGNAL) {
+		r_result = GDScript2ExecutionResult::make_error(
+				GDScript2ExecutionResult::ERROR_TYPE_MISMATCH,
+				"First argument must be a Signal.",
+				p_frame.current_line);
+		return;
+	}
+
+	Signal sig = signal_var;
+
+	// Collect arguments
+	Vector<const Variant *> args;
+	for (int i = 1; i < p_instr.operand_count; i++) {
+		int32_t arg_reg = get_operand(p_instr, i);
+		args.push_back(&get_stack_value_const(p_frame, arg_reg));
+	}
+
+	Error err = GDScript2SignalUtils::safe_emit(sig, args.ptr(), args.size());
+	if (err != OK) {
+		r_result = GDScript2ExecutionResult::make_error(
+				GDScript2ExecutionResult::ERROR_RUNTIME,
+				"Failed to emit signal.",
+				p_frame.current_line);
+	}
+}
+
+void GDScript2VM::exec_signal_is_connected(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr) {
+	int32_t dest = get_operand(p_instr, 0);
+	int32_t signal_reg = get_operand(p_instr, 1);
+	int32_t callable_reg = get_operand(p_instr, 2);
+
+	Variant signal_var = get_stack_value(p_frame, signal_reg);
+	Variant callable_var = get_stack_value(p_frame, callable_reg);
+
+	bool connected = false;
+
+	if (signal_var.get_type() == Variant::SIGNAL && callable_var.get_type() == Variant::CALLABLE) {
+		Signal sig = signal_var;
+		Callable callable = callable_var;
+
+		Object *obj = sig.get_object();
+		if (obj) {
+			connected = obj->is_connected(sig.get_name(), callable);
+		}
+	}
+
+	get_stack_value(p_frame, dest) = connected;
+}
+
+void GDScript2VM::exec_make_signal(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr, GDScript2ExecutionResult &r_result) {
+	int32_t dest = get_operand(p_instr, 0);
+	int32_t object_reg = get_operand(p_instr, 1);
+	int32_t name_idx = get_operand(p_instr, 2);
+
+	Variant object_var = get_stack_value(p_frame, object_reg);
+	const StringName &signal_name = get_name(p_frame, name_idx);
+
+	if (object_var.get_type() != Variant::OBJECT) {
+		r_result = GDScript2ExecutionResult::make_error(
+				GDScript2ExecutionResult::ERROR_TYPE_MISMATCH,
+				"First argument must be an Object.",
+				p_frame.current_line);
+		return;
+	}
+
+	Object *obj = object_var;
+	if (!obj) {
+		r_result = GDScript2ExecutionResult::make_error(
+				GDScript2ExecutionResult::ERROR_NULL_REFERENCE,
+				"Object is null.",
+				p_frame.current_line);
+		return;
+	}
+
+	Signal sig = GDScript2SignalUtils::make_signal(obj, signal_name);
+	get_stack_value(p_frame, dest) = sig;
 }
 
 // ============================================================================
@@ -1426,6 +1591,36 @@ bool GDScript2VM::execute_instruction(GDScript2CallFrame &p_frame, GDScript2Exec
 		case GDScript2Opcode::OP_YIELD:
 			r_result.status = GDScript2ExecutionResult::YIELD;
 			return false;
+
+		// Signal operations
+		case GDScript2Opcode::OP_SIGNAL_DEFINE:
+			exec_signal_define(p_frame, instr);
+			break;
+		case GDScript2Opcode::OP_SIGNAL_CONNECT:
+			exec_signal_connect(p_frame, instr, r_result);
+			if (r_result.has_error()) {
+				return false;
+			}
+			break;
+		case GDScript2Opcode::OP_SIGNAL_DISCONNECT:
+			exec_signal_disconnect(p_frame, instr);
+			break;
+		case GDScript2Opcode::OP_SIGNAL_EMIT:
+			exec_signal_emit(p_frame, instr, r_result);
+			if (r_result.has_error()) {
+				return false;
+			}
+			break;
+		case GDScript2Opcode::OP_SIGNAL_IS_CONNECTED:
+			exec_signal_is_connected(p_frame, instr);
+			break;
+		case GDScript2Opcode::OP_MAKE_SIGNAL:
+			exec_make_signal(p_frame, instr, r_result);
+			if (r_result.has_error()) {
+				return false;
+			}
+			break;
+
 		case GDScript2Opcode::OP_PRELOAD:
 			// Preload requires resource loading - simplified for now
 			break;
