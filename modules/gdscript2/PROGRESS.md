@@ -126,16 +126,41 @@
 - 调试信息支持（行号映射）
 - 反汇编输出
 
-### M5 虚拟机（已完成 - stub）
+### M5 虚拟机（✅ 已完成）
 
 **文件：**
-- `vm/gdscript2_vm.h/.cpp` - VM 执行引擎
+- `vm/gdscript2_vm.h/.cpp` - **完整 VM 执行引擎**
+
+**核心结构：**
+- `GDScript2IteratorState` - 迭代器状态（支持 Array、Dictionary、String 等）
+- `GDScript2CallFrame` - 调用帧（栈、IP、self、迭代器）
+- `GDScript2ExecutionResult` - 执行结果（状态、返回值、错误信息）
+- `GDScript2VMDebugger` - 调试钩子接口
+- `GDScript2VM` - 虚拟机主类
+
+**指令执行（68 种操作码）：**
+- 常量加载（LOAD_CONST, LOAD_NIL, LOAD_TRUE, LOAD_FALSE, LOAD_SMALL_INT）
+- 变量操作（LOAD/STORE_LOCAL, LOAD/STORE_MEMBER, LOAD/STORE_GLOBAL, LOAD_SELF）
+- 算术运算（ADD, SUB, MUL, DIV, MOD, POW, NEG, POS）
+- 位运算（BIT_AND, BIT_OR, BIT_XOR, BIT_NOT, BIT_LSH, BIT_RSH）
+- 比较运算（EQ, NE, LT, LE, GT, GE）
+- 逻辑运算（NOT）
+- 类型操作（IS, AS, TYPEOF, IN）
+- 容器操作（CONSTRUCT_ARRAY, CONSTRUCT_DICT, GET/SET_INDEX, GET/SET_NAMED）
+- 控制流（JUMP, JUMP_IF, JUMP_IF_NOT）
+- 函数调用（CALL, CALL_METHOD, CALL_BUILTIN, CALL_SUPER, CALL_SELF）
+- 返回（RETURN, RETURN_VOID）
+- 迭代器（ITER_BEGIN, ITER_NEXT, ITER_GET, JUMP_IF_ITER_END）
+- 其他（COPY, ASSERT, BREAKPOINT）
 
 **功能：**
-- 调用帧管理
-- 执行结果状态
-- 字节码解释器占位
-- 调用栈管理
+- 完整字节码解释执行
+- 调用栈管理（最大深度 1024）
+- 递归函数调用支持
+- 全局变量管理
+- 迭代器支持（for 循环）
+- 调试钩子（行号、断点、断言）
+- 错误处理与报告
 
 ### 测试用例
 
@@ -145,7 +170,7 @@
 - `tests/test_gdscript2_semantic.cpp` - **语义测试（35 个）**
 - `tests/test_gdscript2_ir.cpp` - **IR 测试（21 个）**
 - `tests/test_gdscript2_codegen.cpp` - **Codegen 测试（17 个）**
-- `tests/test_gdscript2_vm.cpp` - VM 测试
+- `tests/test_gdscript2_vm.cpp` - **VM 测试（30 个）**
 
 **IR 测试命令：**
 - `gdscript2-ir-build-empty` - 空脚本构建
@@ -188,6 +213,40 @@
 - `gdscript2-codegen-disassemble` - 反汇编测试
 - `gdscript2-codegen-jump-patching` - 跳转修补测试
 - `gdscript2-codegen-line-info` - 行号信息测试
+
+**VM 测试命令：**
+- `gdscript2-vm-empty` - 空脚本执行
+- `gdscript2-vm-return-constant` - 返回常量
+- `gdscript2-vm-return-string` - 返回字符串
+- `gdscript2-vm-return-nil` - 返回 null
+- `gdscript2-vm-return-bool` - 返回布尔值
+- `gdscript2-vm-arithmetic-add` - 加法运算
+- `gdscript2-vm-arithmetic-sub` - 减法运算
+- `gdscript2-vm-arithmetic-mul` - 乘法运算
+- `gdscript2-vm-arithmetic-div` - 除法运算
+- `gdscript2-vm-arithmetic-mod` - 取模运算
+- `gdscript2-vm-arithmetic-complex` - 复杂算术
+- `gdscript2-vm-comparison-eq` - 相等比较
+- `gdscript2-vm-comparison-lt` - 小于比较
+- `gdscript2-vm-if-statement` - if 语句执行
+- `gdscript2-vm-while-loop` - while 循环执行
+- `gdscript2-vm-nested-if` - 嵌套 if 执行
+- `gdscript2-vm-local-variables` - 局部变量
+- `gdscript2-vm-variable-reassign` - 变量重赋值
+- `gdscript2-vm-array-create` - 数组创建
+- `gdscript2-vm-array-access` - 数组访问
+- `gdscript2-vm-array-modify` - 数组修改
+- `gdscript2-vm-dictionary-create` - 字典创建
+- `gdscript2-vm-dictionary-access` - 字典访问
+- `gdscript2-vm-function-call` - 函数调用
+- `gdscript2-vm-recursive-function` - 递归函数
+- `gdscript2-vm-fibonacci` - 斐波那契
+- `gdscript2-vm-unary-neg` - 一元负号
+- `gdscript2-vm-unary-not` - 一元 not
+- `gdscript2-vm-globals` - 全局变量
+- `gdscript2-vm-function-not-found` - 函数未找到错误
+- `gdscript2-vm-no-module` - 无模块错误
+- `gdscript2-vm-string-concat` - 字符串连接
 
 ### 语言注册
 
@@ -246,7 +305,7 @@
     │
     ▼
 ┌─────────────┐
-│     VM      │  vm/gdscript2_vm.h (stub)
+│     VM      │  vm/gdscript2_vm.h ✅ 已完成
 └─────────────┘
 ```
 
@@ -254,12 +313,11 @@
 
 ### 高优先级
 
-1. **M5 VM 完善**
-   - 完整指令集解释
-   - 内建函数调用
-   - 对象/类实例化
-   - 协程/await 支持
-   - 调试 hook
+1. **Runtime 运行时完善**
+   - Godot 对象桥接
+   - 完整内建函数支持
+   - 信号/RPC 支持
+   - 协程/await 完整支持
 
 ### 中优先级
 
@@ -369,6 +427,6 @@ modules/gdscript2/
 
 ## 下次对话建议
 
-1. **完善 VM** - 实现完整指令集解释执行（与 Codegen 的字节码格式对应）
-2. 或添加 Tools/LSP 支持
-3. 或完善 Runtime - Godot 对象桥接、内建函数
+1. **完善 Runtime** - Godot 对象桥接、完整内建函数支持
+2. 添加 **Tools/LSP 支持** - 代码补全、跳转定义
+3. 或添加 **Compat 兼容层** - 与旧 GDScript 的兼容
