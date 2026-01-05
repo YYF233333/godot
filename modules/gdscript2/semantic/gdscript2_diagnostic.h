@@ -31,6 +31,8 @@
 #pragma once
 
 #include "core/string/ustring.h"
+#include "core/templates/hash_map.h"
+#include "core/templates/list.h"
 #include "core/templates/local_vector.h"
 
 // Forward declaration
@@ -103,7 +105,7 @@ enum class GDScript2DiagnosticCode {
 	WARN_UNSAFE_PROPERTY_ACCESS = 6007,
 	WARN_UNSAFE_METHOD_ACCESS = 6008,
 	WARN_UNSAFE_CAST = 6009,
-	WARN_DEPRECATED = 6010,
+	WARN_DEPRECATED_ = 6010,
 	WARN_UNREACHABLE_PATTERN = 6011,
 	WARN_REDUNDANT_AWAIT = 6012,
 	WARN_EMPTY_PATTERN = 6013,
