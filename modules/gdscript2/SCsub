@@ -6,8 +6,16 @@ Import("env_modules")
 
 env_gdscript2 = env_modules.Clone()
 
-# Core sources for gdscript2.
+# Core sources for gdscript2 (non-recursive glob by dir).
 env_gdscript2.add_source_files(env.modules_sources, "*.cpp")
+env_gdscript2.add_source_files(env.modules_sources, "./front/*.cpp")
+env_gdscript2.add_source_files(env.modules_sources, "./semantic/*.cpp")
+env_gdscript2.add_source_files(env.modules_sources, "./ir/*.cpp")
+env_gdscript2.add_source_files(env.modules_sources, "./codegen/*.cpp")
+env_gdscript2.add_source_files(env.modules_sources, "./vm/*.cpp")
+env_gdscript2.add_source_files(env.modules_sources, "./runtime/*.cpp")
+env_gdscript2.add_source_files(env.modules_sources, "./tools/*.cpp")
+env_gdscript2.add_source_files(env.modules_sources, "./compat/*.cpp")
 
 # Tests will be added incrementally; keep the toggle in place.
 if env["tests"]:
