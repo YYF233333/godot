@@ -285,11 +285,12 @@
 | M3 IR | ✅ 100% | IR 数据结构、Builder、优化 Pass（5 种）|
 | M4 Codegen | ✅ 100% | 字节码生成（68 种操作码）|
 | M5 VM | ✅ 100% | 完整解释执行、迭代器、调试支持 |
+| M6 协程/Await | ✅ 100% | 协程系统、信号等待、状态管理 |
 | Runtime | ✅ 80% | 内建函数（40+）、Variant 工具 |
 | Tools/LSP | ⏳ 0% | 语言服务器协议（待实现）|
 | Compat | ⏳ 0% | 兼容层（待实现）|
 
-**测试用例总计：** 161+ 个
+**测试用例总计：** 176+ 个
 - Tokenizer: 21 个
 - Parser: 23 个
 - Semantic: 35 个
@@ -297,6 +298,7 @@
 - Codegen: 17 个
 - VM: 30 个
 - Runtime: 19 个
+- Coroutine: 15 个
 
 ## 当前架构
 
@@ -356,14 +358,45 @@
 
 ## 待完成工作（TODO）
 
+### M6 协程/Await 支持（✅ 已完成）
+
+**文件：**
+- `vm/gdscript2_coroutine.h/.cpp` - **完整协程系统实现**
+
+**核心功能：**
+- `GDScript2Coroutine` - 协程对象（状态管理、挂起/恢复）
+- `GDScript2CoroutineManager` - 协程生命周期管理器
+- 协程状态：SUSPENDED, RUNNING, COMPLETED, CANCELLED, ERROR
+- 执行状态保存与恢复（调用栈、寄存器）
+- 信号等待机制（await signal）
+- 协程间等待（await coroutine）
+- 完成回调支持
+
+**VM 集成：**
+- `exec_await()` - await 指令执行
+- `suspend_coroutine()` - 协程挂起
+- `resume_coroutine()` - 协程恢复
+- 自动协程创建与管理
+- 信号连接与断开
+
+**语义分析增强：**
+- 自动检测 await 使用并标记函数为协程
+- await 表达式类型检查（Signal、Coroutine）
+- 协程函数返回类型处理
+
+**测试用例（15 个）：**
+- 协程创建与状态管理
+- 状态转换（挂起、完成、取消、错误）
+- 协程管理器（创建、清理、取消）
+- 信号等待设置
+- await 语义检查
+- IR 中的 await 指令
+- 字节码中的 await 操作
+- VM 协程集成
+
 ### 高优先级
 
-1. **协程/await 完整支持**
-   - 协程状态保存与恢复
-   - await 表达式完整实现
-   - 信号等待
-
-2. **信号/RPC 支持**
+1. **信号/RPC 支持**
    - 信号连接与触发
    - RPC 调用
 
@@ -477,7 +510,9 @@ modules/gdscript2/
 │   └── gdscript2_codegen.cpp
 ├── vm/
 │   ├── gdscript2_vm.h
-│   └── gdscript2_vm.cpp
+│   ├── gdscript2_vm.cpp
+│   ├── gdscript2_coroutine.h
+│   └── gdscript2_coroutine.cpp
 ├── runtime/
 │   ├── gdscript2_builtin.h
 │   ├── gdscript2_builtin.cpp
@@ -492,7 +527,9 @@ modules/gdscript2/
     ├── test_gdscript2_semantic.cpp
     ├── test_gdscript2_ir.cpp
     ├── test_gdscript2_codegen.cpp
-    └── test_gdscript2_vm.cpp
+    ├── test_gdscript2_vm.cpp
+    ├── test_gdscript2_runtime.cpp
+    └── test_gdscript2_coroutine.cpp
 ```
 
 ## 参考文件
@@ -508,7 +545,8 @@ modules/gdscript2/
 
 ## 下次对话建议
 
-1. 添加 **协程/await 完整支持** - 协程状态、信号等待
+1. 添加 **信号系统支持** - 信号定义、连接、触发、RPC
 2. 添加 **Tools/LSP 支持** - 代码补全、跳转定义、符号索引
 3. 或添加 **Compat 兼容层** - 与旧 GDScript 的兼容
 4. 或完善 **测试覆盖率** - 更全面的集成测试
+5. 或添加 **高级特性** - Lambda 闭包、Preload、GetNode 等

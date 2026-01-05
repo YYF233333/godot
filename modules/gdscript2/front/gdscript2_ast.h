@@ -690,6 +690,7 @@ struct GDScript2FunctionNode : public GDScript2ASTNode {
 	GDScript2SuiteNode *body = nullptr;
 	LocalVector<GDScript2AnnotationNode *> annotations;
 	bool is_static = false;
+	bool is_coroutine = false; // async function
 
 	GDScript2FunctionNode() { type = GDScript2ASTNodeType::NODE_FUNCTION; }
 	~GDScript2FunctionNode() {

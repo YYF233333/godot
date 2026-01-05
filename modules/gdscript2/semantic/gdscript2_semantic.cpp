@@ -303,6 +303,13 @@ void GDScript2SemanticAnalyzer::analyze_function_body(GDScript2FunctionNode *p_f
 		expected_return_type = GDScript2Type::make_variant();
 	}
 
+	// For coroutine functions, the actual return type is wrapped in a coroutine
+	// But internally we still check against the declared return type
+	if (p_func->is_coroutine) {
+		// Coroutine functions implicitly return GDScript2Coroutine objects
+		// The declared return type is what the coroutine will eventually yield
+	}
+
 	result->symbol_table->enter_function(p_func);
 
 	// Register parameters as local variables
@@ -1211,17 +1218,36 @@ GDScript2Type GDScript2SemanticAnalyzer::analyze_await(GDScript2AwaitNode *p_awa
 	if (!current_function) {
 		push_error(GDScript2DiagnosticCode::ERR_AWAIT_OUTSIDE_FUNCTION,
 				"Await can only be used inside a function.", p_await);
+		return GDScript2Type::make_unknown();
+	}
+
+	// Mark the current function as a coroutine if it uses await
+	if (current_function) {
+		current_function->is_coroutine = true;
 	}
 
 	GDScript2Type expr_type = analyze_expression(p_await->expression);
 
-	// await on Signal returns Variant
+	// await on Signal returns Variant (signal arguments)
 	if (expr_type.kind == GDScript2TypeKind::TYPE_SIGNAL) {
 		return GDScript2Type::make_variant();
 	}
 
-	// await on coroutine returns its return type
-	return expr_type;
+	// await on coroutine (GDScript2Coroutine) returns its eventual value
+	// For now, we return Variant since we don't track coroutine return types yet
+	// TODO: Track coroutine return types in type system
+	if (expr_type.kind == GDScript2TypeKind::TYPE_OBJECT) {
+		// Could be a coroutine object
+		return GDScript2Type::make_variant();
+	}
+
+	// Invalid await target
+	push_warning(GDScript2DiagnosticCode::WARN_UNREACHABLE_CODE,
+			vformat("Awaiting value of type '%s' may not work as expected. Expected Signal or Coroutine.",
+					expr_type.to_string()),
+			p_await);
+
+	return GDScript2Type::make_variant();
 }
 
 GDScript2Type GDScript2SemanticAnalyzer::analyze_preload(GDScript2PreloadNode *p_preload) {

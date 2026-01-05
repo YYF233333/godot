@@ -34,6 +34,10 @@
 #include "core/variant/variant.h"
 #include "modules/gdscript2/codegen/gdscript2_codegen.h"
 
+// Forward declarations
+class GDScript2Coroutine;
+class GDScript2CoroutineManager;
+
 // ============================================================================
 // Iterator State (for for-loops)
 // ============================================================================
@@ -165,6 +169,10 @@ private:
 	// Debug hook
 	GDScript2VMDebugger *debugger = nullptr;
 
+	// Coroutine management
+	GDScript2CoroutineManager *coroutine_manager = nullptr;
+	GDScript2Coroutine *current_coroutine = nullptr; // Currently executing coroutine (if any)
+
 	// Execution helpers
 	bool execute_instruction(GDScript2CallFrame &p_frame, GDScript2ExecutionResult &r_result);
 	const GDScript2CompiledFunction *find_function(const StringName &p_name) const;
@@ -229,6 +237,10 @@ private:
 	// Internal call implementation
 	GDScript2ExecutionResult call_internal(const GDScript2CompiledFunction *p_func, const Vector<Variant> &p_args, const Variant &p_self = Variant());
 
+	// Coroutine helpers
+	void exec_await(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr, GDScript2ExecutionResult &r_result);
+	GDScript2Coroutine *suspend_coroutine(const Variant &p_await_target);
+
 protected:
 	static void _bind_methods() {}
 
@@ -259,4 +271,14 @@ public:
 
 	// Reset VM state
 	void reset();
+
+	// Coroutine support
+	void set_coroutine_manager(GDScript2CoroutineManager *p_manager) { coroutine_manager = p_manager; }
+	GDScript2CoroutineManager *get_coroutine_manager() const { return coroutine_manager; }
+
+	GDScript2Coroutine *get_current_coroutine() const { return current_coroutine; }
+	void resume_coroutine(GDScript2Coroutine *p_coroutine);
+
+	// Check if execution is inside a coroutine
+	bool is_in_coroutine() const { return current_coroutine != nullptr; }
 };

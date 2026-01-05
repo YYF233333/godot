@@ -33,6 +33,7 @@
 #include "core/variant/variant_utility.h"
 #include "modules/gdscript2/runtime/gdscript2_builtin.h"
 #include "modules/gdscript2/runtime/gdscript2_variant_utils.h"
+#include "modules/gdscript2/vm/gdscript2_coroutine.h"
 
 // ============================================================================
 // GDScript2IteratorState
@@ -290,6 +291,173 @@ void GDScript2VM::reset() {
 	call_stack.clear();
 	call_depth = 0;
 	globals.clear();
+	current_coroutine = nullptr;
+	if (coroutine_manager) {
+		coroutine_manager->cancel_all();
+	}
+}
+
+// ============================================================================
+// Coroutine Support
+// ============================================================================
+
+void GDScript2VM::exec_await(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr, GDScript2ExecutionResult &r_result) {
+	int32_t dest = get_operand(p_instr, 0);
+	int32_t source = get_operand(p_instr, 1);
+
+	Variant await_target = get_stack_value(p_frame, source);
+
+	// Check what we're awaiting
+	if (await_target.get_type() == Variant::SIGNAL) {
+		// Awaiting a signal
+		Signal sig = await_target;
+		Object *obj = sig.get_object();
+		StringName signal_name = sig.get_name();
+
+		if (!obj) {
+			r_result = GDScript2ExecutionResult::make_error(
+					GDScript2ExecutionResult::ERROR_NULL_REFERENCE,
+					"Cannot await signal on null object.",
+					p_frame.current_line);
+			return;
+		}
+
+		// Create or get coroutine
+		GDScript2Coroutine *coro = suspend_coroutine(await_target);
+		if (!coro) {
+			r_result = GDScript2ExecutionResult::make_error(
+					GDScript2ExecutionResult::ERROR_RUNTIME,
+					"Failed to create coroutine for await.",
+					p_frame.current_line);
+			return;
+		}
+
+		// Set up signal wait
+		coro->wait_for_signal(obj, signal_name);
+
+		// Mark as yielded
+		r_result.status = GDScript2ExecutionResult::YIELD;
+		r_result.return_value = Ref<GDScript2Coroutine>(coro);
+
+	} else if (await_target.get_type() == Variant::OBJECT) {
+		// Check if it's a coroutine
+		Ref<GDScript2Coroutine> coro_ref = await_target;
+		if (coro_ref.is_valid()) {
+			// Awaiting another coroutine
+			if (coro_ref->is_completed()) {
+				// Already completed, return its value immediately
+				get_stack_value(p_frame, dest) = coro_ref->get_resume_value();
+			} else {
+				// Wait for completion
+				GDScript2Coroutine *coro = suspend_coroutine(await_target);
+				if (!coro) {
+					r_result = GDScript2ExecutionResult::make_error(
+							GDScript2ExecutionResult::ERROR_RUNTIME,
+							"Failed to create coroutine for await.",
+							p_frame.current_line);
+					return;
+				}
+
+				// Set up completion callback to resume this coroutine
+				Callable callback = callable_mp(coro, &GDScript2Coroutine::resume);
+				coro_ref->set_completion_callback(callback);
+
+				// Mark as yielded
+				r_result.status = GDScript2ExecutionResult::YIELD;
+				r_result.return_value = Ref<GDScript2Coroutine>(coro);
+			}
+		} else {
+			// Unknown object type
+			r_result = GDScript2ExecutionResult::make_error(
+					GDScript2ExecutionResult::ERROR_TYPE_MISMATCH,
+					vformat("Cannot await value of type '%s'.", Variant::get_type_name(await_target.get_type())),
+					p_frame.current_line);
+		}
+	} else {
+		// Invalid await target
+		r_result = GDScript2ExecutionResult::make_error(
+				GDScript2ExecutionResult::ERROR_TYPE_MISMATCH,
+				vformat("Cannot await value of type '%s'.", Variant::get_type_name(await_target.get_type())),
+				p_frame.current_line);
+	}
+}
+
+GDScript2Coroutine *GDScript2VM::suspend_coroutine(const Variant &p_await_target) {
+	if (!coroutine_manager) {
+		ERR_PRINT("No coroutine manager set on VM.");
+		return nullptr;
+	}
+
+	// Create new coroutine if not already in one
+	GDScript2Coroutine *coro = current_coroutine;
+	if (!coro) {
+		Ref<GDScript2Coroutine> coro_ref = coroutine_manager->create_coroutine();
+		coro = coro_ref.ptr();
+		current_coroutine = coro;
+	}
+
+	// Save current execution state
+	coro->save_state(call_stack, call_depth);
+
+	return coro;
+}
+
+void GDScript2VM::resume_coroutine(GDScript2Coroutine *p_coroutine) {
+	if (!p_coroutine || !p_coroutine->has_saved_state()) {
+		ERR_PRINT("Cannot resume coroutine with no saved state.");
+		return;
+	}
+
+	// Set as current coroutine
+	current_coroutine = p_coroutine;
+
+	// Restore execution state
+	p_coroutine->restore_state(call_stack, call_depth);
+
+	// Get the resume value
+	Variant resume_value = p_coroutine->get_resume_value();
+
+	// Store resume value in the destination register of the await instruction
+	// The await instruction should have stored the dest register somewhere accessible
+	// For now, we'll store it in the top frame's first register (simplified)
+	if (!call_stack.is_empty()) {
+		GDScript2CallFrame &frame = call_stack.write[call_stack.size() - 1];
+		if (frame.stack.size() > 0) {
+			// Find the await instruction and get its dest register
+			// For simplicity, we'll use register 0 for now
+			// In a real implementation, this should be tracked properly
+			frame.stack.write[0] = resume_value;
+		}
+	}
+
+	// Continue execution from where we left off
+	GDScript2ExecutionResult result;
+	while (call_depth > 0 && call_depth <= call_stack.size()) {
+		GDScript2CallFrame &frame = call_stack.write[call_depth - 1];
+
+		if (!execute_instruction(frame, result)) {
+			// Hit another yield or error
+			if (result.status == GDScript2ExecutionResult::YIELD) {
+				// Suspended again
+				return;
+			} else if (result.has_error()) {
+				// Error occurred
+				p_coroutine->set_error(result.error_message, result.error_line);
+				current_coroutine = nullptr;
+				return;
+			} else {
+				// Normal return
+				call_depth--;
+			}
+		}
+
+		// Check if we've completed
+		if (call_depth == 0) {
+			p_coroutine->complete(result.return_value);
+			current_coroutine = nullptr;
+			return;
+		}
+	}
 }
 
 const GDScript2CompiledFunction *GDScript2VM::find_function(const StringName &p_name) const {
@@ -1250,7 +1418,10 @@ bool GDScript2VM::execute_instruction(GDScript2CallFrame &p_frame, GDScript2Exec
 
 		// Special
 		case GDScript2Opcode::OP_AWAIT:
-			// Await requires coroutine support - simplified for now
+			exec_await(p_frame, instr, r_result);
+			if (r_result.status == GDScript2ExecutionResult::YIELD) {
+				return false; // Suspend execution
+			}
 			break;
 		case GDScript2Opcode::OP_YIELD:
 			r_result.status = GDScript2ExecutionResult::YIELD;
