@@ -12,13 +12,13 @@
 - 添加构建文件：`SCsub`, `config.py`, `register_types.h/.cpp`
 - 模块可被 SCons 识别并编译链接
 
-### M1 前端（Tokenizer 已完成，Parser stub）
+### M1 前端（✅ 已完成）
 
 **文件：**
 - `front/gdscript2_token.h` - 完整 Token 类型枚举与结构体
 - `front/gdscript2_tokenizer.h/.cpp` - **完整词法分析器实现**
-- `front/gdscript2_ast.h` - AST 节点枚举与结构
-- `front/gdscript2_parser.h/.cpp` - 解析器接口与占位实现
+- `front/gdscript2_ast.h` - **完整 AST 节点定义（40+ 种节点类型）**
+- `front/gdscript2_parser.h/.cpp` - **完整递归下降解析器实现**
 
 **Tokenizer 功能（已完成）：**
 - 完整的 Token 类型定义（90+ 种 token）
@@ -36,9 +36,14 @@
 - 光标位置追踪（IDE 集成）
 - 完整的错误报告
 
-**Parser 功能（stub）：**
-- AST 节点类型（表达式、语句、声明）
-- Parser 返回空块根节点的 stub
+**Parser 功能（已完成）：**
+- 完整 AST 节点类型（表达式、语句、声明、类型）
+- 顶层解析：class, extends, class_name, func, var, const, signal, enum, annotation
+- 控制流：if/elif/else, for, while, match/when, break, continue, pass, return
+- 表达式：运算符优先级、赋值、三元表达式、函数调用、下标、属性访问
+- 字面量：数字、字符串、布尔、null、数组、字典、lambda
+- 特殊：await, preload, super, self, $NodePath, 类型标注
+- 错误恢复机制
 
 ### M2 语义分析（已完成 - stub）
 
@@ -92,6 +97,7 @@
 **文件：**
 - `tests/test_gdscript2_front.cpp` - 前端测试
 - `tests/test_gdscript2_tokenizer.cpp` - **Tokenizer 测试（21 个测试用例）**
+- `tests/test_gdscript2_parser.cpp` - **Parser 测试（23 个测试用例）**
 - `tests/test_gdscript2_semantic.cpp` - 语义测试
 - `tests/test_gdscript2_ir.cpp` - IR 测试
 - `tests/test_gdscript2_codegen.cpp` - Codegen 测试
@@ -149,7 +155,7 @@
     │
     ▼
 ┌─────────────┐
-│   Parser    │  front/gdscript2_parser.h (stub)
+│   Parser    │  front/gdscript2_parser.h ✅ 已完成
 └─────────────┘
     │
     ▼
@@ -196,10 +202,10 @@
 
 ### 高优先级
 
-1. **M1 前端真实实现**
+1. **M1 前端真实实现** ✅ 已完成
    - ~~实现完整 Tokenizer~~ ✅ 已完成
-   - 实现完整 Parser（支持所有 GDScript 语法）
-   - 完善 AST 节点类型（类、函数、变量、表达式等）
+   - ~~实现完整 Parser~~ ✅ 已完成
+   - ~~完善 AST 节点类型~~ ✅ 已完成
 
 2. **M2 语义分析真实实现**
    - 作用域管理（全局/局部/类成员）
@@ -308,6 +314,7 @@ modules/gdscript2/
 └── tests/
     ├── test_gdscript2_front.cpp
     ├── test_gdscript2_tokenizer.cpp
+    ├── test_gdscript2_parser.cpp
     ├── test_gdscript2_semantic.cpp
     ├── test_gdscript2_ir.cpp
     ├── test_gdscript2_codegen.cpp
@@ -327,7 +334,8 @@ modules/gdscript2/
 
 ## 下次对话建议
 
-1. **实现 Parser** - 使用已完成的 Tokenizer，实现递归下降解析器
-2. 或完善 AST 节点类型，支持完整 GDScript 语法
-3. 或选择其他层深入完善（如 IR 优化 pass、语义分析）
-4. 或添加 Tools/LSP 支持
+1. **实现语义分析** - 类型检查、符号解析、作用域管理
+2. **完善 IR 构建** - 从 AST 生成 IR，实现优化 pass
+3. **完善代码生成** - 从 IR 生成字节码
+4. **完善 VM** - 实现完整指令集解释执行
+5. 或添加 Tools/LSP 支持
