@@ -45,17 +45,58 @@
 - 特殊：await, preload, super, self, $NodePath, 类型标注
 - 错误恢复机制
 
-### M2 语义分析（已完成 - stub）
+### M2 语义分析（✅ 已完成）
 
 **文件：**
-- `semantic/gdscript2_type.h` - 类型系统定义
-- `semantic/gdscript2_symbol_table.h` - 符号表
-- `semantic/gdscript2_semantic.h/.cpp` - 语义分析器
+- `semantic/gdscript2_type.h/.cpp` - **完整类型系统实现**
+- `semantic/gdscript2_symbol_table.h/.cpp` - **完整嵌套作用域符号表**
+- `semantic/gdscript2_diagnostic.h/.cpp` - **诊断系统（错误/警告）**
+- `semantic/gdscript2_semantic.h/.cpp` - **完整语义分析器**
 
-**功能：**
-- 类型枚举（VARIANT, NIL, BOOL, INT, FLOAT, STRING, ARRAY, DICTIONARY, OBJECT, FUNC）
-- 简单符号表（HashMap 存储）
-- 语义分析器生成 dummy 全局符号
+**类型系统功能（已完成）：**
+- 完整的类型枚举（50+ 种类型）
+- 所有 Variant 类型支持（nil, bool, int, float, String, Vector2/3/4 等）
+- 容器类型（Array, Dictionary, PackedXxxArray）
+- 泛型容器类型（Array[T], Dictionary[K,V]）
+- 对象/类类型（native class, script class）
+- 函数签名类型（参数类型、返回类型、默认参数）
+- 枚举类型
+- 元类型（typeof）
+- 类型兼容性检查
+- 类型推断辅助
+- Variant 类型转换
+
+**符号表功能（已完成）：**
+- 嵌套作用域支持（全局、类、函数、块、lambda、match）
+- 作用域链查找
+- 符号类型（变量、常量、参数、函数、类、信号、枚举等）
+- 类作用域栈（self 解析）
+- 函数作用域栈（return 类型检查）
+- 循环深度跟踪（break/continue 验证）
+- 内置符号初始化（类型、函数、常量、原生类）
+
+**诊断系统功能（已完成）：**
+- 诊断严重级别（错误、警告、信息、提示）
+- 诊断代码分类（声明、类型、控制流、访问等 50+ 种）
+- AST 节点关联的源位置
+- 警告启用/禁用配置
+- 警告作为错误处理
+- 格式化输出（带源代码片段）
+
+**语义分析器功能（已完成）：**
+- 类分析（接口 + 主体两遍）
+- 函数分析（签名 + 主体）
+- 变量/常量声明分析
+- 信号/枚举声明分析
+- 类型节点解析
+- 语句分析（if, for, while, match, return, break, continue）
+- 表达式类型推断（字面量、标识符、运算符、调用、下标、属性等）
+- 二元/一元/三元运算符类型推断
+- 函数调用返回类型推断
+- 类型兼容性验证
+- 赋值目标验证（常量/只读检查）
+- 常量表达式求值
+- 节点类型缓存
 
 ### M3 IR 中间表示（已完成 - stub）
 
@@ -98,40 +139,47 @@
 - `tests/test_gdscript2_front.cpp` - 前端测试
 - `tests/test_gdscript2_tokenizer.cpp` - **Tokenizer 测试（21 个测试用例）**
 - `tests/test_gdscript2_parser.cpp` - **Parser 测试（23 个测试用例）**
-- `tests/test_gdscript2_semantic.cpp` - 语义测试
+- `tests/test_gdscript2_semantic.cpp` - **语义测试（35 个测试用例）**
 - `tests/test_gdscript2_ir.cpp` - IR 测试
 - `tests/test_gdscript2_codegen.cpp` - Codegen 测试
 - `tests/test_gdscript2_vm.cpp` - VM 测试
 
-**注册的测试命令：**
-- `gdscript2-front-minimal`
-- `gdscript2-tokenizer-empty` - 空源码测试
-- `gdscript2-tokenizer-identifier` - 标识符测试
-- `gdscript2-tokenizer-keywords` - 关键字测试
-- `gdscript2-tokenizer-integers` - 整数测试
-- `gdscript2-tokenizer-hex-binary` - 十六进制/二进制测试
-- `gdscript2-tokenizer-floats` - 浮点数测试
-- `gdscript2-tokenizer-strings` - 字符串测试
-- `gdscript2-tokenizer-operators` - 运算符测试
-- `gdscript2-tokenizer-punctuation` - 标点符号测试
-- `gdscript2-tokenizer-indentation` - 缩进测试
-- `gdscript2-tokenizer-newlines` - 换行测试
-- `gdscript2-tokenizer-comments` - 注释测试
-- `gdscript2-tokenizer-booleans` - 布尔值测试
-- `gdscript2-tokenizer-constants` - 常量测试
-- `gdscript2-tokenizer-assignment-ops` - 赋值运算符测试
-- `gdscript2-tokenizer-annotation` - 注解测试
-- `gdscript2-tokenizer-underscore-numbers` - 下划线数字测试
-- `gdscript2-tokenizer-multiline-string` - 多行字符串测试
-- `gdscript2-tokenizer-string-escapes` - 字符串转义测试
-- `gdscript2-tokenizer-line-tracking` - 行号追踪测试
-- `gdscript2-tokenizer-power-operator` - 幂运算符测试
-- `gdscript2-semantic-minimal`
-- `gdscript2-ir-build`
-- `gdscript2-ir-passes`
-- `gdscript2-codegen-minimal`
-- `gdscript2-vm-execute`
-- `gdscript2-vm-not-found`
+**语义分析测试命令：**
+- `gdscript2-semantic-minimal` - 空脚本测试
+- `gdscript2-semantic-variable` - 变量声明测试
+- `gdscript2-semantic-constant` - 常量声明测试
+- `gdscript2-semantic-function` - 函数声明测试
+- `gdscript2-semantic-type-mismatch` - 类型不匹配测试
+- `gdscript2-semantic-numeric-promotion` - 数值提升测试
+- `gdscript2-semantic-array-type` - 数组类型测试
+- `gdscript2-semantic-dictionary-type` - 字典类型测试
+- `gdscript2-semantic-if` - if 语句测试
+- `gdscript2-semantic-for` - for 循环测试
+- `gdscript2-semantic-while` - while 循环测试
+- `gdscript2-semantic-break-outside-loop` - break 外部循环测试
+- `gdscript2-semantic-continue-outside-loop` - continue 外部循环测试
+- `gdscript2-semantic-return-outside-func` - return 外部函数测试
+- `gdscript2-semantic-undefined-var` - 未定义变量测试
+- `gdscript2-semantic-duplicate-decl` - 重复声明测试
+- `gdscript2-semantic-scope-isolation` - 作用域隔离测试
+- `gdscript2-semantic-class-members` - 类成员测试
+- `gdscript2-semantic-enum` - 枚举测试
+- `gdscript2-semantic-self-in-static` - static 中 self 测试
+- `gdscript2-semantic-binary-ops` - 二元运算符测试
+- `gdscript2-semantic-unary-ops` - 一元运算符测试
+- `gdscript2-semantic-ternary-op` - 三元运算符测试
+- `gdscript2-semantic-assign-to-const` - 赋值常量测试
+- `gdscript2-semantic-function-call` - 函数调用测试
+- `gdscript2-semantic-builtin-call` - 内置函数测试
+- `gdscript2-semantic-match` - match 语句测试
+- `gdscript2-semantic-match-binding` - match 绑定测试
+- `gdscript2-semantic-lambda` - lambda 测试
+- `gdscript2-semantic-await-in-func` - await 函数内测试
+- `gdscript2-semantic-await-outside-func` - await 函数外测试
+- `gdscript2-semantic-type-from-variant` - Variant 类型推断测试
+- `gdscript2-semantic-type-compat` - 类型兼容性测试
+- `gdscript2-semantic-symbol-lookup` - 符号查找测试
+- `gdscript2-semantic-nested-scope` - 嵌套作用域测试
 
 ### 语言注册
 
@@ -160,31 +208,31 @@
     │
     ▼
 ┌─────────────┐
-│     AST     │  front/gdscript2_ast.h
+│     AST     │  front/gdscript2_ast.h ✅ 已完成
 └─────────────┘
     │
     ▼
 ┌─────────────┐
-│  Semantic   │  semantic/gdscript2_semantic.h
+│  Semantic   │  semantic/gdscript2_semantic.h ✅ 已完成
 │  Analyzer   │
 └─────────────┘
     │
     ▼
 ┌─────────────┐
-│     IR      │  ir/gdscript2_ir.h
+│     IR      │  ir/gdscript2_ir.h (stub)
 │   Builder   │  ir/gdscript2_ir_builder.h
 └─────────────┘
     │
     ▼
 ┌─────────────┐
-│  IR Passes  │  ir/gdscript2_ir_pass.h
+│  IR Passes  │  ir/gdscript2_ir_pass.h (stub)
 │ (ConstFold, │
 │    DCE)     │
 └─────────────┘
     │
     ▼
 ┌─────────────┐
-│  Codegen    │  codegen/gdscript2_codegen.h
+│  Codegen    │  codegen/gdscript2_codegen.h (stub)
 └─────────────┘
     │
     ▼
@@ -194,7 +242,7 @@
     │
     ▼
 ┌─────────────┐
-│     VM      │  vm/gdscript2_vm.h
+│     VM      │  vm/gdscript2_vm.h (stub)
 └─────────────┘
 ```
 
@@ -202,29 +250,18 @@
 
 ### 高优先级
 
-1. **M1 前端真实实现** ✅ 已完成
-   - ~~实现完整 Tokenizer~~ ✅ 已完成
-   - ~~实现完整 Parser~~ ✅ 已完成
-   - ~~完善 AST 节点类型~~ ✅ 已完成
-
-2. **M2 语义分析真实实现**
-   - 作用域管理（全局/局部/类成员）
-   - 类型推断与类型检查
-   - 符号解析（变量、函数、类引用）
-   - 诊断信息生成
-
-3. **M3 IR 完善**
+1. **M3 IR 完善**
    - 完整的 AST 到 IR 转换
    - 实现真实的优化 pass（常量折叠、死代码消除、内联）
    - SSA 形式支持（可选）
 
-4. **M4 Codegen 完善**
+2. **M4 Codegen 完善**
    - 完整指令集生成
    - 跳转目标修补
    - 常量池管理
    - 调试信息生成
 
-5. **M5 VM 完善**
+3. **M5 VM 完善**
    - 完整指令集解释
    - 内建函数调用
    - 对象/类实例化
@@ -233,19 +270,19 @@
 
 ### 中优先级
 
-6. **M6 Tools - 语言服务器**
+4. **M6 Tools - 语言服务器**
    - LSP 协议实现
    - 代码补全
    - 跳转定义
    - 符号索引
    - 语法着色
 
-7. **M7 Compat - 兼容层**
+5. **M7 Compat - 兼容层**
    - 旧字节码版本转换
    - 警告映射
    - 开关/标志文档
 
-8. **Runtime 运行时**
+6. **Runtime 运行时**
    - Godot 对象桥接
    - Variant 操作
    - 内建函数注册
@@ -253,16 +290,16 @@
 
 ### 低优先级
 
-9. **M8 稳定化**
+7. **M8 稳定化**
    - 性能回归测试
    - 内存与并发测试
    - API freeze
    - 文档完善
 
-10. **Editor 集成**
-    - 语法高亮
-    - 错误标记
-    - 调试器集成
+8. **Editor 集成**
+   - 语法高亮
+   - 错误标记
+   - 调试器集成
 
 ## 构建命令
 
@@ -293,7 +330,11 @@ modules/gdscript2/
 │   └── gdscript2_parser.cpp
 ├── semantic/
 │   ├── gdscript2_type.h
+│   ├── gdscript2_type.cpp
 │   ├── gdscript2_symbol_table.h
+│   ├── gdscript2_symbol_table.cpp
+│   ├── gdscript2_diagnostic.h
+│   ├── gdscript2_diagnostic.cpp
 │   ├── gdscript2_semantic.h
 │   └── gdscript2_semantic.cpp
 ├── ir/
@@ -334,8 +375,7 @@ modules/gdscript2/
 
 ## 下次对话建议
 
-1. **实现语义分析** - 类型检查、符号解析、作用域管理
-2. **完善 IR 构建** - 从 AST 生成 IR，实现优化 pass
-3. **完善代码生成** - 从 IR 生成字节码
-4. **完善 VM** - 实现完整指令集解释执行
-5. 或添加 Tools/LSP 支持
+1. **完善 IR 构建** - 从 AST 生成 IR，实现优化 pass
+2. **完善代码生成** - 从 IR 生成字节码
+3. **完善 VM** - 实现完整指令集解释执行
+4. 或添加 Tools/LSP 支持
