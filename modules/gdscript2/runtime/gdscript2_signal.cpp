@@ -36,8 +36,7 @@
 
 void GDScript2SignalRegistry::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("define_signal", "signal_name"), &GDScript2SignalRegistry::define_signal);
-	ClassDB::bind_method(D_METHOD("has_signal", "signal_name"), &GDScript2SignalRegistry::has_signal);
-	ClassDB::bind_method(D_METHOD("get_signal_list"), &GDScript2SignalRegistry::get_signal_list);
+	// Note: has_signal, get_signal_list, is_connected are inherited from Object and should not be bound again
 	ClassDB::bind_method(D_METHOD("disconnect_all", "signal_name"), &GDScript2SignalRegistry::disconnect_all);
 	ClassDB::bind_method(D_METHOD("clear_all_connections"), &GDScript2SignalRegistry::clear_all_connections);
 }
@@ -78,8 +77,8 @@ GDScript2SignalDefinition GDScript2SignalRegistry::get_signal_definition(const S
 	return GDScript2SignalDefinition();
 }
 
-Vector<StringName> GDScript2SignalRegistry::get_signal_list() const {
-	Vector<StringName> list;
+Array GDScript2SignalRegistry::get_signal_list() const {
+	Array list;
 	for (const KeyValue<StringName, GDScript2SignalDefinition> &E : signals) {
 		list.push_back(E.key);
 	}
@@ -221,8 +220,9 @@ void GDScript2SignalRegistry::emit_signal(const StringName &p_signal_name, const
 		}
 
 		// Call the callable
+		Variant ret;
 		Callable::CallError ce;
-		conn.callable.callp(p_args, p_argcount, ce);
+		conn.callable.callp(p_args, p_argcount, ret, ce);
 
 		if (ce.error != Callable::CallError::CALL_OK) {
 			ERR_PRINT(vformat("Error calling signal '%s' connection: %d", p_signal_name, ce.error));
@@ -246,10 +246,10 @@ void GDScript2SignalRegistry::emit_signal(const StringName &p_signal_name, const
 }
 
 void GDScript2SignalRegistry::emit_signal(const StringName &p_signal_name, const Vector<Variant> &p_args) {
-	Vector<const Variant *> args;
+	LocalVector<const Variant *> args;
 	args.resize(p_args.size());
 	for (int i = 0; i < p_args.size(); i++) {
-		args.write[i] = &p_args[i];
+		args[i] = &p_args[i];
 	}
 	emit_signal(p_signal_name, args.ptr(), args.size());
 }
@@ -280,8 +280,7 @@ void GDScript2SignalEmitter::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("connect_to_signal", "signal_name", "callable", "flags"), &GDScript2SignalEmitter::connect_to_signal, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("disconnect_from_signal", "signal_name", "callable"), &GDScript2SignalEmitter::disconnect_from_signal);
 	ClassDB::bind_method(D_METHOD("emit", "signal_name", "args"), &GDScript2SignalEmitter::emit, DEFVAL(Vector<Variant>()));
-	ClassDB::bind_method(D_METHOD("has_signal", "signal_name"), &GDScript2SignalEmitter::has_signal);
-	ClassDB::bind_method(D_METHOD("is_connected", "signal_name", "callable"), &GDScript2SignalEmitter::is_connected);
+	// Note: has_signal and is_connected are inherited from Object and should not be bound again
 }
 
 // ============================================================================

@@ -106,10 +106,9 @@ bool GDScript2IteratorState::next() {
 		case Variant::PACKED_COLOR_ARRAY:
 		case Variant::PACKED_VECTOR4_ARRAY: {
 			index++;
-			int size = 0;
-			bool valid_size = false;
-			container.call("size", nullptr, 0, size, valid_size);
-			return valid_size && index < size;
+			Variant size_var = container.call("size");
+			int size = size_var;
+			return index < size;
 		}
 
 		case Variant::STRING: {
@@ -329,7 +328,7 @@ void GDScript2VM::exec_signal_connect(GDScript2CallFrame &p_frame, const GDScrip
 	int32_t dest = get_operand(p_instr, 0);
 	int32_t signal_reg = get_operand(p_instr, 1);
 	int32_t callable_reg = get_operand(p_instr, 2);
-	int32_t flags = (p_instr.operand_count >= 4) ? get_operand(p_instr, 3) : 0;
+	int32_t flags = (p_instr.operands.size() >= 4) ? get_operand(p_instr, 3) : 0;
 
 	Variant signal_var = get_stack_value(p_frame, signal_reg);
 	Variant callable_var = get_stack_value(p_frame, callable_reg);
@@ -395,8 +394,8 @@ void GDScript2VM::exec_signal_emit(GDScript2CallFrame &p_frame, const GDScript2B
 	Signal sig = signal_var;
 
 	// Collect arguments
-	Vector<const Variant *> args;
-	for (int i = 1; i < p_instr.operand_count; i++) {
+	LocalVector<const Variant *> args;
+	for (int i = 1; i < (int)p_instr.operands.size(); i++) {
 		int32_t arg_reg = get_operand(p_instr, i);
 		args.push_back(&get_stack_value_const(p_frame, arg_reg));
 	}
@@ -868,7 +867,8 @@ void GDScript2VM::exec_type_as(GDScript2CallFrame &p_frame, const GDScript2Bytec
 	int32_t type_reg = get_operand(p_instr, 2);
 
 	const Variant &value = get_stack_value_const(p_frame, value_reg);
-	const Variant &type_val = get_stack_value_const(p_frame, type_reg);
+	// const Variant &type_val = get_stack_value_const(p_frame, type_reg);
+	(void)type_reg; // TODO: Implement proper type conversion
 
 	// Simple type cast - just assign for now
 	// Full implementation would do proper type conversion
@@ -1058,7 +1058,7 @@ GDScript2ExecutionResult GDScript2VM::exec_call_method(GDScript2CallFrame &p_fra
 	int32_t name_idx = get_operand(p_instr, 2);
 	int32_t arg_count = get_operand(p_instr, 3);
 
-	const Variant &base = get_stack_value_const(p_frame, base_reg);
+	Variant base = get_stack_value_const(p_frame, base_reg);
 	const StringName &method = get_name(p_frame, name_idx);
 
 	// Build arguments

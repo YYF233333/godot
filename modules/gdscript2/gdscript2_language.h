@@ -149,7 +149,7 @@ public:
 	virtual String get_name() const override { return "GDScript2"; }
 	virtual void init() override {}
 	virtual String get_type() const override { return "GDScript2"; }
-	virtual String get_extension() const override { return "gd"; }
+	virtual String get_extension() const override { return "gd2"; }
 	virtual void finish() override {}
 
 	virtual Vector<String> get_reserved_words() const override { return Vector<String>(); }

@@ -56,7 +56,7 @@ GDScript2CodeGenerator::Result compile_source(const String &p_source, GDScript2A
 	// Build IR
 	Ref<GDScript2IRBuilder> ir_builder;
 	ir_builder.instantiate();
-	GDScript2IRBuilder::Result ir_result = ir_builder->build(parse_result.root, sema_result.globals);
+	GDScript2IRBuilder::Result ir_result = ir_builder->build(parse_result.root);
 
 	// Generate bytecode
 	Ref<GDScript2CodeGenerator> codegen;
@@ -730,8 +730,8 @@ func test(x):
 					if (op == GDScript2Opcode::OP_JUMP_IF || op == GDScript2Opcode::OP_JUMP_IF_NOT) {
 						target = func.code[i].operands.size() > 1 ? func.code[i].operands[1] : -1;
 					}
-					CHECK_MESSAGE(target >= 0 && target <= func.code.size(),
-							"Jump target should be valid");
+					CHECK_MESSAGE(target >= 0, "Jump target should be non-negative");
+					CHECK_MESSAGE(target <= (int)func.code.size(), "Jump target should be within bounds");
 				}
 			}
 		}
@@ -757,7 +757,8 @@ func test():
 
 	if (result.module.function_map.has("test")) {
 		int idx = result.module.function_map["test"];
-		const GDScript2CompiledFunction &func = result.module.functions[idx];
+		// const GDScript2CompiledFunction &func = result.module.functions[idx];
+		(void)idx; // Suppress unused variable warning
 
 		// Should have some line info
 		// Note: Line info might be empty depending on IR builder implementation

@@ -48,7 +48,7 @@ bool GDScript2ResourceLoader::handles_type(const String &p_type) const {
 }
 
 String GDScript2ResourceLoader::get_resource_type(const String &p_path) const {
-	if (p_path.get_extension().to_lower() == "gd") {
+	if (p_path.get_extension().to_lower() == "gd2") {
 		return "Script";
 	}
 	return "";

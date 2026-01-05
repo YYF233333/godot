@@ -30,6 +30,8 @@
 
 #include "gdscript2_variant_utils.h"
 
+#include "core/object/object.h"
+
 bool GDScript2VariantUtils::check_type(const Variant &p_variant, Variant::Type p_expected, String &r_error) {
 	if (p_variant.get_type() != p_expected) {
 		r_error = "Expected " + get_type_name(p_expected) + " but got " + get_type_name(p_variant);

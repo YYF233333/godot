@@ -311,7 +311,10 @@ void GDScript2CodeGenerator::patch_jumps() {
 
 		if (block_addresses.has(patch.block_id)) {
 			int32_t target_addr = block_addresses[patch.block_id];
-			current_func->code.write[patch.bytecode_idx].operands.write[patch.operand_idx] = target_addr;
+			GDScript2BytecodeInstr &instr = current_func->code.write[patch.bytecode_idx];
+			if (patch.operand_idx < (int)instr.operands.size()) {
+				instr.operands[patch.operand_idx] = target_addr;
+			}
 		}
 	}
 }

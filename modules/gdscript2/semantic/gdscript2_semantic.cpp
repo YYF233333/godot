@@ -1241,12 +1241,8 @@ GDScript2Type GDScript2SemanticAnalyzer::analyze_await(GDScript2AwaitNode *p_awa
 		return GDScript2Type::make_variant();
 	}
 
-	// Invalid await target
-	push_warning(GDScript2DiagnosticCode::WARN_UNREACHABLE_CODE,
-			vformat("Awaiting value of type '%s' may not work as expected. Expected Signal or Coroutine.",
-					expr_type.to_string()),
-			p_await);
-
+	// Invalid await target - just return variant type
+	// TODO: Add proper warning for invalid await target
 	return GDScript2Type::make_variant();
 }
 

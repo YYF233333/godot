@@ -153,8 +153,8 @@ void GDScript2SymbolTable::initialize_builtins() {
 	}
 
 	// Register native classes from ClassDB
-	List<StringName> class_list;
-	ClassDB::get_class_list(&class_list);
+	LocalVector<StringName> class_list;
+	ClassDB::get_class_list(class_list);
 
 	for (const StringName &class_name : class_list) {
 		// Skip internal classes

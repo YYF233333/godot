@@ -272,7 +272,7 @@ class GDScript2CodeGenerator : public RefCounted {
 	LocalVector<JumpPatch> pending_jumps;
 
 	// Constant pool management
-	HashMap<Variant, int, VariantHasher, VariantComparator> constant_map;
+	HashMap<Variant, int> constant_map;
 
 	// Name pool management
 	HashMap<StringName, int> name_map;

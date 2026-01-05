@@ -106,7 +106,7 @@ public:
 	void define_signal_with_params(const StringName &p_signal_name, const Vector<GDScript2SignalParam> &p_params);
 	bool has_signal(const StringName &p_signal_name) const;
 	GDScript2SignalDefinition get_signal_definition(const StringName &p_signal_name) const;
-	Vector<StringName> get_signal_list() const;
+	Array get_signal_list() const;
 
 	// Connection management
 	Error connect_signal(const StringName &p_signal_name, const Callable &p_callable, uint32_t p_flags = 0);
@@ -179,5 +179,3 @@ Error safe_disconnect(const Signal &p_signal, const Callable &p_callable);
 Error safe_emit(const Signal &p_signal, const Variant **p_args, int p_argcount);
 
 } // namespace GDScript2SignalUtils
-
-#endif // GDSCRIPT2_SIGNAL_H

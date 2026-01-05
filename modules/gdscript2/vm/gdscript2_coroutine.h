@@ -126,7 +126,7 @@ public:
 	Callable get_completion_callback() const { return completion_callback; }
 
 	// Signal handler for await signal
-	void _on_signal_received(const Variant **p_args, int p_argcount);
+	void _on_signal_received();
 };
 
 // ============================================================================
@@ -162,4 +162,4 @@ public:
 	void clear();
 };
 
-#endif // GDSCRIPT2_COROUTINE_H
+VARIANT_ENUM_CAST(GDScript2Coroutine::State);

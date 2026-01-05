@@ -43,8 +43,8 @@ namespace TestGDScript2Coroutine {
 GDScript2ExecutionResult compile_and_run(const String &p_source, GDScript2VM *p_vm) {
 	// Parse
 	GDScript2Parser parser;
-	GDScript2ParseResult *parse_result = parser.parse(p_source, "test.gd2");
-	if (!parse_result || !parse_result->root || parse_result->has_errors()) {
+	GDScript2Parser::Result parse_result = parser.parse(p_source);
+	if (!parse_result.root || parse_result.has_errors()) {
 		return GDScript2ExecutionResult::make_error(
 				GDScript2ExecutionResult::ERROR_RUNTIME,
 				"Parse error");
@@ -52,8 +52,8 @@ GDScript2ExecutionResult compile_and_run(const String &p_source, GDScript2VM *p_
 
 	// Semantic analysis
 	GDScript2SemanticAnalyzer analyzer;
-	GDScript2SemanticResult *semantic_result = analyzer.analyze(parse_result);
-	if (!semantic_result || semantic_result->has_errors()) {
+	GDScript2SemanticAnalyzer::Result semantic_result = analyzer.analyze(parse_result.root);
+	if (semantic_result.has_errors()) {
 		return GDScript2ExecutionResult::make_error(
 				GDScript2ExecutionResult::ERROR_RUNTIME,
 				"Semantic error");
@@ -61,8 +61,8 @@ GDScript2ExecutionResult compile_and_run(const String &p_source, GDScript2VM *p_
 
 	// Build IR
 	GDScript2IRBuilder ir_builder;
-	GDScript2IRModule *ir_module = ir_builder.build(parse_result->root);
-	if (!ir_module || ir_builder.has_errors()) {
+	GDScript2IRBuilder::Result ir_result = ir_builder.build(parse_result.root);
+	if (ir_result.has_errors()) {
 		return GDScript2ExecutionResult::make_error(
 				GDScript2ExecutionResult::ERROR_RUNTIME,
 				"IR build error");
@@ -70,15 +70,15 @@ GDScript2ExecutionResult compile_and_run(const String &p_source, GDScript2VM *p_
 
 	// Generate bytecode
 	GDScript2CodeGenerator codegen;
-	GDScript2CompiledModule *module = codegen.generate(ir_module);
-	if (!module) {
+	GDScript2CodeGenerator::Result codegen_result = codegen.generate(ir_result.module);
+	if (codegen_result.has_errors()) {
 		return GDScript2ExecutionResult::make_error(
 				GDScript2ExecutionResult::ERROR_RUNTIME,
 				"Codegen error");
 	}
 
 	// Execute
-	p_vm->load_module(module);
+	p_vm->load_module(&codegen_result.module);
 	return p_vm->call("test");
 }
 
@@ -102,7 +102,7 @@ TEST_CASE("[Modules][GDScript2] Coroutine - State transitions") {
 	coro->complete(42);
 	CHECK(coro->is_completed());
 	CHECK(coro->get_state() == GDScript2Coroutine::STATE_COMPLETED);
-	CHECK(coro->get_resume_value() == 42);
+	CHECK((int)coro->get_resume_value() == 42);
 }
 
 TEST_CASE("[Modules][GDScript2] Coroutine - Cancel") {
@@ -195,17 +195,16 @@ func test():
 )";
 
 	GDScript2Parser parser;
-	GDScript2ParseResult *parse_result = parser.parse(source, "test.gd2");
-	CHECK(parse_result != nullptr);
-	CHECK(!parse_result->has_errors());
+	GDScript2Parser::Result parse_result = parser.parse(source);
+	CHECK(parse_result.root != nullptr);
+	CHECK(!parse_result.has_errors());
 
 	GDScript2SemanticAnalyzer analyzer;
-	GDScript2SemanticResult *semantic_result = analyzer.analyze(parse_result);
-	CHECK(semantic_result != nullptr);
+	GDScript2SemanticAnalyzer::Result semantic_result = analyzer.analyze(parse_result.root);
 
 	// Check that the function was marked as coroutine
-	if (parse_result->root && parse_result->root->type == GDScript2ASTNodeType::NODE_CLASS) {
-		GDScript2ClassNode *class_node = static_cast<GDScript2ClassNode *>(parse_result->root);
+	if (parse_result.root && parse_result.root->type == GDScript2ASTNodeType::NODE_CLASS) {
+		GDScript2ClassNode *class_node = static_cast<GDScript2ClassNode *>(parse_result.root);
 		if (!class_node->functions.is_empty()) {
 			GDScript2FunctionNode *func = class_node->functions[0];
 			CHECK(func->is_coroutine);
@@ -222,21 +221,19 @@ func test():
 )";
 
 	GDScript2Parser parser;
-	GDScript2ParseResult *parse_result = parser.parse(source, "test.gd2");
-	CHECK(parse_result != nullptr);
+	GDScript2Parser::Result parse_result = parser.parse(source);
+	CHECK(parse_result.root != nullptr);
 
 	GDScript2SemanticAnalyzer analyzer;
-	GDScript2SemanticResult *semantic_result = analyzer.analyze(parse_result);
-	CHECK(semantic_result != nullptr);
+	GDScript2SemanticAnalyzer::Result semantic_result = analyzer.analyze(parse_result.root);
 
 	GDScript2IRBuilder ir_builder;
-	GDScript2IRModule *ir_module = ir_builder.build(parse_result->root);
-	CHECK(ir_module != nullptr);
-	CHECK(!ir_builder.has_errors());
+	GDScript2IRBuilder::Result ir_result = ir_builder.build(parse_result.root);
+	CHECK(!ir_result.has_errors());
 
 	// Check that IR contains OP_AWAIT
 	bool found_await = false;
-	for (const GDScript2IRFunction &func : ir_module->functions) {
+	for (const GDScript2IRFunction &func : ir_result.module.functions) {
 		for (const GDScript2IRBlock &block : func.blocks) {
 			for (const GDScript2IRInstr &instr : block.instructions) {
 				if (instr.op == GDScript2IROp::OP_AWAIT) {
@@ -258,26 +255,25 @@ func test():
 )";
 
 	GDScript2Parser parser;
-	GDScript2ParseResult *parse_result = parser.parse(source, "test.gd2");
-	CHECK(parse_result != nullptr);
+	GDScript2Parser::Result parse_result = parser.parse(source);
+	CHECK(parse_result.root != nullptr);
 
 	GDScript2SemanticAnalyzer analyzer;
-	GDScript2SemanticResult *semantic_result = analyzer.analyze(parse_result);
-	CHECK(semantic_result != nullptr);
+	GDScript2SemanticAnalyzer::Result semantic_result = analyzer.analyze(parse_result.root);
 
 	GDScript2IRBuilder ir_builder;
-	GDScript2IRModule *ir_module = ir_builder.build(parse_result->root);
-	CHECK(ir_module != nullptr);
+	GDScript2IRBuilder::Result ir_result = ir_builder.build(parse_result.root);
+	CHECK(!ir_result.has_errors());
 
 	GDScript2CodeGenerator codegen;
-	GDScript2CompiledModule *module = codegen.generate(ir_module);
-	CHECK(module != nullptr);
+	GDScript2CodeGenerator::Result codegen_result = codegen.generate(ir_result.module);
+	CHECK(!codegen_result.has_errors());
 
 	// Check that bytecode contains OP_AWAIT
 	bool found_await = false;
-	for (const GDScript2CompiledFunction &func : module->functions) {
-		for (const GDScript2BytecodeInstr &instr : func.bytecode) {
-			if (instr.opcode == GDScript2Opcode::OP_AWAIT) {
+	for (const GDScript2CompiledFunction &func : codegen_result.module.functions) {
+		for (const GDScript2BytecodeInstr &instr : func.code) {
+			if (instr.op == GDScript2Opcode::OP_AWAIT) {
 				found_await = true;
 				break;
 			}

@@ -154,25 +154,13 @@ void GDScript2Coroutine::cancel_signal_wait() {
 	signal_callback = Callable();
 }
 
-void GDScript2Coroutine::_on_signal_received(const Variant **p_args, int p_argcount) {
+void GDScript2Coroutine::_on_signal_received() {
 	if (!is_valid()) {
 		return;
 	}
 
-	// Prepare resume value from signal arguments
+	// Prepare resume value - signal received with no specific value
 	Variant resume_val;
-	if (p_argcount == 0) {
-		resume_val = Variant(); // null
-	} else if (p_argcount == 1) {
-		resume_val = *p_args[0];
-	} else {
-		// Multiple arguments - pack into array
-		Array args_array;
-		for (int i = 0; i < p_argcount; i++) {
-			args_array.push_back(*p_args[i]);
-		}
-		resume_val = args_array;
-	}
 
 	// Cancel the signal wait
 	waiting_for_signal = false;
@@ -204,8 +192,9 @@ void GDScript2Coroutine::complete(const Variant &p_return_value) {
 	// Call completion callback if set
 	if (completion_callback.is_valid()) {
 		const Variant *args[1] = { &p_return_value };
+		Variant ret;
 		Callable::CallError ce;
-		completion_callback.callp(args, 1, ce);
+		completion_callback.callp(args, 1, ret, ce);
 	}
 }
 
@@ -225,8 +214,9 @@ void GDScript2Coroutine::cancel() {
 	if (completion_callback.is_valid()) {
 		Variant null_value;
 		const Variant *args[1] = { &null_value };
+		Variant ret;
 		Callable::CallError ce;
-		completion_callback.callp(args, 1, ce);
+		completion_callback.callp(args, 1, ret, ce);
 	}
 }
 

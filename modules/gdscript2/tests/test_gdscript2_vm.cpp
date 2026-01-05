@@ -63,7 +63,7 @@ struct TestContext {
 		// Build IR
 		Ref<GDScript2IRBuilder> ir_builder;
 		ir_builder.instantiate();
-		GDScript2IRBuilder::Result ir_result = ir_builder->build(ast, sema_result.globals);
+		GDScript2IRBuilder::Result ir_result = ir_builder->build(ast);
 
 		// Generate bytecode
 		Ref<GDScript2CodeGenerator> codegen;
