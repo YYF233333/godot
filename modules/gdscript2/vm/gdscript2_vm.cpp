@@ -31,6 +31,8 @@
 #include "gdscript2_vm.h"
 
 #include "core/variant/variant_utility.h"
+#include "modules/gdscript2/runtime/gdscript2_builtin.h"
+#include "modules/gdscript2/runtime/gdscript2_variant_utils.h"
 
 // ============================================================================
 // GDScript2IteratorState
@@ -279,6 +281,9 @@ void GDScript2CallFrame::ensure_stack_size(int p_size) {
 void GDScript2VM::load_module(const GDScript2CompiledModule *p_module) {
 	module = p_module;
 	reset();
+
+	// Initialize builtin functions if not already done
+	GDScript2BuiltinRegistry::initialize();
 }
 
 void GDScript2VM::reset() {
@@ -769,10 +774,31 @@ GDScript2ExecutionResult GDScript2VM::exec_call_builtin(GDScript2CallFrame &p_fr
 		args.write[i] = get_stack_value_const(p_frame, arg_reg);
 	}
 
-	// Try to call utility function
 	Variant result;
 	Callable::CallError error;
 
+	// Try GDScript2 builtin registry first
+	if (GDScript2BuiltinRegistry::has_function(func_name)) {
+		const Variant **argptrs = nullptr;
+		if (!args.is_empty()) {
+			argptrs = (const Variant **)alloca(sizeof(Variant *) * args.size());
+			for (int i = 0; i < args.size(); i++) {
+				argptrs[i] = &args[i];
+			}
+		}
+
+		result = GDScript2BuiltinRegistry::call_function(func_name, argptrs, args.size(), error);
+
+		if (error.error != Callable::CallError::CALL_OK) {
+			return GDScript2ExecutionResult::make_error(GDScript2ExecutionResult::ERROR_RUNTIME,
+					"Builtin call failed: " + String(func_name));
+		}
+
+		get_stack_value(p_frame, dest) = result;
+		return GDScript2ExecutionResult::make_ok();
+	}
+
+	// Fallback to Godot utility functions
 	if (Variant::has_utility_function(func_name)) {
 		const Variant **argptrs = nullptr;
 		if (!args.is_empty()) {
@@ -786,12 +812,16 @@ GDScript2ExecutionResult GDScript2VM::exec_call_builtin(GDScript2CallFrame &p_fr
 
 		if (error.error != Callable::CallError::CALL_OK) {
 			return GDScript2ExecutionResult::make_error(GDScript2ExecutionResult::ERROR_RUNTIME,
-					"Builtin call failed: " + String(func_name));
+					"Utility function call failed: " + String(func_name));
 		}
+
+		get_stack_value(p_frame, dest) = result;
+		return GDScript2ExecutionResult::make_ok();
 	}
 
-	get_stack_value(p_frame, dest) = result;
-	return GDScript2ExecutionResult::make_ok();
+	// Function not found
+	return GDScript2ExecutionResult::make_error(GDScript2ExecutionResult::ERROR_RUNTIME,
+			"Builtin function not found: " + String(func_name));
 }
 
 GDScript2ExecutionResult GDScript2VM::exec_call_super(GDScript2CallFrame &p_frame, const GDScript2BytecodeInstr &p_instr) {

@@ -171,6 +171,7 @@
 - `tests/test_gdscript2_ir.cpp` - **IR 测试（21 个）**
 - `tests/test_gdscript2_codegen.cpp` - **Codegen 测试（17 个）**
 - `tests/test_gdscript2_vm.cpp` - **VM 测试（30 个）**
+- `tests/test_gdscript2_runtime.cpp` - **Runtime 测试（19 个）**
 
 **IR 测试命令：**
 - `gdscript2-ir-build-empty` - 空脚本构建
@@ -248,10 +249,54 @@
 - `gdscript2-vm-no-module` - 无模块错误
 - `gdscript2-vm-string-concat` - 字符串连接
 
+**Runtime 测试命令：**
+- `gdscript2-runtime-builtin-print` - print 函数测试
+- `gdscript2-runtime-builtin-str` - str 函数测试
+- `gdscript2-runtime-builtin-int` - int 转换测试
+- `gdscript2-runtime-builtin-float` - float 转换测试
+- `gdscript2-runtime-builtin-abs` - abs 函数测试
+- `gdscript2-runtime-builtin-min-max` - min/max 函数测试
+- `gdscript2-runtime-builtin-clamp` - clamp 函数测试
+- `gdscript2-runtime-builtin-sqrt` - sqrt 函数测试
+- `gdscript2-runtime-builtin-pow` - pow 函数测试
+- `gdscript2-runtime-builtin-len` - len 函数测试
+- `gdscript2-runtime-builtin-range` - range 函数测试
+- `gdscript2-runtime-builtin-typeof` - typeof 函数测试
+- `gdscript2-runtime-builtin-floor-ceil-round` - 取整函数测试
+- `gdscript2-runtime-variant-utils-type-check` - 类型检查测试
+- `gdscript2-runtime-variant-utils-conversion` - 类型转换测试
+- `gdscript2-runtime-variant-utils-container` - 容器操作测试
+- `gdscript2-runtime-variant-utils-safe-ops` - 安全运算测试
+- `gdscript2-runtime-builtin-in-expression` - 表达式中的内建函数
+- `gdscript2-runtime-builtin-nested-calls` - 嵌套调用测试
+
 ### 语言注册
 
 **文件：**
 - `gdscript2_language.h/.cpp` - 语言类、脚本类、资源加载/保存器
+
+## 当前完成状态
+
+| 模块 | 完成度 | 说明 |
+|------|--------|------|
+| M0 基线 | ✅ 100% | 模块结构与构建系统 |
+| M1 前端 | ✅ 100% | Tokenizer, Parser, AST（40+ 节点类型）|
+| M2 语义分析 | ✅ 100% | 类型系统、符号表、诊断（50+ 错误码）|
+| M3 IR | ✅ 100% | IR 数据结构、Builder、优化 Pass（5 种）|
+| M4 Codegen | ✅ 100% | 字节码生成（68 种操作码）|
+| M5 VM | ✅ 100% | 完整解释执行、迭代器、调试支持 |
+| Runtime | ✅ 80% | 内建函数（40+）、Variant 工具 |
+| Tools/LSP | ⏳ 0% | 语言服务器协议（待实现）|
+| Compat | ⏳ 0% | 兼容层（待实现）|
+
+**测试用例总计：** 161+ 个
+- Tokenizer: 21 个
+- Parser: 23 个
+- Semantic: 35 个
+- IR: 21 个
+- Codegen: 17 个
+- VM: 30 个
+- Runtime: 19 个
 
 ## 当前架构
 
@@ -313,11 +358,14 @@
 
 ### 高优先级
 
-1. **Runtime 运行时完善**
-   - Godot 对象桥接
-   - 完整内建函数支持
-   - 信号/RPC 支持
-   - 协程/await 完整支持
+1. **协程/await 完整支持**
+   - 协程状态保存与恢复
+   - await 表达式完整实现
+   - 信号等待
+
+2. **信号/RPC 支持**
+   - 信号连接与触发
+   - RPC 调用
 
 ### 中优先级
 
@@ -333,11 +381,40 @@
    - 警告映射
    - 开关/标志文档
 
-5. **Runtime 运行时**
-   - Godot 对象桥接
-   - Variant 操作
-   - 内建函数注册
-   - 信号/RPC 支持
+### Runtime 运行时（✅ 已完成 - 基础部分）
+
+**文件：**
+- `runtime/gdscript2_builtin.h/.cpp` - **内建函数注册系统**
+- `runtime/gdscript2_variant_utils.h/.cpp` - **Variant 操作辅助工具**
+
+**内建函数（40+ 个）：**
+- 打印函数：print, print_debug, printerr, printraw, push_error, push_warning
+- 类型转换：str, int, float, bool
+- 数学函数：abs, sign, min, max, clamp, floor, ceil, round, sqrt, pow, sin, cos, tan, exp, log
+- 容器函数：len, range
+- 类型检查：typeof, type_exists, is_instance_valid
+- 对象函数：instance_from_id, is_instance_of
+- 字符串函数：char, ord
+- Variant 工具：var_to_str, str_to_var, var_to_bytes, bytes_to_var, hash
+- 资源加载：load, preload
+
+**Variant 辅助工具：**
+- 类型检查与验证
+- 安全类型转换（int, float, bool, string）
+- 容器操作（get_length, get_index, set_index）
+- 安全算术运算（带错误检查）
+- 比较运算封装
+- 深拷贝与序列化
+- 错误信息生成
+
+**集成：**
+- VM 中的 CALL_BUILTIN 指令支持
+- 自动初始化与清理
+- 与 Godot utility functions 的回退机制
+
+5. **信号/RPC 支持（待完成）**
+   - 信号连接与触发
+   - RPC 调用
 
 ### 低优先级
 
@@ -402,6 +479,10 @@ modules/gdscript2/
 │   ├── gdscript2_vm.h
 │   └── gdscript2_vm.cpp
 ├── runtime/
+│   ├── gdscript2_builtin.h
+│   ├── gdscript2_builtin.cpp
+│   ├── gdscript2_variant_utils.h
+│   └── gdscript2_variant_utils.cpp
 ├── tools/
 ├── compat/
 └── tests/
@@ -427,6 +508,7 @@ modules/gdscript2/
 
 ## 下次对话建议
 
-1. **完善 Runtime** - Godot 对象桥接、完整内建函数支持
-2. 添加 **Tools/LSP 支持** - 代码补全、跳转定义
+1. 添加 **协程/await 完整支持** - 协程状态、信号等待
+2. 添加 **Tools/LSP 支持** - 代码补全、跳转定义、符号索引
 3. 或添加 **Compat 兼容层** - 与旧 GDScript 的兼容
+4. 或完善 **测试覆盖率** - 更全面的集成测试

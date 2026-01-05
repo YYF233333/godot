@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  register_types.cpp                                                    */
+/*  gdscript2_variant_utils.h                                             */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -28,62 +28,49 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "register_types.h"
+#pragma once
 
-#include "gdscript2_language.h"
-#include "runtime/gdscript2_builtin.h"
+#include "core/variant/variant.h"
 
-#include "core/io/resource_loader.h"
-#include "core/io/resource_saver.h"
-#include "core/object/script_language.h"
+// Utility class for Variant operations in GDScript2
+class GDScript2VariantUtils {
+public:
+	// Type checking with better error messages
+	static bool check_type(const Variant &p_variant, Variant::Type p_expected, String &r_error);
+	static bool is_numeric(const Variant &p_variant);
+	static bool is_container(const Variant &p_variant);
+	static bool is_iterable(const Variant &p_variant);
 
-static GDScript2Language *gdscript2_language = nullptr;
-static Ref<GDScript2ResourceLoader> gdscript2_loader;
-static Ref<GDScript2ResourceSaver> gdscript2_saver;
+	// Safe conversions
+	static int64_t to_int(const Variant &p_variant, bool &r_valid);
+	static double to_float(const Variant &p_variant, bool &r_valid);
+	static bool to_bool(const Variant &p_variant);
+	static String to_string(const Variant &p_variant);
 
-void initialize_gdscript2_module(ModuleInitializationLevel p_level) {
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SERVERS) {
-		return;
-	}
+	// Container operations
+	static int get_length(const Variant &p_container, bool &r_valid);
+	static Variant get_index(const Variant &p_container, const Variant &p_index, bool &r_valid);
+	static void set_index(Variant &p_container, const Variant &p_index, const Variant &p_value, bool &r_valid);
 
-	// Initialize builtin functions registry
-	GDScript2BuiltinRegistry::initialize();
+	// Safe arithmetic operations with error checking
+	static Variant safe_add(const Variant &p_left, const Variant &p_right, bool &r_valid);
+	static Variant safe_subtract(const Variant &p_left, const Variant &p_right, bool &r_valid);
+	static Variant safe_multiply(const Variant &p_left, const Variant &p_right, bool &r_valid);
+	static Variant safe_divide(const Variant &p_left, const Variant &p_right, bool &r_valid);
+	static Variant safe_modulo(const Variant &p_left, const Variant &p_right, bool &r_valid);
 
-	gdscript2_language = memnew(GDScript2Language);
-	ScriptServer::register_language(gdscript2_language);
+	// Comparison operations
+	static bool equals(const Variant &p_left, const Variant &p_right);
+	static bool less_than(const Variant &p_left, const Variant &p_right, bool &r_valid);
+	static bool less_equal(const Variant &p_left, const Variant &p_right, bool &r_valid);
 
-	gdscript2_loader = gdscript2_language->get_loader();
-	if (gdscript2_loader.is_valid()) {
-		ResourceLoader::add_resource_format_loader(gdscript2_loader);
-	}
+	// Type name utilities
+	static String get_type_name(Variant::Type p_type);
+	static String get_type_name(const Variant &p_variant);
 
-	gdscript2_saver = gdscript2_language->get_saver();
-	if (gdscript2_saver.is_valid()) {
-		ResourceSaver::add_resource_format_saver(gdscript2_saver);
-	}
-}
+	// Deep copy
+	static Variant deep_copy(const Variant &p_variant);
 
-void uninitialize_gdscript2_module(ModuleInitializationLevel p_level) {
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SERVERS) {
-		return;
-	}
-
-	if (gdscript2_saver.is_valid()) {
-		ResourceSaver::remove_resource_format_saver(gdscript2_saver);
-		gdscript2_saver.unref();
-	}
-
-	if (gdscript2_loader.is_valid()) {
-		ResourceLoader::remove_resource_format_loader(gdscript2_loader);
-		gdscript2_loader.unref();
-	}
-
-	if (gdscript2_language) {
-		ScriptServer::unregister_language(gdscript2_language);
-		memdelete(gdscript2_language);
-		gdscript2_language = nullptr;
-	}
-
-	// Finalize builtin functions registry
-	GDScript2BuiltinRegistry::finalize();
-}
+	// Stringify for debugging
+	static String stringify_for_error(const Variant &p_variant);
+};
