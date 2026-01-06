@@ -288,19 +288,6 @@ func test(x):
 	CHECK_MESSAGE(ok, "CFG simplification should succeed.");
 }
 
-void test_gdscript2_ir_pass_strength_reduction() {
-	auto result = build_ir(R"(
-func test(x):
-	return x * 2
-)");
-	CHECK_MESSAGE(!result.has_errors(), "Should build without errors.");
-
-	// Run strength reduction
-	GDScript2StrengthReductionPass pass;
-	bool ok = pass.run(result.module);
-	CHECK_MESSAGE(ok, "Strength reduction should succeed.");
-}
-
 void test_gdscript2_ir_pass_manager() {
 	auto result = build_ir(R"(
 func factorial(n):
@@ -357,7 +344,6 @@ void test_ir() {
 	test_gdscript2_ir_pass_dce();
 	test_gdscript2_ir_pass_copy_prop();
 	test_gdscript2_ir_pass_simplify_cfg();
-	test_gdscript2_ir_pass_strength_reduction();
 	test_gdscript2_ir_pass_manager();
 	test_gdscript2_ir_to_string();
 }

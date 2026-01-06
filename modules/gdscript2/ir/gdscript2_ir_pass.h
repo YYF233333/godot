@@ -167,19 +167,3 @@ private:
 	// Remove empty blocks (only contain jump to single successor)
 	bool remove_empty_blocks(GDScript2IRFunction &p_func);
 };
-
-// ============================================================================
-// Strength Reduction Pass
-// ============================================================================
-
-// Replaces expensive operations with cheaper equivalents
-// e.g., x * 2 -> x + x, x * 4 -> x << 2
-class GDScript2StrengthReductionPass : public GDScript2IRPass {
-public:
-	const char *get_name() const override { return "StrengthReduction"; }
-	bool run(GDScript2IRModule &p_module) override;
-
-private:
-	bool run_on_function(GDScript2IRFunction &p_func) override;
-	bool reduce_instruction(GDScript2IRInstr &p_instr, GDScript2IRFunction &p_func);
-};

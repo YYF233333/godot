@@ -52,11 +52,16 @@ bool GDScript2IRPassManager::run_all(GDScript2IRModule &p_module) {
 
 void GDScript2IRPassManager::add_standard_passes() {
 	// Standard optimization pipeline
+	// 1. Constant Folding - 消除常量计算
 	add_pass(memnew(GDScript2ConstFoldPass));
+	// 2. Copy Propagation - 消除冗余拷贝，辅助其他优化
 	add_pass(memnew(GDScript2CopyPropPass));
+	// 3. Constant Folding again - 处理传播后的常量
+	add_pass(memnew(GDScript2ConstFoldPass));
+	// 4. Dead Code Elimination - 删除死代码
 	add_pass(memnew(GDScript2DCEPass));
+	// 5. Simplify CFG - 简化控制流
 	add_pass(memnew(GDScript2SimplifyCFGPass));
-	add_pass(memnew(GDScript2StrengthReductionPass));
 }
 
 // ============================================================================
@@ -587,88 +592,4 @@ bool GDScript2SimplifyCFGPass::remove_empty_blocks(GDScript2IRFunction &p_func) 
 	}
 
 	return changed;
-}
-
-// ============================================================================
-// Strength Reduction Pass
-// ============================================================================
-
-bool GDScript2StrengthReductionPass::run(GDScript2IRModule &p_module) {
-	for (GDScript2IRFunction &func : p_module.functions) {
-		run_on_function(func);
-	}
-	return true;
-}
-
-bool GDScript2StrengthReductionPass::run_on_function(GDScript2IRFunction &p_func) {
-	bool changed = false;
-
-	for (GDScript2IRBlock &block : p_func.blocks) {
-		for (GDScript2IRInstr &instr : block.instructions) {
-			if (instr.is_dead) {
-				continue;
-			}
-			if (reduce_instruction(instr, p_func)) {
-				changed = true;
-			}
-		}
-	}
-
-	return changed;
-}
-
-bool GDScript2StrengthReductionPass::reduce_instruction(GDScript2IRInstr &p_instr, GDScript2IRFunction &p_func) {
-	// Multiplication by power of 2 -> shift
-	if (p_instr.op == GDScript2IROp::OP_MUL && p_instr.args.size() >= 2) {
-		// Check if second operand is a constant power of 2
-		if (p_instr.args[1].type == GDScript2IROperandType::IMMEDIATE) {
-			Variant val = p_instr.args[1].imm_value;
-			if (val.get_type() == Variant::INT) {
-				int64_t n = val;
-				if (n > 0 && (n & (n - 1)) == 0) {
-					// n is a power of 2
-					int shift = 0;
-					while ((n >> shift) > 1) {
-						shift++;
-					}
-					p_instr.op = GDScript2IROp::OP_BIT_LSH;
-					p_instr.args[1] = GDScript2IROperand::make_imm(shift);
-					return true;
-				}
-			}
-		}
-	}
-
-	// Division by power of 2 -> shift (for integers)
-	if (p_instr.op == GDScript2IROp::OP_DIV && p_instr.args.size() >= 2) {
-		if (p_instr.args[1].type == GDScript2IROperandType::IMMEDIATE) {
-			Variant val = p_instr.args[1].imm_value;
-			if (val.get_type() == Variant::INT) {
-				int64_t n = val;
-				if (n > 0 && (n & (n - 1)) == 0) {
-					int shift = 0;
-					while ((n >> shift) > 1) {
-						shift++;
-					}
-					p_instr.op = GDScript2IROp::OP_BIT_RSH;
-					p_instr.args[1] = GDScript2IROperand::make_imm(shift);
-					return true;
-				}
-			}
-		}
-	}
-
-	// x * 2 -> x + x
-	if (p_instr.op == GDScript2IROp::OP_MUL && p_instr.args.size() >= 2) {
-		if (p_instr.args[1].type == GDScript2IROperandType::IMMEDIATE) {
-			Variant val = p_instr.args[1].imm_value;
-			if (val.get_type() == Variant::INT && (int64_t)val == 2) {
-				p_instr.op = GDScript2IROp::OP_ADD;
-				p_instr.args[1] = p_instr.args[0]; // x + x
-				return true;
-			}
-		}
-	}
-
-	return false;
 }

@@ -93,8 +93,10 @@
 - `GDScript2DCEPass` - **死代码消除**（删除不可达代码和无用指令）
 - `GDScript2CopyPropPass` - **拷贝传播**（消除冗余拷贝）
 - `GDScript2SimplifyCFGPass` - **CFG 简化**（删除空块、合并块）
-- `GDScript2StrengthReductionPass` - **强度削减**（x*2 → x+x, x*4 → x<<2）
-- `add_standard_passes()` - 标准优化流水线
+- `add_standard_passes()` - 标准优化流水线（优化顺序：ConstFold → CopyProp → ConstFold → DCE → SimplifyCFG）
+
+**设计决策：**
+- ❌ **已移除 Strength Reduction Pass**：在动态类型解释器中，传统强度削减优化（如 x*2 → x+x）收益不明显，甚至可能因多次变量访问而降低性能；位移优化（x*4 → x<<2）对浮点数不安全。
 
 ### M4 代码生成（✅ 已完成）
 
@@ -309,7 +311,7 @@
 │  IR Passes  │  ir/gdscript2_ir_pass.h ✅ 已完成
 │ (ConstFold, │
 │ DCE, Copy,  │
-│ CFG, Strength)
+│     CFG)    │
 └─────────────┘
     │
     ▼
