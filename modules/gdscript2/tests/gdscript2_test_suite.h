@@ -44,6 +44,7 @@ void test_runtime();
 void test_front();
 void test_coroutine();
 void test_signal();
+void test_integration();
 } //namespace GDScript2Tests
 
 // Register tests with doctest
@@ -86,5 +87,9 @@ TEST_SUITE("[Modules][GDScript2]") {
 
 	TEST_CASE("[GDScript2] Signal System") {
 		GDScript2Tests::test_signal();
+	}
+
+	TEST_CASE("[GDScript2] Editor Integration") {
+		GDScript2Tests::test_integration();
 	}
 }

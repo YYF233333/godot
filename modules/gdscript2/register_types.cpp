@@ -30,6 +30,7 @@
 
 #include "register_types.h"
 
+#include "gdscript2.h"
 #include "gdscript2_language.h"
 #include "runtime/gdscript2_builtin.h"
 #include "runtime/gdscript2_signal.h"
@@ -47,6 +48,9 @@ void initialize_gdscript2_module(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SERVERS) {
 		return;
 	}
+
+	// Register script classes
+	GDREGISTER_CLASS(GDScript2);
 
 	// Register coroutine classes
 	GDREGISTER_CLASS(GDScript2Coroutine);
