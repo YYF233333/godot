@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/io/resource.h"
+#include "core/io/resource_uid.h"
 #include "core/object/gdvirtual.gen.h"
 
 class ResourceFormatSaver : public RefCounted {

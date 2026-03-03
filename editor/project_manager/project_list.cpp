@@ -33,6 +33,7 @@
 #include "core/config/project_settings.h"
 #include "core/input/input.h"
 #include "core/io/dir_access.h"
+#include "core/io/resource_uid.h"
 #include "core/object/class_db.h"
 #include "core/os/os.h"
 #include "core/os/time.h"

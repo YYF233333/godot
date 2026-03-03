@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/io/file_access.h"
 #include "core/os/semaphore.h"
 #include "core/os/thread.h"
 #include "core/templates/safe_refcount.h"

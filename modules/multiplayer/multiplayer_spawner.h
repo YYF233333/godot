@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/io/resource_uid.h"
 #include "core/templates/local_vector.h"
 #include "scene/main/node.h"
 #include "scene/resources/packed_scene.h"

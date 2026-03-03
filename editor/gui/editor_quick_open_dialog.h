@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/io/resource_uid.h"
 #include "core/templates/a_hash_map.h"
 #include "scene/gui/dialogs.h"
 #include "scene/gui/margin_container.h"

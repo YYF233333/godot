@@ -30,11 +30,12 @@
 
 #pragma once
 
-#include "core/object/ref_counted.h"
-#include "core/string/string_name.h"
+#include "core/object/object.h"
 #include "core/templates/hash_map.h"
 
 class FileAccess;
+template <typename T>
+class Ref;
 
 typedef void (*ResourceUIDScanForUIDOnStartup)();
 

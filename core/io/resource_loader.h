@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/io/resource.h"
+#include "core/io/resource_uid.h"
 #include "core/object/gdvirtual.gen.h"
 #include "core/object/worker_thread_pool.h"
 #include "core/os/thread.h"
