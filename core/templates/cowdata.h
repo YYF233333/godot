@@ -665,6 +665,19 @@ public:
 template <size_t N>
 CowBuffer(const char (&)[N]) -> CowBuffer<char32_t, N>;
 
+template <size_t N>
+struct StrLit {
+	char value[N];
+	consteval StrLit(const char (&str)[N]) {
+		for (size_t i = 0; i < N; ++i) {
+			value[i] = str[i];
+		}
+	}
+};
+
+template <size_t N>
+StrLit(const char (&)[N]) -> StrLit<N>;
+
 // Zero-constructing CowData initializes _ptr to nullptr (and thus empty).
 template <typename T>
 struct is_zero_constructible<CowData<T>> : std::true_type {};

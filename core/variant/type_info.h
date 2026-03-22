@@ -238,11 +238,67 @@ inline String enum_qualified_name_to_class_info_name(const String &p_qualified_n
 	if (parts.size() <= 2) {
 		return String(".").join(parts);
 	}
-	// Contains namespace. We only want the class and enum names.
 	return parts[parts.size() - 2] + "." + parts[parts.size() - 1];
 }
 } // namespace Internal
 } // namespace GodotTypeInfo
+
+template <StrLit input>
+struct ComptimeEnumName {
+private:
+	static consteval size_t _output_size() {
+		constexpr size_t N = sizeof(input.value);
+		int last_sep = -2, second_last_sep = -2;
+		for (size_t i = 0; i + 1 < N - 1; i++) {
+			if (input.value[i] == ':' && input.value[i + 1] == ':') {
+				second_last_sep = last_sep;
+				last_sep = (int)i;
+			}
+		}
+		size_t start = (second_last_sep >= 0) ? (size_t)(second_last_sep + 2) : 0;
+		size_t len = 0;
+		for (size_t i = start; i < N - 1; i++) {
+			if (input.value[i] == ':' && i + 1 < N - 1 && input.value[i + 1] == ':') {
+				len++;
+				i++;
+			} else {
+				len++;
+			}
+		}
+		return len + 1;
+	}
+
+	static constexpr size_t OUT_N = _output_size();
+
+	static consteval auto _make_buf() {
+		constexpr size_t N = sizeof(input.value);
+		int last_sep = -2, second_last_sep = -2;
+		for (size_t i = 0; i + 1 < N - 1; i++) {
+			if (input.value[i] == ':' && input.value[i + 1] == ':') {
+				second_last_sep = last_sep;
+				last_sep = (int)i;
+			}
+		}
+		size_t start = (second_last_sep >= 0) ? (size_t)(second_last_sep + 2) : 0;
+		char temp[OUT_N]{};
+		size_t j = 0;
+		for (size_t i = start; i < N - 1; i++) {
+			if (input.value[i] == ':' && i + 1 < N - 1 && input.value[i + 1] == ':') {
+				temp[j++] = '.';
+				i++;
+			} else {
+				temp[j++] = input.value[i];
+			}
+		}
+		temp[j] = '\0';
+		return CowBuffer(temp);
+	}
+
+	static constexpr auto buf = _make_buf();
+
+public:
+	inline static constexpr const StringName &value = ComptimeStringName<buf>().value;
+};
 
 #define MAKE_ENUM_TYPE_INFO(m_enum, m_bound_name) \
 	template <> \
@@ -251,7 +307,7 @@ inline String enum_qualified_name_to_class_info_name(const String &p_qualified_n
 		static const GodotTypeInfo::Metadata METADATA = GodotTypeInfo::METADATA_NONE; \
 		static inline PropertyInfo get_class_info() { \
 			return PropertyInfo(Variant::INT, String(), PROPERTY_HINT_NONE, String(), PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_CLASS_IS_ENUM, \
-					GodotTypeInfo::Internal::enum_qualified_name_to_class_info_name(String(#m_bound_name))); \
+					ComptimeEnumName<#m_bound_name>().value); \
 		} \
 	};
 
@@ -271,7 +327,7 @@ inline StringName __constant_get_enum_value_name(const char *p_name) {
 		static const GodotTypeInfo::Metadata METADATA = GodotTypeInfo::METADATA_NONE; \
 		static inline PropertyInfo get_class_info() { \
 			return PropertyInfo(Variant::INT, String(), PROPERTY_HINT_NONE, String(), PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_CLASS_IS_BITFIELD, \
-					GodotTypeInfo::Internal::enum_qualified_name_to_class_info_name(String(#m_bound_name))); \
+					ComptimeEnumName<#m_bound_name>().value); \
 		} \
 	}; \
 	template <> \
@@ -280,7 +336,7 @@ inline StringName __constant_get_enum_value_name(const char *p_name) {
 		static const GodotTypeInfo::Metadata METADATA = GodotTypeInfo::METADATA_NONE; \
 		static inline PropertyInfo get_class_info() { \
 			return PropertyInfo(Variant::INT, String(), PROPERTY_HINT_NONE, String(), PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_CLASS_IS_BITFIELD, \
-					GodotTypeInfo::Internal::enum_qualified_name_to_class_info_name(String(#m_bound_name))); \
+					ComptimeEnumName<#m_bound_name>().value); \
 		} \
 	};
 
