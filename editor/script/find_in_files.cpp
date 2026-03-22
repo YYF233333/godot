@@ -52,8 +52,6 @@
 #include "scene/gui/tree.h"
 #include "scene/main/scene_tree.h"
 
-const char *FindInFiles::SIGNAL_RESULT_FOUND = "result_found";
-
 // TODO: Would be nice in Vector and Vectors.
 template <typename T>
 inline void pop_back(T &container) {
@@ -331,9 +329,6 @@ void FindInFiles::_bind_methods() {
 }
 
 //-----------------------------------------------------------------------------
-const char *FindInFilesDialog::SIGNAL_FIND_REQUESTED = "find_requested";
-const char *FindInFilesDialog::SIGNAL_REPLACE_REQUESTED = "replace_requested";
-
 FindInFilesDialog::FindInFilesDialog() {
 	set_min_size(Size2(500 * EDSCALE, 0));
 	set_title(TTRC("Find in Files"));
@@ -687,10 +682,6 @@ void FindInFilesDialog::_bind_methods() {
 }
 
 //-----------------------------------------------------------------------------
-const char *FindInFilesPanel::SIGNAL_RESULT_SELECTED = "result_selected";
-const char *FindInFilesPanel::SIGNAL_FILES_MODIFIED = "files_modified";
-const char *FindInFilesPanel::SIGNAL_CLOSE_BUTTON_CLICKED = "close_button_clicked";
-
 FindInFilesPanel::FindInFilesPanel() {
 	_finder = memnew(FindInFiles);
 	_finder->connect(FindInFiles::SIGNAL_RESULT_FOUND, callable_mp(this, &FindInFilesPanel::_on_result_found));

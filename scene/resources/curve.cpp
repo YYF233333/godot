@@ -35,9 +35,6 @@
 
 #include <cfloat> // FLT_EPSILON
 
-const char *Curve::SIGNAL_RANGE_CHANGED = "range_changed";
-const char *Curve::SIGNAL_DOMAIN_CHANGED = "domain_changed";
-
 Curve::Curve() {
 	property_helper.setup_for_instance(base_property_helper, this);
 }

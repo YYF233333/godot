@@ -167,7 +167,7 @@ public:
 		p_name._data = nullptr;
 		return *this;
 	}
-	StringName(const char *p_name, bool p_static = false);
+	StringName(const char *p_name);
 	constexpr StringName(const StringName &p_name) {
 		_data = nullptr;
 		if (std::is_constant_evaluated() || (p_name._data && p_name._data->refcount.ref())) {
@@ -218,7 +218,7 @@ bool operator!=(const char *p_name, const StringName &p_string_name);
  * Use in places that can be called hundreds of times per frame (or more) is recommended, but this situation is very rare. If in doubt, do not use.
  */
 
-#define SNAME(m_arg) ([]() -> const StringName & { static StringName sname = StringName(m_arg, true); return sname; })()
+#define SNAME(m_arg) ComptimeStringName<m_arg>().value
 
 template <CowBuffer buf>
 struct ComptimeStringName {

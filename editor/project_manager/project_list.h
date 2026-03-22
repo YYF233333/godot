@@ -279,10 +279,10 @@ protected:
 	static void _bind_methods();
 
 public:
-	static inline const char *SIGNAL_LIST_CHANGED = "list_changed";
-	static inline const char *SIGNAL_SELECTION_CHANGED = "selection_changed";
-	static inline const char *SIGNAL_PROJECT_ASK_OPEN = "project_ask_open";
-	static inline const char *SIGNAL_MENU_OPTION_SELECTED = "menu_option_selected";
+	static inline constexpr char SIGNAL_LIST_CHANGED[] = "list_changed";
+	static inline constexpr char SIGNAL_SELECTION_CHANGED[] = "selection_changed";
+	static inline constexpr char SIGNAL_PROJECT_ASK_OPEN[] = "project_ask_open";
+	static inline constexpr char SIGNAL_MENU_OPTION_SELECTED[] = "menu_option_selected";
 
 	static bool project_feature_looks_like_version(const String &p_feature);
 

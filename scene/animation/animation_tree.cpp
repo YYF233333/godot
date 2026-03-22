@@ -656,7 +656,7 @@ bool AnimationTree::_blend_pre_process(double p_delta, int p_track_count, const 
 		_update_connections();
 	}
 
-	AnimationNodeInstance &instance = get_node_instance_by_path(SNAME(Animation::PARAMETERS_BASE_PATH.ascii().get_data()));
+	AnimationNodeInstance &instance = get_node_instance_by_path(Animation::PARAMETERS_BASE_PATH_SNAME);
 
 	{ // Setup.
 		process_pass++;
@@ -682,7 +682,7 @@ bool AnimationTree::_blend_pre_process(double p_delta, int p_track_count, const 
 		for (int i = 0; i < p_track_count; i++) {
 			src_blendsw[i] = 1.0; // By default all go to 1 for the root input.
 		}
-		instance.path = SNAME(Animation::PARAMETERS_BASE_PATH.ascii().get_data());
+		instance.path = Animation::PARAMETERS_BASE_PATH_SNAME;
 	}
 
 	// Process.

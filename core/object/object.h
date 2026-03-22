@@ -262,7 +262,7 @@ private: \
 		if (initialized) { \
 			return *gdtype; \
 		} \
-		gdtype = memnew(GDType(&super_type::get_gdtype_static(), StringName(#m_class))); \
+		gdtype = memnew(GDType(&super_type::get_gdtype_static(), ComptimeStringName<#m_class>().value)); \
 		m_class::autorelease_gdtype(&gdtype); \
 		initialized = true; \
 		return *gdtype; \
@@ -275,8 +275,8 @@ public: \
 	static const GDType &get_gdtype_static() { \
 		return get_gdtype_static_mutable(); \
 	} \
-	static const StringName &get_class_static() { \
-		return get_gdtype_static().get_name(); \
+	static constexpr const StringName &get_class_static() { \
+		return ComptimeStringName<#m_class>().value; \
 	} \
 \
 protected: \
@@ -663,7 +663,7 @@ public:
 
 	const GDType &get_gdtype() const;
 
-	static const StringName &get_class_static() { return get_gdtype_static().get_name(); }
+	static constexpr const StringName &get_class_static() { return ComptimeStringName<"Object">().value; }
 
 	_FORCE_INLINE_ String get_class() const { return get_class_name(); }
 
