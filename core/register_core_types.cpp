@@ -132,7 +132,6 @@ void register_core_types() {
 	static_assert(sizeof(Callable) <= 16);
 
 	ObjectDB::setup();
-	StringName::setup();
 	register_global_constants();
 	CoreStringNames::create();
 

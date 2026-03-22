@@ -40,17 +40,40 @@ struct StringName::Table {
 	constexpr static uint32_t TABLE_LEN = 1 << TABLE_BITS;
 	constexpr static uint32_t TABLE_MASK = TABLE_LEN - 1;
 
-	static inline _Data *table[TABLE_LEN];
+	static inline constinit _Data *table[TABLE_LEN];
 	static inline BinaryMutex mutex;
 	static inline PagedAllocator<_Data> allocator;
 };
 
-void StringName::setup() {
-	ERR_FAIL_COND(configured);
-	for (uint32_t i = 0; i < Table::TABLE_LEN; i++) {
-		Table::table[i] = nullptr;
+StringName::Register::Register(StringName::_Data &p_data) {
+	if (p_data.name.is_empty()) {
+		return;
 	}
-	configured = true;
+
+	const uint32_t hash = p_data.hash;
+	const uint32_t idx = hash & Table::TABLE_MASK;
+
+	MutexLock lock(Table::mutex);
+	_Data *entry = Table::table[idx];
+
+	while (entry) {
+		if (entry->hash == hash && entry->name == p_data.name) {
+			break;
+		}
+		entry = entry->next;
+	}
+
+	if (entry && entry->refcount.ref()) {
+		return;
+	}
+
+	p_data.next = Table::table[idx];
+	p_data.prev = nullptr;
+
+	if (Table::table[idx]) {
+		Table::table[idx]->prev = &p_data;
+	}
+	Table::table[idx] = &p_data;
 }
 
 void StringName::cleanup() {
@@ -89,16 +112,23 @@ void StringName::cleanup() {
 	for (uint32_t i = 0; i < Table::TABLE_LEN; i++) {
 		while (Table::table[i]) {
 			_Data *d = Table::table[i];
-			if (d->static_count.get() != d->refcount.get()) {
-				lost_strings++;
+			Table::table[i] = Table::table[i]->next;
 
+#ifdef DEBUG_ENABLED
+			bool is_orphan = !d->is_static && d->refcount.get() > 1;
+#else
+			bool is_orphan = !d->is_static && d->refcount.get() > 0;
+#endif
+			if (!is_orphan) {
+				lost_strings++;
 				if (OS::get_singleton()->is_stdout_verbose()) {
-					print_line(vformat("Orphan StringName: %s (static: %d, total: %d)", d->name, d->static_count.get(), d->refcount.get()));
+					print_line(vformat("Orphan StringName: %s (total ref: %d)", d->name, d->refcount.get()));
 				}
 			}
 
-			Table::table[i] = Table::table[i]->next;
-			Table::allocator.free(d);
+			if (!d->is_static) {
+				Table::allocator.free(d);
+			}
 		}
 	}
 	if (lost_strings) {
@@ -108,14 +138,13 @@ void StringName::cleanup() {
 }
 
 void StringName::unref() {
-	ERR_FAIL_COND(!configured);
+	if (!configured) {
+		return;
+	}
 
 	if (_data && _data->refcount.unref()) {
 		MutexLock lock(Table::mutex);
 
-		if (CoreGlobals::leak_reporting_enabled && _data->static_count.get() > 0) {
-			ERR_PRINT("BUG: Unreferenced static string to 0: " + _data->name);
-		}
 		if (_data->prev) {
 			_data->prev->next = _data->next;
 		} else {
@@ -192,23 +221,11 @@ StringName &StringName::operator=(const StringName &p_name) {
 	return *this;
 }
 
-StringName::StringName(const StringName &p_name) {
-	_data = nullptr;
-
-	ERR_FAIL_COND(!configured);
-
-	if (p_name._data && p_name._data->refcount.ref()) {
-		_data = p_name._data;
-	}
-}
-
 StringName::StringName(const char *p_name, bool p_static) {
 	_data = nullptr;
 
-	ERR_FAIL_COND(!configured);
-
 	if (!p_name || p_name[0] == 0) {
-		return; //empty, ignore
+		return;
 	}
 
 	const uint32_t hash = String::hash(p_name);
@@ -218,7 +235,6 @@ StringName::StringName(const char *p_name, bool p_static) {
 	_data = Table::table[idx];
 
 	while (_data) {
-		// compare hash first
 		if (_data->hash == hash && _data->name == p_name) {
 			break;
 		}
@@ -226,10 +242,6 @@ StringName::StringName(const char *p_name, bool p_static) {
 	}
 
 	if (_data && _data->refcount.ref()) {
-		// exists
-		if (p_static) {
-			_data->static_count.increment();
-		}
 #ifdef DEBUG_ENABLED
 		if (unlikely(debug_stringname)) {
 			_data->debug_references++;
@@ -241,16 +253,14 @@ StringName::StringName(const char *p_name, bool p_static) {
 	_data = Table::allocator.alloc();
 	_data->name = p_name;
 	_data->refcount.init();
-	_data->static_count.set(p_static ? 1 : 0);
+	_data->is_static = false;
 	_data->hash = hash;
 	_data->next = Table::table[idx];
 	_data->prev = nullptr;
 
 #ifdef DEBUG_ENABLED
 	if (unlikely(debug_stringname)) {
-		// Keep in memory, force static.
 		_data->refcount.ref();
-		_data->static_count.increment();
 	}
 #endif
 	if (Table::table[idx]) {
@@ -261,8 +271,6 @@ StringName::StringName(const char *p_name, bool p_static) {
 
 StringName::StringName(const String &p_name, bool p_static) {
 	_data = nullptr;
-
-	ERR_FAIL_COND(!configured);
 
 	if (p_name.is_empty()) {
 		return;
@@ -282,10 +290,6 @@ StringName::StringName(const String &p_name, bool p_static) {
 	}
 
 	if (_data && _data->refcount.ref()) {
-		// exists
-		if (p_static) {
-			_data->static_count.increment();
-		}
 #ifdef DEBUG_ENABLED
 		if (unlikely(debug_stringname)) {
 			_data->debug_references++;
@@ -297,15 +301,13 @@ StringName::StringName(const String &p_name, bool p_static) {
 	_data = Table::allocator.alloc();
 	_data->name = p_name;
 	_data->refcount.init();
-	_data->static_count.set(p_static ? 1 : 0);
+	_data->is_static = false;
 	_data->hash = hash;
 	_data->next = Table::table[idx];
 	_data->prev = nullptr;
 #ifdef DEBUG_ENABLED
 	if (unlikely(debug_stringname)) {
-		// Keep in memory, force static.
 		_data->refcount.ref();
-		_data->static_count.increment();
 	}
 #endif
 
