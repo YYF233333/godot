@@ -145,9 +145,8 @@ public:
 		}
 	}
 
-	_ALWAYS_INLINE_ explicit SafeNumeric(T p_value = static_cast<T>(0)) {
-		set(p_value);
-	}
+	_ALWAYS_INLINE_ constexpr explicit SafeNumeric(T p_value = static_cast<T>(0)) :
+			value(p_value) {}
 };
 
 class SafeFlag {
@@ -172,9 +171,8 @@ public:
 		flag.store(p_value, std::memory_order_release);
 	}
 
-	_ALWAYS_INLINE_ explicit SafeFlag(bool p_value = false) {
-		set_to(p_value);
-	}
+	_ALWAYS_INLINE_ constexpr explicit SafeFlag(bool p_value = false) :
+			flag(p_value) {}
 };
 
 class SafeRefCount {
@@ -220,4 +218,8 @@ public:
 	_ALWAYS_INLINE_ void init(uint32_t p_value = 1) {
 		count.set(p_value);
 	}
+
+	_ALWAYS_INLINE_ constexpr explicit SafeRefCount(uint32_t p_value) :
+			count(p_value) {}
+	constexpr SafeRefCount() = default;
 };
